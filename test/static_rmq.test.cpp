@@ -1,6 +1,6 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/staticrmq"
 
-#include "../cpl/segment_tree.hpp"
+#include "../include/mtl/segment_tree.hpp"
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;

@@ -1,7 +1,6 @@
 #include <fibonacci_heap.hpp>
 
 #include <vector>
-#include <numeric>
 #include <random>
 #include <iostream>
 #include <queue>

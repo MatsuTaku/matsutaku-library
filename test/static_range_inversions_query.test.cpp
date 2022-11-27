@@ -1,7 +1,7 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/static_range_inversions_query"
 
-#include "../cpl/mo.hpp"
-#include "../cpl/fenwick_tree.hpp"
+#include "../include/mtl/mo.hpp"
+#include "../include/mtl/fenwick_tree.hpp"
 #include <bits/stdc++.h>
 using namespace std;
 using lint = long long;

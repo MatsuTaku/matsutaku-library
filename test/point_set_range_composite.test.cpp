@@ -1,7 +1,7 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/point_set_range_composite"
 
-#include "../cpl/segment_tree.hpp"
-#include "../cpl/modular.hpp"
+#include "../include/mtl/segment_tree.hpp"
+#include "../include/mtl/modular.hpp"
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;

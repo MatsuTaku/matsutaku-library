@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <iostream>
+#include <limits>
 #include "search.hpp"
 
 template<typename T, typename C = std::less<T>>

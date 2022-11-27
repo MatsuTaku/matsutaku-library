@@ -1,6 +1,6 @@
 #define PROBLEM "https://atcoder.jp/contests/arc116/tasks/arc116_c"
-#include "../cpl/dirichlet.hpp"
-#include "../cpl/modular.hpp"
+#include "../include/mtl/dirichlet.hpp"
+#include "../include/mtl/modular.hpp"
 #include <bits/stdc++.h>
 using namespace std;
 using mint = Modular998244353;

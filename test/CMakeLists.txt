@@ -1,0 +1,11 @@
+file(GLOB test_files *test.cpp */*test.cpp)
+foreach(test_file ${test_files})
+  get_Filename_component(base_name ${test_file} NAME_WE)
+  add_executable(${base_name} ${test_file})
+endforeach()
+
+file(GLOB ctest_files *_test.cpp */*_test.cpp)
+foreach(ctest_file ${ctest_files})
+  get_Filename_component(base_name ${ctest_file} NAME_WE)
+  add_test(${base_name} ${base_name})
+endforeach()
