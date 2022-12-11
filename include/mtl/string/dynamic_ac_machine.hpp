@@ -1,5 +1,5 @@
 #pragma once
-#include "string/ac_machine.hpp"
+#include "ac_machine.hpp"
 #include <queue>
 #include <unordered_set>
 
