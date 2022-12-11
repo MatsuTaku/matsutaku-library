@@ -10,7 +10,8 @@ class PersistentStack {
     T v;
     node_ptr next;
     Node() = default;
-    Node(T v, node_ptr next) : v(v), next(next) {}
+    Node(const T& v, node_ptr next) : v(v), next(next) {}
+    Node(T&& v, node_ptr next) : v(std::move(v)), next(next) {}
   };
  private:
   node_ptr top_;
@@ -21,9 +22,23 @@ class PersistentStack {
   size_t size() const { return size_; }
   bool empty() const { return size() == 0; }
   T top() const { return top_->v; }
-  [[nodiscard]] PersistentStack push(const T& v) const {
-    auto new_node = std::make_shared<Node>(v, top_);
+ private:
+  template<typename V>
+  PersistentStack _push(V&& v) const {
+    auto new_node = std::make_shared<Node>(std::forward<V>(v), top_);
     return PersistentStack(new_node, size()+1);
+  }
+ public:
+  template<typename V>
+  [[nodiscard]] PersistentStack push(V&& v) const {
+    static_assert(std::is_convertible<V,T>::value, "");
+    return _push(v);
+  }
+  [[nodiscard]] PersistentStack push(const T& v) const {
+    return _push(v);
+  }
+  [[nodiscard]] PersistentStack push(T&& v) const {
+    return _push(v);
   }
   [[nodiscard]] PersistentStack pop() const {
     return PersistentStack(top_->next, size()-1);
