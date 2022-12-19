@@ -2,6 +2,7 @@
 #include <vector>
 
 struct Hld {
+  int n;
   std::vector<std::vector<int>> edge;
   std::vector<int> size, in, out, head, rev, par, depth;
  private:
@@ -38,9 +39,9 @@ struct Hld {
   }
 
  public:
-  Hld(int n) : edge(n), size(n), in(n), out(n), head(n), rev(n), par(n), depth(n) {}
+  Hld(int n) : n(n), edge(n), size(n), in(n), out(n), head(n), rev(n), par(n), depth(n) {}
 
-  void add_edge(int a, int b) {
+  inline void add_edge(int a, int b) {
     edge[a].push_back(b);
     edge[b].push_back(a);
   }
@@ -53,7 +54,7 @@ struct Hld {
     dfs_hld(root, -1, t);
   }
 
-  int lca(int a, int b) const {
+  inline int lca(int a, int b) const {
     if (depth[a] > depth[b]) std::swap(a, b);
     while (depth[a] < depth[b]) {
       b = par[head[b]];
@@ -62,40 +63,41 @@ struct Hld {
       a = par[head[a]];
       b = par[head[b]];
     }
-    if (in[a] > in[b]) std::swap(a, b);
-    return a;
+    return in[a] < in[b] ? a : b;
   }
 
-  template<typename T, T (*Q)(int, int), T (*M)(T, T), T (*E)(),
-      bool INCLUDE_LCA = true>
-  T query(int u, int v) const {
-    T ret = E();
+  template<class T, typename Query,
+      bool INCLUDE_LCA = true, typename R = void>
+  T query(int u, int v, Query Q) const {
     if (depth[u] > depth[v]) std::swap(u,v);
-    auto up = [&](int& v) {
-      ret = M(ret, Q(in[head[v]], in[v]+1));
+    T um, vm;
+    auto up = [&](int& v, T& ret) {
+      ret = Q(in[head[v]], in[v]+1) * ret;
       v = par[head[v]];
     };
     while (depth[u] < depth[v]) {
-      up(v);
+      up(v, vm);
     }
     while (head[u] != head[v]) {
-      up(u);
-      up(v);
+      up(u, um);
+      up(v, vm);
     }
-    if (in[u] > in[v]) std::swap(u,v);
+    if (in[u] > in[v]) {
+      std::swap(u,v);
+      std::swap(um,vm);
+    }
     int l = INCLUDE_LCA ? in[u] : in[u]+1;
-    ret = M(ret, Q(l, in[v]+1));
-    return ret;
+    return ~um * Q(l, in[v]+1) * vm;
   }
 
-  template<typename T, void (*S)(int, T)>
-  void set(int i, int val) const {
-    S(in[i], val);
+  template<typename T, typename Set>
+  void set(int i, T&& val, Set S) const {
+    S(in[i], std::forward<T>(val));
   }
 
-  template<typename T, void (*U)(int, int, T),
+  template<typename T, typename Upd,
       bool INCLUDE_LCA = true>
-  void update(int u, int v, T val) const {
+  void update(int u, int v, const T& val, Upd U) const {
     if (depth[u] > depth[v]) std::swap(u,v);
     auto up = [&](int& v) {
       U(in[head[v]], in[v]+1, val);

@@ -1,8 +1,8 @@
 #pragma once
+#include "bit_manip.hpp"
+#include <cstddef>
 #include <vector>
 #include <cassert>
-#include <cstddef>
-#include "bit_manip.hpp"
 
 template <typename M, typename A>
 class LazySegmentTree {
@@ -19,7 +19,9 @@ class LazySegmentTree {
   }
 
   template <typename Iter>
-  explicit LazySegmentTree(Iter begin, Iter end) : LazySegmentTree(end-begin) {
+  explicit LazySegmentTree(Iter begin, Iter end)
+    : LazySegmentTree(std::distance(begin, end)) {
+    static_assert(std::is_convertible<typename std::iterator_traits<Iter>::value_type, M>::value, "");
     for (auto it = begin; it != end; ++it) {
       tree_[size_ + it - begin].first = *it;
     }
@@ -28,11 +30,8 @@ class LazySegmentTree {
     }
   }
 
-  M operator[](size_t index) {
-    return query(index, index+1);
-  }
-
-  void range_update(size_t l, size_t r, A e) {
+  template<typename T>
+  inline void range_update(size_t l, size_t r, T&& e) {
     assert(l <= r and r <= size_);
     if (l == r) return;
     _set_ids(l, r);
@@ -59,8 +58,30 @@ class LazySegmentTree {
       tree_[id].first = tree_[id*2].first * tree_[id*2+1].first;
     }
   }
+  template<typename T>
+  inline void update(size_t l, size_t r, T&& e) {
+    range_update(l, r, std::forward<T>(e));
+  }
+  template<typename T>
+  inline void update(size_t i, T&& e) {
+    range_update(i, i+1, std::forward<T>(e));
+  }
 
-  M query(size_t l, size_t r) {
+  template<typename T>
+  inline void set(size_t i, T&& e) {
+    _set_ids(i,i+1);
+    for (long long j = ids_.size()-1; j >= 0; --j)
+      _propagate(ids_[j].first, ids_[j].second);
+    int u = i+size_;
+    tree_[u].first = M(std::forward(e));
+    u /= 2;
+    while (u > 0) {
+      tree_[u].first = tree_[u*2].first * tree_[u*2+1].first;
+      u /= 2;
+    }
+  }
+
+  inline M query(size_t l, size_t r) {
     _set_ids(l, r);
     for (int i = ids_.size()-1; i >= 0; --i) {
       _propagate(ids_[i].first, ids_[i].second);
@@ -82,8 +103,12 @@ class LazySegmentTree {
     return lhs * rhs;
   }
 
+  inline M get(size_t index) {
+    return query(index, index+1);
+  }
+
  private:
-  void _set_ids(size_t l, size_t r) {
+  inline void _set_ids(size_t l, size_t r) {
     ids_.clear();
     auto _l=l+size_, _r=r+size_;
     auto lth = _l/(_l&(-_l))/2;
@@ -98,9 +123,9 @@ class LazySegmentTree {
     }
   }
 
-  void _propagate(size_t id, size_t sz) {
-    auto e = tree_[id].second;
-    if (e == A()) return;
+  inline void _propagate(size_t id, size_t sz) {
+    A e = tree_[id].second;
+    if (!e()) return;
     tree_[id].second = A();
     tree_[id].first = e.act(tree_[id].first, sz);
     if (id < size_) {
