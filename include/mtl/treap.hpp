@@ -11,8 +11,8 @@ class Treap {
  public:
   using key_type = T;
   static constexpr bool kKeyOnly = std::is_same<V, void>::value;
-  using value_type = typename std::conditional<kKeyOnly, T, V>::type;
-  using element_type = typename std::conditional<kKeyOnly, T, std::pair<T, V>>::type;
+  using mapped_type = typename std::conditional<kKeyOnly, T, V>::type;
+  using value_type = typename std::conditional<kKeyOnly, T, std::pair<T, V>>::type;
   using priority_type = uint32_t;
   class iterator;
  private:
@@ -23,16 +23,18 @@ class Treap {
     node_ptr left, right;
     node_weak parent;
     priority_type p;
-    element_type v;
+    value_type v;
     explicit Node(priority_type p)
       : left(nullptr), right(nullptr), p(p) {}
-    explicit Node(priority_type p, T v)
-      : left(nullptr), right(nullptr), p(p), v(v) {}
+    explicit Node(priority_type p, const value_type& v)
+        : left(nullptr), right(nullptr), p(p), v(v) {}
+    explicit Node(priority_type p, value_type&& v)
+        : left(nullptr), right(nullptr), p(p), v(std::forward<value_type>(v)) {}
     template<typename... Args>
     explicit Node(priority_type p, Args&&... args)
         : left(nullptr), right(nullptr), p(p),
           v(std::forward<Args>(args)...) {}
-    T key() const {
+    const T& key() const {
       if constexpr (kKeyOnly)
         return v;
       else
@@ -52,32 +54,32 @@ class Treap {
   }
   template<typename I>
   Treap(std::initializer_list<I> list) : Treap(list.begin(), list.end()) {}
+ private:
+  void _clone(node_ptr u, const node_ptr ru) {
+    if (ru->left) {
+      u->left = std::make_shared<Node>(ru->left->p, ru->left->v);
+      u->left->parent = u;
+      _clone(u->left, ru->left);
+    }
+    if (ru->right) {
+      u->right = std::make_shared<Node>(ru->right->p, ru->right->v);
+      u->right->parent = u;
+      _clone(u->right, ru->right);
+    }
+  }
+ public:
   Treap(const Treap& r) : Treap() {
-    clear();
-    insert(r.begin(), r.end());
+    _clone(sentinel_, r.sentinel_);
+    size_ = r.size_;
   }
   Treap& operator=(const Treap& r) {
-    _del_node(_root());
-    sentinel_->left = nullptr;
-    size_ = 0;
-    insert(r.begin(), r.end());
+    clear();
+    _clone(sentinel_, r.sentinel_);
+    size_ = r.size_;
     return *this;
   }
-  Treap(Treap&& r) : Treap() {
-    sentinel_ = std::move(r.sentinel_);
-    size_ = std::move(r.size_);
-  }
-  Treap& operator=(Treap&& r) {
-    _del_node(_root());
-    sentinel_->left = nullptr;
-    sentinel_ = std::move(r.sentinel_);
-    size_ = std::move(r.size_);
-    return *this;
-  }
-  ~Treap() {
-    _del();
-    sentinel_ = nullptr;
-  }
+  Treap(Treap&& r) noexcept = default;
+  Treap& operator=(Treap&& r) noexcept = default;
 
  private:
   bool _check_connection(node_ptr u) const {
@@ -193,23 +195,11 @@ class Treap {
     }
     u->parent.reset();
   }
+  // NOTE: value of size_ is broken.
   Treap(node_ptr node) : Treap() {
     sentinel_->left = node;
     if (node)
       node->parent = sentinel_;
-  }
-  void _del_node(node_ptr u) {
-    if (!u)
-      return;
-    _del_node(u->left);
-    u->left = nullptr;
-    _del_node(u->right);
-    u->right = nullptr;
-    u->parent.reset();
-  }
-  void _del() {
-    _del_node(sentinel_);
-    sentinel_ = nullptr;
   }
   iterator _insert_node_subtree(node_ptr u, node_ptr new_node) {
     auto x = new_node->key();
@@ -256,15 +246,12 @@ class Treap {
   size_t size() const { return size_; }
   bool empty() const { return _root() == nullptr; }
   void clear() {
-    _del_node(_root());
     sentinel_->left = nullptr;
     size_ = 0;
   }
 
   iterator find(T x) const {
     node_ptr u = _root();
-    if (!u)
-      return end();
     while (u) {
       if (u->key() == x)
         return iterator(u);
@@ -319,37 +306,37 @@ class Treap {
     return iterator(pr);
   }
 
-  iterator insert(const element_type& e) {
+ private:
+  template<typename... Args>
+  node_ptr _create_node(Args&&... args) {
     auto p = _pick_priority();
-    auto new_node = std::make_shared<Node>(p, e);
-    return _insert_node(new_node);
+    return std::make_shared<Node>(p, std::forward<Args>(args)...);
+  }
+ public:
+  template<typename ...Args>
+  iterator emplace(Args&&... args) {
+    return _insert_node(_create_node(std::forward<Args>(args)...));
+  }
+  template<typename ...Args>
+  iterator emplace_hint(iterator hint, Args&&... args) {
+    return _insert_node_hint(hint, _create_node(std::forward<Args>(args)...));
+  }
+  iterator insert(const value_type& e) {
+    return emplace(e);
+  }
+  iterator insert(value_type&& e) {
+    return emplace(std::forward<value_type>(e));
   }
   template<class It>
   void insert(It begin, It end) {
     using traits = std::iterator_traits<It>;
-    static_assert(std::is_convertible<typename traits::value_type, element_type>::value, "");
+    static_assert(std::is_convertible<typename traits::value_type, value_type>::value, "");
     static_assert(std::is_base_of<std::forward_iterator_tag, typename traits::iterator_category>::value, "");
-    if (begin == end)
-      return;
-    It it = begin;
-    auto hint = insert(*(it++));
-    while (it != end)
-      hint = emplace_hint(hint, *(it++));
+    for (auto it = begin; it != end; ++it)
+      emplace(*it);
   }
-  void insert(std::initializer_list<element_type> list) {
+  void insert(std::initializer_list<value_type> list) {
     insert(list.begin(), list.end());
-  }
-  template<class ...Args>
-  iterator emplace(Args&&... args) {
-    auto p = _pick_priority();
-    auto new_node = std::make_shared<Node>(p, std::forward<Args>(args)...);
-    return _insert_node(new_node);
-  }
-  template<class ...Args>
-  iterator emplace_hint(iterator hint, Args&&... args) {
-    auto p = _pick_priority();
-    auto new_node = std::make_shared<Node>(p, std::forward<Args>(args)...);
-    return _insert_node_hint(hint, new_node);
   }
 
   iterator erase(iterator it) {
@@ -363,7 +350,7 @@ class Treap {
     --size_;
     return ret;
   }
-  iterator erase(const T& x) {
+  iterator erase(T x) {
     auto it = lower_bound(x);
     if (it != end() and it.ptr_->key() == x)
       return erase(it);
@@ -417,9 +404,9 @@ class Treap {
 
   class iterator {
    public:
-    using value_type = T;
-    using pointer = T*;
-    using reference = T&;
+    using value_type = Treap::value_type;
+    using pointer = value_type*;
+    using reference = value_type&;
     using difference_type = long long;
     using iterator_category = std::bidirectional_iterator_tag;
    private:
@@ -511,28 +498,24 @@ class Treap {
     std::cout<<std::endl;
   }
 
-
 };
+
 template<typename T, typename V>
 constexpr bool Treap<T, V>::kKeyOnly;
 template<typename T>
 using TreapSet = Treap<T, void>;
 
-
 template<typename T, typename V>
 class TreapMap : public Treap<T, V> {
+  static_assert(!std::is_same<V, void>::value, "");
   using _base = Treap<T, V>;
  public:
-  using typename _base::value_type;
-  using _base::kKeyOnly;
-  using reference = value_type&;
+  using typename _base::mapped_type;
+  using reference = mapped_type&;
   reference operator[](T x) {
     auto it = _base::lower_bound(x);
     if (it == _base::end() or it.ptr_->key() != x)
       it = _base::emplace_hint(it, x);
-    if constexpr (kKeyOnly)
-      return *it;
-    else
-      return it->second;
+    return it->second;
   }
 };

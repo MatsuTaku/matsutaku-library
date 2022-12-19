@@ -18,7 +18,7 @@ int test_insert() {
     TreapSet<int> s;
     for (int i = 0; i < n; i++) {
       s.insert(v[i]);
-      if (s.size() != i+1) {
+      if ((int)s.size() != i+1) {
         std::cout << "insert " << t << "," << i << ": " << s.size() << " < " << i+1 << std::endl;
         assert(false);
         return 1;
