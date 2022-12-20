@@ -15,15 +15,15 @@ data:
     \         std::numeric_limits<int>::max(),\r\n                     std::numeric_limits<int>::min()};\r\
     \n    while (_v.size() < n)\r\n      _v.insert(rand());\r\n    std::vector<int>\
     \ v(_v.begin(), _v.end());\r\n    TreapSet<int> s;\r\n    for (int i = 0; i <\
-    \ n; i++) {\r\n      s.insert(v[i]);\r\n      if (s.size() != i+1) {\r\n     \
-    \   std::cout << \"insert \" << t << \",\" << i << \": \" << s.size() << \" <\
-    \ \" << i+1 << std::endl;\r\n        assert(false);\r\n        return 1;\r\n \
-    \     }\r\n      int k = 0;\r\n      for (auto x : s) {\r\n        if (x != v[k])\
-    \ {\r\n          std::cout << \"insert \" << t << \",\" << i << ' ' << k << \"\
-    : \" << x << \" != \" << v[k] << std::endl;\r\n          assert(false);\r\n  \
-    \        return 1;\r\n        }\r\n        k++;\r\n      }\r\n    }\r\n  }\r\n\
-    \  return 0;\r\n}\r\n\r\nint test_split() {\r\n  constexpr int n = 1000;\r\n \
-    \ for (int t = 0; t < 1000; t++) {\r\n    std::set<int> _v;\r\n    while (_v.size()\
+    \ n; i++) {\r\n      s.insert(v[i]);\r\n      if ((int)s.size() != i+1) {\r\n\
+    \        std::cout << \"insert \" << t << \",\" << i << \": \" << s.size() <<\
+    \ \" < \" << i+1 << std::endl;\r\n        assert(false);\r\n        return 1;\r\
+    \n      }\r\n      int k = 0;\r\n      for (auto x : s) {\r\n        if (x !=\
+    \ v[k]) {\r\n          std::cout << \"insert \" << t << \",\" << i << ' ' << k\
+    \ << \": \" << x << \" != \" << v[k] << std::endl;\r\n          assert(false);\r\
+    \n          return 1;\r\n        }\r\n        k++;\r\n      }\r\n    }\r\n  }\r\
+    \n  return 0;\r\n}\r\n\r\nint test_split() {\r\n  constexpr int n = 1000;\r\n\
+    \  for (int t = 0; t < 1000; t++) {\r\n    std::set<int> _v;\r\n    while (_v.size()\
     \ < n)\r\n      _v.insert(rand());\r\n    std::vector<int> v(_v.begin(), _v.end());\r\
     \n    TreapSet<int> r(v.begin(), v.end());\r\n    auto l = r.split(std::next(r.begin(),\
     \ n/2));\r\n    int k = 0;\r\n    for (auto x : l) {\r\n      if (x != v[k]) {\r\
@@ -81,33 +81,33 @@ data:
     \            std::numeric_limits<int>::min()};\r\n    while (_v.size() < n)\r\n\
     \      _v.insert(rand());\r\n    std::vector<int> v(_v.begin(), _v.end());\r\n\
     \    TreapSet<int> s;\r\n    for (int i = 0; i < n; i++) {\r\n      s.insert(v[i]);\r\
-    \n      if (s.size() != i+1) {\r\n        std::cout << \"insert \" << t << \"\
-    ,\" << i << \": \" << s.size() << \" < \" << i+1 << std::endl;\r\n        assert(false);\r\
-    \n        return 1;\r\n      }\r\n      int k = 0;\r\n      for (auto x : s) {\r\
-    \n        if (x != v[k]) {\r\n          std::cout << \"insert \" << t << \",\"\
-    \ << i << ' ' << k << \": \" << x << \" != \" << v[k] << std::endl;\r\n      \
-    \    assert(false);\r\n          return 1;\r\n        }\r\n        k++;\r\n  \
-    \    }\r\n    }\r\n  }\r\n  return 0;\r\n}\r\n\r\nint test_split() {\r\n  constexpr\
-    \ int n = 1000;\r\n  for (int t = 0; t < 1000; t++) {\r\n    std::set<int> _v;\r\
-    \n    while (_v.size() < n)\r\n      _v.insert(rand());\r\n    std::vector<int>\
-    \ v(_v.begin(), _v.end());\r\n    TreapSet<int> r(v.begin(), v.end());\r\n   \
-    \ auto l = r.split(std::next(r.begin(), n/2));\r\n    int k = 0;\r\n    for (auto\
-    \ x : l) {\r\n      if (x != v[k]) {\r\n        std::cout << \"split \" << t <<\
-    \ \",left,\" << k << \": \" << x << \" != \" << v[k] << std::endl;\r\n       \
-    \ assert(false);\r\n        return 1;\r\n      }\r\n      k++;\r\n    }\r\n  \
-    \  for (auto x : r) {\r\n      if (x != v[k]) {\r\n        std::cout << \"split\
-    \ \" << t << \",right,\" << k << \": \" << x << \" != \" << v[k] << std::endl;\r\
+    \n      if ((int)s.size() != i+1) {\r\n        std::cout << \"insert \" << t <<\
+    \ \",\" << i << \": \" << s.size() << \" < \" << i+1 << std::endl;\r\n       \
+    \ assert(false);\r\n        return 1;\r\n      }\r\n      int k = 0;\r\n     \
+    \ for (auto x : s) {\r\n        if (x != v[k]) {\r\n          std::cout << \"\
+    insert \" << t << \",\" << i << ' ' << k << \": \" << x << \" != \" << v[k] <<\
+    \ std::endl;\r\n          assert(false);\r\n          return 1;\r\n        }\r\
+    \n        k++;\r\n      }\r\n    }\r\n  }\r\n  return 0;\r\n}\r\n\r\nint test_split()\
+    \ {\r\n  constexpr int n = 1000;\r\n  for (int t = 0; t < 1000; t++) {\r\n   \
+    \ std::set<int> _v;\r\n    while (_v.size() < n)\r\n      _v.insert(rand());\r\
+    \n    std::vector<int> v(_v.begin(), _v.end());\r\n    TreapSet<int> r(v.begin(),\
+    \ v.end());\r\n    auto l = r.split(std::next(r.begin(), n/2));\r\n    int k =\
+    \ 0;\r\n    for (auto x : l) {\r\n      if (x != v[k]) {\r\n        std::cout\
+    \ << \"split \" << t << \",left,\" << k << \": \" << x << \" != \" << v[k] <<\
+    \ std::endl;\r\n        assert(false);\r\n        return 1;\r\n      }\r\n   \
+    \   k++;\r\n    }\r\n    for (auto x : r) {\r\n      if (x != v[k]) {\r\n    \
+    \    std::cout << \"split \" << t << \",right,\" << k << \": \" << x << \" !=\
+    \ \" << v[k] << std::endl;\r\n        assert(false);\r\n        return 1;\r\n\
+    \      }\r\n      k++;\r\n    }\r\n  }\r\n  return 0;\r\n}\r\n\r\nint test_absorb()\
+    \ {\r\n  constexpr int n = 1000;\r\n  for (int t = 0; t < 1000; t++) {\r\n   \
+    \ std::set<int> _v;\r\n    while (_v.size() < n)\r\n      _v.insert(rand());\r\
+    \n    std::vector<int> v(_v.begin(), _v.end());\r\n    TreapSet<int> l(v.begin(),\
+    \ v.begin()+n/2);\r\n    TreapSet<int> r(v.begin()+n/2, v.end());\r\n    r.absorb(&l);\r\
+    \n    int k = 0;\r\n    for (auto x : r) {\r\n      if (x != v[k]) {\r\n     \
+    \   std::cout << t << \", \" << k << \": \" << x << \" != \" << v[k] << std::endl;\r\
     \n        assert(false);\r\n        return 1;\r\n      }\r\n      k++;\r\n   \
-    \ }\r\n  }\r\n  return 0;\r\n}\r\n\r\nint test_absorb() {\r\n  constexpr int n\
-    \ = 1000;\r\n  for (int t = 0; t < 1000; t++) {\r\n    std::set<int> _v;\r\n \
-    \   while (_v.size() < n)\r\n      _v.insert(rand());\r\n    std::vector<int>\
-    \ v(_v.begin(), _v.end());\r\n    TreapSet<int> l(v.begin(), v.begin()+n/2);\r\
-    \n    TreapSet<int> r(v.begin()+n/2, v.end());\r\n    r.absorb(&l);\r\n    int\
-    \ k = 0;\r\n    for (auto x : r) {\r\n      if (x != v[k]) {\r\n        std::cout\
-    \ << t << \", \" << k << \": \" << x << \" != \" << v[k] << std::endl;\r\n   \
-    \     assert(false);\r\n        return 1;\r\n      }\r\n      k++;\r\n    }\r\n\
-    \  }\r\n  return 0;\r\n}\r\n\r\nint unit_test() {\r\n  if (test_insert())\r\n\
-    \    return 1;\r\n  if (test_split())\r\n    return 1;\r\n  if (test_absorb())\r\
+    \ }\r\n  }\r\n  return 0;\r\n}\r\n\r\nint unit_test() {\r\n  if (test_insert())\r\
+    \n    return 1;\r\n  if (test_split())\r\n    return 1;\r\n  if (test_absorb())\r\
     \n    return 1;\r\n  return 0;\r\n}\r\n\r\ntemplate<typename Set>\r\nint test_set()\
     \ {\r\n  const int Max = 4e5;\r\n  std::vector<int> values;\r\n  while (values.empty())\
     \ {\r\n    for (int i = 0; i < Max; i++)\r\n      if (rand()%4 == 0)\r\n     \
@@ -144,7 +144,7 @@ data:
   isVerificationFile: false
   path: test/treap_test.cpp
   requiredBy: []
-  timestamp: '2022-11-27 14:51:20+09:00'
+  timestamp: '2022-12-19 16:09:09+09:00'
   verificationStatus: LIBRARY_NO_TESTS
   verifiedWith: []
 documentation_of: test/treap_test.cpp
