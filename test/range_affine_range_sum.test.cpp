@@ -1,11 +1,10 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/range_affine_range_sum"
-
 #include "../include/mtl/lazy_segment_tree.hpp"
 #include "../include/mtl/modular.hpp"
 #include <bits/stdc++.h>
+
 using namespace std;
 using ll = long long;
-
 constexpr ll MOD = 998244353;
 using mint = Modular<MOD>;
 
@@ -23,7 +22,7 @@ struct FnMonoid {
     return {b*r.b, c*r.b+r.c};
   }
   FnMonoid& operator*=(FnMonoid r) {return *this = *this * r;}
-  bool operator==(FnMonoid r) const {return b==r.b and c==r.c;}
+  bool operator()() const {return !(b == 1 and c == 0);}
   SumMonoid act(SumMonoid a, size_t num) const {
     return {b*a.a + c*num};
   }
