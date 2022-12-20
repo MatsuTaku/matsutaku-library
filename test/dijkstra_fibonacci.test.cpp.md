@@ -16,12 +16,12 @@ data:
     - https://onlinejudge.u-aizu.ac.jp/problems/GRL_1_A
   bundledCode: "#line 1 \"test/dijkstra_fibonacci.test.cpp\"\n#define PROBLEM \"https://onlinejudge.u-aizu.ac.jp/problems/GRL_1_A\"\
     \n\n#line 2 \"include/mtl/fibonacci_heap.hpp\"\n#include <memory>\n#include <cassert>\n\
-    #include <vector>\n#include <list>\n#include <iostream>\n\ntemplate<typename T,\
-    \ typename Cond = std::less<>>\nclass FibonacciHeap {\n  Cond cond_;\n\n public:\n\
-    \  struct Node;\n  using node_ptr = Node*;\n  using const_node_ptr = const Node*;\n\
-    \  struct Node {\n    node_ptr next = nullptr;\n    node_ptr prev = nullptr;\n\
-    \    node_ptr child = nullptr;\n    node_ptr parent = nullptr;\n    int deg =\
-    \ 0;\n    bool marked = false;\n    bool enabled = false;\n    std::pair<int,\
+    #include <vector>\n#include <array>\n#include <list>\n#include <iostream>\n\n\
+    template<typename T, typename Cond = std::less<>>\nclass FibonacciHeap {\n  Cond\
+    \ cond_;\n\n public:\n  struct Node;\n  using node_ptr = Node*;\n  using const_node_ptr\
+    \ = const Node*;\n  struct Node {\n    node_ptr next = nullptr;\n    node_ptr\
+    \ prev = nullptr;\n    node_ptr child = nullptr;\n    node_ptr parent = nullptr;\n\
+    \    int deg = 0;\n    bool marked = false;\n    bool enabled = false;\n    std::pair<int,\
     \ T> value;\n\n    Node() = default;\n    void init(int k, T v) {\n      next\
     \ = prev = this;\n      child = parent = nullptr;\n      deg = 0;\n      marked\
     \ = false;\n      enabled = true;\n      value = {k, v};\n    }\n    T priority()\
@@ -128,7 +128,7 @@ data:
   isVerificationFile: true
   path: test/dijkstra_fibonacci.test.cpp
   requiredBy: []
-  timestamp: '2022-11-27 16:09:45+09:00'
+  timestamp: '2022-12-20 20:34:44+09:00'
   verificationStatus: TEST_ACCEPTED
   verifiedWith: []
 documentation_of: test/dijkstra_fibonacci.test.cpp

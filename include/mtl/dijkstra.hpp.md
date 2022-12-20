@@ -47,19 +47,19 @@ data:
     \ b, c);\r\n    add_edge_dir(b, a, c);\r\n  }\r\n\r\n  template <typename T>\r\
     \n  void dijkstra_search(int s, std::vector<T> &dist, T INF) const;\r\n};\r\n\
     #line 2 \"include/mtl/fibonacci_heap.hpp\"\n#include <memory>\n#include <cassert>\n\
-    #line 5 \"include/mtl/fibonacci_heap.hpp\"\n#include <list>\n#include <iostream>\n\
-    \ntemplate<typename T, typename Cond = std::less<>>\nclass FibonacciHeap {\n \
-    \ Cond cond_;\n\n public:\n  struct Node;\n  using node_ptr = Node*;\n  using\
-    \ const_node_ptr = const Node*;\n  struct Node {\n    node_ptr next = nullptr;\n\
-    \    node_ptr prev = nullptr;\n    node_ptr child = nullptr;\n    node_ptr parent\
-    \ = nullptr;\n    int deg = 0;\n    bool marked = false;\n    bool enabled = false;\n\
-    \    std::pair<int, T> value;\n\n    Node() = default;\n    void init(int k, T\
-    \ v) {\n      next = prev = this;\n      child = parent = nullptr;\n      deg\
-    \ = 0;\n      marked = false;\n      enabled = true;\n      value = {k, v};\n\
-    \    }\n    T priority() const { return value.second; }\n    void free() {\n \
-    \     enabled = false;\n    }\n  };\n\n private:\n  node_ptr root_ = nullptr;\n\
-    \  size_t sz_ = 0;\n  std::vector<node_ptr> map_;\n  std::vector<Node> container_;\n\
-    \  std::vector<node_ptr> deg_table_;\n\n public:\n  explicit FibonacciHeap(size_t\
+    #line 5 \"include/mtl/fibonacci_heap.hpp\"\n#include <array>\n#include <list>\n\
+    #include <iostream>\n\ntemplate<typename T, typename Cond = std::less<>>\nclass\
+    \ FibonacciHeap {\n  Cond cond_;\n\n public:\n  struct Node;\n  using node_ptr\
+    \ = Node*;\n  using const_node_ptr = const Node*;\n  struct Node {\n    node_ptr\
+    \ next = nullptr;\n    node_ptr prev = nullptr;\n    node_ptr child = nullptr;\n\
+    \    node_ptr parent = nullptr;\n    int deg = 0;\n    bool marked = false;\n\
+    \    bool enabled = false;\n    std::pair<int, T> value;\n\n    Node() = default;\n\
+    \    void init(int k, T v) {\n      next = prev = this;\n      child = parent\
+    \ = nullptr;\n      deg = 0;\n      marked = false;\n      enabled = true;\n \
+    \     value = {k, v};\n    }\n    T priority() const { return value.second; }\n\
+    \    void free() {\n      enabled = false;\n    }\n  };\n\n private:\n  node_ptr\
+    \ root_ = nullptr;\n  size_t sz_ = 0;\n  std::vector<node_ptr> map_;\n  std::vector<Node>\
+    \ container_;\n  std::vector<node_ptr> deg_table_;\n\n public:\n  explicit FibonacciHeap(size_t\
     \ size) : map_(size) {\n    container_.reserve(size);\n    std::array<size_t,2>\
     \ tb{1,1};\n    int k = 2;\n    while (tb[1] < size) {\n      auto x = tb[0]+tb[1];\n\
     \      tb[0] = tb[1];\n      tb[1] = x;\n      ++k;\n    }\n    deg_table_.resize(k);\n\
@@ -154,7 +154,7 @@ data:
   isVerificationFile: false
   path: include/mtl/dijkstra.hpp
   requiredBy: []
-  timestamp: '2022-11-27 16:09:45+09:00'
+  timestamp: '2022-12-20 20:34:44+09:00'
   verificationStatus: LIBRARY_NO_TESTS
   verifiedWith: []
 documentation_of: include/mtl/dijkstra.hpp

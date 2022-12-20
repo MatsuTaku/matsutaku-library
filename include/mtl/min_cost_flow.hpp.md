@@ -16,9 +16,9 @@ data:
     links: []
   bundledCode: "#line 2 \"include/mtl/min_cost_flow.hpp\"\n#include <vector>\r\n#include\
     \ <limits>\r\n#line 2 \"include/mtl/fibonacci_heap.hpp\"\n#include <memory>\n\
-    #include <cassert>\n#line 5 \"include/mtl/fibonacci_heap.hpp\"\n#include <list>\n\
-    #include <iostream>\n\ntemplate<typename T, typename Cond = std::less<>>\nclass\
-    \ FibonacciHeap {\n  Cond cond_;\n\n public:\n  struct Node;\n  using node_ptr\
+    #include <cassert>\n#line 5 \"include/mtl/fibonacci_heap.hpp\"\n#include <array>\n\
+    #include <list>\n#include <iostream>\n\ntemplate<typename T, typename Cond = std::less<>>\n\
+    class FibonacciHeap {\n  Cond cond_;\n\n public:\n  struct Node;\n  using node_ptr\
     \ = Node*;\n  using const_node_ptr = const Node*;\n  struct Node {\n    node_ptr\
     \ next = nullptr;\n    node_ptr prev = nullptr;\n    node_ptr child = nullptr;\n\
     \    node_ptr parent = nullptr;\n    int deg = 0;\n    bool marked = false;\n\
@@ -162,7 +162,7 @@ data:
   isVerificationFile: false
   path: include/mtl/min_cost_flow.hpp
   requiredBy: []
-  timestamp: '2022-11-27 16:09:45+09:00'
+  timestamp: '2022-12-20 20:34:44+09:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
   - test/min_cost_flow.test.cpp

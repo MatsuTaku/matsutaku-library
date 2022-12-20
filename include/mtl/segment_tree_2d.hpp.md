@@ -14,8 +14,7 @@ data:
   _verificationStatusIcon: ':warning:'
   attributes:
     links: []
-  bundledCode: "#line 2 \"include/mtl/segment_tree.hpp\"\n#include <cstddef>\n#include\
-    \ <vector>\n#line 2 \"include/mtl/bit_manip.hpp\"\n#include <cstdint>\n#include\
+  bundledCode: "#line 2 \"include/mtl/bit_manip.hpp\"\n#include <cstdint>\n#include\
     \ <cassert>\n\nnamespace bm {\n\ninline constexpr uint64_t popcnt_e8(uint64_t\
     \ x) {\n  x = (x & 0x5555555555555555) + ((x>>1) & 0x5555555555555555);\n  x =\
     \ (x & 0x3333333333333333) + ((x>>2) & 0x3333333333333333);\n  x = (x & 0x0F0F0F0F0F0F0F0F)\
@@ -49,8 +48,11 @@ data:
     \ 4) | ((x & 0xF0F0F0F0F0F0F0F0) >> 4);\n  x = ((x & 0x3333333333333333) << 2)\
     \ | ((x & 0xCCCCCCCCCCCCCCCC) >> 2);\n  x = ((x & 0x5555555555555555) << 1) |\
     \ ((x & 0xAAAAAAAAAAAAAAAA) >> 1);\n  return x;\n}\n\n} // namespace bm\n#line\
-    \ 5 \"include/mtl/segment_tree.hpp\"\n\ntemplate <typename M>\nclass SegmentTree\
-    \ {\n private:\n  size_t size_;\n  std::vector<M> tree_;\n\n public:\n  explicit\
+    \ 3 \"include/mtl/segment_tree.hpp\"\n#include <cstddef>\n#include <vector>\n\
+    #if __cplusplus >= 202002L\n#include <concepts>\n\ntemplate<typename M>\nconcept\
+    \ SegmentTreeMonoid = requires (M m) {\n  {m * m} -> std::same_as<M>;\n};\n#endif\n\
+    \ntemplate <typename M>\nclass SegmentTree {\n#if __cplusplus >= 202002L\n  static_assert(SegmentTreeMonoid<M>);\n\
+    #endif\n private:\n  size_t size_;\n  std::vector<M> tree_;\n\n public:\n  explicit\
     \ SegmentTree(size_t size) : size_(size), tree_(size*2) {}\n\n  template <typename\
     \ Iter>\n  explicit SegmentTree(Iter begin, Iter end) : SegmentTree(end-begin)\
     \ {\n    for (auto it = begin; it != end; ++it)\n      tree_[size_ + it - begin]\
@@ -66,32 +68,33 @@ data:
     \ (begin == size_) return size_;\n    M p;\n    auto l = begin + size_;\n    do\
     \ {\n      while (l % 2 == 0) l >>= 1;\n      if (!f(p * tree_[l])) {\n      \
     \  while (l < size_) {\n          l = l*2;\n          if (f(p * tree_[l])) {\n\
-    \            p *= tree_[l];\n            l++;\n          }\n        }\n      \
-    \  return l - size_;\n      }\n      p *= tree_[l];\n      l++;\n    } while ((l\
-    \ & -l) != l);\n    return size_;\n  }\n  template<bool (*F)(M)>\n  size_t max_right(size_t\
-    \ begin) const {\n    return find_last(begin, [](M x) { return F(x); });\n  }\n\
-    \n  template<typename F>\n  size_t min_left(size_t end, F f) const {\n    if (end\
-    \ == 0) return 0;\n    M p;\n    auto r = end + size_;\n    do {\n      r--;\n\
-    \      while (r > 1 and r % 2 == 1) r >>= 1;\n      if (!f(tree_[r] * p)) {\n\
-    \        while (r < size_) {\n          r = r*2+1;\n          if (f(tree_[r] *\
-    \ p)) {\n            p = tree_[r] * p;\n            r--;\n          }\n      \
-    \  }\n        return r + 1 - size_;\n      }\n      p = tree_[r] * p;\n    } while\
-    \ ((r & -r) != r);\n    return 0;\n  }\n  template<bool (*F)(M)>\n  size_t min_left(size_t\
-    \ begin) const {\n    return min_left(begin, [](M x) { return F(x); });\n  }\n\
-    \n};\n\n#line 5 \"include/mtl/segment_tree_2d.hpp\"\n\r\n// In-memory 2D segment\
-    \ tree.\r\n// It requires enough memory size of O(nm).\r\ntemplate<typename M>\r\
-    \nclass SegmentTree2D {\r\n public:\r\n  using seg_type = SegmentTree<M>;\r\n\
-    \ private:\r\n  size_t n_,m_;\r\n  std::vector<seg_type> tb_;\r\n public:\r\n\
-    \  explicit SegmentTree2D(int n, int m) : n_(n), m_(m), tb_(n*2, seg_type(m))\
-    \ {}\r\n  void set(int i, int j, M val) {\r\n    assert(i >= 0 and i < (int)n_\
-    \ and j >= 0 and j < (int)m_);\r\n    int x = n_ + i;\r\n    tb_[x].set(j, val);\r\
-    \n    x >>= 1;\r\n    while (x > 0) {\r\n      tb_[x].set(j, tb_[x*2][j] * tb_[x*2+1][j]);\r\
-    \n      x >>= 1;\r\n    }\r\n  }\r\n  M query(int rl, int cl, int rr, int cr)\
-    \ const {\r\n    assert(rl >= 0 and rl <= (int)n_ and rr >= 0 and rr <= (int)n_);\r\
-    \n    assert(cl >= 0 and cl <= (int)m_ and cr >= 0 and cr <= (int)m_);\r\n   \
-    \ M lhs, rhs;\r\n    for (auto l = rl+n_, r = rr+n_; l < r; l>>=1, r>>=1) {\r\n\
-    \      if (l&1) lhs = lhs * tb_[l++].query(cl,cr);\r\n      if (r&1) rhs = tb_[--r].query(cl,cr)\
-    \ * rhs;\r\n    }\r\n    return lhs * rhs;\r\n  }\r\n};\n"
+    \            p = p * tree_[l];\n            l++;\n          }\n        }\n   \
+    \     return l - size_;\n      }\n      p = p * tree_[l];\n      l++;\n    } while\
+    \ ((l & -l) != l);\n    return size_;\n  }\n  template<bool (*F)(M)>\n  size_t\
+    \ max_right(size_t begin) const {\n    return find_last(begin, [](M x) { return\
+    \ F(x); });\n  }\n\n  template<typename F>\n  size_t min_left(size_t end, F f)\
+    \ const {\n    if (end == 0) return 0;\n    M p;\n    auto r = end + size_;\n\
+    \    do {\n      r--;\n      while (r > 1 and r % 2 == 1) r >>= 1;\n      if (!f(tree_[r]\
+    \ * p)) {\n        while (r < size_) {\n          r = r*2+1;\n          if (f(tree_[r]\
+    \ * p)) {\n            p = tree_[r] * p;\n            r--;\n          }\n    \
+    \    }\n        return r + 1 - size_;\n      }\n      p = tree_[r] * p;\n    }\
+    \ while ((r & -r) != r);\n    return 0;\n  }\n  template<bool (*F)(M)>\n  size_t\
+    \ min_left(size_t begin) const {\n    return min_left(begin, [](M x) { return\
+    \ F(x); });\n  }\n\n};\n\n#line 5 \"include/mtl/segment_tree_2d.hpp\"\n\r\n//\
+    \ In-memory 2D segment tree.\r\n// It requires enough memory size of O(nm).\r\n\
+    template<typename M>\r\nclass SegmentTree2D {\r\n public:\r\n  using seg_type\
+    \ = SegmentTree<M>;\r\n private:\r\n  size_t n_,m_;\r\n  std::vector<seg_type>\
+    \ tb_;\r\n public:\r\n  explicit SegmentTree2D(int n, int m) : n_(n), m_(m), tb_(n*2,\
+    \ seg_type(m)) {}\r\n  void set(int i, int j, M val) {\r\n    assert(i >= 0 and\
+    \ i < (int)n_ and j >= 0 and j < (int)m_);\r\n    int x = n_ + i;\r\n    tb_[x].set(j,\
+    \ val);\r\n    x >>= 1;\r\n    while (x > 0) {\r\n      tb_[x].set(j, tb_[x*2][j]\
+    \ * tb_[x*2+1][j]);\r\n      x >>= 1;\r\n    }\r\n  }\r\n  M query(int rl, int\
+    \ cl, int rr, int cr) const {\r\n    assert(rl >= 0 and rl <= (int)n_ and rr >=\
+    \ 0 and rr <= (int)n_);\r\n    assert(cl >= 0 and cl <= (int)m_ and cr >= 0 and\
+    \ cr <= (int)m_);\r\n    M lhs, rhs;\r\n    for (auto l = rl+n_, r = rr+n_; l\
+    \ < r; l>>=1, r>>=1) {\r\n      if (l&1) lhs = lhs * tb_[l++].query(cl,cr);\r\n\
+    \      if (r&1) rhs = tb_[--r].query(cl,cr) * rhs;\r\n    }\r\n    return lhs\
+    \ * rhs;\r\n  }\r\n};\n"
   code: "#pragma once\r\n#include \"segment_tree.hpp\"\r\n#include <cassert>\r\n#include\
     \ <vector>\r\n\r\n// In-memory 2D segment tree.\r\n// It requires enough memory\
     \ size of O(nm).\r\ntemplate<typename M>\r\nclass SegmentTree2D {\r\n public:\r\
@@ -113,7 +116,7 @@ data:
   isVerificationFile: false
   path: include/mtl/segment_tree_2d.hpp
   requiredBy: []
-  timestamp: '2022-12-18 04:26:00+09:00'
+  timestamp: '2022-12-20 20:34:44+09:00'
   verificationStatus: LIBRARY_NO_TESTS
   verifiedWith: []
 documentation_of: include/mtl/segment_tree_2d.hpp

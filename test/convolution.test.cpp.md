@@ -24,8 +24,8 @@ data:
     links:
     - https://judge.yosupo.jp/problem/convolution_mod
   bundledCode: "#line 1 \"test/convolution.test.cpp\"\n#define PROBLEM \"https://judge.yosupo.jp/problem/convolution_mod\"\
-    \n\n#line 2 \"include/mtl/modular.hpp\"\n#include <iostream>\n\ntemplate <long\
-    \ long MOD>\nclass Modular {\n private:\n  long long val_;\n\n public:\n  Modular()\
+    \n#line 2 \"include/mtl/modular.hpp\"\n#include <iostream>\n\ntemplate <long long\
+    \ MOD>\nclass Modular {\n private:\n  long long val_;\n\n public:\n  Modular()\
     \ : val_(0) {}\n  Modular(long long v) : val_(v%MOD) {\n    if (val_ < 0) val_\
     \ += MOD;\n  }\n\n  long long val() const { return val_; }\n  Modular& operator+=(Modular\
     \ x) {\n    val_ += x.val();\n    if (val_ >= MOD) val_ %= MOD;\n    return *this;\n\
@@ -157,12 +157,12 @@ data:
     \ Fps& r) const { return Fps(*this) -= r; }\n  Fps operator*(const Fps& r) const\
     \ { return Fps(*this) *= r; }\n  Fps operator/(const Fps& r) const { return Fps(*this)\
     \ /= r; }\n  Fps operator%(const Fps& r) const { return Fps(*this) %= r; }\n};\n\
-    #line 4 \"test/convolution.test.cpp\"\n#include <bits/stdc++.h>\n\nusing namespace\
+    #line 3 \"test/convolution.test.cpp\"\n#include <bits/stdc++.h>\n\nusing namespace\
     \ std;\nusing ll = long long;\n\nint main() {\n  cin.tie(nullptr); ios::sync_with_stdio(false);\n\
     \n  int N,M; cin>>N>>M;\n  Fps A(N), B(M);\n  for (auto& a : A) cin>>a;\n  for\
     \ (auto& b : B) cin>>b;\n  auto C = A * B;\n  for (int i = 0; i < N+M-1; i++)\n\
     \    cout << C[i] << \" \";\n  cout << endl;\n\n  return 0;\n}\n"
-  code: "#define PROBLEM \"https://judge.yosupo.jp/problem/convolution_mod\"\n\n#include\
+  code: "#define PROBLEM \"https://judge.yosupo.jp/problem/convolution_mod\"\n#include\
     \ \"../include/mtl/fps.hpp\"\n#include <bits/stdc++.h>\n\nusing namespace std;\n\
     using ll = long long;\n\nint main() {\n  cin.tie(nullptr); ios::sync_with_stdio(false);\n\
     \n  int N,M; cin>>N>>M;\n  Fps A(N), B(M);\n  for (auto& a : A) cin>>a;\n  for\
@@ -176,7 +176,7 @@ data:
   isVerificationFile: true
   path: test/convolution.test.cpp
   requiredBy: []
-  timestamp: '2022-12-18 04:26:00+09:00'
+  timestamp: '2022-12-20 20:34:44+09:00'
   verificationStatus: TEST_ACCEPTED
   verifiedWith: []
 documentation_of: test/convolution.test.cpp

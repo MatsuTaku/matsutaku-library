@@ -232,9 +232,10 @@ data:
     \ 4) | ((x & 0xF0F0F0F0F0F0F0F0) >> 4);\n  x = ((x & 0x3333333333333333) << 2)\
     \ | ((x & 0xCCCCCCCCCCCCCCCC) >> 2);\n  x = ((x & 0x5555555555555555) << 1) |\
     \ ((x & 0xAAAAAAAAAAAAAAAA) >> 1);\n  return x;\n}\n\n} // namespace bm\n#line\
-    \ 7 \"include/mtl/integer_set.hpp\"\n#include <unordered_map>\r\n#include <initializer_list>\r\
-    \n\r\ntemplate<typename T, unsigned BITS = 64>\r\nclass _XFastTrie {\r\n public:\r\
-    \n  using U = uint64_t;\r\n  static constexpr int W = BITS;\r\n  class iterator;\r\
+    \ 6 \"include/mtl/integer_set.hpp\"\n#include <array>\r\n#include <unordered_map>\r\
+    \n#include <initializer_list>\r\n#line 10 \"include/mtl/integer_set.hpp\"\n\r\n\
+    template<typename T, unsigned BITS = 64>\r\nclass _XFastTrie {\r\n public:\r\n\
+    \  using U = uint64_t;\r\n  static constexpr int W = BITS;\r\n  class iterator;\r\
     \n  static constexpr bool kKeyOnly = std::is_same<T, void>::value;\r\n  using\
     \ element_type = typename std::conditional<kKeyOnly, U, std::pair<U, T>>::type;\r\
     \n private:\r\n  struct Node;\r\n  using node_ptr = std::shared_ptr<Node>;\r\n\
@@ -481,21 +482,21 @@ data:
     \ emplace(x);\r\n    if constexpr (kKeyOnly)\r\n      return *it;\r\n    else\r\
     \n      return it->second;\r\n  }\r\n};\n"
   code: "#pragma once\r\n#include \"treap.hpp\"\r\n#include \"bit_manip.hpp\"\r\n\
-    #include <memory>\r\n#include <iterator>\r\n#include <cassert>\r\n#include <unordered_map>\r\
-    \n#include <initializer_list>\r\n\r\ntemplate<typename T, unsigned BITS = 64>\r\
-    \nclass _XFastTrie {\r\n public:\r\n  using U = uint64_t;\r\n  static constexpr\
-    \ int W = BITS;\r\n  class iterator;\r\n  static constexpr bool kKeyOnly = std::is_same<T,\
-    \ void>::value;\r\n  using element_type = typename std::conditional<kKeyOnly,\
-    \ U, std::pair<U, T>>::type;\r\n private:\r\n  struct Node;\r\n  using node_ptr\
-    \ = std::shared_ptr<Node>;\r\n  using node_weak = std::weak_ptr<Node>;\r\n  struct\
-    \ Node {\r\n    // common\r\n    uint8_t cmask;\r\n    std::array<node_ptr, 2>\
-    \ child;\r\n    node_weak parent;\r\n    // leaf\r\n    element_type* vptr;\r\n\
-    \    Node() : cmask(0), child({nullptr, nullptr}), vptr(nullptr) {}\r\n    U key()\
-    \ const {\r\n      if constexpr (kKeyOnly)\r\n        return *vptr;\r\n      else\r\
-    \n        return vptr->first;\r\n    }\r\n  };\r\n private:\r\n  using _hash_table\
-    \ = std::unordered_map<U, node_ptr>;\r\n  node_ptr root_, sentinel_;\r\n  size_t\
-    \ size_;\r\n  std::array<_hash_table, W+1> xmap_;\r\n\r\n public:\r\n  _XFastTrie()\r\
-    \n      : root_(std::make_shared<Node>()), sentinel_(std::make_shared<Node>()),\
+    #include <memory>\r\n#include <iterator>\r\n#include <array>\r\n#include <unordered_map>\r\
+    \n#include <initializer_list>\r\n#include <cassert>\r\n\r\ntemplate<typename T,\
+    \ unsigned BITS = 64>\r\nclass _XFastTrie {\r\n public:\r\n  using U = uint64_t;\r\
+    \n  static constexpr int W = BITS;\r\n  class iterator;\r\n  static constexpr\
+    \ bool kKeyOnly = std::is_same<T, void>::value;\r\n  using element_type = typename\
+    \ std::conditional<kKeyOnly, U, std::pair<U, T>>::type;\r\n private:\r\n  struct\
+    \ Node;\r\n  using node_ptr = std::shared_ptr<Node>;\r\n  using node_weak = std::weak_ptr<Node>;\r\
+    \n  struct Node {\r\n    // common\r\n    uint8_t cmask;\r\n    std::array<node_ptr,\
+    \ 2> child;\r\n    node_weak parent;\r\n    // leaf\r\n    element_type* vptr;\r\
+    \n    Node() : cmask(0), child({nullptr, nullptr}), vptr(nullptr) {}\r\n    U\
+    \ key() const {\r\n      if constexpr (kKeyOnly)\r\n        return *vptr;\r\n\
+    \      else\r\n        return vptr->first;\r\n    }\r\n  };\r\n private:\r\n \
+    \ using _hash_table = std::unordered_map<U, node_ptr>;\r\n  node_ptr root_, sentinel_;\r\
+    \n  size_t size_;\r\n  std::array<_hash_table, W+1> xmap_;\r\n\r\n public:\r\n\
+    \  _XFastTrie()\r\n      : root_(std::make_shared<Node>()), sentinel_(std::make_shared<Node>()),\
     \ size_(0)\r\n  {\r\n    sentinel_->child[0] = sentinel_->child[1] = root_->child[0]\
     \ = root_->child[1] = sentinel_;\r\n    xmap_[0].emplace(0, root_);\r\n  }\r\n\
     \  template<typename It>\r\n  explicit _XFastTrie(It begin, It end) : _XFastTrie()\
@@ -736,7 +737,7 @@ data:
   isVerificationFile: false
   path: include/mtl/integer_set.hpp
   requiredBy: []
-  timestamp: '2022-12-18 04:26:00+09:00'
+  timestamp: '2022-12-20 20:34:44+09:00'
   verificationStatus: LIBRARY_NO_TESTS
   verifiedWith: []
 documentation_of: include/mtl/integer_set.hpp

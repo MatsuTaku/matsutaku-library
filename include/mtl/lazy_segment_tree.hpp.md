@@ -52,52 +52,14 @@ data:
     \ | ((x & 0xCCCCCCCCCCCCCCCC) >> 2);\n  x = ((x & 0x5555555555555555) << 1) |\
     \ ((x & 0xAAAAAAAAAAAAAAAA) >> 1);\n  return x;\n}\n\n} // namespace bm\n#line\
     \ 3 \"include/mtl/lazy_segment_tree.hpp\"\n#include <cstddef>\n#include <vector>\n\
-    #line 6 \"include/mtl/lazy_segment_tree.hpp\"\n\ntemplate <typename M, typename\
-    \ A>\nclass LazySegmentTree {\n private:\n  size_t size_;\n  std::vector<std::pair<M,A>>\
-    \ tree_;\n  std::vector<std::pair<size_t, size_t>> ids_;\n\n public:\n  explicit\
-    \ LazySegmentTree(size_t size) :\n      size_(1ull<<(64-bm::clz(size-1))),\n \
-    \     tree_(size_*2) {\n    ids_.reserve((64-bm::clz(size-1))*2);\n  }\n\n  template\
-    \ <typename Iter>\n  explicit LazySegmentTree(Iter begin, Iter end)\n    : LazySegmentTree(std::distance(begin,\
-    \ end)) {\n    static_assert(std::is_convertible<typename std::iterator_traits<Iter>::value_type,\
-    \ M>::value, \"\");\n    for (auto it = begin; it != end; ++it) {\n      tree_[size_\
-    \ + it - begin].first = *it;\n    }\n    for (size_t i = size_-1; i > 0; i--)\
-    \ {\n      tree_[i].first = tree_[i*2].first * tree_[i*2+1].first;\n    }\n  }\n\
-    \n  template<typename T>\n  inline void range_update(size_t l, size_t r, T&& e)\
-    \ {\n    assert(l <= r and r <= size_);\n    if (l == r) return;\n    _set_ids(l,\
-    \ r);\n    for (int i = ids_.size()-1; i >= 0; --i) {\n      _propagate(ids_[i].first,\
-    \ ids_[i].second);\n    }\n\n    for (size_t _l=l+size_, _r=r+size_, s=1; _l<_r;\
-    \ _l>>=1, _r>>=1, s*=2) {\n      if (_l&1) {\n        tree_[_l].second *= e;\n\
-    \        ++_l;\n      }\n      if (_r&1) {\n        --_r;\n        tree_[_r].second\
-    \ *= e;\n      }\n    }\n\n    for (auto is : ids_) {\n      auto id = is.first;\n\
-    \      auto sz = is.second;\n      _propagate(id*2, sz/2);\n      _propagate(id*2+1,\
-    \ sz/2);\n      tree_[id].first = tree_[id*2].first * tree_[id*2+1].first;\n \
-    \   }\n  }\n  template<typename T>\n  inline void update(size_t l, size_t r, T&&\
-    \ e) {\n    range_update(l, r, std::forward<T>(e));\n  }\n  template<typename\
-    \ T>\n  inline void update(size_t i, T&& e) {\n    range_update(i, i+1, std::forward<T>(e));\n\
-    \  }\n\n  template<typename T>\n  inline void set(size_t i, T&& e) {\n    _set_ids(i,i+1);\n\
-    \    for (long long j = ids_.size()-1; j >= 0; --j)\n      _propagate(ids_[j].first,\
-    \ ids_[j].second);\n    int u = i+size_;\n    tree_[u].first = M(std::forward(e));\n\
-    \    u /= 2;\n    while (u > 0) {\n      tree_[u].first = tree_[u*2].first * tree_[u*2+1].first;\n\
-    \      u /= 2;\n    }\n  }\n\n  inline M query(size_t l, size_t r) {\n    _set_ids(l,\
-    \ r);\n    for (int i = ids_.size()-1; i >= 0; --i) {\n      _propagate(ids_[i].first,\
-    \ ids_[i].second);\n    }\n\n    M lhs,rhs;\n    for (size_t _l=l+size_, _r=r+size_,\
-    \ s=1; _l<_r; _l>>=1, _r>>=1, s*=2) {\n      if (_l&1) {\n        _propagate(_l,\
-    \ s);\n        lhs = lhs * tree_[_l].first;\n        ++_l;\n      }\n      if\
-    \ (_r&1) {\n        --_r;\n        _propagate(_r, s);\n        rhs = tree_[_r].first\
-    \ * rhs;\n      }\n    }\n    return lhs * rhs;\n  }\n\n  inline M get(size_t\
-    \ index) {\n    return query(index, index+1);\n  }\n\n private:\n  inline void\
-    \ _set_ids(size_t l, size_t r) {\n    ids_.clear();\n    auto _l=l+size_, _r=r+size_;\n\
-    \    auto lth = _l/(_l&(-_l))/2;\n    auto rth = _r/(_r&(-_r))/2;\n    size_t\
-    \ s = 1;\n    for (; _l<_r; _l>>=1, _r>>=1, s*=2) {\n      if (_r <= rth) ids_.emplace_back(_r,\
-    \ s);\n      if (_l <= lth) ids_.emplace_back(_l, s);\n    }\n    for (; _l>0;\
-    \ _l>>=1, s*=2) {\n      ids_.emplace_back(_l, s);\n    }\n  }\n\n  inline void\
-    \ _propagate(size_t id, size_t sz) {\n    A e = tree_[id].second;\n    if (!e())\
-    \ return;\n    tree_[id].second = A();\n    tree_[id].first = e.act(tree_[id].first,\
-    \ sz);\n    if (id < size_) {\n      tree_[id*2].second *= e;\n      tree_[id*2+1].second\
-    \ *= e;\n    }\n  }\n\n};\n\n"
-  code: "#pragma once\n#include \"bit_manip.hpp\"\n#include <cstddef>\n#include <vector>\n\
-    #include <cassert>\n\ntemplate <typename M, typename A>\nclass LazySegmentTree\
-    \ {\n private:\n  size_t size_;\n  std::vector<std::pair<M,A>> tree_;\n  std::vector<std::pair<size_t,\
+    #line 6 \"include/mtl/lazy_segment_tree.hpp\"\n#if __cplusplus >= 202002L\n#include\
+    \ <concepts>\n\ntemplate<typename M>\nconcept LazySegmentTreeMonoid = requires\
+    \ (M m) {\n  {m * m} -> std::same_as<M>;\n};\ntemplate<typename A, typename M>\n\
+    concept LazySegmentTreeOperatorMonoid = requires(A a, M m) {\n  {a()} -> std::same_as<bool>;\n\
+    \  {a *= a} -> std::convertible_to<A>;\n  {a.act(m, 1)} -> std::same_as<M>;\n\
+    };\n#endif\n\ntemplate <typename M, typename A>\nclass LazySegmentTree {\n#if\
+    \ __cplusplus >= 202002L\n  static_assert(LazySegmentTreeMonoid<M>);\n  static_assert(LazySegmentTreeOperatorMonoid<A,M>);\n\
+    #endif\n private:\n  size_t size_;\n  std::vector<std::pair<M,A>> tree_;\n  std::vector<std::pair<size_t,\
     \ size_t>> ids_;\n\n public:\n  explicit LazySegmentTree(size_t size) :\n    \
     \  size_(1ull<<(64-bm::clz(size-1))),\n      tree_(size_*2) {\n    ids_.reserve((64-bm::clz(size-1))*2);\n\
     \  }\n\n  template <typename Iter>\n  explicit LazySegmentTree(Iter begin, Iter\
@@ -105,8 +67,8 @@ data:
     \ std::iterator_traits<Iter>::value_type, M>::value, \"\");\n    for (auto it\
     \ = begin; it != end; ++it) {\n      tree_[size_ + it - begin].first = *it;\n\
     \    }\n    for (size_t i = size_-1; i > 0; i--) {\n      tree_[i].first = tree_[i*2].first\
-    \ * tree_[i*2+1].first;\n    }\n  }\n\n  template<typename T>\n  inline void range_update(size_t\
-    \ l, size_t r, T&& e) {\n    assert(l <= r and r <= size_);\n    if (l == r) return;\n\
+    \ * tree_[i*2+1].first;\n    }\n  }\n\n  void range_update(size_t l, size_t r,\
+    \ const A& e) {\n    assert(l <= r and r <= size_);\n    if (l == r) return;\n\
     \    _set_ids(l, r);\n    for (int i = ids_.size()-1; i >= 0; --i) {\n      _propagate(ids_[i].first,\
     \ ids_[i].second);\n    }\n\n    for (size_t _l=l+size_, _r=r+size_, s=1; _l<_r;\
     \ _l>>=1, _r>>=1, s*=2) {\n      if (_l&1) {\n        tree_[_l].second *= e;\n\
@@ -114,36 +76,85 @@ data:
     \ *= e;\n      }\n    }\n\n    for (auto is : ids_) {\n      auto id = is.first;\n\
     \      auto sz = is.second;\n      _propagate(id*2, sz/2);\n      _propagate(id*2+1,\
     \ sz/2);\n      tree_[id].first = tree_[id*2].first * tree_[id*2+1].first;\n \
-    \   }\n  }\n  template<typename T>\n  inline void update(size_t l, size_t r, T&&\
-    \ e) {\n    range_update(l, r, std::forward<T>(e));\n  }\n  template<typename\
-    \ T>\n  inline void update(size_t i, T&& e) {\n    range_update(i, i+1, std::forward<T>(e));\n\
-    \  }\n\n  template<typename T>\n  inline void set(size_t i, T&& e) {\n    _set_ids(i,i+1);\n\
-    \    for (long long j = ids_.size()-1; j >= 0; --j)\n      _propagate(ids_[j].first,\
-    \ ids_[j].second);\n    int u = i+size_;\n    tree_[u].first = M(std::forward(e));\n\
-    \    u /= 2;\n    while (u > 0) {\n      tree_[u].first = tree_[u*2].first * tree_[u*2+1].first;\n\
-    \      u /= 2;\n    }\n  }\n\n  inline M query(size_t l, size_t r) {\n    _set_ids(l,\
-    \ r);\n    for (int i = ids_.size()-1; i >= 0; --i) {\n      _propagate(ids_[i].first,\
-    \ ids_[i].second);\n    }\n\n    M lhs,rhs;\n    for (size_t _l=l+size_, _r=r+size_,\
-    \ s=1; _l<_r; _l>>=1, _r>>=1, s*=2) {\n      if (_l&1) {\n        _propagate(_l,\
-    \ s);\n        lhs = lhs * tree_[_l].first;\n        ++_l;\n      }\n      if\
-    \ (_r&1) {\n        --_r;\n        _propagate(_r, s);\n        rhs = tree_[_r].first\
-    \ * rhs;\n      }\n    }\n    return lhs * rhs;\n  }\n\n  inline M get(size_t\
-    \ index) {\n    return query(index, index+1);\n  }\n\n private:\n  inline void\
-    \ _set_ids(size_t l, size_t r) {\n    ids_.clear();\n    auto _l=l+size_, _r=r+size_;\n\
-    \    auto lth = _l/(_l&(-_l))/2;\n    auto rth = _r/(_r&(-_r))/2;\n    size_t\
-    \ s = 1;\n    for (; _l<_r; _l>>=1, _r>>=1, s*=2) {\n      if (_r <= rth) ids_.emplace_back(_r,\
-    \ s);\n      if (_l <= lth) ids_.emplace_back(_l, s);\n    }\n    for (; _l>0;\
-    \ _l>>=1, s*=2) {\n      ids_.emplace_back(_l, s);\n    }\n  }\n\n  inline void\
-    \ _propagate(size_t id, size_t sz) {\n    A e = tree_[id].second;\n    if (!e())\
-    \ return;\n    tree_[id].second = A();\n    tree_[id].first = e.act(tree_[id].first,\
-    \ sz);\n    if (id < size_) {\n      tree_[id*2].second *= e;\n      tree_[id*2+1].second\
-    \ *= e;\n    }\n  }\n\n};\n\n"
+    \   }\n  }\n  inline void update(size_t l, size_t r, const A& e) {\n    range_update(l,\
+    \ r, e);\n  }\n  inline void update(size_t i, const A& e) {\n    range_update(i,\
+    \ i+1, e);\n  }\n\n  template<typename T>\n  inline void set(size_t i, T&& e)\
+    \ {\n    _set_ids(i,i+1);\n    for (long long j = ids_.size()-1; j >= 0; --j)\n\
+    \      _propagate(ids_[j].first, ids_[j].second);\n    int u = i+size_;\n    tree_[u].first\
+    \ = M(std::forward(e));\n    u /= 2;\n    while (u > 0) {\n      tree_[u].first\
+    \ = tree_[u*2].first * tree_[u*2+1].first;\n      u /= 2;\n    }\n  }\n\n  inline\
+    \ M query(size_t l, size_t r) {\n    _set_ids(l, r);\n    for (int i = ids_.size()-1;\
+    \ i >= 0; --i) {\n      _propagate(ids_[i].first, ids_[i].second);\n    }\n\n\
+    \    M lhs,rhs;\n    for (size_t _l=l+size_, _r=r+size_, s=1; _l<_r; _l>>=1, _r>>=1,\
+    \ s*=2) {\n      if (_l&1) {\n        _propagate(_l, s);\n        lhs = lhs *\
+    \ tree_[_l].first;\n        ++_l;\n      }\n      if (_r&1) {\n        --_r;\n\
+    \        _propagate(_r, s);\n        rhs = tree_[_r].first * rhs;\n      }\n \
+    \   }\n    return lhs * rhs;\n  }\n\n  inline M get(size_t index) {\n    return\
+    \ query(index, index+1);\n  }\n\n private:\n  inline void _set_ids(size_t l, size_t\
+    \ r) {\n    ids_.clear();\n    auto _l=l+size_, _r=r+size_;\n    auto lth = _l/(_l&(-_l))/2;\n\
+    \    auto rth = _r/(_r&(-_r))/2;\n    size_t s = 1;\n    for (; _l<_r; _l>>=1,\
+    \ _r>>=1, s*=2) {\n      if (_r <= rth) ids_.emplace_back(_r, s);\n      if (_l\
+    \ <= lth) ids_.emplace_back(_l, s);\n    }\n    for (; _l>0; _l>>=1, s*=2) {\n\
+    \      ids_.emplace_back(_l, s);\n    }\n  }\n\n  inline void _propagate(size_t\
+    \ id, size_t sz) {\n    A e = tree_[id].second;\n    if (!e()) return;\n    tree_[id].second\
+    \ = A();\n    tree_[id].first = e.act(tree_[id].first, sz);\n    if (id < size_)\
+    \ {\n      tree_[id*2].second *= e;\n      tree_[id*2+1].second *= e;\n    }\n\
+    \  }\n\n};\n\n"
+  code: "#pragma once\n#include \"bit_manip.hpp\"\n#include <cstddef>\n#include <vector>\n\
+    #include <cassert>\n#if __cplusplus >= 202002L\n#include <concepts>\n\ntemplate<typename\
+    \ M>\nconcept LazySegmentTreeMonoid = requires (M m) {\n  {m * m} -> std::same_as<M>;\n\
+    };\ntemplate<typename A, typename M>\nconcept LazySegmentTreeOperatorMonoid =\
+    \ requires(A a, M m) {\n  {a()} -> std::same_as<bool>;\n  {a *= a} -> std::convertible_to<A>;\n\
+    \  {a.act(m, 1)} -> std::same_as<M>;\n};\n#endif\n\ntemplate <typename M, typename\
+    \ A>\nclass LazySegmentTree {\n#if __cplusplus >= 202002L\n  static_assert(LazySegmentTreeMonoid<M>);\n\
+    \  static_assert(LazySegmentTreeOperatorMonoid<A,M>);\n#endif\n private:\n  size_t\
+    \ size_;\n  std::vector<std::pair<M,A>> tree_;\n  std::vector<std::pair<size_t,\
+    \ size_t>> ids_;\n\n public:\n  explicit LazySegmentTree(size_t size) :\n    \
+    \  size_(1ull<<(64-bm::clz(size-1))),\n      tree_(size_*2) {\n    ids_.reserve((64-bm::clz(size-1))*2);\n\
+    \  }\n\n  template <typename Iter>\n  explicit LazySegmentTree(Iter begin, Iter\
+    \ end)\n    : LazySegmentTree(std::distance(begin, end)) {\n    static_assert(std::is_convertible<typename\
+    \ std::iterator_traits<Iter>::value_type, M>::value, \"\");\n    for (auto it\
+    \ = begin; it != end; ++it) {\n      tree_[size_ + it - begin].first = *it;\n\
+    \    }\n    for (size_t i = size_-1; i > 0; i--) {\n      tree_[i].first = tree_[i*2].first\
+    \ * tree_[i*2+1].first;\n    }\n  }\n\n  void range_update(size_t l, size_t r,\
+    \ const A& e) {\n    assert(l <= r and r <= size_);\n    if (l == r) return;\n\
+    \    _set_ids(l, r);\n    for (int i = ids_.size()-1; i >= 0; --i) {\n      _propagate(ids_[i].first,\
+    \ ids_[i].second);\n    }\n\n    for (size_t _l=l+size_, _r=r+size_, s=1; _l<_r;\
+    \ _l>>=1, _r>>=1, s*=2) {\n      if (_l&1) {\n        tree_[_l].second *= e;\n\
+    \        ++_l;\n      }\n      if (_r&1) {\n        --_r;\n        tree_[_r].second\
+    \ *= e;\n      }\n    }\n\n    for (auto is : ids_) {\n      auto id = is.first;\n\
+    \      auto sz = is.second;\n      _propagate(id*2, sz/2);\n      _propagate(id*2+1,\
+    \ sz/2);\n      tree_[id].first = tree_[id*2].first * tree_[id*2+1].first;\n \
+    \   }\n  }\n  inline void update(size_t l, size_t r, const A& e) {\n    range_update(l,\
+    \ r, e);\n  }\n  inline void update(size_t i, const A& e) {\n    range_update(i,\
+    \ i+1, e);\n  }\n\n  template<typename T>\n  inline void set(size_t i, T&& e)\
+    \ {\n    _set_ids(i,i+1);\n    for (long long j = ids_.size()-1; j >= 0; --j)\n\
+    \      _propagate(ids_[j].first, ids_[j].second);\n    int u = i+size_;\n    tree_[u].first\
+    \ = M(std::forward(e));\n    u /= 2;\n    while (u > 0) {\n      tree_[u].first\
+    \ = tree_[u*2].first * tree_[u*2+1].first;\n      u /= 2;\n    }\n  }\n\n  inline\
+    \ M query(size_t l, size_t r) {\n    _set_ids(l, r);\n    for (int i = ids_.size()-1;\
+    \ i >= 0; --i) {\n      _propagate(ids_[i].first, ids_[i].second);\n    }\n\n\
+    \    M lhs,rhs;\n    for (size_t _l=l+size_, _r=r+size_, s=1; _l<_r; _l>>=1, _r>>=1,\
+    \ s*=2) {\n      if (_l&1) {\n        _propagate(_l, s);\n        lhs = lhs *\
+    \ tree_[_l].first;\n        ++_l;\n      }\n      if (_r&1) {\n        --_r;\n\
+    \        _propagate(_r, s);\n        rhs = tree_[_r].first * rhs;\n      }\n \
+    \   }\n    return lhs * rhs;\n  }\n\n  inline M get(size_t index) {\n    return\
+    \ query(index, index+1);\n  }\n\n private:\n  inline void _set_ids(size_t l, size_t\
+    \ r) {\n    ids_.clear();\n    auto _l=l+size_, _r=r+size_;\n    auto lth = _l/(_l&(-_l))/2;\n\
+    \    auto rth = _r/(_r&(-_r))/2;\n    size_t s = 1;\n    for (; _l<_r; _l>>=1,\
+    \ _r>>=1, s*=2) {\n      if (_r <= rth) ids_.emplace_back(_r, s);\n      if (_l\
+    \ <= lth) ids_.emplace_back(_l, s);\n    }\n    for (; _l>0; _l>>=1, s*=2) {\n\
+    \      ids_.emplace_back(_l, s);\n    }\n  }\n\n  inline void _propagate(size_t\
+    \ id, size_t sz) {\n    A e = tree_[id].second;\n    if (!e()) return;\n    tree_[id].second\
+    \ = A();\n    tree_[id].first = e.act(tree_[id].first, sz);\n    if (id < size_)\
+    \ {\n      tree_[id*2].second *= e;\n      tree_[id*2+1].second *= e;\n    }\n\
+    \  }\n\n};\n\n"
   dependsOn:
   - include/mtl/bit_manip.hpp
   isVerificationFile: false
   path: include/mtl/lazy_segment_tree.hpp
   requiredBy: []
-  timestamp: '2022-12-19 10:18:19+09:00'
+  timestamp: '2022-12-20 20:34:44+09:00'
   verificationStatus: LIBRARY_SOME_WA
   verifiedWith:
   - test/range_affine_range_sum.test.cpp
