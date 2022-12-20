@@ -3,9 +3,10 @@
 #include "bit_manip.hpp"
 #include <memory>
 #include <iterator>
-#include <cassert>
+#include <array>
 #include <unordered_map>
 #include <initializer_list>
+#include <cassert>
 
 template<typename T, unsigned BITS = 64>
 class _XFastTrie {

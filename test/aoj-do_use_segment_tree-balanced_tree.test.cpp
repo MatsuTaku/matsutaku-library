@@ -1,6 +1,6 @@
 #define PROBLEM "https://onlinejudge.u-aizu.ac.jp/problems/2450"
-#include "../include/mtl/segment_hld.hpp"
 #include "../include/mtl/hld.hpp"
+#include "../include/mtl/segment_hld.hpp"
 #include <bits/stdc++.h>
 
 using namespace std;
@@ -26,6 +26,11 @@ struct M {
     return ret;
   }
 };
+M rev(M m) {
+  M ret = m;
+  swap(ret.l, ret.r);
+  return ret;
+}
 struct A {
   int v;
   bool f;

@@ -1,10 +1,21 @@
 #pragma once
+#include "bit_manip.hpp"
 #include <cstddef>
 #include <vector>
-#include "bit_manip.hpp"
+#if __cplusplus >= 202002L
+#include <concepts>
+
+template<typename M>
+concept SegmentTreeMonoid = requires (M m) {
+  {m * m} -> std::same_as<M>;
+};
+#endif
 
 template <typename M>
 class SegmentTree {
+#if __cplusplus >= 202002L
+  static_assert(SegmentTreeMonoid<M>);
+#endif
  private:
   size_t size_;
   std::vector<M> tree_;
@@ -54,13 +65,13 @@ class SegmentTree {
         while (l < size_) {
           l = l*2;
           if (f(p * tree_[l])) {
-            p *= tree_[l];
+            p = p * tree_[l];
             l++;
           }
         }
         return l - size_;
       }
-      p *= tree_[l];
+      p = p * tree_[l];
       l++;
     } while ((l & -l) != l);
     return size_;

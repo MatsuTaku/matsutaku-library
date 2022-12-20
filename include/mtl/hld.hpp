@@ -1,4 +1,5 @@
 #pragma once
+#include <cstddef>
 #include <vector>
 
 struct Hld {
@@ -67,7 +68,7 @@ struct Hld {
   }
 
   template<class T, typename Query,
-      bool INCLUDE_LCA = true, typename R = void>
+      bool INCLUDE_LCA = true>
   T query(int u, int v, Query Q) const {
     if (depth[u] > depth[v]) std::swap(u,v);
     T um, vm;

@@ -2,6 +2,7 @@
 #include <memory>
 #include <cassert>
 #include <vector>
+#include <array>
 #include <list>
 #include <iostream>
 

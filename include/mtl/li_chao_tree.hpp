@@ -1,4 +1,5 @@
 #pragma once
+#include "bit_manip.hpp"
 #include <utility>
 #include <vector>
 #include <limits>
@@ -6,7 +7,6 @@
 #include <functional>
 #include <cstring>
 #include <iostream>
-#include "bit_manip.hpp"
 
 template<typename T, typename Comp = std::less<T>>
 struct LiChaoTree {

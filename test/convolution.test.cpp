@@ -1,5 +1,4 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/convolution_mod"
-
 #include "../include/mtl/fps.hpp"
 #include <bits/stdc++.h>
 

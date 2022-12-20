@@ -3,9 +3,27 @@
 #include <cstddef>
 #include <vector>
 #include <cassert>
+#if __cplusplus >= 202002L
+#include <concepts>
+
+template<typename M>
+concept LazySegmentTreeMonoid = requires (M m) {
+  {m * m} -> std::same_as<M>;
+};
+template<typename A, typename M>
+concept LazySegmentTreeOperatorMonoid = requires(A a, M m) {
+  {a()} -> std::same_as<bool>;
+  {a *= a} -> std::convertible_to<A>;
+  {a.act(m, 1)} -> std::same_as<M>;
+};
+#endif
 
 template <typename M, typename A>
 class LazySegmentTree {
+#if __cplusplus >= 202002L
+  static_assert(LazySegmentTreeMonoid<M>);
+  static_assert(LazySegmentTreeOperatorMonoid<A,M>);
+#endif
  private:
   size_t size_;
   std::vector<std::pair<M,A>> tree_;
@@ -30,8 +48,7 @@ class LazySegmentTree {
     }
   }
 
-  template<typename T>
-  inline void range_update(size_t l, size_t r, T&& e) {
+  void range_update(size_t l, size_t r, const A& e) {
     assert(l <= r and r <= size_);
     if (l == r) return;
     _set_ids(l, r);
@@ -58,13 +75,11 @@ class LazySegmentTree {
       tree_[id].first = tree_[id*2].first * tree_[id*2+1].first;
     }
   }
-  template<typename T>
-  inline void update(size_t l, size_t r, T&& e) {
-    range_update(l, r, std::forward<T>(e));
+  inline void update(size_t l, size_t r, const A& e) {
+    range_update(l, r, e);
   }
-  template<typename T>
-  inline void update(size_t i, T&& e) {
-    range_update(i, i+1, std::forward<T>(e));
+  inline void update(size_t i, const A& e) {
+    range_update(i, i+1, e);
   }
 
   template<typename T>
