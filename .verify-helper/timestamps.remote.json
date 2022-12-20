@@ -10,6 +10,7 @@
 "test/min_cost_flow.test.cpp": "2022-12-20 20:34:44 +0900",
 "test/point_add_range_sum.test.cpp": "2022-12-18 04:26:00 +0900",
 "test/point_set_range_composite.test.cpp": "2022-12-20 20:34:44 +0900",
+"test/range_affine_range_sum.test.cpp": "2022-12-20 20:42:21 +0900",
 "test/scc.test.cpp": "2022-11-27 16:09:45 +0900",
 "test/static_range_inversions_query.test.cpp": "2022-12-18 04:26:00 +0900",
 "test/static_range_sum.test.cpp": "2022-12-18 04:26:00 +0900",
