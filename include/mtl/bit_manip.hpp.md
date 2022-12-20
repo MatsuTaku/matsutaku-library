@@ -14,7 +14,7 @@ data:
   - icon: ':warning:'
     path: include/mtl/integer_set.hpp
     title: include/mtl/integer_set.hpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/lazy_segment_tree.hpp
     title: include/mtl/lazy_segment_tree.hpp
   - icon: ':heavy_check_mark:'
@@ -52,6 +52,9 @@ data:
     title: include/mtl/succinct/wavelet_tree.hpp
   _extendedVerifiedWith:
   - icon: ':heavy_check_mark:'
+    path: test/aoj-do_use_segment_tree-binary_tree.test.cpp
+    title: test/aoj-do_use_segment_tree-binary_tree.test.cpp
+  - icon: ':heavy_check_mark:'
     path: test/convolution.test.cpp
     title: test/convolution.test.cpp
   - icon: ':heavy_check_mark:'
@@ -60,7 +63,7 @@ data:
   - icon: ':heavy_check_mark:'
     path: test/point_set_range_composite.test.cpp
     title: test/point_set_range_composite.test.cpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':x:'
     path: test/range_affine_range_sum.test.cpp
     title: test/range_affine_range_sum.test.cpp
   - icon: ':heavy_check_mark:'
@@ -84,9 +87,9 @@ data:
   - icon: ':heavy_check_mark:'
     path: test/yosupo-segment_add_get_min.test.cpp
     title: test/yosupo-segment_add_get_min.test.cpp
-  _isVerificationFailed: false
+  _isVerificationFailed: true
   _pathExtension: hpp
-  _verificationStatusIcon: ':heavy_check_mark:'
+  _verificationStatusIcon: ':question:'
   attributes:
     links: []
   bundledCode: "#line 2 \"include/mtl/bit_manip.hpp\"\n#include <cstdint>\n#include\
@@ -178,7 +181,7 @@ data:
   - include/mtl/lazy_segment_tree.hpp
   - include/mtl/li_chao_tree.hpp
   timestamp: '2022-12-18 04:26:00+09:00'
-  verificationStatus: LIBRARY_ALL_AC
+  verificationStatus: LIBRARY_SOME_WA
   verifiedWith:
   - test/yosupo-line_add_get_min.test.cpp
   - test/succinct/range_kth_smallest.test.cpp
@@ -186,6 +189,7 @@ data:
   - test/point_set_range_composite.test.cpp
   - test/yosupo-point_add_rectangle_sum-wm.test.cpp
   - test/static_rmq.test.cpp
+  - test/aoj-do_use_segment_tree-binary_tree.test.cpp
   - test/convolution.test.cpp
   - test/yosupo-segment_add_get_min.test.cpp
   - test/static_range_sum.test.cpp

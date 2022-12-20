@@ -3,7 +3,7 @@ data:
   libraryCategories:
   - name: include/mtl
     pages:
-    - icon: ':heavy_check_mark:'
+    - icon: ':question:'
       path: include/mtl/bit_manip.hpp
       title: include/mtl/bit_manip.hpp
     - icon: ':warning:'
@@ -51,13 +51,13 @@ data:
     - icon: ':heavy_check_mark:'
       path: include/mtl/graph.hpp
       title: include/mtl/graph.hpp
-    - icon: ':warning:'
+    - icon: ':heavy_check_mark:'
       path: include/mtl/hld.hpp
       title: include/mtl/hld.hpp
     - icon: ':warning:'
       path: include/mtl/integer_set.hpp
       title: include/mtl/integer_set.hpp
-    - icon: ':heavy_check_mark:'
+    - icon: ':question:'
       path: include/mtl/lazy_segment_tree.hpp
       title: include/mtl/lazy_segment_tree.hpp
     - icon: ':heavy_check_mark:'
@@ -78,7 +78,7 @@ data:
     - icon: ':heavy_check_mark:'
       path: include/mtl/mo.hpp
       title: include/mtl/mo.hpp
-    - icon: ':heavy_check_mark:'
+    - icon: ':question:'
       path: include/mtl/modular.hpp
       title: include/mtl/modular.hpp
     - icon: ':heavy_check_mark:'
@@ -102,6 +102,9 @@ data:
     - icon: ':heavy_check_mark:'
       path: include/mtl/search.hpp
       title: include/mtl/search.hpp
+    - icon: ':heavy_check_mark:'
+      path: include/mtl/segment_hld.hpp
+      title: include/mtl/segment_hld.hpp
     - icon: ':heavy_check_mark:'
       path: include/mtl/segment_tree.hpp
       title: include/mtl/segment_tree.hpp
@@ -233,6 +236,12 @@ data:
   - name: test
     pages:
     - icon: ':heavy_check_mark:'
+      path: test/aoj-do_use_segment_tree-balanced_tree.test.cpp
+      title: test/aoj-do_use_segment_tree-balanced_tree.test.cpp
+    - icon: ':heavy_check_mark:'
+      path: test/aoj-do_use_segment_tree-binary_tree.test.cpp
+      title: test/aoj-do_use_segment_tree-binary_tree.test.cpp
+    - icon: ':heavy_check_mark:'
       path: test/aoj-time_table-cht.test.cpp
       title: test/aoj-time_table-cht.test.cpp
     - icon: ':heavy_check_mark:'
@@ -259,7 +268,7 @@ data:
     - icon: ':heavy_check_mark:'
       path: test/point_set_range_composite.test.cpp
       title: test/point_set_range_composite.test.cpp
-    - icon: ':heavy_check_mark:'
+    - icon: ':x:'
       path: test/range_affine_range_sum.test.cpp
       title: test/range_affine_range_sum.test.cpp
     - icon: ':heavy_check_mark:'
