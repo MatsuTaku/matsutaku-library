@@ -25,7 +25,7 @@ jobs:
 
     - name: Build
       # Build your program with the given configuration
-      run: cmake --build build --config ${{env.BUILD_TYPE}} --target ctest
+      run: cmake --build build --config ${{env.BUILD_TYPE}} --target build_ctest
 
     - name: Test
       working-directory: build
