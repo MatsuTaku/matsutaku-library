@@ -1,7 +1,7 @@
 ---
 data:
   _extendedDependsOn:
-  - icon: ':question:'
+  - icon: ':heavy_check_mark:'
     path: include/mtl/bit_manip.hpp
     title: include/mtl/bit_manip.hpp
   _extendedRequiredBy: []
@@ -9,12 +9,12 @@ data:
   - icon: ':heavy_check_mark:'
     path: test/aoj-do_use_segment_tree-binary_tree.test.cpp
     title: test/aoj-do_use_segment_tree-binary_tree.test.cpp
-  - icon: ':x:'
+  - icon: ':heavy_check_mark:'
     path: test/range_affine_range_sum.test.cpp
     title: test/range_affine_range_sum.test.cpp
-  _isVerificationFailed: true
+  _isVerificationFailed: false
   _pathExtension: hpp
-  _verificationStatusIcon: ':question:'
+  _verificationStatusIcon: ':heavy_check_mark:'
   attributes:
     links: []
   bundledCode: "#line 2 \"include/mtl/bit_manip.hpp\"\n#include <cstdint>\n#include\
@@ -155,7 +155,7 @@ data:
   path: include/mtl/lazy_segment_tree.hpp
   requiredBy: []
   timestamp: '2022-12-20 20:34:44+09:00'
-  verificationStatus: LIBRARY_SOME_WA
+  verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
   - test/range_affine_range_sum.test.cpp
   - test/aoj-do_use_segment_tree-binary_tree.test.cpp

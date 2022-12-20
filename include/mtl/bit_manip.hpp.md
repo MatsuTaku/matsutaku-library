@@ -14,7 +14,7 @@ data:
   - icon: ':warning:'
     path: include/mtl/integer_set.hpp
     title: include/mtl/integer_set.hpp
-  - icon: ':question:'
+  - icon: ':heavy_check_mark:'
     path: include/mtl/lazy_segment_tree.hpp
     title: include/mtl/lazy_segment_tree.hpp
   - icon: ':heavy_check_mark:'
@@ -63,7 +63,7 @@ data:
   - icon: ':heavy_check_mark:'
     path: test/point_set_range_composite.test.cpp
     title: test/point_set_range_composite.test.cpp
-  - icon: ':x:'
+  - icon: ':heavy_check_mark:'
     path: test/range_affine_range_sum.test.cpp
     title: test/range_affine_range_sum.test.cpp
   - icon: ':heavy_check_mark:'
@@ -87,9 +87,9 @@ data:
   - icon: ':heavy_check_mark:'
     path: test/yosupo-segment_add_get_min.test.cpp
     title: test/yosupo-segment_add_get_min.test.cpp
-  _isVerificationFailed: true
+  _isVerificationFailed: false
   _pathExtension: hpp
-  _verificationStatusIcon: ':question:'
+  _verificationStatusIcon: ':heavy_check_mark:'
   attributes:
     links: []
   bundledCode: "#line 2 \"include/mtl/bit_manip.hpp\"\n#include <cstdint>\n#include\
@@ -181,7 +181,7 @@ data:
   - include/mtl/lazy_segment_tree.hpp
   - include/mtl/li_chao_tree.hpp
   timestamp: '2022-12-18 04:26:00+09:00'
-  verificationStatus: LIBRARY_SOME_WA
+  verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
   - test/yosupo-line_add_get_min.test.cpp
   - test/succinct/range_kth_smallest.test.cpp

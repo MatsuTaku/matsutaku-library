@@ -1,27 +1,27 @@
 ---
 data:
   _extendedDependsOn:
-  - icon: ':question:'
+  - icon: ':heavy_check_mark:'
     path: include/mtl/bit_manip.hpp
     title: include/mtl/bit_manip.hpp
-  - icon: ':question:'
+  - icon: ':heavy_check_mark:'
     path: include/mtl/lazy_segment_tree.hpp
     title: include/mtl/lazy_segment_tree.hpp
-  - icon: ':question:'
+  - icon: ':heavy_check_mark:'
     path: include/mtl/modular.hpp
     title: include/mtl/modular.hpp
   _extendedRequiredBy: []
   _extendedVerifiedWith: []
-  _isVerificationFailed: true
+  _isVerificationFailed: false
   _pathExtension: cpp
-  _verificationStatusIcon: ':x:'
+  _verificationStatusIcon: ':heavy_check_mark:'
   attributes:
     '*NOT_SPECIAL_COMMENTS*': ''
     PROBLEM: https://judge.yosupo.jp/problem/range_affine_range_sum
     links:
     - https://judge.yosupo.jp/problem/range_affine_range_sum
   bundledCode: "#line 1 \"test/range_affine_range_sum.test.cpp\"\n#define PROBLEM\
-    \ \"https://judge.yosupo.jp/problem/range_affine_range_sum\"\n\n#line 2 \"include/mtl/bit_manip.hpp\"\
+    \ \"https://judge.yosupo.jp/problem/range_affine_range_sum\"\n#line 2 \"include/mtl/bit_manip.hpp\"\
     \n#include <cstdint>\n#include <cassert>\n\nnamespace bm {\n\ninline constexpr\
     \ uint64_t popcnt_e8(uint64_t x) {\n  x = (x & 0x5555555555555555) + ((x>>1) &\
     \ 0x5555555555555555);\n  x = (x & 0x3333333333333333) + ((x>>2) & 0x3333333333333333);\n\
@@ -133,15 +133,15 @@ data:
     \ {\n    return os << x.val();\n  }\n  friend std::istream& operator>>(std::istream&\
     \ is, Modular& x) {\n    return is >> x.val_;\n  }\n\n};\n\nusing Modular998244353\
     \ = Modular<998244353>;\nusing Modular1000000007 = Modular<(int)1e9+7>;\n#line\
-    \ 5 \"test/range_affine_range_sum.test.cpp\"\n#include <bits/stdc++.h>\nusing\
-    \ namespace std;\nusing ll = long long;\n\nconstexpr ll MOD = 998244353;\nusing\
+    \ 4 \"test/range_affine_range_sum.test.cpp\"\n#include <bits/stdc++.h>\n\nusing\
+    \ namespace std;\nusing ll = long long;\nconstexpr ll MOD = 998244353;\nusing\
     \ mint = Modular<MOD>;\n\nstruct SumMonoid {\n  mint a=0;\n  SumMonoid operator*(SumMonoid\
     \ r) const {\n    return {a+r.a};\n  }\n  SumMonoid& operator*=(SumMonoid r) {return\
     \ *this = *this * r;}\n};\n\nstruct FnMonoid {\n  mint b=1, c=0;\n  FnMonoid operator*(FnMonoid\
     \ r) const {\n    return {b*r.b, c*r.b+r.c};\n  }\n  FnMonoid& operator*=(FnMonoid\
-    \ r) {return *this = *this * r;}\n  bool operator==(FnMonoid r) const {return\
-    \ b==r.b and c==r.c;}\n  SumMonoid act(SumMonoid a, size_t num) const {\n    return\
-    \ {b*a.a + c*num};\n  }\n};\n\nint main() {\n  cin.tie(nullptr); ios::sync_with_stdio(false);\n\
+    \ r) {return *this = *this * r;}\n  bool operator()() const {return !(b == 1 and\
+    \ c == 0);}\n  SumMonoid act(SumMonoid a, size_t num) const {\n    return {b*a.a\
+    \ + c*num};\n  }\n};\n\nint main() {\n  cin.tie(nullptr); ios::sync_with_stdio(false);\n\
     \n  int N,Q; cin>>N>>Q;\n  vector<SumMonoid> A(N); for (auto& a : A) cin>>a.a;\n\
     \  LazySegmentTree<SumMonoid, FnMonoid> rsq(A.begin(), A.end());\n\n  for (int\
     \ q = 0; q < Q; q++) {\n    int t; cin>>t;\n    if (t == 0) {\n      int l,r,b,c;\
@@ -149,17 +149,17 @@ data:
     \ {\n      int l,r; cin>>l>>r;\n      auto ans = rsq.query(l,r);\n      cout <<\
     \ ans.a << endl;\n    }\n  }\n\n  return 0;\n}\n"
   code: "#define PROBLEM \"https://judge.yosupo.jp/problem/range_affine_range_sum\"\
-    \n\n#include \"../include/mtl/lazy_segment_tree.hpp\"\n#include \"../include/mtl/modular.hpp\"\
-    \n#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nconstexpr\
+    \n#include \"../include/mtl/lazy_segment_tree.hpp\"\n#include \"../include/mtl/modular.hpp\"\
+    \n#include <bits/stdc++.h>\n\nusing namespace std;\nusing ll = long long;\nconstexpr\
     \ ll MOD = 998244353;\nusing mint = Modular<MOD>;\n\nstruct SumMonoid {\n  mint\
     \ a=0;\n  SumMonoid operator*(SumMonoid r) const {\n    return {a+r.a};\n  }\n\
     \  SumMonoid& operator*=(SumMonoid r) {return *this = *this * r;}\n};\n\nstruct\
     \ FnMonoid {\n  mint b=1, c=0;\n  FnMonoid operator*(FnMonoid r) const {\n   \
     \ return {b*r.b, c*r.b+r.c};\n  }\n  FnMonoid& operator*=(FnMonoid r) {return\
-    \ *this = *this * r;}\n  bool operator==(FnMonoid r) const {return b==r.b and\
-    \ c==r.c;}\n  SumMonoid act(SumMonoid a, size_t num) const {\n    return {b*a.a\
-    \ + c*num};\n  }\n};\n\nint main() {\n  cin.tie(nullptr); ios::sync_with_stdio(false);\n\
-    \n  int N,Q; cin>>N>>Q;\n  vector<SumMonoid> A(N); for (auto& a : A) cin>>a.a;\n\
+    \ *this = *this * r;}\n  bool operator()() const {return !(b == 1 and c == 0);}\n\
+    \  SumMonoid act(SumMonoid a, size_t num) const {\n    return {b*a.a + c*num};\n\
+    \  }\n};\n\nint main() {\n  cin.tie(nullptr); ios::sync_with_stdio(false);\n\n\
+    \  int N,Q; cin>>N>>Q;\n  vector<SumMonoid> A(N); for (auto& a : A) cin>>a.a;\n\
     \  LazySegmentTree<SumMonoid, FnMonoid> rsq(A.begin(), A.end());\n\n  for (int\
     \ q = 0; q < Q; q++) {\n    int t; cin>>t;\n    if (t == 0) {\n      int l,r,b,c;\
     \ cin>>l>>r>>b>>c;\n      rsq.range_update(l,r, {b,c});\n    } else if (t == 1)\
@@ -172,8 +172,8 @@ data:
   isVerificationFile: true
   path: test/range_affine_range_sum.test.cpp
   requiredBy: []
-  timestamp: '2022-12-20 20:34:44+09:00'
-  verificationStatus: TEST_WRONG_ANSWER
+  timestamp: '2022-12-20 20:42:21+09:00'
+  verificationStatus: TEST_ACCEPTED
   verifiedWith: []
 documentation_of: test/range_affine_range_sum.test.cpp
 layout: document

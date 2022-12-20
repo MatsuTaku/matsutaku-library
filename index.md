@@ -3,7 +3,7 @@ data:
   libraryCategories:
   - name: include/mtl
     pages:
-    - icon: ':question:'
+    - icon: ':heavy_check_mark:'
       path: include/mtl/bit_manip.hpp
       title: include/mtl/bit_manip.hpp
     - icon: ':warning:'
@@ -57,7 +57,7 @@ data:
     - icon: ':warning:'
       path: include/mtl/integer_set.hpp
       title: include/mtl/integer_set.hpp
-    - icon: ':question:'
+    - icon: ':heavy_check_mark:'
       path: include/mtl/lazy_segment_tree.hpp
       title: include/mtl/lazy_segment_tree.hpp
     - icon: ':heavy_check_mark:'
@@ -78,7 +78,7 @@ data:
     - icon: ':heavy_check_mark:'
       path: include/mtl/mo.hpp
       title: include/mtl/mo.hpp
-    - icon: ':question:'
+    - icon: ':heavy_check_mark:'
       path: include/mtl/modular.hpp
       title: include/mtl/modular.hpp
     - icon: ':heavy_check_mark:'
@@ -268,7 +268,7 @@ data:
     - icon: ':heavy_check_mark:'
       path: test/point_set_range_composite.test.cpp
       title: test/point_set_range_composite.test.cpp
-    - icon: ':x:'
+    - icon: ':heavy_check_mark:'
       path: test/range_affine_range_sum.test.cpp
       title: test/range_affine_range_sum.test.cpp
     - icon: ':heavy_check_mark:'
