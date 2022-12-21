@@ -9,6 +9,7 @@
 #include <cassert>
 
 template<typename T, unsigned BITS = 64>
+[[deprecated]]
 class _XFastTrie {
  public:
   using U = uint64_t;
@@ -342,6 +343,7 @@ using XFastTrieMap = _XFastTrie<T, BITS>;
 
 
 template<typename T, unsigned BITS=64>
+[[deprecated]]
 class YFastTrie {
  public:
   using U = uint64_t;
