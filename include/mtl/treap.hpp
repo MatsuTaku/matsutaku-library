@@ -12,9 +12,12 @@ class Treap {
   using key_type = T;
   static constexpr bool kKeyOnly = std::is_same<V, void>::value;
   using mapped_type = typename std::conditional<kKeyOnly, T, V>::type;
-  using value_type = typename std::conditional<kKeyOnly, T, std::pair<T, V>>::type;
+  using value_type = typename std::conditional<kKeyOnly,
+    T,
+    std::pair<T const, V>
+    >::type;
   using priority_type = uint32_t;
-  class iterator;
+  struct iterator;
  private:
   struct Node;
   using node_ptr = std::shared_ptr<Node>;
@@ -34,7 +37,7 @@ class Treap {
     explicit Node(priority_type p, Args&&... args)
         : left(nullptr), right(nullptr), p(p),
           v(std::forward<Args>(args)...) {}
-    const T& key() const {
+    inline const T& key() const {
       if constexpr (kKeyOnly)
         return v;
       else
@@ -104,14 +107,14 @@ class Treap {
       return true;
     return false;
   }
-  node_ptr _root() const {
+  inline node_ptr _root() const {
     return sentinel_->left;
   }
-  priority_type _pick_priority() { return dist(eng); }
-  bool _comp_priority(node_ptr u, node_ptr v) const {
+  inline priority_type _pick_priority() { return dist(eng); }
+  inline bool _comp_priority(node_ptr u, node_ptr v) const {
     return u->p < v->p;
   }
-  void _turn_left(node_ptr u) {
+  inline void _turn_left(node_ptr u) {
     auto p = u->parent.lock();
     auto r = u->right;
     assert(p);
@@ -129,7 +132,7 @@ class Treap {
     r->left = u;
     u->parent = r;
   }
-  void _turn_right(node_ptr u) {
+  inline void _turn_right(node_ptr u) {
     auto p = u->parent.lock();
     auto l = u->left;
     assert(p);
@@ -148,7 +151,7 @@ class Treap {
     u->parent = l;
   }
   template<typename Cond>
-  void _bubble_up_cond(node_ptr u, Cond cond) {
+  inline void _bubble_up_cond(node_ptr u, Cond cond) {
     while (cond(u)) {
       assert(!u->parent.expired());
       auto p = u->parent.lock();
@@ -161,15 +164,15 @@ class Treap {
       }
     }
   }
-  void _bubble_up(node_ptr u) {
+  inline void _bubble_up(node_ptr u) {
     _bubble_up_cond(u, [&](node_ptr u) { return _comp_priority(u, u->parent.lock()); });
   }
-  void _bubble_up_force(node_ptr u) {
+  inline void _bubble_up_force(node_ptr u) {
     _bubble_up_cond(u, [&](node_ptr u) { return u->parent.lock() != sentinel_; });
     assert(u->parent.lock() == sentinel_);
     assert(_root() == u);
   }
-  void _tricle_down(node_ptr u) {
+  inline void _tricle_down(node_ptr u) {
     while (u->left or u->right) {
       if (!u->right) {
         _turn_right(u);
@@ -183,7 +186,7 @@ class Treap {
     }
   }
   // Used for leaf only (done after _tricle_down)
-  void _splice(node_ptr u) {
+  inline void _splice(node_ptr u) {
     assert(!u->left and !u->right);
     auto p = u->parent.lock();
     assert(p);
@@ -201,11 +204,11 @@ class Treap {
     if (node)
       node->parent = sentinel_;
   }
-  iterator _insert_node_subtree(node_ptr u, node_ptr new_node) {
+  inline std::pair<iterator, bool> _insert_node_subtree(node_ptr u, node_ptr new_node) {
     auto x = new_node->key();
     while (true) {
       if (u != sentinel_ and x == u->key())
-        return iterator(u);
+        return std::make_pair(iterator(u), false);
       auto& c = u == sentinel_ or x < u->key() ? u->left : u->right;
       if (!c) {
         c = new_node;
@@ -218,39 +221,39 @@ class Treap {
     }
     _bubble_up(u);
     ++size_;
-    return iterator(u);
+    return std::make_pair(iterator(u), true);
   }
-  iterator _insert_node(node_ptr new_node) {
+  inline std::pair<iterator, bool> _insert_node(node_ptr new_node) {
     return _insert_node_subtree(sentinel_, new_node);
   }
-  iterator _insert_node_hint(iterator hint, node_ptr new_node) {
+  inline iterator _insert_node_hint(iterator hint, node_ptr new_node) {
     auto x = new_node->key();
     auto u = hint.ptr_;
     if (!u->parent.expired()) {
       auto p = u->parent.lock();
       if (p != sentinel_) {
         T xp = p->key();
-        if (xp == x)
+        if (xp == x) [[unlikely]]
           return iterator(p);
         // Check hint is malicious
         if (   (p->left == u and xp < x)
-            or (p->right == u and x < xp))
-          return _insert_node(new_node);
+            or (p->right == u and x < xp)) [[unlikely]]
+          return _insert_node(new_node).first;
         //
       }
     }
-    return _insert_node_subtree(u, new_node);
+    return _insert_node_subtree(u, new_node).first;
   }
 
  public:
-  size_t size() const { return size_; }
-  bool empty() const { return _root() == nullptr; }
-  void clear() {
+  inline size_t size() const { return size_; } // TODO: split break size
+  inline bool empty() const { return _root() == nullptr; }
+  inline void clear() {
     sentinel_->left = nullptr;
     size_ = 0;
   }
 
-  iterator find(T x) const {
+  inline iterator find(T x) const {
     node_ptr u = _root();
     while (u) {
       if (u->key() == x)
@@ -262,8 +265,8 @@ class Treap {
     }
     return end();
   }
-  size_t count(T x) const { return (size_t) (find(x) != end()); }
-  iterator lower_bound(T x) const {
+  inline size_t count(T x) const { return (size_t) (find(x) != end()); }
+  inline iterator lower_bound(T x) const {
     node_ptr u = _root();
     node_ptr lb = sentinel_;
     while (u) {
@@ -278,7 +281,7 @@ class Treap {
     }
     return iterator(lb);
   }
-  iterator upper_bound(T x) const {
+  inline iterator upper_bound(T x) const {
     node_ptr u = _root();
     node_ptr ub = sentinel_;
     while (u) {
@@ -291,8 +294,8 @@ class Treap {
     }
     return iterator(ub);
   }
-  iterator successor(T x) const { return upper_bound(x); }
-  iterator predecessor(T x) const {
+  inline iterator successor(T x) const { return upper_bound(x); }
+  inline iterator predecessor(T x) const {
     auto u = _root();
     node_ptr pr = sentinel_;
     while (u) {
@@ -308,38 +311,43 @@ class Treap {
 
  private:
   template<typename... Args>
-  node_ptr _create_node(Args&&... args) {
+  inline node_ptr _create_node(Args&&... args) {
     auto p = _pick_priority();
     return std::make_shared<Node>(p, std::forward<Args>(args)...);
   }
  public:
   template<typename ...Args>
-  iterator emplace(Args&&... args) {
+  inline std::pair<iterator, bool> emplace(Args&&... args) {
     return _insert_node(_create_node(std::forward<Args>(args)...));
   }
   template<typename ...Args>
-  iterator emplace_hint(iterator hint, Args&&... args) {
+  inline iterator emplace_hint(iterator hint, Args&&... args) {
     return _insert_node_hint(hint, _create_node(std::forward<Args>(args)...));
   }
-  iterator insert(const value_type& e) {
+  template<typename Value>
+  inline std::pair<iterator, bool> insert(Value&& value) {
+    static_assert(std::is_convertible<Value, value_type>::value, "");
+    return emplace(std::forward<Value>(value));
+  }
+  inline std::pair<iterator, bool> insert(const value_type& e) {
     return emplace(e);
   }
-  iterator insert(value_type&& e) {
-    return emplace(std::forward<value_type>(e));
+  inline std::pair<iterator, bool> insert(value_type&& e) {
+    return emplace(std::move(e));
   }
   template<class It>
-  void insert(It begin, It end) {
+  inline void insert(It begin, It end) {
     using traits = std::iterator_traits<It>;
     static_assert(std::is_convertible<typename traits::value_type, value_type>::value, "");
     static_assert(std::is_base_of<std::forward_iterator_tag, typename traits::iterator_category>::value, "");
     for (auto it = begin; it != end; ++it)
       emplace(*it);
   }
-  void insert(std::initializer_list<value_type> list) {
+  inline void insert(std::initializer_list<value_type> list) {
     insert(list.begin(), list.end());
   }
 
-  iterator erase(iterator it) {
+  inline iterator erase(iterator it) {
     if (it == end())
       return end();
     auto u = it.ptr_;
@@ -350,28 +358,30 @@ class Treap {
     --size_;
     return ret;
   }
-  iterator erase(T x) {
-    auto it = lower_bound(x);
-    if (it != end() and it.ptr_->key() == x)
-      return erase(it);
-    else
-      return it;
+  inline bool erase(T x) {
+    auto it = find(x);
+    if (it != end()) {
+      erase(it);
+      return 1;
+    } else {
+      return 0;
+    }
   }
-  iterator erase(iterator begin, iterator end) {
+  inline iterator erase(iterator begin, iterator end) {
     auto _l = split(begin);
     auto _m = split(end);
     return absorb(&_l);
   }
 
-  [[nodiscard]] Treap split(iterator it) {
+  [[nodiscard]] inline Treap split(iterator it) {
     // !!! Breaking size_ value !!!
     auto u = it.ptr_;
-    auto d = std::make_shared<Node>(0);
+    auto d = std::make_shared<Node>(std::numeric_limits<priority_type>::max());
     auto lu = u->left;
     d->left = lu;
-    if (lu) lu->parent = d;
-    u->left = d;
     d->parent = u;
+    u->left = d;
+    if (lu) lu->parent = d;
     _bubble_up_force(d);
     auto l = d->left;
     auto r = d->right;
@@ -380,29 +390,37 @@ class Treap {
     if (l) l->parent.reset();
     return Treap(l);
   }
-  iterator absorb(Treap* s) {
+  inline iterator absorb(Treap* s) {
+    assert((s and s->empty()) or empty() or *--s->end() < *begin());
+    if (s->count(147253) or count(147253)) {
+      std::cerr<<"absorb "<<*(s->begin())<<' '<<*begin()<<' '<<*--end()<<std::endl;
+    }
     auto it = begin();
-    if (!s)
-      return it;
-    assert(s->empty() or empty() or *--s->end() < *begin());
+    if (!s or s->empty()) return it;
+    if (empty()) {
+      sentinel_->left = s->_root();
+      sentinel_->left->parent = sentinel_;
+      size_ = s->size_;
+      s->clear();
+      return begin();
+    }
     auto d = std::make_shared<Node>(0);
     d->left = s->_root();
+    d->right = _root();
+    d->parent = sentinel_;
     if (d->left)
       d->left->parent = d;
-    d->right = _root();
     if (d->right)
       d->right->parent = d;
     sentinel_->left = d;
-    d->parent = sentinel_;
-    s->sentinel_->left = nullptr;
     _tricle_down(d);
     _splice(d);
     size_ += s->size_;
-    s->size_ = 0;
+    s->clear();
     return it;
   }
 
-  class iterator {
+  struct iterator {
    public:
     using value_type = Treap::value_type;
     using pointer = value_type*;
@@ -414,11 +432,11 @@ class Treap {
     friend class Treap;
    public:
     explicit iterator(node_ptr ptr) : ptr_(ptr) {}
-    bool operator==(const iterator& r) const { return ptr_ == r.ptr_; }
-    bool operator!=(const iterator& r) const { return ptr_ != r.ptr_; }
-    reference operator*() const { return ptr_->v; }
-    pointer operator->() const { return &(ptr_->v); }
-    iterator& operator++() {
+    inline bool operator==(const iterator& r) const { return ptr_ == r.ptr_; }
+    inline bool operator!=(const iterator& r) const { return ptr_ != r.ptr_; }
+    inline reference operator*() const { return ptr_->v; }
+    inline pointer operator->() const { return &(ptr_->v); }
+    inline iterator& operator++() {
       auto u = ptr_;
       if (u->right) {
         u = u->right;
@@ -427,7 +445,7 @@ class Treap {
         ptr_ = u;
       } else {
         node_ptr p;
-        while (!u->parent.expired() and (p = u->parent.lock())->left != u) {
+        while ((p = u->parent.lock()) and p->left != u) {
           u = p;
         }
         assert(!u->parent.expired());
@@ -436,12 +454,12 @@ class Treap {
       }
       return *this;
     }
-    iterator operator++(int) {
+    inline iterator operator++(int) {
       iterator ret = *this;
       ++*this;
       return ret;
     }
-    iterator& operator--() {
+    inline iterator& operator--() {
       auto u = ptr_;
       if (u->left) {
         u = u->left;
@@ -450,26 +468,26 @@ class Treap {
         ptr_ = u;
       } else {
         node_ptr p;
-        while (!u->parent.expired() and (p = u->parent.lock())->right != u) {
+        while ((p = u->parent.lock()) and p->right != u) {
           u = p;
         }
         ptr_ = u->parent.lock();
       }
       return *this;
     }
-    iterator operator--(int) {
+    inline iterator operator--(int) {
       iterator ret = *this;
       --*this;
       return ret;
     }
   };
-  iterator begin() const {
+  inline iterator begin() const {
     auto u = sentinel_;
     while (u->left)
       u = u->left;
     return iterator(u);
   };
-  iterator end() const {
+  inline iterator end() const {
     return iterator(sentinel_);
   };
   void print_for_debug(node_ptr u = nullptr, int depth = -1) const {
@@ -512,10 +530,14 @@ class TreapMap : public Treap<T, V> {
  public:
   using typename _base::mapped_type;
   using reference = mapped_type&;
-  reference operator[](T x) {
-    auto it = _base::lower_bound(x);
-    if (it == _base::end() or it.ptr_->key() != x)
-      it = _base::emplace_hint(it, x);
-    return it->second;
+  inline reference operator[](const T& x) {
+    // TODO
+//    return _base::try_emplace(std::move(x)).first->second;
+    return _base::insert({x, mapped_type()}).first->second;
+  }
+  inline reference operator[](T&& x) {
+    // TODO
+//    return _base::try_emplace(std::move(x)).first->second;
+    return _base::insert({std::move(x), mapped_type()}).first->second;
   }
 };
