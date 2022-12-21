@@ -2,6 +2,7 @@
 #include "set_test.hpp"
 
 int main() {
-  mtl::integer_set_test<YFastTrieSet<unsigned, 20>, (int)4e5>();
+  mtl::integer_set_test<YFastTrieSet<unsigned, 20>, 1<<20>();
+  mtl::integer_set_test<YFastTrieSet<unsigned, 20>, 1<<20, false>();
   std::cout << "OK" << std::endl;
 }

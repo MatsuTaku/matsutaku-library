@@ -95,36 +95,123 @@ class BinaryTrieBase : public BinaryTrieDefinition<T, M> {
   node_ptr root_;
   leaf_ptr dummy_;
   size_t size_;
-  virtual void _init() {
-    root_ = std::make_shared<Node>();
+  virtual inline void _init() {
+    root_ = create_node_at(0, 0);
     dummy_ = std::make_shared<Leaf>();
     root_->jump = dummy_;
     dummy_->set_next(dummy_);
     dummy_->set_prev(dummy_);
     size_ = 0;
   }
+  inline void _deinit() {
+    root_ = nullptr;
+    auto u = dummy_->next();
+    dummy_->set_next(nullptr);
+    u->set_prev(nullptr);
+    while (u != dummy_) {
+      auto n = u->next();
+      u->set_next(nullptr);
+      n->set_prev(nullptr);
+      u = n;
+    }
+    dummy_ = nullptr;
+  }
  public:
   BinaryTrieBase() {
     _init();
   }
-  ~BinaryTrieBase() {
-    root_ = nullptr;
-    dummy_->set_next(nullptr);
-    dummy_->set_prev(nullptr);
-    dummy_ = nullptr;
+  BinaryTrieBase(const BinaryTrieBase& rhs) {
+    _insert_init(rhs.begin(), rhs.end());
   }
-  template<typename InputIt>
-  explicit BinaryTrieBase(InputIt begin, InputIt end) : BinaryTrieBase() {
+  BinaryTrieBase& operator=(const BinaryTrieBase& rhs) {
+    _deinit();
+    _insert_init(rhs.begin(), rhs.end());
+  }
+  BinaryTrieBase(BinaryTrieBase&&) noexcept = default;
+  BinaryTrieBase& operator=(BinaryTrieBase&& rhs) noexcept {
+    _deinit();
+    root_ = std::move(rhs.root_);
+    dummy_ = std::move(rhs.dummy_);
+    size_ = std::move(rhs.size_);
+  }
+  ~BinaryTrieBase() {
+    _deinit();
+  }
+ protected:
+  template<class InputIt>
+  void _insert_init(InputIt begin, InputIt end) {
     static_assert(std::is_convertible<typename std::iterator_traits<InputIt>::value_type, value_type>::value, "");
-    // TODO: optimize
-    for (auto it = begin; it != end; ++it)
-      _insert(*it);
+    _init();
+    if (begin == end) return;
+    if (!std::is_sorted(begin, end, [](auto& l, auto& r) {
+      return Def::key_of(l) < Def::key_of(r);
+    })) {
+      for (auto it = begin; it != end; ++it)
+        _insert(*it);
+      return;
+    }
+    auto push_link = [&](leaf_ptr l) {
+      auto b = dummy_->prev();
+      l->set_prev(b);
+      l->set_next(dummy_);
+      l->prev()->set_next(l);
+      l->next()->set_prev(l);
+    };
+    std::array<node_ptr, W> us{};
+    auto grow = [&](key_type x, int k, leaf_ptr l) {
+      for (int i = k; i < W-1; i++) {
+        us[i+1] = create_node_at(x, i+1);
+        int c = (x >> (W-i-1)) & 1;
+        us[i]->c[c] = us[i+1];
+        us[i+1]->parent = us[i];
+        us[i+1]->jump = l;
+      }
+      int c = x & 1;
+      us[W-1]->c[c] = l;
+      l->parent = us[W-1];
+    };
+    us[0] = root_;
+    key_type x = Def::key_of(*begin);
+    auto l = create_leaf_at(x, *begin);
+    push_link(l);
+    us[0]->jump = l;
+    grow(x, 0, l);
+    size_t sz = 1;
+    for (auto it = std::next(begin); it != end; ++it) {
+      key_type px = x;
+      x = Def::key_of(*it);
+      auto m = x ^ px;
+      if (m == 0) continue;
+//      [[assume(m != 0)]]
+      int k = W-1;
+      while (m > 1) {
+        m >>= 1;
+        --k;
+      }
+      l = create_leaf_at(x, *it);
+      push_link(l);
+      for (int i = 0; i < k; i++)
+        if (!us[i]->c[1]) us[i]->jump = l;
+      us[k]->jump = nullptr;
+      grow(x, k, l);
+      ++sz;
+    }
+    size_ = sz;
+  }
+ public:
+  template<typename InputIt>
+  explicit BinaryTrieBase(InputIt begin, InputIt end) {
+    _insert_init(begin, end);
   }
   BinaryTrieBase(std::initializer_list<value_type> init) : BinaryTrieBase(init.begin(), init.end()) {}
   inline size_t size() const {
     return size_;
   }
   inline bool empty() const { return size() == 0; }
+  inline void clear() {
+    _deinit();
+    _init();
+  }
   struct iterator;
   inline iterator begin() const {
     return iterator(dummy_->next());
@@ -133,19 +220,26 @@ class BinaryTrieBase : public BinaryTrieDefinition<T, M> {
     return iterator(dummy_);
   }
  protected:
-  template<typename Key>
-  inline iterator _lower_bound(Key&& key) const {
-    static_assert(std::is_convertible<Key, key_type>::value, "");
-    key_type x = std::forward<Key>(key);
+  virtual inline std::pair<int, node_ptr> _traverse(const key_type& key) const {
     int i, c;
+    key_type x = key;
     auto u = root_;
     for (i = 0; i < W; i++) {
       c = (x >> (W-i-1)) & 1;
       if (!u->c[c]) break;
       u = u->c[c];
     }
+    return std::make_pair(i, u);
+  }
+  template<typename Key>
+  inline iterator _lower_bound(Key&& key) const {
+    static_assert(std::is_convertible<Key, key_type>::value, "");
+    key_type x = std::forward<Key>(key);
+    auto reached = _traverse(x);
+    int i = reached.first;
+    node_ptr u = reached.second;
     if (i == W) return iterator(std::static_pointer_cast<Leaf>(u));
-    auto l = (c == 0) ? u->jump : u->jump->next();
+    auto l = (((x >> (W-i-1)) & 1) == 0) ? u->jump : u->jump->next();
     return iterator(l);
   }
  protected:
@@ -162,18 +256,13 @@ class BinaryTrieBase : public BinaryTrieDefinition<T, M> {
   inline iterator _find(Key&& key) const {
     static_assert(std::is_convertible<Key, key_type>::value, "");
     key_type x = std::forward<Key>(key);
-    int i, c;
-    auto u = root_;
-    for (i = 0; i < W; i++) {
-      c = (x >> (W-i-1)) & 1;
-      if (!u->c[c]) return end();
-      u = u->c[c];
-    }
-    return iterator(std::static_pointer_cast<Leaf>(u));
-  }
- public:
-  inline void clear() {
-    _init();
+    auto reached = _traverse(x);
+    int i = reached.first;
+    node_ptr u = reached.second;
+    if (i == W)
+      return iterator(std::static_pointer_cast<Leaf>(u));
+    else
+      return end();
   }
  protected:
   virtual inline node_ptr create_node_at(const key_type& x [[maybe_unused]], int i [[maybe_unused]]) {
@@ -188,17 +277,14 @@ class BinaryTrieBase : public BinaryTrieDefinition<T, M> {
   template<typename Value>
   inline std::pair<iterator, bool> _insert(Value&& value) {
     static_assert(std::is_convertible<Value, value_type>::value, "");
-    int i, c;
     key_type x = Def::key_of(value);
-    auto u = root_;
-    for (i = 0; i < W; i++) {
-      c = (x >> (W-i-1)) & 1;
-      if (!u->c[c]) break;
-      u = u->c[c];
-    }
+    auto reached = _traverse(x);
+    int i = reached.first;
+    node_ptr u = reached.second;
     if (i == W)
       return std::make_pair(iterator(std::static_pointer_cast<Leaf>(u)), false);
     auto f = u;
+    int c = (x >> (W-i-1)) & 1;
     auto fc = c;
     auto fi = i;
     auto pred = c == 1 ? u->jump : u->jump->prev();

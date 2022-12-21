@@ -13,7 +13,7 @@
 #include <bitset>
 #include <algorithm>
 
-template<typename T, typename M,
+template<class T, class M,
     int8_t W = sizeof(T) * 8,
     class TREAP = Treap<T, M>,
     class XFT = XFastTrieMap<T, TREAP>>
@@ -33,7 +33,7 @@ class YFastTrieBase : AssociativeArrayDefinition<T, M> {
   size_t size_;
   std::default_random_engine eng_;
   std::uniform_int_distribution<uint8_t> dist_;
-  void _init() {
+  inline void _init() {
     xft_.clear();
 //    xft_.emplace(kKeyMax, treap_type()); // TODO
     auto xit = xft_.insert({kKeyMax, treap_type()}).first;
@@ -46,17 +46,61 @@ class YFastTrieBase : AssociativeArrayDefinition<T, M> {
       end_(&xft_, std::prev(xft_.end()), std::prev(xft_.end())->second.end()),
       size_(0),
       dist_(0, W-1) {}
+//  YFastTrieBase(const YFastTrieBase& rhs)
+//    : xft_(rhs.xft_),
+//      end_(&xft_, std::prev(xft_.end()), std::prev(xft_.end())->second.end()),
+//      size_(rhs.size_),
+//      dist_(0, W-1) {}
+//  YFastTrieBase& operator=(const YFastTrieBase& rhs) {
+//    xft_ = rhs.xft_;
+//    end_ = iterator(&xft_, std::prev(xft_.end()), std::prev(xft_.end())->second.end());
+//    size_ = rhs.size_;
+//    eng_ = rhs.eng_;
+//    dist_ = rhs.dist_;
+//  }
+//  YFastTrieBase(YFastTrieBase&&) noexcept = default;
+//  YFastTrieBase& operator=(YFastTrieBase&&) noexcept = default;
   template<typename InputIt>
   explicit YFastTrieBase(InputIt begin, InputIt end) : YFastTrieBase() {
     static_assert(std::is_convertible<typename std::iterator_traits<InputIt>::value_type, value_type>::value, "");
-    // TODO: optimizable
-    for (auto it = begin; it != end; ++it)
-      _insert(*it);
+    // TODO: needs test
+    if (begin == end) return;
+    if (!std::is_sorted(begin, end, [](auto& l, auto& r) {
+      return Def::key_of(l) < Def::key_of(r);
+    })) {
+      for (auto it = begin; it != end; ++it)
+        _insert(*it);
+      return;
+    }
+    xft_.clear();
+    auto b = begin;
+    while (b != end) {
+      auto e = std::next(b);
+      key_type px = Def::key_of(*b);
+      while (e != end and (px == Def::key_of(*e) or !_pivot_selected())) {
+        px = Def::key_of(*(e++));
+      }
+      if (e != end) {
+        key_type x = Def::key_of(*e);
+        ++e;
+//        xft_.emplace_hint(xft_.end(), x, treap_type(b, e)); // TODO: best
+//        xft_.emplace(x, treap_type(b, e)); // TODO: better
+        xft_.insert({x, treap_type(b, e)});
+        b = e;
+      } else {
+//        auto xe = xft_.emplace_hint(xft_.end(), kKeyMax, treap_type(b, e)); // TODO: best
+//        auto xe = xft_.emplace(kKeyMax, treap_type(b, e)); // TODO: better
+        auto xe = xft_.insert({kKeyMax, treap_type(b, e)}).first;
+        end_ = iterator(&xft_, xe, xe->second.end());
+        break;
+      }
+    }
+    size_ = std::distance(begin, end);
   }
   YFastTrieBase(std::initializer_list<value_type> init) : YFastTrieBase(init.begin(), init.end()) {}
   inline size_t size() const { return size_; }
   inline bool empty() const { return size() == 0; }
-  void clear() {
+  inline void clear() {
     _init();
   }
   inline iterator begin() const {

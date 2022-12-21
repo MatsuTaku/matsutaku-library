@@ -27,26 +27,29 @@ class XFastTrieBase : public BinaryTrieBase<T, M, W> {
   using Base::dummy_;
   using Base::size_;
   std::array<hash_table_type, W+1> tb_;
-  void _init() override {
+  inline void _init() override {
+    for (auto& t:tb_) t.clear();
     Base::_init();
-    tb_[0].emplace(0, std::static_pointer_cast<Node>(root_));
   }
  public:
   XFastTrieBase() : Base() {}
+  XFastTrieBase(const XFastTrieBase&) = default;
+  XFastTrieBase& operator=(const XFastTrieBase&) = default;
+  XFastTrieBase(XFastTrieBase&&) noexcept = default;
+  XFastTrieBase& operator=(XFastTrieBase&& rhs) {
+    Base::operator=(std::move((Base&&)rhs));
+    tb_ = std::move(rhs.tb_);
+  }
   template<typename InputIt>
-  explicit XFastTrieBase(InputIt begin, InputIt end) : XFastTrieBase() {
-    static_assert(std::is_convertible<typename std::iterator_traits<InputIt>::value_type, value_type>::value, "");
-    // TODO: optimize
-    for (auto it = begin; it != end; ++it)
-      _insert(*it);
+  explicit XFastTrieBase(InputIt begin, InputIt end) {
+    Base::_insert_init(begin, end);
   }
   XFastTrieBase(std::initializer_list<value_type> init) : XFastTrieBase(init.begin(), init.end()) {}
   using iterator = typename Base::iterator;
   using Base::end;
  protected:
-  template<class Key>
-  inline std::pair<int, node_ptr> _traverse(Key&& key) const {
-    key_type x = std::forward<Key>(key);
+  inline std::pair<int, node_ptr> _traverse(const key_type& key) const override {
+    key_type x = key;
     int l = 0, h = W+1;
     auto u = root_;
     while (l+1 < h) {

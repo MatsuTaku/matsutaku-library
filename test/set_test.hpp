@@ -11,7 +11,7 @@ using std::cout;
 using std::cerr;
 using std::endl;
 
-template<typename Set, int Max = (int)4e5>
+template<typename Set, int Max = (int)4e5, bool Shuffle = true>
 void integer_set_test() {
   std::vector<int> values;
   while (values.empty()) {
@@ -20,13 +20,11 @@ void integer_set_test() {
         values.push_back(i);
   }
   int n = values.size();
-  auto shuffled = values;
-  std::random_shuffle(shuffled.begin(), shuffled.end());
+  auto insertions = values;
+  if constexpr (Shuffle)
+    std::random_shuffle(insertions.begin(), insertions.end());
 
-  Set S;
-  for (auto v : shuffled) {
-    S.insert(v);
-  }
+  Set S(insertions.begin(), insertions.end());
 
   if (values != std::vector<int>(S.begin(), S.end())) {
     cout << "after insert order broken" << endl;
@@ -103,7 +101,7 @@ void integer_set_test() {
     exit(EXIT_FAILURE);
   }
 
-  for (int v : shuffled) {
+  for (int v : insertions) {
     auto f = S.find(v);
     assert(f != S.end());
     auto p = f;
@@ -141,7 +139,7 @@ void integer_set_test() {
       exit(EXIT_FAILURE);
     }
   }
-
+  cerr<<"integer_set_test ok"<<endl;
 }
 
 }
