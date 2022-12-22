@@ -99,7 +99,7 @@ class BinaryTrieBase : public traits::AssociativeArrayDefinition<T, M> {
     dummy_ = std::move(rhs.dummy_);
     size_ = std::move(rhs.size_);
   }
-  ~BinaryTrieBase() {
+  virtual ~BinaryTrieBase() {
     _deinit();
   }
  protected:
