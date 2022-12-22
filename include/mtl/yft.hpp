@@ -36,8 +36,8 @@ class YFastTrieBase : public traits::AssociativeArrayDefinition<T, M> {
   std::uniform_int_distribution<uint8_t> dist_;
   inline void _init() {
     xft_.clear();
-//    xft_.emplace(kKeyMax, treap_type()); // TODO
-    auto xit = xft_.insert({kKeyMax, treap_type()}).first;
+    auto xit = xft_.emplace(kKeyMax, treap_type()).first; // TODO
+//    auto xit = xft_.insert({kKeyMax, treap_type()}).first;
     end_ = iterator(&xft_, xit, xit->second.end());
     size_ = 0;
   }
@@ -85,13 +85,13 @@ class YFastTrieBase : public traits::AssociativeArrayDefinition<T, M> {
         key_type x = Def::key_of(*e);
         ++e;
 //        xft_.emplace_hint(xft_.end(), x, treap_type(b, e)); // TODO: best
-//        xft_.emplace(x, treap_type(b, e)); // TODO: better
-        xft_.insert({x, treap_type(b, e)});
+        xft_.emplace(x, treap_type(b, e)); // TODO: better
+//        xft_.insert({x, treap_type(b, e)});
         b = e;
       } else {
 //        auto xe = xft_.emplace_hint(xft_.end(), kKeyMax, treap_type(b, e)); // TODO: best
-//        auto xe = xft_.emplace(kKeyMax, treap_type(b, e)); // TODO: better
-        auto xe = xft_.insert({kKeyMax, treap_type(b, e)}).first;
+        auto xe = xft_.emplace(kKeyMax, treap_type(b, e)).first; // TODO: better
+//        auto xe = xft_.insert({kKeyMax, treap_type(b, e)}).first;
         end_ = iterator(&xft_, xe, xe->second.end());
         break;
       }
@@ -154,7 +154,8 @@ class YFastTrieBase : public traits::AssociativeArrayDefinition<T, M> {
       if (_pivot_selected()) [[unlikely]] {
         auto lt = std::move(t.split(std::next(tins.first)));
 //        xlb = xft_.emplace_hint(xlb, x, std::move(lt)); // TODO
-        xlb = xft_.insert({x, std::move(lt)}).first;
+        xlb = xft_.emplace(x, std::move(lt)).first;
+//        xlb = xft_.insert({x, std::move(lt)}).first;
       }
       return std::make_pair(iterator(&xft_, xlb, tins.first), true);
     }

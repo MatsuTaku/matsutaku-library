@@ -11,8 +11,8 @@ struct AssociativeArrayDefinition {
   using key_type = T;
   using mapped_type = M;
   using value_type = std::pair<T const, M>;
-  using raw_key_type = typename std::remove_reference<T>::type;
-  using raw_mapped_type = typename std::remove_reference<M>::type;
+  using raw_key_type = typename std::remove_const<T>::type;
+  using raw_mapped_type = typename std::remove_const<M>::type;
   using init_type = std::pair<raw_key_type, raw_mapped_type>;
   using moved_type = std::pair<raw_key_type&&, raw_mapped_type&&>;
   template<class K, class V>
@@ -51,6 +51,7 @@ class SetTraitsBase : public Base {
  public:
   using key_type = typename Base::key_type;
   using value_type = typename Base::value_type;
+  using init_type = typename Base::init_type;
   using iterator = typename Base::iterator;
   SetTraitsBase() = default;
   template<typename InputIt>
@@ -110,21 +111,30 @@ class SetTraitsBase : public Base {
   inline size_t count(key_type&& x) const {
     return find(std::move(x)) != end();
   }
-  template<class Value>
-  inline std::pair<iterator, bool> insert(Value&& v) {
-    return Base::_insert(std::forward<Value>(v));
+  inline std::pair<iterator, bool> insert(const init_type& v) {
+    return Base::_insert(v);
   }
+  inline std::pair<iterator, bool> insert(init_type&& v) {
+    return Base::_insert(std::move(v));
+  }
+  template<typename=void>
   inline std::pair<iterator, bool> insert(const value_type& v) {
     return Base::_insert(v);
   }
+  template<typename=void>
   inline std::pair<iterator, bool> insert(value_type&& v) {
     return Base::_insert(std::move(v));
   }
   // TODO
-//  template<class... Args>
-//  inline std::pair<iterator, bool> emplace(Args&&... args) {
-//    return Base::_emplace(std::forward<Args>(args)...);
-//  }
+  template<class... Args>
+  inline std::pair<iterator, bool> emplace(Args&&... args) {
+    using emplace_type = std::conditional<
+        std::is_constructible<init_type, Args...>::value,
+            init_type,
+            value_type
+        >::type;
+    return Base::_insert(emplace_type(std::forward<Args>(args)...));
+  }
   template<class Key>
   inline bool erase(Key&& x) {
     return Base::_erase(std::forward<Key>(x));

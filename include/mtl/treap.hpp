@@ -12,10 +12,18 @@ class Treap {
   using key_type = T;
   static constexpr bool kKeyOnly = std::is_same<V, void>::value;
   using mapped_type = typename std::conditional<kKeyOnly, T, V>::type;
-  using value_type = typename std::conditional<kKeyOnly,
-    T,
-    std::pair<T const, V>
-    >::type;
+  using value_type = typename std::conditional<
+      kKeyOnly,
+      T,
+      std::pair<T const, V>
+  >::type;
+  using raw_key_type = typename std::conditional<kKeyOnly, T, typename std::remove_const<T>::type>::type;
+  using raw_value_type = typename std::conditional<kKeyOnly, T, typename std::remove_const<V>::type>::type;
+  using init_type = typename std::conditional<
+      kKeyOnly,
+      T,
+      std::pair<raw_key_type, raw_value_type>
+  >::type;
   using priority_type = uint32_t;
   struct iterator;
  private:
@@ -37,11 +45,11 @@ class Treap {
     explicit Node(priority_type p, Args&&... args)
         : left(nullptr), right(nullptr), p(p),
           v(std::forward<Args>(args)...) {}
-    inline const T& key() const {
+    inline const raw_key_type& key() const {
       if constexpr (kKeyOnly)
         return v;
       else
-        return v->first;
+        return v.first;
     }
   };
   node_ptr sentinel_;
@@ -324,14 +332,17 @@ class Treap {
   inline iterator emplace_hint(iterator hint, Args&&... args) {
     return _insert_node_hint(hint, _create_node(std::forward<Args>(args)...));
   }
-  template<typename Value>
-  inline std::pair<iterator, bool> insert(Value&& value) {
-    static_assert(std::is_convertible<Value, value_type>::value, "");
-    return emplace(std::forward<Value>(value));
+  inline std::pair<iterator, bool> insert(const init_type& e) {
+    return emplace(e);
   }
+  inline std::pair<iterator, bool> insert(init_type&& e) {
+    return emplace(std::move(e));
+  }
+  template<typename=void>
   inline std::pair<iterator, bool> insert(const value_type& e) {
     return emplace(e);
   }
+  template<typename=void>
   inline std::pair<iterator, bool> insert(value_type&& e) {
     return emplace(std::move(e));
   }

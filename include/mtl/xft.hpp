@@ -18,12 +18,14 @@ class XFastTrieBase : public BinaryTrieBase<T, M, W> {
   using Base = BinaryTrieBase<T, M, W>;
  public:
   using hash_table_type = HashTable;
+  using types = typename Base::types;
+  using value_type = typename types::value_type;
+  using init_type = typename types::init_type;
   using typename Base::Node;
   using typename Base::Leaf;
   using typename Base::node_ptr;
   using typename Base::leaf_ptr;
   using typename Base::key_type;
-  using typename Base::value_type;
  protected:
   using Base::root_;
   using Base::dummy_;
@@ -103,12 +105,12 @@ class XFastTrieBase : public BinaryTrieBase<T, M, W> {
     _store_node(i, x, u);
     return u;
   }
-  inline leaf_ptr create_leaf_at(const key_type& x, const value_type& value) override {
+  inline leaf_ptr create_leaf_at(const key_type& x, const init_type& value) override {
     auto l = Base::create_leaf_at(x, value);
     _store_node(W, x, std::static_pointer_cast<Node>(l));
     return l;
   }
-  inline leaf_ptr create_leaf_at(const key_type& x, value_type&& value) override {
+  inline leaf_ptr create_leaf_at(const key_type& x, init_type&& value) override {
     auto l = Base::create_leaf_at(x, std::move(value));
     _store_node(W, x, std::static_pointer_cast<Node>(l));
     return l;
@@ -127,7 +129,7 @@ class XFastTrieBase : public BinaryTrieBase<T, M, W> {
     key_type x = std::forward<Key>(key);
     auto it = tb_[W].find(x);
     if (it != tb_[W].end()) {
-      Base::_erase(x, std::static_pointer_cast<Leaf>(it->second));
+      Base::_erase_from_leaf(x, std::static_pointer_cast<Leaf>(it->second));
       return true;
     } else {
       return false;

@@ -16,10 +16,11 @@ template<typename T, typename M,
     int8_t W = sizeof(T) * 8>
 class BinaryTrieBase : public traits::AssociativeArrayDefinition<T, M> {
   static_assert(std::is_unsigned<T>::value, "");
-  using types = traits::AssociativeArrayDefinition<T, M>;
  public:
+  using types = traits::AssociativeArrayDefinition<T, M>;
   using key_type = typename types::key_type;
   using value_type = typename types::value_type;
+  using init_type = typename types::init_type;
   struct Node;
   using node_ptr = std::shared_ptr<Node>;
   using node_weak_ptr = std::weak_ptr<Node>;
@@ -228,13 +229,13 @@ class BinaryTrieBase : public traits::AssociativeArrayDefinition<T, M> {
       return end();
   }
  protected:
-  virtual inline node_ptr create_node_at(const key_type& x [[maybe_unused]], int i [[maybe_unused]]) {
+  virtual inline node_ptr create_node_at(const key_type&, int) {
     return std::make_shared<Node>();
   }
-  virtual inline leaf_ptr create_leaf_at(const key_type& x [[maybe_unused]], const value_type& value) {
+  virtual inline leaf_ptr create_leaf_at(const key_type&, const init_type& value) {
     return std::make_shared<Leaf>(value);
   }
-  virtual inline leaf_ptr create_leaf_at(const key_type& x [[maybe_unused]], value_type&& value) {
+  virtual inline leaf_ptr create_leaf_at(const key_type&, init_type&& value) {
     return std::make_shared<Leaf>(std::move(value));
   }
   template<typename Value>
@@ -288,7 +289,7 @@ class BinaryTrieBase : public traits::AssociativeArrayDefinition<T, M> {
     return std::make_pair(iterator(l), true);
   }
 
-  virtual void erase_node_at(const key_type& x [[maybe_unused]], int i [[maybe_unused]], node_ptr u [[maybe_unused]]) {}
+  virtual void erase_node_at(const key_type&, int, node_ptr) {}
   template<typename Key>
   bool _erase(Key&& x) {
     static_assert(std::is_convertible<Key, key_type>::value, "");
@@ -301,7 +302,7 @@ class BinaryTrieBase : public traits::AssociativeArrayDefinition<T, M> {
     }
   }
   template<typename Key>
-  inline iterator _erase(Key&& key, leaf_ptr l) {
+  inline iterator _erase_from_leaf(Key&& key, leaf_ptr l) {
     static_assert(std::is_convertible<Key, key_type>::value, "");
     key_type x = std::forward<Key>(key);
     assert(x == l->key());
@@ -335,7 +336,7 @@ class BinaryTrieBase : public traits::AssociativeArrayDefinition<T, M> {
   }
   inline iterator _erase(iterator it) {
     if (it == end()) return it;
-    return _erase(types::key_of(*it), it.ptr_);
+    return _erase_from_leaf(types::key_of(*it), it.ptr_);
   }
 };
 template<typename T, typename M, int8_t W>

@@ -11,7 +11,16 @@ using std::cout;
 using std::cerr;
 using std::endl;
 
-template<typename Set, int Max = (int)4e5, bool Shuffle = true>
+template<class Map>
+void map_emplace_test() {
+  using key_type = typename Map::key_type;
+  using mapped_type = typename Map::mapped_type;
+  Map s;
+  s.emplace(std::make_pair(key_type(), mapped_type()));
+  s.emplace(key_type(), mapped_type());
+}
+
+template<class Set, int Max = (int)4e5, bool Shuffle = true>
 void integer_set_test() {
   std::vector<int> values;
   while (values.empty()) {
