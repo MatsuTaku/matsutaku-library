@@ -6,7 +6,8 @@
 #include <random>
 #include <iostream>
 
-template<typename T, typename V=void>
+template<class T, class V=void,
+    class Compare = std::less<>>
 class Treap {
  public:
   using key_type = T;
@@ -56,9 +57,12 @@ class Treap {
   size_t size_;
   std::default_random_engine eng;
   std::uniform_int_distribution<priority_type> dist;
+  Compare comp_;
 
  public:
-  Treap() : sentinel_(std::make_shared<Node>(0)), size_(0) {}
+  Treap(const Compare& comp = Compare())
+      : sentinel_(std::make_shared<Node>(0)), size_(0),
+        comp_(comp) {}
   template<typename It>
   explicit Treap(It begin, It end) : Treap() {
     insert(begin, end);
@@ -217,7 +221,7 @@ class Treap {
     while (true) {
       if (u != sentinel_ and x == u->key())
         return std::make_pair(iterator(u), false);
-      auto& c = u == sentinel_ or x < u->key() ? u->left : u->right;
+      auto& c = u == sentinel_ or comp_(x, u->key()) ? u->left : u->right;
       if (!c) {
         c = new_node;
         c->parent = u;
@@ -244,8 +248,8 @@ class Treap {
         if (xp == x) [[unlikely]]
           return iterator(p);
         // Check hint is malicious
-        if (   (p->left == u and xp < x)
-            or (p->right == u and x < xp)) [[unlikely]]
+        if (   (p->left == u and comp_(xp, x))
+            or (p->right == u and comp_(x, xp))) [[unlikely]]
           return _insert_node(new_node).first;
         //
       }
@@ -266,7 +270,7 @@ class Treap {
     while (u) {
       if (u->key() == x)
         return iterator(u);
-      if (x < u->key())
+      if (comp_(x, u->key()))
         u = u->left;
       else
         u = u->right;
@@ -280,7 +284,7 @@ class Treap {
     while (u) {
       if (u->key() == x)
         return iterator(u);
-      if (x < u->key()) {
+      if (comp_(x, u->key())) {
         lb = u;
         u = u->left;
       } else {
@@ -293,7 +297,7 @@ class Treap {
     node_ptr u = _root();
     node_ptr ub = sentinel_;
     while (u) {
-      if (x < u->key()) {
+      if (comp_(x, u->key())) {
         ub = u;
         u = u->left;
       } else {
@@ -307,7 +311,7 @@ class Treap {
     auto u = _root();
     node_ptr pr = sentinel_;
     while (u) {
-      if (x <= u->key()) {
+      if (!comp_(u->key(), x)) {
         u = u->left;
       } else {
         pr = u;
@@ -402,7 +406,7 @@ class Treap {
     return Treap(l);
   }
   inline iterator absorb(Treap* s) {
-    assert((s and s->empty()) or empty() or *--s->end() < *begin());
+    assert((s and s->empty()) or empty() or comp_(*--s->end(), *begin()));
     if (s->count(147253) or count(147253)) {
       std::cerr<<"absorb "<<*(s->begin())<<' '<<*begin()<<' '<<*--end()<<std::endl;
     }
@@ -529,8 +533,6 @@ class Treap {
 
 };
 
-template<typename T, typename V>
-constexpr bool Treap<T, V>::kKeyOnly;
 template<typename T>
 using TreapSet = Treap<T, void>;
 

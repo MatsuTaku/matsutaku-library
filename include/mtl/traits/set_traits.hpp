@@ -128,7 +128,7 @@ class SetTraitsBase : public Base {
   // TODO
   template<class... Args>
   inline std::pair<iterator, bool> emplace(Args&&... args) {
-    using emplace_type = std::conditional<
+    using emplace_type = typename std::conditional<
         std::is_constructible<init_type, Args...>::value,
             init_type,
             value_type
