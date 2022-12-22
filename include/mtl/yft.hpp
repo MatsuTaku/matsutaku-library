@@ -1,4 +1,5 @@
 #pragma once
+#include "traits/set_traits.hpp"
 #include "binary_trie.hpp"
 #include "treap.hpp"
 #include "xft.hpp"
@@ -17,9 +18,9 @@ template<class T, class M,
     int8_t W = sizeof(T) * 8,
     class TREAP = Treap<T, M>,
     class XFT = XFastTrieMap<T, TREAP>>
-class YFastTrieBase : AssociativeArrayDefinition<T, M> {
+class YFastTrieBase : public traits::AssociativeArrayDefinition<T, M> {
   static_assert(std::is_unsigned<T>::value, "");
-  using Def = AssociativeArrayDefinition<T, M>;
+  using Def = traits::AssociativeArrayDefinition<T, M>;
  public:
   using typename Def::key_type;
   using typename Def::value_type;
@@ -46,20 +47,20 @@ class YFastTrieBase : AssociativeArrayDefinition<T, M> {
       end_(&xft_, std::prev(xft_.end()), std::prev(xft_.end())->second.end()),
       size_(0),
       dist_(0, W-1) {}
-//  YFastTrieBase(const YFastTrieBase& rhs)
-//    : xft_(rhs.xft_),
-//      end_(&xft_, std::prev(xft_.end()), std::prev(xft_.end())->second.end()),
-//      size_(rhs.size_),
-//      dist_(0, W-1) {}
-//  YFastTrieBase& operator=(const YFastTrieBase& rhs) {
-//    xft_ = rhs.xft_;
-//    end_ = iterator(&xft_, std::prev(xft_.end()), std::prev(xft_.end())->second.end());
-//    size_ = rhs.size_;
-//    eng_ = rhs.eng_;
-//    dist_ = rhs.dist_;
-//  }
-//  YFastTrieBase(YFastTrieBase&&) noexcept = default;
-//  YFastTrieBase& operator=(YFastTrieBase&&) noexcept = default;
+  YFastTrieBase(const YFastTrieBase& rhs)
+    : xft_(rhs.xft_),
+      end_(&xft_, std::prev(xft_.end()), std::prev(xft_.end())->second.end()),
+      size_(rhs.size_),
+      dist_(0, W-1) {}
+  YFastTrieBase& operator=(const YFastTrieBase& rhs) {
+    xft_ = rhs.xft_;
+    end_ = iterator(&xft_, std::prev(xft_.end()), std::prev(xft_.end())->second.end());
+    size_ = rhs.size_;
+    eng_ = rhs.eng_;
+    dist_ = rhs.dist_;
+  }
+  YFastTrieBase(YFastTrieBase&&) noexcept = default;
+  YFastTrieBase& operator=(YFastTrieBase&&) noexcept = default;
   template<typename InputIt>
   explicit YFastTrieBase(InputIt begin, InputIt end) : YFastTrieBase() {
     static_assert(std::is_convertible<typename std::iterator_traits<InputIt>::value_type, value_type>::value, "");
@@ -97,7 +98,6 @@ class YFastTrieBase : AssociativeArrayDefinition<T, M> {
     }
     size_ = std::distance(begin, end);
   }
-  YFastTrieBase(std::initializer_list<value_type> init) : YFastTrieBase(init.begin(), init.end()) {}
   inline size_t size() const { return size_; }
   inline bool empty() const { return size() == 0; }
   inline void clear() {
@@ -255,8 +255,8 @@ class YFastTrieBase : AssociativeArrayDefinition<T, M> {
 };
 
 template<typename T, typename V, uint8_t W = sizeof(T)*8>
-using YFastTrie = MapInterface<YFastTrieBase<T, V, W>>;
+using YFastTrie = traits::MapTraits<YFastTrieBase<T, V, W>>;
 template<typename T, uint8_t W = sizeof(T)*8>
-using YFastTrieSet = SetInterface<YFastTrieBase<T, void, W>>;
+using YFastTrieSet = traits::SetTraits<YFastTrieBase<T, void, W>>;
 template<typename T, typename V, uint8_t W = sizeof(T)*8>
 using YFastTrieMap = YFastTrie<T, V, W>;

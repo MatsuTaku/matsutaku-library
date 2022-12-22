@@ -7,21 +7,23 @@
 #include <unordered_map>
 #include <cassert>
 
+template<class T, class M, int8_t W>
+using XFastTrieHashTableMappedType = typename BinaryTrieBase<T, M, W>::node_ptr;
+
 template<typename T, typename M,
     int8_t W = sizeof(T) * 8,
-    typename HashTable = std::unordered_map<T, typename BinaryTrieDefinition<T, M>::node_ptr>>
+    class HashTable = std::unordered_map<T, XFastTrieHashTableMappedType<T, M, W>>>
 class XFastTrieBase : public BinaryTrieBase<T, M, W> {
   static_assert(std::is_unsigned<T>::value, "");
   using Base = BinaryTrieBase<T, M, W>;
-  using Def = AssociativeArrayDefinition<T, M>;
  public:
+  using hash_table_type = HashTable;
   using typename Base::Node;
   using typename Base::Leaf;
   using typename Base::node_ptr;
   using typename Base::leaf_ptr;
   using typename Base::key_type;
   using typename Base::value_type;
-  using hash_table_type = HashTable;
  protected:
   using Base::root_;
   using Base::dummy_;
@@ -44,7 +46,6 @@ class XFastTrieBase : public BinaryTrieBase<T, M, W> {
   explicit XFastTrieBase(InputIt begin, InputIt end) {
     Base::_insert_init(begin, end);
   }
-  XFastTrieBase(std::initializer_list<value_type> init) : XFastTrieBase(init.begin(), init.end()) {}
   using iterator = typename Base::iterator;
   using Base::end;
  protected:
@@ -134,9 +135,11 @@ class XFastTrieBase : public BinaryTrieBase<T, M, W> {
   }
 };
 
+#include "traits/set_traits.hpp"
+
 template<typename T, typename V, uint8_t W = sizeof(T)*8>
-using XFastTrie = MapInterface<XFastTrieBase<T, V, W>>;
+using XFastTrie = traits::MapTraits<XFastTrieBase<T, V, W>>;
 template<typename T, uint8_t W = sizeof(T)*8>
-using XFastTrieSet = SetInterface<XFastTrieBase<T, void, W>>;
+using XFastTrieSet = traits::SetTraits<XFastTrieBase<T, void, W>>;
 template<typename T, typename V, uint8_t W = sizeof(T)*8>
 using XFastTrieMap = XFastTrie<T, V, W>;

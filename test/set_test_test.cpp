@@ -1,5 +1,5 @@
-#include <set>
 #include "set_test.hpp"
+#include <set>
 
 int main() {
   mtl::integer_set_test<std::set<unsigned>, 1<<20>();
