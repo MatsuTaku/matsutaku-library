@@ -3,6 +3,9 @@ data:
   libraryCategories:
   - name: include/mtl
     pages:
+    - icon: ':warning:'
+      path: include/mtl/binary_trie.hpp
+      title: include/mtl/binary_trie.hpp
     - icon: ':heavy_check_mark:'
       path: include/mtl/bit_manip.hpp
       title: include/mtl/bit_manip.hpp
@@ -126,6 +129,12 @@ data:
     - icon: ':heavy_check_mark:'
       path: include/mtl/unionfind.hpp
       title: include/mtl/unionfind.hpp
+    - icon: ':warning:'
+      path: include/mtl/xft.hpp
+      title: include/mtl/xft.hpp
+    - icon: ':warning:'
+      path: include/mtl/yft.hpp
+      title: include/mtl/yft.hpp
   - name: include/mtl/string
     pages:
     - icon: ':warning:'
@@ -162,6 +171,9 @@ data:
     - icon: ':warning:'
       path: test/abc116-c-multiple_sequences-dirichlet.cpp
       title: test/abc116-c-multiple_sequences-dirichlet.cpp
+    - icon: ':warning:'
+      path: test/binary_trie_test.cpp
+      title: test/binary_trie_test.cpp
     - icon: ':warning:'
       path: test/bitmap_test.cpp
       title: test/bitmap_test.cpp
@@ -202,6 +214,12 @@ data:
       path: test/sample.cpp
       title: test/sample.cpp
     - icon: ':warning:'
+      path: test/set_test.cpp
+      title: test/set_test.cpp
+    - icon: ':warning:'
+      path: test/set_test.hpp
+      title: test/set_test.hpp
+    - icon: ':warning:'
       path: test/skewbinary_list_test.cpp
       title: test/skewbinary_list_test.cpp
     - icon: ':warning:'
@@ -213,6 +231,12 @@ data:
     - icon: ':warning:'
       path: test/treap_test.cpp
       title: test/treap_test.cpp
+    - icon: ':warning:'
+      path: test/xft_test.cpp
+      title: test/xft_test.cpp
+    - icon: ':warning:'
+      path: test/yft_test.cpp
+      title: test/yft_test.cpp
   - name: test/string
     pages:
     - icon: ':warning:'
