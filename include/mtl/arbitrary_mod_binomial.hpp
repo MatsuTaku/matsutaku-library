@@ -47,14 +47,13 @@ struct ArbitraryModBinomial {
       for (int j = i+i; j <= n; j += i)
         isn_p[j] = 1;
       if (mod() % i) continue;
-      P[++k] = prime;
-      for (int v = prime; v <= n; v += prime)
+      P[++k] = i;
+      for (int v = i; v <= n; v += i)
         d[v] = k;
     }
-    using mint = Modular<mod()>;
     int mid = (n+1)/2;
     std::vector<int> inv(mid+1);
-    inv[mid] = mint(mid).inv().val();
+    inv[mid] = mod_inv(mid);
     for (int i = mid-1; i > 0; i--)
       inv[i] = (long long) inv[i+1] * (i+1) % mod();
     int h = k+1;
@@ -69,9 +68,6 @@ struct ArbitraryModBinomial {
         ptb[i*h+j] = v;
       }
     }
-    int s = 1, ns = 1;
-    buffer_type t{}, nt{};
-    S[0] = T[0] = 1;
     /* important equation
      * \binom(n,k) = (n-k+1) / k * \binom(n,k-1)
      */
@@ -86,7 +82,11 @@ struct ArbitraryModBinomial {
       }
       return x;
     };
+    int s = 1, ns = 1;
+    buffer_type t{}, nt{};
+    st_[0] = 1;
     for (int k = 1; k <= mid; k++) {
+      ns = make_st(n-k+1, nt);
       s = (long long) s * ns % mod();
       for (int i = 1; i <= MAX_PRIME_FACTOR_NUM; i++)
         t[i] += nt[i];
@@ -95,9 +95,20 @@ struct ArbitraryModBinomial {
       for (int i = 1; i <= MAX_PRIME_FACTOR_NUM; i++)
         t[i] -= nt[i];
       st_[i] = s;
-      for (int i = 0; i <= MAX_PRIME_FACTOR_NUM; i++)
+      for (int i = 1; i <= MAX_PRIME_FACTOR_NUM; i++)
         st_[i] = (long long) st_[i] * ptb[i][t[i]] % mod();
     }
+  }
+  constexpr inline int mod_inv(int x) const {
+    int t = 1;
+    int u = x;
+    int p = mod()-2;
+    while (p) {
+      if (p&1) t = t * u % mod();
+      u = u * u % mod();
+      p >>= 1;
+    }
+    return t;
   }
   constexpr inline int operator(int m) const {
     assert(enabled());
