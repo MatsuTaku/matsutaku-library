@@ -1,35 +1,42 @@
 #pragma once
 #include <iostream>
 
-template <long long MOD>
+template <int MOD>
 class Modular {
  private:
-  long long val_;
+  unsigned int val_;
 
  public:
-  Modular() : val_(0) {}
-  Modular(long long v) : val_(v%MOD) {
-    if (val_ < 0) val_ += MOD;
+  static constexpr int mod() { return MOD; }
+
+  constexpr Modular() : val_(0) {}
+  template<class T>
+  constexpr Modular(T v) {
+    auto x = (long long)(v%(long long)MOD);
+    if (x < 0) x += MOD;
+    val_ = x;
   }
 
-  long long val() const { return val_; }
-  Modular& operator+=(Modular x) {
+  constexpr unsigned int val() const { return val_; }
+  constexpr Modular& operator+=(Modular x) {
     val_ += x.val();
-    if (val_ >= MOD) val_ %= MOD;
+    if (val_ >= MOD) val_ -= MOD;
     return *this;
   }
-  Modular operator-() const { return {MOD - val_}; }
-  Modular& operator-=(Modular x) {
+  constexpr Modular operator-() const { return {MOD - val_}; }
+  constexpr Modular& operator-=(Modular x) {
     val_ -= x.val();
     if (val_ < 0) val_ += MOD;
     return *this;
   }
-  Modular& operator*=(Modular x) {
-    val_ *= x.val();
-    if (val_ >= MOD) val_ %= MOD;
+  constexpr Modular& operator*=(Modular x) {
+    auto v = (long long) val_ * x.val();
+    if (v >= MOD) v %= MOD;
+    val_ = (int) v;
     return *this;
   }
-  Modular pow(long long p) const {
+  constexpr Modular pow(long long p) const {
+    assert(p >= 0);
     Modular t = 1;
     Modular u = *this;
     while (p) {
@@ -40,26 +47,26 @@ class Modular {
     }
     return t;
   }
-  friend Modular pow(Modular x, long long p) {
+  friend constexpr Modular pow(Modular x, long long p) {
     return x.pow(p);
   }
-  Modular inv() const { return pow(MOD-2); }
-  Modular& operator/=(Modular x) { return *this *= x.inv(); }
-  Modular operator+(Modular x) const { return Modular(*this) += x; }
-  Modular operator-(Modular x) const { return Modular(*this) -= x; }
-  Modular operator*(Modular x) const { return Modular(*this) *= x; }
-  Modular operator/(Modular x) const { return Modular(*this) /= x; }
-  Modular& operator++() { return *this += 1; }
-  Modular operator++(int) { Modular c = *this; ++(*this); return c; }
-  Modular& operator--() { return *this -= 1; }
-  Modular operator--(int) { Modular c = *this; --(*this); return c; }
+  constexpr Modular inv() const { return pow(MOD-2); }
+  constexpr Modular& operator/=(Modular x) { return *this *= x.inv(); }
+  constexpr Modular operator+(Modular x) const { return Modular(*this) += x; }
+  constexpr Modular operator-(Modular x) const { return Modular(*this) -= x; }
+  constexpr Modular operator*(Modular x) const { return Modular(*this) *= x; }
+  constexpr Modular operator/(Modular x) const { return Modular(*this) /= x; }
+  constexpr Modular& operator++() { return *this += 1; }
+  constexpr Modular operator++(int) { Modular c = *this; ++(*this); return c; }
+  constexpr Modular& operator--() { return *this -= 1; }
+  constexpr Modular operator--(int) { Modular c = *this; --(*this); return c; }
 
-  bool operator==(Modular x) const { return val() == x.val(); }
-  bool operator!=(Modular x) const { return val() != x.val(); }
-  bool operator<(Modular x) const { return val() < x.val(); };
-  bool operator<=(Modular x) const { return val() <= x.val(); };
-  bool operator>(Modular x) const { return val() > x.val(); };
-  bool operator>=(Modular x) const { return val() >= x.val(); };
+  constexpr bool operator==(Modular x) const { return val() == x.val(); }
+  constexpr bool operator!=(Modular x) const { return val() != x.val(); }
+//  constexpr bool operator<(Modular x) const { return val() < x.val(); };
+//  constexpr bool operator<=(Modular x) const { return val() <= x.val(); };
+//  constexpr bool operator>(Modular x) const { return val() > x.val(); };
+//  constexpr bool operator>=(Modular x) const { return val() >= x.val(); };
 
   friend std::ostream& operator<<(std::ostream& os, const Modular& x) {
     return os << x.val();
