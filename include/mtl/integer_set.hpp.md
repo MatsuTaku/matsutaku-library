@@ -246,7 +246,257 @@ data:
     \ ((x & 0xAAAAAAAAAAAAAAAA) >> 1);\n  return x;\n}\n\n} // namespace bm\n#line\
     \ 6 \"include/mtl/integer_set.hpp\"\n#include <array>\r\n#include <unordered_map>\r\
     \n#include <initializer_list>\r\n#line 10 \"include/mtl/integer_set.hpp\"\n\r\n\
-    template<typename T, unsigned BITS = 64>\r\nclass _XFastTrie {\r\n public:\r\n\
+    template<typename T, unsigned BITS = 64>\r\n[[deprecated]]\r\nclass _XFastTrie\
+    \ {\r\n public:\r\n  using U = uint64_t;\r\n  static constexpr int W = BITS;\r\
+    \n  class iterator;\r\n  static constexpr bool kKeyOnly = std::is_same<T, void>::value;\r\
+    \n  using element_type = typename std::conditional<kKeyOnly, U, std::pair<U, T>>::type;\r\
+    \n private:\r\n  struct Node;\r\n  using node_ptr = std::shared_ptr<Node>;\r\n\
+    \  using node_weak = std::weak_ptr<Node>;\r\n  struct Node {\r\n    // common\r\
+    \n    uint8_t cmask;\r\n    std::array<node_ptr, 2> child;\r\n    node_weak parent;\r\
+    \n    // leaf\r\n    element_type* vptr;\r\n    Node() : cmask(0), child({nullptr,\
+    \ nullptr}), vptr(nullptr) {}\r\n    U key() const {\r\n      if constexpr (kKeyOnly)\r\
+    \n        return *vptr;\r\n      else\r\n        return vptr->first;\r\n    }\r\
+    \n  };\r\n private:\r\n  using _hash_table = std::unordered_map<U, node_ptr>;\r\
+    \n  node_ptr root_, sentinel_;\r\n  size_t size_;\r\n  std::array<_hash_table,\
+    \ W+1> xmap_;\r\n\r\n public:\r\n  _XFastTrie()\r\n      : root_(std::make_shared<Node>()),\
+    \ sentinel_(std::make_shared<Node>()), size_(0)\r\n  {\r\n    sentinel_->child[0]\
+    \ = sentinel_->child[1] = root_->child[0] = root_->child[1] = sentinel_;\r\n \
+    \   xmap_[0].emplace(0, root_);\r\n  }\r\n  template<typename It>\r\n  explicit\
+    \ _XFastTrie(It begin, It end) : _XFastTrie() {\r\n    insert(begin, end);\r\n\
+    \  }\r\n  _XFastTrie(std::initializer_list<element_type> list) : _XFastTrie(list.begin(),\
+    \ list.end()) {}\r\n private:\r\n  void _del_node(node_ptr u) {\r\n    u->parent.reset();\r\
+    \n    for (int i = 0; i < 2; i++) {\r\n      if (u->cmask & (1<<i) and u->child[i]\
+    \ != u) {\r\n        _del_node(u->child[i]);\r\n      }\r\n      u->child[i] =\
+    \ nullptr;\r\n    }\r\n    if (u->vptr) {\r\n      delete u->vptr;\r\n    }\r\n\
+    \  }\r\n  void _del() {\r\n    if (root_)\r\n      _del_node(root_);\r\n    if\
+    \ (sentinel_)\r\n      sentinel_->child[0] = sentinel_->child[1] = nullptr;\r\n\
+    \  }\r\n public:\r\n//  TODO: Optimal copy implementation\r\n  _XFastTrie(const\
+    \ _XFastTrie& r) : _XFastTrie(r.begin(), r.end()) {}\r\n  _XFastTrie& operator=(const\
+    \ _XFastTrie& r) {\r\n    _del();\r\n    root_ = std::make_shared<Node>();\r\n\
+    \    sentinel_ = std::make_shared<Node>();\r\n    size_ = 0;\r\n    sentinel_->child[0]\
+    \ = sentinel_->child[1] =\r\n        root_->child[0] = root_->child[1] = sentinel_;\r\
+    \n    xmap_[0].emplace(0, root_);\r\n    insert(r.begin(), r.end());\r\n    return\
+    \ *this;\r\n  }\r\n  _XFastTrie(_XFastTrie&& r)\r\n    : root_(std::move(r.root_)),\
+    \ sentinel_(std::move(r.sentinel_)),\r\n      size_(std::move(r.size_)), xmap_(std::move(r.xmap_))\
+    \ {}\r\n  _XFastTrie& operator=(_XFastTrie&& r) noexcept {\r\n    _del();\r\n\
+    \    root_ = std::move(r.root_);\r\n    sentinel_ = std::move(r.sentinel_);\r\n\
+    \    size_ = std::move(r.size_);\r\n    xmap_ = std::move(r.xmap_);\r\n    return\
+    \ *this;\r\n  }\r\n  ~_XFastTrie() {\r\n    _del();\r\n  }\r\n\r\n  size_t size()\
+    \ const { return size_; }\r\n  bool empty() const { return size() == 0; }\r\n\
+    \  void clear() {\r\n    *this = _XFastTrie();\r\n  }\r\n\r\n  iterator find(U\
+    \ x) const {\r\n    auto it = xmap_[W].find(x);\r\n    return it != xmap_[W].end()\
+    \ ? iterator(it->second) : end();\r\n  }\r\n  size_t count(U x) const { return\
+    \ (size_t) (find(x) != end()); }\r\n  bool contains(U x) const { return (bool)\
+    \ count(x); }\r\n  iterator lower_bound(U x) const {\r\n    int l = 0, r = W+1;\r\
+    \n    auto u = root_;\r\n    while (l+1<r) {\r\n      int c = (l+r)/2;\r\n   \
+    \   auto vit = xmap_[c].find(x >> (W-c));\r\n      if (vit != xmap_[c].end())\
+    \ {\r\n        u = vit->second;\r\n        l = c;\r\n      } else {\r\n      \
+    \  r = c;\r\n      }\r\n    }\r\n    if (l == W) return iterator(u);\r\n    auto\
+    \ next = ((x>>(W-1-l))&1) == 0 ? u->child[0] : u->child[1]->child[1];\r\n    return\
+    \ iterator(next);\r\n  }\r\n  iterator upper_bound(U x) const {\r\n    auto it\
+    \ = lower_bound(x);\r\n    return (it != end() and it.ptr_->key() == x) ? ++it\
+    \ : it;\r\n  }\r\n  iterator successor(U x) const {\r\n    return upper_bound(x);\r\
+    \n  }\r\n  iterator predecessor(U x) const {\r\n    auto it = lower_bound(x);\r\
+    \n    return it != begin() ? --it : end();\r\n  }\r\n\r\n private:\r\n  U _key_of_elm(element_type&\
+    \ e) const {\r\n    if constexpr (kKeyOnly)\r\n      return e;\r\n    else\r\n\
+    \      return e.first;\r\n  }\r\n  U _key_of(iterator it) const {\r\n    return\
+    \ _key_of_elm(*(it.ptr_->vptr));\r\n  }\r\n  template<typename... Args>\r\n  U\
+    \ _key_of_elm_args(U x, Args&&...) const { return x; }\r\n  iterator _insert_subtree(int\
+    \ depth, node_ptr u, U x, element_type* eptr) {\r\n    int i = depth;\r\n    int\
+    \ c = (x >> (W-i-1)) & 1;\r\n    auto pred = c == 1 ? u->child[1] : u->child[0]->child[0];\r\
+    \n    assert(pred);\r\n    for (; i < W; i++) {\r\n      c = (x >> (W-1-i)) &\
+    \ 1;\r\n      u->cmask |= 1u<<c;\r\n      u->child[c] = std::make_shared<Node>();\r\
+    \n      u->child[c]->parent = u;\r\n      u = u->child[c];\r\n      xmap_[i+1].emplace(x>>(W-1-i),\
+    \ u);\r\n    }\r\n    u->vptr = eptr;\r\n    u->child[0] = pred;\r\n    u->child[1]\
+    \ = pred->child[1];\r\n    pred->child[1]->child[0] = u;\r\n    pred->child[1]\
+    \ = u;\r\n    auto v = u->parent.lock();\r\n    for (i = W-1; i >= 0; i--) {\r\
+    \n      assert(v);\r\n      c = (x >> (W-1-i)) & 1;\r\n      int ic = c^1;\r\n\
+    \      if ((v->cmask & (1u<<ic)) == 0\r\n          and (!v->child[ic] or v->child[ic]\
+    \ == sentinel_\r\n              or (ic == 0 ? v->child[ic]->key() > x\r\n    \
+    \                      : v->child[ic]->key() < x)))\r\n        v->child[ic] =\
+    \ u;\r\n      assert(v->child[0] and v->child[1]);\r\n      v = v->parent.lock();\r\
+    \n    }\r\n    size_++;\r\n    return iterator(u);\r\n  }\r\n  iterator _insert(U\
+    \ x, element_type* eptr) {\r\n    auto u = root_;\r\n    int i, c;\r\n    for\
+    \ (i = 0; i < W; i++) {\r\n      c = (x >> (W-1-i)) & 1;\r\n      if ((u->cmask\
+    \ & (1u<<c)) == 0) break;\r\n      u = u->child[c];\r\n    }\r\n    if (i == W)\
+    \ return iterator(u);\r\n    return _insert_subtree(i, u, x, eptr);\r\n  }\r\n\
+    \  iterator _insert_hint(iterator hint, U x, element_type* eptr) {\r\n    // Check\
+    \ hint isn't malicious.\r\n    U lx=0, rx=0;\r\n    if ((hint != begin() and x\
+    \ < (lx = _key_of(std::prev(hint)))) or\r\n        (hint != end() and (rx = _key_of(hint))\
+    \ < x))\r\n      return _insert(x, eptr);\r\n    // Find longest common path on\
+    \ the trie.\r\n    int d = 0;\r\n    if (hint != begin())\r\n      d = std::max(d,\
+    \ (int) bm::clz(x ^ lx) - (64-W));\r\n    if (hint != end())\r\n      d = std::max(d,\
+    \ (int) bm::clz(x ^ rx) - (64-W));\r\n    if (d == W) return iterator(xmap_[W][x]);\r\
+    \n    return _insert_subtree(d, xmap_[d][x >> (W-d)], x, eptr);\r\n  }\r\n public:\r\
+    \n  iterator insert(const element_type& e) {\r\n    return _insert(_key_of_elm(e),\r\
+    \n                   new element_type(e));\r\n  }\r\n  iterator insert(element_type&&\
+    \ e) {\r\n    return _insert(_key_of_elm(e),\r\n                   new element_type(std::move(e)));\r\
+    \n  }\r\n  template<typename... Args>\r\n  iterator emplace(Args&&... args) {\r\
+    \n    return _insert(_key_of_elm_args(args...),\r\n                   new element_type(std::forward<Args>(args)...));\r\
+    \n  }\r\n  template<typename... Args>\r\n  iterator emplace_hint(iterator hint,\
+    \ Args&&... args) {\r\n    return _insert_hint(hint,\r\n                     \
+    \   _key_of_elm_args(args...),\r\n                        new element_type(std::forward<Args>(args)...));\r\
+    \n  }\r\n  template<typename It>\r\n  void insert(It begin, It end) {\r\n    using\
+    \ traits = std::iterator_traits<It>;\r\n    static_assert(std::is_convertible<typename\
+    \ traits::value_type, element_type>::value, \"\");\r\n    static_assert(std::is_base_of<std::forward_iterator_tag,\
+    \ typename traits::iterator_category>::value, \"\");\r\n    for (auto it = begin;\
+    \ it != end; ++it)\r\n      insert(*it);\r\n  }\r\n  void insert(std::initializer_list<element_type>\
+    \ list) {\r\n    insert(list.begin(), list.end());\r\n  }\r\n  iterator erase(iterator\
+    \ it) {\r\n    if (it == end())\r\n      return it;\r\n    auto u = it.ptr_;\r\
+    \n    U x = u->key();\r\n    delete u->vptr;\r\n    auto next = u->child[0];\r\
+    \n    u->child[0]->child[1] = u->child[1];\r\n    u->child[1]->child[0] = u->child[0];\r\
+    \n    auto v = u;\r\n    int i, c;\r\n    for (i = W-1; i >= 0; i--) {\r\n   \
+    \   c = (x >> (W-1-i)) & 1;\r\n      auto p = v->parent.lock();\r\n      v->parent.reset();\r\
+    \n      p->cmask ^= 1u<<c;\r\n      p->child[c] = nullptr;\r\n      assert(xmap_[i+1].find(x>>(W-1-i))->second\
+    \ == v);\r\n      xmap_[i+1].erase(x>>(W-1-i));\r\n      v = p;\r\n      if ((p->cmask\
+    \ & (1u<<(c^1))) != 0) break;\r\n    }\r\n    if (i >= 0) {\r\n      c = (x >>\
+    \ (W-1-i)) & 1;\r\n      v->child[c] = u->child[c^1];\r\n      v = v->parent.lock();\r\
+    \n      i--;\r\n      for (; i >= 0; i--) {\r\n        c = (x >> (W-1-i)) & 1;\r\
+    \n        int ic = c^1;\r\n        if (v->child[ic] == u) {\r\n          v->child[ic]\
+    \ = u->child[c];\r\n        }\r\n        v = v->parent.lock();\r\n      }\r\n\
+    \    }\r\n    size_--;\r\n    return iterator(next);\r\n  }\r\n  iterator erase(U\
+    \ x) {\r\n    auto it = lower_bound(x);\r\n    if (it.key() != x)\r\n      return\
+    \ it;\r\n    return erase(it);\r\n  }\r\n\r\n public:\r\n  class iterator {\r\n\
+    \   public:\r\n    using value_type = element_type;\r\n    using pointer = element_type*;\r\
+    \n    using reference = const element_type&;\r\n    using difference_type = long\
+    \ long;\r\n    using iterator_category = std::bidirectional_iterator_tag;\r\n\
+    \   private:\r\n    node_ptr ptr_;\r\n    friend class _XFastTrie;\r\n   public:\r\
+    \n    explicit iterator(node_ptr ptr) : ptr_(ptr) {}\r\n    reference operator*()\
+    \ const { return *(ptr_->vptr); }\r\n    pointer operator->() const { return ptr_->vptr;\
+    \ }\r\n    bool operator==(const iterator& r) const { return ptr_ == r.ptr_; }\r\
+    \n    bool operator!=(const iterator& r) const { return ptr_ != r.ptr_; }\r\n\
+    \    iterator& operator++() {\r\n      ptr_ = ptr_->child[1];\r\n      return\
+    \ *this;\r\n    }\r\n    iterator operator++(int) {\r\n      iterator ret = *this;\r\
+    \n      ++*this;\r\n      return ret;\r\n    }\r\n    iterator& operator--() {\r\
+    \n      ptr_ = ptr_->child[0];\r\n      return *this;\r\n    }\r\n    iterator\
+    \ operator--(int) {\r\n      iterator ret = *this;\r\n      --*this;\r\n     \
+    \ return ret;\r\n    }\r\n    U key() const { return ptr_->key(); }\r\n  };\r\n\
+    \  iterator begin() const { return iterator(sentinel_->child[1]); }\r\n  iterator\
+    \ end() const { return iterator(sentinel_); }\r\n};\r\ntemplate<typename T, unsigned\
+    \ BITS>\r\nconstexpr int _XFastTrie<T, BITS>::W;\r\ntemplate<typename T, unsigned\
+    \ BITS>\r\nconstexpr bool _XFastTrie<T, BITS>::kKeyOnly;\r\ntemplate<unsigned\
+    \ BITS = 64>\r\nusing XFastTrieSet = _XFastTrie<void, BITS>;\r\ntemplate<typename\
+    \ T, unsigned BITS = 64>\r\nusing XFastTrieMap = _XFastTrie<T, BITS>;\r\n\r\n\r\
+    \ntemplate<typename T, unsigned BITS=64>\r\n[[deprecated]]\r\nclass YFastTrie\
+    \ {\r\n public:\r\n  using U = uint64_t;\r\n  static constexpr int W = BITS;\r\
+    \n  static constexpr U MAX_KEY = W == 64 ? ~uint64_t(0) : (1ull<<W)-1;\r\n  static\
+    \ constexpr bool kKeyOnly = std::is_same<T, void>::value;\r\n  using element_type\
+    \ = typename std::conditional<kKeyOnly, U, std::pair<U,T>>::type;\r\n  using value_type\
+    \ = typename std::conditional<kKeyOnly, U, T>::type;\r\n  using _set = typename\
+    \ std::conditional<kKeyOnly, TreapSet<U>, TreapMap<U,T>>::type;\r\n  using _set_iterator\
+    \ = typename _set::iterator;\r\n  using _xft = XFastTrieMap<_set, W>;\r\n  class\
+    \ iterator;\r\n private:\r\n  _xft xft_;\r\n  size_t size_;\r\n\r\n  bool _pibot_selected()\
+    \ {\r\n    return rand() % W == 0;\r\n  }\r\n  U _key_of_elm(const element_type&\
+    \ e) const {\r\n    if constexpr (kKeyOnly)\r\n      return e;\r\n    else\r\n\
+    \      return e.first;\r\n  }\r\n  U _key_of_elm(element_type&& e) const {\r\n\
+    \    if constexpr (kKeyOnly)\r\n      return e;\r\n    else\r\n      return e.first;\r\
+    \n  }\r\n  template<typename... Args>\r\n  U _key_of_elm_args(U x, Args&&...)\
+    \ const {\r\n    return x;\r\n  }\r\n  U _key_of_sub(_set_iterator it) const {\r\
+    \n    return _key_of_elm(*it);\r\n  }\r\n  U _key_of(iterator it) const {\r\n\
+    \    return _key_of_sub(it.sit_);\r\n  }\r\n\r\n public:\r\n  YFastTrie() : size_(0)\
+    \ {\r\n    xft_.emplace(MAX_KEY, _set{});\r\n  }\r\n  template<typename It>\r\n\
+    \  explicit YFastTrie(It begin, It end) : YFastTrie() {\r\n    insert(begin, end);\r\
+    \n  }\r\n  YFastTrie(std::initializer_list<element_type> list) : YFastTrie(list.begin(),\
+    \ list.end()) {}\r\n\r\n  size_t size() const { return size_; }\r\n  bool empty()\
+    \ const { return size() == 0; }\r\n  void clear() {\r\n    *this = YFastTrie();\r\
+    \n  }\r\n\r\n  iterator find(U x) const {\r\n    auto xit = xft_.lower_bound(x);\r\
+    \n    assert(xit != xft_.end());\r\n    auto& s = xit->second;\r\n    auto sit\
+    \ = s.find(x);\r\n    return sit != s.end() ? iterator(this, xit, sit) : end();\r\
+    \n  }\r\n  size_t count(U x) const { return (size_t) (find(x) != end()); }\r\n\
+    \  bool contains(U x) const { return (bool) count(x); }\r\n  iterator lower_bound(U\
+    \ x) const {\r\n    auto xit = xft_.lower_bound(x);\r\n    assert(xit != xft_.end());\r\
+    \n    auto& s = xit->second;\r\n    auto sit = s.lower_bound(x);\r\n    if (sit\
+    \ == s.end()) {\r\n      assert(std::next(xit) == xft_.end());\r\n      return\
+    \ end();\r\n    }\r\n    return iterator(this, xit, sit);\r\n  }\r\n  iterator\
+    \ upper_bound(U x) const {\r\n    auto it = lower_bound(x);\r\n    return (it\
+    \ != end() and _key_of(it) == x) ? ++it : it;\r\n  }\r\n  iterator successor(U\
+    \ x) const {\r\n    return upper_bound(x);\r\n  }\r\n  iterator predecessor(U\
+    \ x) const {\r\n    auto it = lower_bound(x);\r\n    return it != begin() ? --it\
+    \ : end();\r\n  }\r\n\r\n private:\r\n  template<typename C>\r\n  iterator _insert_before(typename\
+    \ _xft::iterator xit, _set_iterator sit, U x, C elm_constructor) {\r\n    auto&\
+    \ s = xit->second;\r\n    // Expect 'sit = s.emplace_hint(sit, element)'\r\n \
+    \   sit = elm_constructor(s, sit);\r\n    size_++;\r\n    if (_pibot_selected())\
+    \ {\r\n      xit = xft_.emplace_hint(xit, x, _set());\r\n      xit->second = s.split(std::next(sit));\r\
+    \n    }\r\n    return iterator(this, xit, sit);\r\n  }\r\n  template<typename\
+    \ C>\r\n  iterator _insert(U x, C elm_constructor) {\r\n    auto xit = xft_.lower_bound(x);\r\
+    \n    assert(xit != xft_.end());\r\n    auto& s = xit->second;\r\n    auto sit\
+    \ = s.lower_bound(x);\r\n    if (sit == s.end() or _key_of_sub(sit) > x) {\r\n\
+    \      return _insert_before(xit, sit, x, elm_constructor);\r\n    }\r\n    return\
+    \ iterator(this, xit, sit);\r\n  }\r\n  template<typename C>\r\n  iterator _insert_hint(iterator\
+    \ hint, U x, C elm_constructor) {\r\n    // Check hint isn't malicious.\r\n  \
+    \  if ((hint != begin() and x <= _key_of(std::prev(hint))) or\r\n        (hint\
+    \ != end() and _key_of(hint) <= x))\r\n      return _insert(x, elm_constructor);\r\
+    \n\r\n    auto xit = hint.xit_;\r\n    assert(xit != xft_.end());\r\n    auto\
+    \ sit = hint.sit_;\r\n    assert(sit == xit->second.end() or _key_of_sub(sit)\
+    \ > x);\r\n    return _insert_before(xit, sit, x, elm_constructor);\r\n  }\r\n\
+    \ public:\r\n  iterator insert(const element_type& e) {\r\n    return _insert(_key_of_elm(e),\r\
+    \n                   [&e]\r\n                   (_set& s, const _set_iterator&\
+    \ it) {\r\n                     return s.emplace_hint(it, e);\r\n            \
+    \       });\r\n  }\r\n  iterator insert(element_type&& e) {\r\n    return _insert(_key_of_elm(e),\r\
+    \n                   [e=std::move(e)](_set& s, const _set_iterator& it) {\r\n\
+    \                     return s.emplace_hint(it, std::move(e));\r\n           \
+    \        });\r\n  }\r\n  template<typename... Args>\r\n  iterator emplace(Args&&...\
+    \ args) {\r\n    return _insert(_key_of_elm_args(args...),\r\n               \
+    \    [&args...](_set& s, const _set_iterator& it) {\r\n                     return\
+    \ s.emplace_hint(it, std::forward<Args>(args)...);\r\n                   });\r\
+    \n  }\r\n  template<typename... Args>\r\n  iterator emplace_hint(iterator hint,\
+    \ Args&&... args) {\r\n    return _insert_hint(hint,\r\n                     \
+    \   _key_of_elm_args(args...),\r\n                        [&args...](_set& s,\
+    \ const _set_iterator& it) {\r\n                          return s.emplace_hint(it,\
+    \ std::forward<Args>(args)...);\r\n                        });\r\n  }\r\n  template<typename\
+    \ It>\r\n  void insert(It begin, It end) {\r\n    using traits = std::iterator_traits<It>;\r\
+    \n    static_assert(std::is_convertible<typename traits::value_type, element_type>::value,\
+    \ \"\");\r\n    static_assert(std::is_base_of<std::forward_iterator_tag, typename\
+    \ traits::iterator_category>::value, \"\");\r\n    for (auto it = begin; it !=\
+    \ end; ++it)\r\n      insert(*it);\r\n  }\r\n  void insert(std::initializer_list<element_type>\
+    \ list) {\r\n    insert(list.begin(), list.end());\r\n  }\r\n  iterator erase(iterator\
+    \ it) {\r\n    if (it == end())\r\n      return it;\r\n    U x = _key_of(it);\r\
+    \n    auto xit = it.xit_;\r\n    assert(xit != xft_.end());\r\n    auto& s = xit->second;\r\
+    \n    auto sit = it.sit_;\r\n    size_--;\r\n    sit = s.erase(sit);\r\n    if\
+    \ (x == xit.key()) {\r\n      if (x != MAX_KEY) {\r\n        if (!s.empty()) {\r\
+    \n          auto& snext = std::next(xit)->second;\r\n          sit = snext.absorb(&s);\r\
+    \n        }\r\n        xit = xft_.erase(xit);\r\n      } else {\r\n        return\
+    \ end();\r\n      }\r\n    }\r\n    return iterator(this, xit, sit);\r\n  }\r\n\
+    \  iterator erase(U x) {\r\n    auto it = lower_bound(x);\r\n    return (_key_of(it)\
+    \ == x) ? erase(it) : it;\r\n  }\r\n\r\n public:\r\n  class iterator {\r\n   public:\r\
+    \n    using value_type = element_type;\r\n    using pointer = element_type*;\r\
+    \n    using reference = const element_type&;\r\n    using difference_type = long\
+    \ long;\r\n    using iterator_category = std::bidirectional_iterator_tag;\r\n\
+    \    using xiterator = typename _xft::iterator;\r\n    using siterator = _set_iterator;\r\
+    \n   private:\r\n    const YFastTrie* yft_;\r\n    xiterator xit_;\r\n    siterator\
+    \ sit_;\r\n    friend class YFastTrie;\r\n   public:\r\n    iterator(const YFastTrie*\
+    \ yft, xiterator xit, siterator sit) : yft_(yft), xit_(xit), sit_(sit) {}\r\n\
+    \    reference operator*() const { return *sit_; }\r\n    pointer operator->()\
+    \ const { return &*sit_; }\r\n    bool operator==(const iterator& r) { return\
+    \ sit_ == r.sit_; }\r\n    bool operator!=(const iterator& r) { return sit_ !=\
+    \ r.sit_; }\r\n    iterator& operator++() {\r\n      if (++sit_ == xit_->second.end())\
+    \ {\r\n        auto nxt = std::next(xit_);\r\n        if (nxt != yft_->xft_.end())\
+    \ {\r\n          xit_ = nxt;\r\n          sit_ = xit_->second.begin();\r\n   \
+    \     }\r\n      }\r\n      return *this;\r\n    }\r\n    iterator operator++(int)\
+    \ {\r\n      iterator ret = *this;\r\n      ++this;\r\n      return ret;\r\n \
+    \   }\r\n    iterator& operator--() {\r\n      if (sit_ == xit_->second.begin())\
+    \ {\r\n        --xit_;\r\n        sit_ = std::prev(xit_->second.end());\r\n  \
+    \    } else {\r\n        --sit_;\r\n      }\r\n      return *this;\r\n    }\r\n\
+    \    iterator operator--(int) {\r\n      iterator ret = *this;\r\n      --this;\r\
+    \n      return ret;\r\n    }\r\n  };\r\n  iterator begin() const {\r\n    auto\
+    \ xit = xft_.begin();\r\n    return iterator(this, xit, xit->second.begin());\r\
+    \n  }\r\n  iterator end() const {\r\n    auto xit = std::prev(xft_.end());\r\n\
+    \    return iterator(this, xit, xit->second.end());\r\n  }\r\n};\r\ntemplate<typename\
+    \ T, unsigned BITS>\r\nconstexpr int YFastTrie<T, BITS>::W;\r\ntemplate<typename\
+    \ T, unsigned BITS>\r\nconstexpr typename YFastTrie<T, BITS>::U YFastTrie<T, BITS>::MAX_KEY;\r\
+    \ntemplate<typename T, unsigned BITS>\r\nconstexpr bool YFastTrie<T, BITS>::kKeyOnly;\r\
+    \ntemplate<unsigned BITS=64>\r\nusing YFastTrieSet = YFastTrie<void, BITS>;\r\n\
+    \r\n\r\ntemplate<typename T, unsigned BITS=64>\r\nclass YFastTrieMAP : public\
+    \ YFastTrie<T, BITS> {\r\n  using _base = YFastTrie<T, BITS>;\r\n public:\r\n\
+    \  using typename _base::value_type;\r\n  using typename _base::U;\r\n  using\
+    \ _base::kKeyOnly;\r\n  using reference = value_type&;\r\n  reference operator[](U\
+    \ x) {\r\n    auto it = find(x);\r\n    if (it == _base::end())\r\n      it =\
+    \ emplace(x);\r\n    if constexpr (kKeyOnly)\r\n      return *it;\r\n    else\r\
+    \n      return it->second;\r\n  }\r\n};\n"
+  code: "#pragma once\r\n#include \"treap.hpp\"\r\n#include \"bit_manip.hpp\"\r\n\
+    #include <memory>\r\n#include <iterator>\r\n#include <array>\r\n#include <unordered_map>\r\
+    \n#include <initializer_list>\r\n#include <cassert>\r\n\r\ntemplate<typename T,\
+    \ unsigned BITS = 64>\r\n[[deprecated]]\r\nclass _XFastTrie {\r\n public:\r\n\
     \  using U = uint64_t;\r\n  static constexpr int W = BITS;\r\n  class iterator;\r\
     \n  static constexpr bool kKeyOnly = std::is_same<T, void>::value;\r\n  using\
     \ element_type = typename std::conditional<kKeyOnly, U, std::pair<U, T>>::type;\r\
@@ -377,262 +627,12 @@ data:
     \ BITS>\r\nconstexpr bool _XFastTrie<T, BITS>::kKeyOnly;\r\ntemplate<unsigned\
     \ BITS = 64>\r\nusing XFastTrieSet = _XFastTrie<void, BITS>;\r\ntemplate<typename\
     \ T, unsigned BITS = 64>\r\nusing XFastTrieMap = _XFastTrie<T, BITS>;\r\n\r\n\r\
-    \ntemplate<typename T, unsigned BITS=64>\r\nclass YFastTrie {\r\n public:\r\n\
-    \  using U = uint64_t;\r\n  static constexpr int W = BITS;\r\n  static constexpr\
-    \ U MAX_KEY = W == 64 ? ~uint64_t(0) : (1ull<<W)-1;\r\n  static constexpr bool\
-    \ kKeyOnly = std::is_same<T, void>::value;\r\n  using element_type = typename\
-    \ std::conditional<kKeyOnly, U, std::pair<U,T>>::type;\r\n  using value_type =\
-    \ typename std::conditional<kKeyOnly, U, T>::type;\r\n  using _set = typename\
-    \ std::conditional<kKeyOnly, TreapSet<U>, TreapMap<U,T>>::type;\r\n  using _set_iterator\
-    \ = typename _set::iterator;\r\n  using _xft = XFastTrieMap<_set, W>;\r\n  class\
-    \ iterator;\r\n private:\r\n  _xft xft_;\r\n  size_t size_;\r\n\r\n  bool _pibot_selected()\
-    \ {\r\n    return rand() % W == 0;\r\n  }\r\n  U _key_of_elm(const element_type&\
-    \ e) const {\r\n    if constexpr (kKeyOnly)\r\n      return e;\r\n    else\r\n\
-    \      return e.first;\r\n  }\r\n  U _key_of_elm(element_type&& e) const {\r\n\
-    \    if constexpr (kKeyOnly)\r\n      return e;\r\n    else\r\n      return e.first;\r\
-    \n  }\r\n  template<typename... Args>\r\n  U _key_of_elm_args(U x, Args&&...)\
-    \ const {\r\n    return x;\r\n  }\r\n  U _key_of_sub(_set_iterator it) const {\r\
-    \n    return _key_of_elm(*it);\r\n  }\r\n  U _key_of(iterator it) const {\r\n\
-    \    return _key_of_sub(it.sit_);\r\n  }\r\n\r\n public:\r\n  YFastTrie() : size_(0)\
-    \ {\r\n    xft_.emplace(MAX_KEY, _set{});\r\n  }\r\n  template<typename It>\r\n\
-    \  explicit YFastTrie(It begin, It end) : YFastTrie() {\r\n    insert(begin, end);\r\
-    \n  }\r\n  YFastTrie(std::initializer_list<element_type> list) : YFastTrie(list.begin(),\
-    \ list.end()) {}\r\n\r\n  size_t size() const { return size_; }\r\n  bool empty()\
-    \ const { return size() == 0; }\r\n  void clear() {\r\n    *this = YFastTrie();\r\
-    \n  }\r\n\r\n  iterator find(U x) const {\r\n    auto xit = xft_.lower_bound(x);\r\
-    \n    assert(xit != xft_.end());\r\n    auto& s = xit->second;\r\n    auto sit\
-    \ = s.find(x);\r\n    return sit != s.end() ? iterator(this, xit, sit) : end();\r\
-    \n  }\r\n  size_t count(U x) const { return (size_t) (find(x) != end()); }\r\n\
-    \  bool contains(U x) const { return (bool) count(x); }\r\n  iterator lower_bound(U\
-    \ x) const {\r\n    auto xit = xft_.lower_bound(x);\r\n    assert(xit != xft_.end());\r\
-    \n    auto& s = xit->second;\r\n    auto sit = s.lower_bound(x);\r\n    if (sit\
-    \ == s.end()) {\r\n      assert(std::next(xit) == xft_.end());\r\n      return\
-    \ end();\r\n    }\r\n    return iterator(this, xit, sit);\r\n  }\r\n  iterator\
-    \ upper_bound(U x) const {\r\n    auto it = lower_bound(x);\r\n    return (it\
-    \ != end() and _key_of(it) == x) ? ++it : it;\r\n  }\r\n  iterator successor(U\
-    \ x) const {\r\n    return upper_bound(x);\r\n  }\r\n  iterator predecessor(U\
-    \ x) const {\r\n    auto it = lower_bound(x);\r\n    return it != begin() ? --it\
-    \ : end();\r\n  }\r\n\r\n private:\r\n  template<typename C>\r\n  iterator _insert_before(typename\
-    \ _xft::iterator xit, _set_iterator sit, U x, C elm_constructor) {\r\n    auto&\
-    \ s = xit->second;\r\n    // Expect 'sit = s.emplace_hint(sit, element)'\r\n \
-    \   sit = elm_constructor(s, sit);\r\n    size_++;\r\n    if (_pibot_selected())\
-    \ {\r\n      xit = xft_.emplace_hint(xit, x, _set());\r\n      xit->second = s.split(std::next(sit));\r\
-    \n    }\r\n    return iterator(this, xit, sit);\r\n  }\r\n  template<typename\
-    \ C>\r\n  iterator _insert(U x, C elm_constructor) {\r\n    auto xit = xft_.lower_bound(x);\r\
-    \n    assert(xit != xft_.end());\r\n    auto& s = xit->second;\r\n    auto sit\
-    \ = s.lower_bound(x);\r\n    if (sit == s.end() or _key_of_sub(sit) > x) {\r\n\
-    \      return _insert_before(xit, sit, x, elm_constructor);\r\n    }\r\n    return\
-    \ iterator(this, xit, sit);\r\n  }\r\n  template<typename C>\r\n  iterator _insert_hint(iterator\
-    \ hint, U x, C elm_constructor) {\r\n    // Check hint isn't malicious.\r\n  \
-    \  if ((hint != begin() and x <= _key_of(std::prev(hint))) or\r\n        (hint\
-    \ != end() and _key_of(hint) <= x))\r\n      return _insert(x, elm_constructor);\r\
-    \n\r\n    auto xit = hint.xit_;\r\n    assert(xit != xft_.end());\r\n    auto\
-    \ sit = hint.sit_;\r\n    assert(sit == xit->second.end() or _key_of_sub(sit)\
-    \ > x);\r\n    return _insert_before(xit, sit, x, elm_constructor);\r\n  }\r\n\
-    \ public:\r\n  iterator insert(const element_type& e) {\r\n    return _insert(_key_of_elm(e),\r\
-    \n                   [&e]\r\n                   (_set& s, const _set_iterator&\
-    \ it) {\r\n                     return s.emplace_hint(it, e);\r\n            \
-    \       });\r\n  }\r\n  iterator insert(element_type&& e) {\r\n    return _insert(_key_of_elm(e),\r\
-    \n                   [e=std::move(e)](_set& s, const _set_iterator& it) {\r\n\
-    \                     return s.emplace_hint(it, std::move(e));\r\n           \
-    \        });\r\n  }\r\n  template<typename... Args>\r\n  iterator emplace(Args&&...\
-    \ args) {\r\n    return _insert(_key_of_elm_args(args...),\r\n               \
-    \    [&args...](_set& s, const _set_iterator& it) {\r\n                     return\
-    \ s.emplace_hint(it, std::forward<Args>(args)...);\r\n                   });\r\
-    \n  }\r\n  template<typename... Args>\r\n  iterator emplace_hint(iterator hint,\
-    \ Args&&... args) {\r\n    return _insert_hint(hint,\r\n                     \
-    \   _key_of_elm_args(args...),\r\n                        [&args...](_set& s,\
-    \ const _set_iterator& it) {\r\n                          return s.emplace_hint(it,\
-    \ std::forward<Args>(args)...);\r\n                        });\r\n  }\r\n  template<typename\
-    \ It>\r\n  void insert(It begin, It end) {\r\n    using traits = std::iterator_traits<It>;\r\
-    \n    static_assert(std::is_convertible<typename traits::value_type, element_type>::value,\
-    \ \"\");\r\n    static_assert(std::is_base_of<std::forward_iterator_tag, typename\
-    \ traits::iterator_category>::value, \"\");\r\n    for (auto it = begin; it !=\
-    \ end; ++it)\r\n      insert(*it);\r\n  }\r\n  void insert(std::initializer_list<element_type>\
-    \ list) {\r\n    insert(list.begin(), list.end());\r\n  }\r\n  iterator erase(iterator\
-    \ it) {\r\n    if (it == end())\r\n      return it;\r\n    U x = _key_of(it);\r\
-    \n    auto xit = it.xit_;\r\n    assert(xit != xft_.end());\r\n    auto& s = xit->second;\r\
-    \n    auto sit = it.sit_;\r\n    size_--;\r\n    sit = s.erase(sit);\r\n    if\
-    \ (x == xit.key()) {\r\n      if (x != MAX_KEY) {\r\n        if (!s.empty()) {\r\
-    \n          auto& snext = std::next(xit)->second;\r\n          sit = snext.absorb(&s);\r\
-    \n        }\r\n        xit = xft_.erase(xit);\r\n      } else {\r\n        return\
-    \ end();\r\n      }\r\n    }\r\n    return iterator(this, xit, sit);\r\n  }\r\n\
-    \  iterator erase(U x) {\r\n    auto it = lower_bound(x);\r\n    return (_key_of(it)\
-    \ == x) ? erase(it) : it;\r\n  }\r\n\r\n public:\r\n  class iterator {\r\n   public:\r\
-    \n    using value_type = element_type;\r\n    using pointer = element_type*;\r\
-    \n    using reference = const element_type&;\r\n    using difference_type = long\
-    \ long;\r\n    using iterator_category = std::bidirectional_iterator_tag;\r\n\
-    \    using xiterator = typename _xft::iterator;\r\n    using siterator = _set_iterator;\r\
-    \n   private:\r\n    const YFastTrie* yft_;\r\n    xiterator xit_;\r\n    siterator\
-    \ sit_;\r\n    friend class YFastTrie;\r\n   public:\r\n    iterator(const YFastTrie*\
-    \ yft, xiterator xit, siterator sit) : yft_(yft), xit_(xit), sit_(sit) {}\r\n\
-    \    reference operator*() const { return *sit_; }\r\n    pointer operator->()\
-    \ const { return &*sit_; }\r\n    bool operator==(const iterator& r) { return\
-    \ sit_ == r.sit_; }\r\n    bool operator!=(const iterator& r) { return sit_ !=\
-    \ r.sit_; }\r\n    iterator& operator++() {\r\n      if (++sit_ == xit_->second.end())\
-    \ {\r\n        auto nxt = std::next(xit_);\r\n        if (nxt != yft_->xft_.end())\
-    \ {\r\n          xit_ = nxt;\r\n          sit_ = xit_->second.begin();\r\n   \
-    \     }\r\n      }\r\n      return *this;\r\n    }\r\n    iterator operator++(int)\
-    \ {\r\n      iterator ret = *this;\r\n      ++this;\r\n      return ret;\r\n \
-    \   }\r\n    iterator& operator--() {\r\n      if (sit_ == xit_->second.begin())\
-    \ {\r\n        --xit_;\r\n        sit_ = std::prev(xit_->second.end());\r\n  \
-    \    } else {\r\n        --sit_;\r\n      }\r\n      return *this;\r\n    }\r\n\
-    \    iterator operator--(int) {\r\n      iterator ret = *this;\r\n      --this;\r\
-    \n      return ret;\r\n    }\r\n  };\r\n  iterator begin() const {\r\n    auto\
-    \ xit = xft_.begin();\r\n    return iterator(this, xit, xit->second.begin());\r\
-    \n  }\r\n  iterator end() const {\r\n    auto xit = std::prev(xft_.end());\r\n\
-    \    return iterator(this, xit, xit->second.end());\r\n  }\r\n};\r\ntemplate<typename\
-    \ T, unsigned BITS>\r\nconstexpr int YFastTrie<T, BITS>::W;\r\ntemplate<typename\
-    \ T, unsigned BITS>\r\nconstexpr typename YFastTrie<T, BITS>::U YFastTrie<T, BITS>::MAX_KEY;\r\
-    \ntemplate<typename T, unsigned BITS>\r\nconstexpr bool YFastTrie<T, BITS>::kKeyOnly;\r\
-    \ntemplate<unsigned BITS=64>\r\nusing YFastTrieSet = YFastTrie<void, BITS>;\r\n\
-    \r\n\r\ntemplate<typename T, unsigned BITS=64>\r\nclass YFastTrieMAP : public\
-    \ YFastTrie<T, BITS> {\r\n  using _base = YFastTrie<T, BITS>;\r\n public:\r\n\
-    \  using typename _base::value_type;\r\n  using typename _base::U;\r\n  using\
-    \ _base::kKeyOnly;\r\n  using reference = value_type&;\r\n  reference operator[](U\
-    \ x) {\r\n    auto it = find(x);\r\n    if (it == _base::end())\r\n      it =\
-    \ emplace(x);\r\n    if constexpr (kKeyOnly)\r\n      return *it;\r\n    else\r\
-    \n      return it->second;\r\n  }\r\n};\n"
-  code: "#pragma once\r\n#include \"treap.hpp\"\r\n#include \"bit_manip.hpp\"\r\n\
-    #include <memory>\r\n#include <iterator>\r\n#include <array>\r\n#include <unordered_map>\r\
-    \n#include <initializer_list>\r\n#include <cassert>\r\n\r\ntemplate<typename T,\
-    \ unsigned BITS = 64>\r\nclass _XFastTrie {\r\n public:\r\n  using U = uint64_t;\r\
-    \n  static constexpr int W = BITS;\r\n  class iterator;\r\n  static constexpr\
-    \ bool kKeyOnly = std::is_same<T, void>::value;\r\n  using element_type = typename\
-    \ std::conditional<kKeyOnly, U, std::pair<U, T>>::type;\r\n private:\r\n  struct\
-    \ Node;\r\n  using node_ptr = std::shared_ptr<Node>;\r\n  using node_weak = std::weak_ptr<Node>;\r\
-    \n  struct Node {\r\n    // common\r\n    uint8_t cmask;\r\n    std::array<node_ptr,\
-    \ 2> child;\r\n    node_weak parent;\r\n    // leaf\r\n    element_type* vptr;\r\
-    \n    Node() : cmask(0), child({nullptr, nullptr}), vptr(nullptr) {}\r\n    U\
-    \ key() const {\r\n      if constexpr (kKeyOnly)\r\n        return *vptr;\r\n\
-    \      else\r\n        return vptr->first;\r\n    }\r\n  };\r\n private:\r\n \
-    \ using _hash_table = std::unordered_map<U, node_ptr>;\r\n  node_ptr root_, sentinel_;\r\
-    \n  size_t size_;\r\n  std::array<_hash_table, W+1> xmap_;\r\n\r\n public:\r\n\
-    \  _XFastTrie()\r\n      : root_(std::make_shared<Node>()), sentinel_(std::make_shared<Node>()),\
-    \ size_(0)\r\n  {\r\n    sentinel_->child[0] = sentinel_->child[1] = root_->child[0]\
-    \ = root_->child[1] = sentinel_;\r\n    xmap_[0].emplace(0, root_);\r\n  }\r\n\
-    \  template<typename It>\r\n  explicit _XFastTrie(It begin, It end) : _XFastTrie()\
-    \ {\r\n    insert(begin, end);\r\n  }\r\n  _XFastTrie(std::initializer_list<element_type>\
-    \ list) : _XFastTrie(list.begin(), list.end()) {}\r\n private:\r\n  void _del_node(node_ptr\
-    \ u) {\r\n    u->parent.reset();\r\n    for (int i = 0; i < 2; i++) {\r\n    \
-    \  if (u->cmask & (1<<i) and u->child[i] != u) {\r\n        _del_node(u->child[i]);\r\
-    \n      }\r\n      u->child[i] = nullptr;\r\n    }\r\n    if (u->vptr) {\r\n \
-    \     delete u->vptr;\r\n    }\r\n  }\r\n  void _del() {\r\n    if (root_)\r\n\
-    \      _del_node(root_);\r\n    if (sentinel_)\r\n      sentinel_->child[0] =\
-    \ sentinel_->child[1] = nullptr;\r\n  }\r\n public:\r\n//  TODO: Optimal copy\
-    \ implementation\r\n  _XFastTrie(const _XFastTrie& r) : _XFastTrie(r.begin(),\
-    \ r.end()) {}\r\n  _XFastTrie& operator=(const _XFastTrie& r) {\r\n    _del();\r\
-    \n    root_ = std::make_shared<Node>();\r\n    sentinel_ = std::make_shared<Node>();\r\
-    \n    size_ = 0;\r\n    sentinel_->child[0] = sentinel_->child[1] =\r\n      \
-    \  root_->child[0] = root_->child[1] = sentinel_;\r\n    xmap_[0].emplace(0, root_);\r\
-    \n    insert(r.begin(), r.end());\r\n    return *this;\r\n  }\r\n  _XFastTrie(_XFastTrie&&\
-    \ r)\r\n    : root_(std::move(r.root_)), sentinel_(std::move(r.sentinel_)),\r\n\
-    \      size_(std::move(r.size_)), xmap_(std::move(r.xmap_)) {}\r\n  _XFastTrie&\
-    \ operator=(_XFastTrie&& r) noexcept {\r\n    _del();\r\n    root_ = std::move(r.root_);\r\
-    \n    sentinel_ = std::move(r.sentinel_);\r\n    size_ = std::move(r.size_);\r\
-    \n    xmap_ = std::move(r.xmap_);\r\n    return *this;\r\n  }\r\n  ~_XFastTrie()\
-    \ {\r\n    _del();\r\n  }\r\n\r\n  size_t size() const { return size_; }\r\n \
-    \ bool empty() const { return size() == 0; }\r\n  void clear() {\r\n    *this\
-    \ = _XFastTrie();\r\n  }\r\n\r\n  iterator find(U x) const {\r\n    auto it =\
-    \ xmap_[W].find(x);\r\n    return it != xmap_[W].end() ? iterator(it->second)\
-    \ : end();\r\n  }\r\n  size_t count(U x) const { return (size_t) (find(x) != end());\
-    \ }\r\n  bool contains(U x) const { return (bool) count(x); }\r\n  iterator lower_bound(U\
-    \ x) const {\r\n    int l = 0, r = W+1;\r\n    auto u = root_;\r\n    while (l+1<r)\
-    \ {\r\n      int c = (l+r)/2;\r\n      auto vit = xmap_[c].find(x >> (W-c));\r\
-    \n      if (vit != xmap_[c].end()) {\r\n        u = vit->second;\r\n        l\
-    \ = c;\r\n      } else {\r\n        r = c;\r\n      }\r\n    }\r\n    if (l ==\
-    \ W) return iterator(u);\r\n    auto next = ((x>>(W-1-l))&1) == 0 ? u->child[0]\
-    \ : u->child[1]->child[1];\r\n    return iterator(next);\r\n  }\r\n  iterator\
-    \ upper_bound(U x) const {\r\n    auto it = lower_bound(x);\r\n    return (it\
-    \ != end() and it.ptr_->key() == x) ? ++it : it;\r\n  }\r\n  iterator successor(U\
-    \ x) const {\r\n    return upper_bound(x);\r\n  }\r\n  iterator predecessor(U\
-    \ x) const {\r\n    auto it = lower_bound(x);\r\n    return it != begin() ? --it\
-    \ : end();\r\n  }\r\n\r\n private:\r\n  U _key_of_elm(element_type& e) const {\r\
-    \n    if constexpr (kKeyOnly)\r\n      return e;\r\n    else\r\n      return e.first;\r\
-    \n  }\r\n  U _key_of(iterator it) const {\r\n    return _key_of_elm(*(it.ptr_->vptr));\r\
-    \n  }\r\n  template<typename... Args>\r\n  U _key_of_elm_args(U x, Args&&...)\
-    \ const { return x; }\r\n  iterator _insert_subtree(int depth, node_ptr u, U x,\
-    \ element_type* eptr) {\r\n    int i = depth;\r\n    int c = (x >> (W-i-1)) &\
-    \ 1;\r\n    auto pred = c == 1 ? u->child[1] : u->child[0]->child[0];\r\n    assert(pred);\r\
-    \n    for (; i < W; i++) {\r\n      c = (x >> (W-1-i)) & 1;\r\n      u->cmask\
-    \ |= 1u<<c;\r\n      u->child[c] = std::make_shared<Node>();\r\n      u->child[c]->parent\
-    \ = u;\r\n      u = u->child[c];\r\n      xmap_[i+1].emplace(x>>(W-1-i), u);\r\
-    \n    }\r\n    u->vptr = eptr;\r\n    u->child[0] = pred;\r\n    u->child[1] =\
-    \ pred->child[1];\r\n    pred->child[1]->child[0] = u;\r\n    pred->child[1] =\
-    \ u;\r\n    auto v = u->parent.lock();\r\n    for (i = W-1; i >= 0; i--) {\r\n\
-    \      assert(v);\r\n      c = (x >> (W-1-i)) & 1;\r\n      int ic = c^1;\r\n\
-    \      if ((v->cmask & (1u<<ic)) == 0\r\n          and (!v->child[ic] or v->child[ic]\
-    \ == sentinel_\r\n              or (ic == 0 ? v->child[ic]->key() > x\r\n    \
-    \                      : v->child[ic]->key() < x)))\r\n        v->child[ic] =\
-    \ u;\r\n      assert(v->child[0] and v->child[1]);\r\n      v = v->parent.lock();\r\
-    \n    }\r\n    size_++;\r\n    return iterator(u);\r\n  }\r\n  iterator _insert(U\
-    \ x, element_type* eptr) {\r\n    auto u = root_;\r\n    int i, c;\r\n    for\
-    \ (i = 0; i < W; i++) {\r\n      c = (x >> (W-1-i)) & 1;\r\n      if ((u->cmask\
-    \ & (1u<<c)) == 0) break;\r\n      u = u->child[c];\r\n    }\r\n    if (i == W)\
-    \ return iterator(u);\r\n    return _insert_subtree(i, u, x, eptr);\r\n  }\r\n\
-    \  iterator _insert_hint(iterator hint, U x, element_type* eptr) {\r\n    // Check\
-    \ hint isn't malicious.\r\n    U lx=0, rx=0;\r\n    if ((hint != begin() and x\
-    \ < (lx = _key_of(std::prev(hint)))) or\r\n        (hint != end() and (rx = _key_of(hint))\
-    \ < x))\r\n      return _insert(x, eptr);\r\n    // Find longest common path on\
-    \ the trie.\r\n    int d = 0;\r\n    if (hint != begin())\r\n      d = std::max(d,\
-    \ (int) bm::clz(x ^ lx) - (64-W));\r\n    if (hint != end())\r\n      d = std::max(d,\
-    \ (int) bm::clz(x ^ rx) - (64-W));\r\n    if (d == W) return iterator(xmap_[W][x]);\r\
-    \n    return _insert_subtree(d, xmap_[d][x >> (W-d)], x, eptr);\r\n  }\r\n public:\r\
-    \n  iterator insert(const element_type& e) {\r\n    return _insert(_key_of_elm(e),\r\
-    \n                   new element_type(e));\r\n  }\r\n  iterator insert(element_type&&\
-    \ e) {\r\n    return _insert(_key_of_elm(e),\r\n                   new element_type(std::move(e)));\r\
-    \n  }\r\n  template<typename... Args>\r\n  iterator emplace(Args&&... args) {\r\
-    \n    return _insert(_key_of_elm_args(args...),\r\n                   new element_type(std::forward<Args>(args)...));\r\
-    \n  }\r\n  template<typename... Args>\r\n  iterator emplace_hint(iterator hint,\
-    \ Args&&... args) {\r\n    return _insert_hint(hint,\r\n                     \
-    \   _key_of_elm_args(args...),\r\n                        new element_type(std::forward<Args>(args)...));\r\
-    \n  }\r\n  template<typename It>\r\n  void insert(It begin, It end) {\r\n    using\
-    \ traits = std::iterator_traits<It>;\r\n    static_assert(std::is_convertible<typename\
-    \ traits::value_type, element_type>::value, \"\");\r\n    static_assert(std::is_base_of<std::forward_iterator_tag,\
-    \ typename traits::iterator_category>::value, \"\");\r\n    for (auto it = begin;\
-    \ it != end; ++it)\r\n      insert(*it);\r\n  }\r\n  void insert(std::initializer_list<element_type>\
-    \ list) {\r\n    insert(list.begin(), list.end());\r\n  }\r\n  iterator erase(iterator\
-    \ it) {\r\n    if (it == end())\r\n      return it;\r\n    auto u = it.ptr_;\r\
-    \n    U x = u->key();\r\n    delete u->vptr;\r\n    auto next = u->child[0];\r\
-    \n    u->child[0]->child[1] = u->child[1];\r\n    u->child[1]->child[0] = u->child[0];\r\
-    \n    auto v = u;\r\n    int i, c;\r\n    for (i = W-1; i >= 0; i--) {\r\n   \
-    \   c = (x >> (W-1-i)) & 1;\r\n      auto p = v->parent.lock();\r\n      v->parent.reset();\r\
-    \n      p->cmask ^= 1u<<c;\r\n      p->child[c] = nullptr;\r\n      assert(xmap_[i+1].find(x>>(W-1-i))->second\
-    \ == v);\r\n      xmap_[i+1].erase(x>>(W-1-i));\r\n      v = p;\r\n      if ((p->cmask\
-    \ & (1u<<(c^1))) != 0) break;\r\n    }\r\n    if (i >= 0) {\r\n      c = (x >>\
-    \ (W-1-i)) & 1;\r\n      v->child[c] = u->child[c^1];\r\n      v = v->parent.lock();\r\
-    \n      i--;\r\n      for (; i >= 0; i--) {\r\n        c = (x >> (W-1-i)) & 1;\r\
-    \n        int ic = c^1;\r\n        if (v->child[ic] == u) {\r\n          v->child[ic]\
-    \ = u->child[c];\r\n        }\r\n        v = v->parent.lock();\r\n      }\r\n\
-    \    }\r\n    size_--;\r\n    return iterator(next);\r\n  }\r\n  iterator erase(U\
-    \ x) {\r\n    auto it = lower_bound(x);\r\n    if (it.key() != x)\r\n      return\
-    \ it;\r\n    return erase(it);\r\n  }\r\n\r\n public:\r\n  class iterator {\r\n\
-    \   public:\r\n    using value_type = element_type;\r\n    using pointer = element_type*;\r\
-    \n    using reference = const element_type&;\r\n    using difference_type = long\
-    \ long;\r\n    using iterator_category = std::bidirectional_iterator_tag;\r\n\
-    \   private:\r\n    node_ptr ptr_;\r\n    friend class _XFastTrie;\r\n   public:\r\
-    \n    explicit iterator(node_ptr ptr) : ptr_(ptr) {}\r\n    reference operator*()\
-    \ const { return *(ptr_->vptr); }\r\n    pointer operator->() const { return ptr_->vptr;\
-    \ }\r\n    bool operator==(const iterator& r) const { return ptr_ == r.ptr_; }\r\
-    \n    bool operator!=(const iterator& r) const { return ptr_ != r.ptr_; }\r\n\
-    \    iterator& operator++() {\r\n      ptr_ = ptr_->child[1];\r\n      return\
-    \ *this;\r\n    }\r\n    iterator operator++(int) {\r\n      iterator ret = *this;\r\
-    \n      ++*this;\r\n      return ret;\r\n    }\r\n    iterator& operator--() {\r\
-    \n      ptr_ = ptr_->child[0];\r\n      return *this;\r\n    }\r\n    iterator\
-    \ operator--(int) {\r\n      iterator ret = *this;\r\n      --*this;\r\n     \
-    \ return ret;\r\n    }\r\n    U key() const { return ptr_->key(); }\r\n  };\r\n\
-    \  iterator begin() const { return iterator(sentinel_->child[1]); }\r\n  iterator\
-    \ end() const { return iterator(sentinel_); }\r\n};\r\ntemplate<typename T, unsigned\
-    \ BITS>\r\nconstexpr int _XFastTrie<T, BITS>::W;\r\ntemplate<typename T, unsigned\
-    \ BITS>\r\nconstexpr bool _XFastTrie<T, BITS>::kKeyOnly;\r\ntemplate<unsigned\
-    \ BITS = 64>\r\nusing XFastTrieSet = _XFastTrie<void, BITS>;\r\ntemplate<typename\
-    \ T, unsigned BITS = 64>\r\nusing XFastTrieMap = _XFastTrie<T, BITS>;\r\n\r\n\r\
-    \ntemplate<typename T, unsigned BITS=64>\r\nclass YFastTrie {\r\n public:\r\n\
-    \  using U = uint64_t;\r\n  static constexpr int W = BITS;\r\n  static constexpr\
-    \ U MAX_KEY = W == 64 ? ~uint64_t(0) : (1ull<<W)-1;\r\n  static constexpr bool\
-    \ kKeyOnly = std::is_same<T, void>::value;\r\n  using element_type = typename\
-    \ std::conditional<kKeyOnly, U, std::pair<U,T>>::type;\r\n  using value_type =\
-    \ typename std::conditional<kKeyOnly, U, T>::type;\r\n  using _set = typename\
+    \ntemplate<typename T, unsigned BITS=64>\r\n[[deprecated]]\r\nclass YFastTrie\
+    \ {\r\n public:\r\n  using U = uint64_t;\r\n  static constexpr int W = BITS;\r\
+    \n  static constexpr U MAX_KEY = W == 64 ? ~uint64_t(0) : (1ull<<W)-1;\r\n  static\
+    \ constexpr bool kKeyOnly = std::is_same<T, void>::value;\r\n  using element_type\
+    \ = typename std::conditional<kKeyOnly, U, std::pair<U,T>>::type;\r\n  using value_type\
+    \ = typename std::conditional<kKeyOnly, U, T>::type;\r\n  using _set = typename\
     \ std::conditional<kKeyOnly, TreapSet<U>, TreapMap<U,T>>::type;\r\n  using _set_iterator\
     \ = typename _set::iterator;\r\n  using _xft = XFastTrieMap<_set, W>;\r\n  class\
     \ iterator;\r\n private:\r\n  _xft xft_;\r\n  size_t size_;\r\n\r\n  bool _pibot_selected()\
@@ -749,7 +749,7 @@ data:
   isVerificationFile: false
   path: include/mtl/integer_set.hpp
   requiredBy: []
-  timestamp: '2022-12-21 13:24:57+09:00'
+  timestamp: '2022-12-21 13:28:45+09:00'
   verificationStatus: LIBRARY_NO_TESTS
   verifiedWith: []
 documentation_of: include/mtl/integer_set.hpp

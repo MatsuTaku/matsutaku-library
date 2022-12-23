@@ -92,7 +92,7 @@ data:
     \ S.erase(v);\r\n//    size--;\r\n//    if ((int) S.size() != size) {\r\n//  \
     \    std::cout << S.size() << ' ' << size<< std::endl;\r\n//      assert(false);\r\
     \n//      return 1;\r\n//    }\r\n//  }\r\n//  return 0;\r\n//}\r\n\r\nint main()\
-    \ {\r\n  mtl::integer_set_test<XFastTrieSet<W>>();\r\n  mtl::integer_set_test<YFastTrieSet<W>>();\r\
+    \ {\r\n//  mtl::integer_set_test<XFastTrieSet<W>>();\r\n//  mtl::integer_set_test<YFastTrieSet<W>>();\r\
     \n  std::cout << \"OK\" << std::endl;\r\n}\r\n"
   code: "#include <integer_set.hpp>\r\n#include \"set_test.hpp\"\r\n\r\nconstexpr\
     \ int W = 20;\r\n//constexpr int Max = 4e5;\r\n//\r\n//template<typename Set>\r\
@@ -128,14 +128,14 @@ data:
     \ S.erase(v);\r\n//    size--;\r\n//    if ((int) S.size() != size) {\r\n//  \
     \    std::cout << S.size() << ' ' << size<< std::endl;\r\n//      assert(false);\r\
     \n//      return 1;\r\n//    }\r\n//  }\r\n//  return 0;\r\n//}\r\n\r\nint main()\
-    \ {\r\n  mtl::integer_set_test<XFastTrieSet<W>>();\r\n  mtl::integer_set_test<YFastTrieSet<W>>();\r\
+    \ {\r\n//  mtl::integer_set_test<XFastTrieSet<W>>();\r\n//  mtl::integer_set_test<YFastTrieSet<W>>();\r\
     \n  std::cout << \"OK\" << std::endl;\r\n}\r\n"
   dependsOn:
   - test/set_test.hpp
   isVerificationFile: false
   path: test/integer_set_test.cpp
   requiredBy: []
-  timestamp: '2022-12-21 13:24:57+09:00'
+  timestamp: '2022-12-21 13:28:45+09:00'
   verificationStatus: LIBRARY_NO_TESTS
   verifiedWith: []
 documentation_of: test/integer_set_test.cpp
