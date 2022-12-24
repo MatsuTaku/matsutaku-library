@@ -163,6 +163,11 @@ data:
     - icon: ':warning:'
       path: include/mtl/succinct/wavelet_tree.hpp
       title: include/mtl/succinct/wavelet_tree.hpp
+  - name: include/mtl/traits
+    pages:
+    - icon: ':warning:'
+      path: include/mtl/traits/set_traits.hpp
+      title: include/mtl/traits/set_traits.hpp
   - name: test
     pages:
     - icon: ':warning:'
@@ -214,11 +219,11 @@ data:
       path: test/sample.cpp
       title: test/sample.cpp
     - icon: ':warning:'
-      path: test/set_test.cpp
-      title: test/set_test.cpp
-    - icon: ':warning:'
       path: test/set_test.hpp
       title: test/set_test.hpp
+    - icon: ':warning:'
+      path: test/set_test_test.cpp
+      title: test/set_test_test.cpp
     - icon: ':warning:'
       path: test/skewbinary_list_test.cpp
       title: test/skewbinary_list_test.cpp

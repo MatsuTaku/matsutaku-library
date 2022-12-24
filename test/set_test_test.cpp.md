@@ -11,26 +11,29 @@ data:
   _verificationStatusIcon: ':warning:'
   attributes:
     links: []
-  bundledCode: "#line 1 \"test/set_test.cpp\"\n#include <set>\r\n#line 1 \"test/set_test.hpp\"\
-    \n#include <iostream>\r\n#include <vector>\r\n#include <algorithm>\r\n#include\
-    \ <type_traits>\r\n#include <cassert>\r\n#line 7 \"test/set_test.hpp\"\n\r\nnamespace\
-    \ mtl {\r\n\r\nusing std::cout;\r\nusing std::cerr;\r\nusing std::endl;\r\n\r\n\
-    template<typename Set, int Max = (int)4e5, bool Shuffle = true>\r\nvoid integer_set_test()\
-    \ {\r\n  std::vector<int> values;\r\n  while (values.empty()) {\r\n    for (int\
-    \ i = 0; i < Max; i++)\r\n      if (rand()%4 == 0)\r\n        values.push_back(i);\r\
-    \n  }\r\n  int n = values.size();\r\n  auto insertions = values;\r\n  if constexpr\
-    \ (Shuffle)\r\n    std::random_shuffle(insertions.begin(), insertions.end());\r\
-    \n\r\n  Set S(insertions.begin(), insertions.end());\r\n\r\n  if (values != std::vector<int>(S.begin(),\
-    \ S.end())) {\r\n    cout << \"after insert order broken\" << endl;\r\n    exit(EXIT_FAILURE);\r\
-    \n  }\r\n\r\n//  S.print_for_debug();\r\n  int target = -1;\r\n  int pred = -1;\r\
-    \n  int succ = values[0];\r\n  int k = 0;\r\n  auto log = [&]() {\r\n    std::cout\
-    \ << pred << ' ' << target << ' ' << succ << std::endl;\r\n  };\r\n  for (int\
-    \ i = 0; i < Max; i++) {\r\n    if (k < n and values[k] == i) {\r\n      target\
-    \ = values[k];\r\n      pred = k-1 >= 0 ? values[k-1] : -1;\r\n      succ = k+1\
-    \ < n ? values[k+1] : -1;\r\n      k++;\r\n    } else {\r\n      pred = k-1 >=\
-    \ 0 ? values[k-1] : -1;\r\n      target = -1;\r\n    }\r\n\r\n    auto fit = S.find(i);\r\
-    \n    if (fit != S.end()) {\r\n      if ((int)*fit != i) {\r\n        std::cout\
-    \ << \"find: \" << i << std::endl;\r\n        log();\r\n        exit(EXIT_FAILURE);\r\
+  bundledCode: "#line 1 \"test/set_test.hpp\"\n#include <iostream>\r\n#include <vector>\r\
+    \n#include <algorithm>\r\n#include <type_traits>\r\n#include <cassert>\r\n#include\
+    \ <set>\r\n\r\nnamespace mtl {\r\n\r\nusing std::cout;\r\nusing std::cerr;\r\n\
+    using std::endl;\r\n\r\ntemplate<class Map>\r\nvoid map_emplace_test() {\r\n \
+    \ using key_type = typename Map::key_type;\r\n  using mapped_type = typename Map::mapped_type;\r\
+    \n  Map s;\r\n  s.emplace(std::make_pair(key_type(), mapped_type()));\r\n  s.emplace(key_type(),\
+    \ mapped_type());\r\n}\r\n\r\ntemplate<class Set, int Max = (int)4e5, bool Shuffle\
+    \ = true>\r\nvoid integer_set_test() {\r\n  std::vector<int> values;\r\n  while\
+    \ (values.empty()) {\r\n    for (int i = 0; i < Max; i++)\r\n      if (rand()%4\
+    \ == 0)\r\n        values.push_back(i);\r\n  }\r\n  int n = values.size();\r\n\
+    \  auto insertions = values;\r\n  if constexpr (Shuffle)\r\n    std::random_shuffle(insertions.begin(),\
+    \ insertions.end());\r\n\r\n  Set S(insertions.begin(), insertions.end());\r\n\
+    \r\n  if (values != std::vector<int>(S.begin(), S.end())) {\r\n    cout << \"\
+    after insert order broken\" << endl;\r\n    exit(EXIT_FAILURE);\r\n  }\r\n\r\n\
+    //  S.print_for_debug();\r\n  int target = -1;\r\n  int pred = -1;\r\n  int succ\
+    \ = values[0];\r\n  int k = 0;\r\n  auto log = [&]() {\r\n    std::cout << pred\
+    \ << ' ' << target << ' ' << succ << std::endl;\r\n  };\r\n  for (int i = 0; i\
+    \ < Max; i++) {\r\n    if (k < n and values[k] == i) {\r\n      target = values[k];\r\
+    \n      pred = k-1 >= 0 ? values[k-1] : -1;\r\n      succ = k+1 < n ? values[k+1]\
+    \ : -1;\r\n      k++;\r\n    } else {\r\n      pred = k-1 >= 0 ? values[k-1] :\
+    \ -1;\r\n      target = -1;\r\n    }\r\n\r\n    auto fit = S.find(i);\r\n    if\
+    \ (fit != S.end()) {\r\n      if ((int)*fit != i) {\r\n        std::cout << \"\
+    find: \" << i << std::endl;\r\n        log();\r\n        exit(EXIT_FAILURE);\r\
     \n      }\r\n    } else {\r\n      if (target != -1) {\r\n        log();\r\n \
     \       exit(EXIT_FAILURE);\r\n      }\r\n    }\r\n\r\n    auto sucit = S.upper_bound(i);\r\
     \n    if (sucit != S.end()) {\r\n      if ((int)*sucit != succ) {\r\n        std::cout\
@@ -58,24 +61,24 @@ data:
     \        cerr<<endl;\r\n        exit(EXIT_FAILURE);\r\n      }\r\n    }\r\n  \
     \  if ((int) S.size() != size) {\r\n      std::cout << S.size() << ' ' << size<<\
     \ std::endl;\r\n      exit(EXIT_FAILURE);\r\n    }\r\n  }\r\n  cerr<<\"integer_set_test\
-    \ ok\"<<endl;\r\n}\r\n\r\n}\r\n#line 3 \"test/set_test.cpp\"\n\r\nint main() {\r\
-    \n  mtl::integer_set_test<std::set<unsigned>, 1<<20>();\r\n  mtl::integer_set_test<std::set<unsigned>,\
+    \ ok\"<<endl;\r\n}\r\n\r\n}\r\n#line 3 \"test/set_test_test.cpp\"\n\r\nint main()\
+    \ {\r\n  mtl::integer_set_test<std::set<unsigned>, 1<<20>();\r\n  mtl::integer_set_test<std::set<unsigned>,\
     \ 1<<20, false>();\r\n  std::cout << \"OK\" << std::endl;\r\n}\r\n"
-  code: "#include <set>\r\n#include \"set_test.hpp\"\r\n\r\nint main() {\r\n  mtl::integer_set_test<std::set<unsigned>,\
+  code: "#include \"set_test.hpp\"\r\n#include <set>\r\n\r\nint main() {\r\n  mtl::integer_set_test<std::set<unsigned>,\
     \ 1<<20>();\r\n  mtl::integer_set_test<std::set<unsigned>, 1<<20, false>();\r\n\
     \  std::cout << \"OK\" << std::endl;\r\n}\r\n"
   dependsOn:
   - test/set_test.hpp
   isVerificationFile: false
-  path: test/set_test.cpp
+  path: test/set_test_test.cpp
   requiredBy: []
-  timestamp: '2022-12-21 18:43:34+09:00'
+  timestamp: '2022-12-22 12:22:12+09:00'
   verificationStatus: LIBRARY_NO_TESTS
   verifiedWith: []
-documentation_of: test/set_test.cpp
+documentation_of: test/set_test_test.cpp
 layout: document
 redirect_from:
-- /library/test/set_test.cpp
-- /library/test/set_test.cpp.html
-title: test/set_test.cpp
+- /library/test/set_test_test.cpp
+- /library/test/set_test_test.cpp.html
+title: test/set_test_test.cpp
 ---

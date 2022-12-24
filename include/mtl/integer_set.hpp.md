@@ -19,26 +19,31 @@ data:
     \ <iostream>\r\n\r\ntemplate<typename T, typename V=void>\r\nclass Treap {\r\n\
     \ public:\r\n  using key_type = T;\r\n  static constexpr bool kKeyOnly = std::is_same<V,\
     \ void>::value;\r\n  using mapped_type = typename std::conditional<kKeyOnly, T,\
-    \ V>::type;\r\n  using value_type = typename std::conditional<kKeyOnly,\r\n  \
-    \  T,\r\n    std::pair<T const, V>\r\n    >::type;\r\n  using priority_type =\
-    \ uint32_t;\r\n  struct iterator;\r\n private:\r\n  struct Node;\r\n  using node_ptr\
-    \ = std::shared_ptr<Node>;\r\n  using node_weak = std::weak_ptr<Node>;\r\n  struct\
-    \ Node {\r\n    node_ptr left, right;\r\n    node_weak parent;\r\n    priority_type\
-    \ p;\r\n    value_type v;\r\n    explicit Node(priority_type p)\r\n      : left(nullptr),\
-    \ right(nullptr), p(p) {}\r\n    explicit Node(priority_type p, const value_type&\
-    \ v)\r\n        : left(nullptr), right(nullptr), p(p), v(v) {}\r\n    explicit\
-    \ Node(priority_type p, value_type&& v)\r\n        : left(nullptr), right(nullptr),\
-    \ p(p), v(std::forward<value_type>(v)) {}\r\n    template<typename... Args>\r\n\
-    \    explicit Node(priority_type p, Args&&... args)\r\n        : left(nullptr),\
+    \ V>::type;\r\n  using value_type = typename std::conditional<\r\n      kKeyOnly,\r\
+    \n      T,\r\n      std::pair<T const, V>\r\n  >::type;\r\n  using raw_key_type\
+    \ = typename std::conditional<kKeyOnly, T, typename std::remove_const<T>::type>::type;\r\
+    \n  using raw_value_type = typename std::conditional<kKeyOnly, T, typename std::remove_const<V>::type>::type;\r\
+    \n  using init_type = typename std::conditional<\r\n      kKeyOnly,\r\n      T,\r\
+    \n      std::pair<raw_key_type, raw_value_type>\r\n  >::type;\r\n  using priority_type\
+    \ = uint32_t;\r\n  struct iterator;\r\n private:\r\n  struct Node;\r\n  using\
+    \ node_ptr = std::shared_ptr<Node>;\r\n  using node_weak = std::weak_ptr<Node>;\r\
+    \n  struct Node {\r\n    node_ptr left, right;\r\n    node_weak parent;\r\n  \
+    \  priority_type p;\r\n    value_type v;\r\n    explicit Node(priority_type p)\r\
+    \n      : left(nullptr), right(nullptr), p(p) {}\r\n    explicit Node(priority_type\
+    \ p, const value_type& v)\r\n        : left(nullptr), right(nullptr), p(p), v(v)\
+    \ {}\r\n    explicit Node(priority_type p, value_type&& v)\r\n        : left(nullptr),\
+    \ right(nullptr), p(p), v(std::forward<value_type>(v)) {}\r\n    template<typename...\
+    \ Args>\r\n    explicit Node(priority_type p, Args&&... args)\r\n        : left(nullptr),\
     \ right(nullptr), p(p),\r\n          v(std::forward<Args>(args)...) {}\r\n   \
-    \ inline const T& key() const {\r\n      if constexpr (kKeyOnly)\r\n        return\
-    \ v;\r\n      else\r\n        return v->first;\r\n    }\r\n  };\r\n  node_ptr\
-    \ sentinel_;\r\n  size_t size_;\r\n  std::default_random_engine eng;\r\n  std::uniform_int_distribution<priority_type>\
-    \ dist;\r\n\r\n public:\r\n  Treap() : sentinel_(std::make_shared<Node>(0)), size_(0)\
-    \ {}\r\n  template<typename It>\r\n  explicit Treap(It begin, It end) : Treap()\
-    \ {\r\n    insert(begin, end);\r\n  }\r\n  template<typename I>\r\n  Treap(std::initializer_list<I>\
-    \ list) : Treap(list.begin(), list.end()) {}\r\n private:\r\n  void _clone(node_ptr\
-    \ u, const node_ptr ru) {\r\n    if (ru->left) {\r\n      u->left = std::make_shared<Node>(ru->left->p,\
+    \ inline const raw_key_type& key() const {\r\n      if constexpr (kKeyOnly)\r\n\
+    \        return v;\r\n      else\r\n        return v.first;\r\n    }\r\n  };\r\
+    \n  node_ptr sentinel_;\r\n  size_t size_;\r\n  std::default_random_engine eng;\r\
+    \n  std::uniform_int_distribution<priority_type> dist;\r\n\r\n public:\r\n  Treap()\
+    \ : sentinel_(std::make_shared<Node>(0)), size_(0) {}\r\n  template<typename It>\r\
+    \n  explicit Treap(It begin, It end) : Treap() {\r\n    insert(begin, end);\r\n\
+    \  }\r\n  template<typename I>\r\n  Treap(std::initializer_list<I> list) : Treap(list.begin(),\
+    \ list.end()) {}\r\n private:\r\n  void _clone(node_ptr u, const node_ptr ru)\
+    \ {\r\n    if (ru->left) {\r\n      u->left = std::make_shared<Node>(ru->left->p,\
     \ ru->left->v);\r\n      u->left->parent = u;\r\n      _clone(u->left, ru->left);\r\
     \n    }\r\n    if (ru->right) {\r\n      u->right = std::make_shared<Node>(ru->right->p,\
     \ ru->right->v);\r\n      u->right->parent = u;\r\n      _clone(u->right, ru->right);\r\
@@ -130,13 +135,14 @@ data:
     \n  inline std::pair<iterator, bool> emplace(Args&&... args) {\r\n    return _insert_node(_create_node(std::forward<Args>(args)...));\r\
     \n  }\r\n  template<typename ...Args>\r\n  inline iterator emplace_hint(iterator\
     \ hint, Args&&... args) {\r\n    return _insert_node_hint(hint, _create_node(std::forward<Args>(args)...));\r\
-    \n  }\r\n  template<typename Value>\r\n  inline std::pair<iterator, bool> insert(Value&&\
-    \ value) {\r\n    static_assert(std::is_convertible<Value, value_type>::value,\
-    \ \"\");\r\n    return emplace(std::forward<Value>(value));\r\n  }\r\n  inline\
-    \ std::pair<iterator, bool> insert(const value_type& e) {\r\n    return emplace(e);\r\
-    \n  }\r\n  inline std::pair<iterator, bool> insert(value_type&& e) {\r\n    return\
-    \ emplace(std::move(e));\r\n  }\r\n  template<class It>\r\n  inline void insert(It\
-    \ begin, It end) {\r\n    using traits = std::iterator_traits<It>;\r\n    static_assert(std::is_convertible<typename\
+    \n  }\r\n  inline std::pair<iterator, bool> insert(const init_type& e) {\r\n \
+    \   return emplace(e);\r\n  }\r\n  inline std::pair<iterator, bool> insert(init_type&&\
+    \ e) {\r\n    return emplace(std::move(e));\r\n  }\r\n  template<typename=void>\r\
+    \n  inline std::pair<iterator, bool> insert(const value_type& e) {\r\n    return\
+    \ emplace(e);\r\n  }\r\n  template<typename=void>\r\n  inline std::pair<iterator,\
+    \ bool> insert(value_type&& e) {\r\n    return emplace(std::move(e));\r\n  }\r\
+    \n  template<class It>\r\n  inline void insert(It begin, It end) {\r\n    using\
+    \ traits = std::iterator_traits<It>;\r\n    static_assert(std::is_convertible<typename\
     \ traits::value_type, value_type>::value, \"\");\r\n    static_assert(std::is_base_of<std::forward_iterator_tag,\
     \ typename traits::iterator_category>::value, \"\");\r\n    for (auto it = begin;\
     \ it != end; ++it)\r\n      emplace(*it);\r\n  }\r\n  inline void insert(std::initializer_list<value_type>\
@@ -749,7 +755,7 @@ data:
   isVerificationFile: false
   path: include/mtl/integer_set.hpp
   requiredBy: []
-  timestamp: '2022-12-21 13:28:45+09:00'
+  timestamp: '2022-12-22 12:22:12+09:00'
   verificationStatus: LIBRARY_NO_TESTS
   verifiedWith: []
 documentation_of: include/mtl/integer_set.hpp

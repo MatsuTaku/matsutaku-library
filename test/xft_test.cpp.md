@@ -14,7 +14,10 @@ data:
   bundledCode: "#line 1 \"test/xft_test.cpp\"\n#include <xft.hpp>\r\n#line 1 \"test/set_test.hpp\"\
     \n#include <iostream>\r\n#include <vector>\r\n#include <algorithm>\r\n#include\
     \ <type_traits>\r\n#include <cassert>\r\n#include <set>\r\n\r\nnamespace mtl {\r\
-    \n\r\nusing std::cout;\r\nusing std::cerr;\r\nusing std::endl;\r\n\r\ntemplate<typename\
+    \n\r\nusing std::cout;\r\nusing std::cerr;\r\nusing std::endl;\r\n\r\ntemplate<class\
+    \ Map>\r\nvoid map_emplace_test() {\r\n  using key_type = typename Map::key_type;\r\
+    \n  using mapped_type = typename Map::mapped_type;\r\n  Map s;\r\n  s.emplace(std::make_pair(key_type(),\
+    \ mapped_type()));\r\n  s.emplace(key_type(), mapped_type());\r\n}\r\n\r\ntemplate<class\
     \ Set, int Max = (int)4e5, bool Shuffle = true>\r\nvoid integer_set_test() {\r\
     \n  std::vector<int> values;\r\n  while (values.empty()) {\r\n    for (int i =\
     \ 0; i < Max; i++)\r\n      if (rand()%4 == 0)\r\n        values.push_back(i);\r\
@@ -60,16 +63,18 @@ data:
     \ std::endl;\r\n      exit(EXIT_FAILURE);\r\n    }\r\n  }\r\n  cerr<<\"integer_set_test\
     \ ok\"<<endl;\r\n}\r\n\r\n}\r\n#line 3 \"test/xft_test.cpp\"\n\r\nint main() {\r\
     \n  mtl::integer_set_test<XFastTrieSet<unsigned, 20>, 1<<20>();\r\n  mtl::integer_set_test<XFastTrieSet<unsigned,\
-    \ 20>, 1<<20, false>();\r\n  std::cout << \"OK\" << std::endl;\r\n}\r\n"
+    \ 20>, 1<<20, false>();\r\n  mtl::map_emplace_test<XFastTrieMap<unsigned, std::vector<int>>>();\r\
+    \n  std::cout << \"OK\" << std::endl;\r\n}\r\n"
   code: "#include <xft.hpp>\r\n#include \"set_test.hpp\"\r\n\r\nint main() {\r\n \
     \ mtl::integer_set_test<XFastTrieSet<unsigned, 20>, 1<<20>();\r\n  mtl::integer_set_test<XFastTrieSet<unsigned,\
-    \ 20>, 1<<20, false>();\r\n  std::cout << \"OK\" << std::endl;\r\n}\r\n"
+    \ 20>, 1<<20, false>();\r\n  mtl::map_emplace_test<XFastTrieMap<unsigned, std::vector<int>>>();\r\
+    \n  std::cout << \"OK\" << std::endl;\r\n}\r\n"
   dependsOn:
   - test/set_test.hpp
   isVerificationFile: false
   path: test/xft_test.cpp
   requiredBy: []
-  timestamp: '2022-12-21 18:43:34+09:00'
+  timestamp: '2022-12-22 12:22:12+09:00'
   verificationStatus: LIBRARY_NO_TESTS
   verifiedWith: []
 documentation_of: test/xft_test.cpp
