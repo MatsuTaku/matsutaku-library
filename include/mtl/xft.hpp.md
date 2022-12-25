@@ -69,7 +69,7 @@ data:
     \ value_type& v) {\r\n    return Base::_insert(v);\r\n  }\r\n  template<typename=void>\r\
     \n  inline std::pair<iterator, bool> insert(value_type&& v) {\r\n    return Base::_insert(std::move(v));\r\
     \n  }\r\n  // TODO\r\n  template<class... Args>\r\n  inline std::pair<iterator,\
-    \ bool> emplace(Args&&... args) {\r\n    using emplace_type = std::conditional<\r\
+    \ bool> emplace(Args&&... args) {\r\n    using emplace_type = typename std::conditional<\r\
     \n        std::is_constructible<init_type, Args...>::value,\r\n            init_type,\r\
     \n            value_type\r\n        >::type;\r\n    return Base::_insert(emplace_type(std::forward<Args>(args)...));\r\
     \n  }\r\n  template<class Key>\r\n  inline bool erase(Key&& x) {\r\n    return\
@@ -125,8 +125,8 @@ data:
     \n    _insert_init(rhs.begin(), rhs.end());\r\n  }\r\n  BinaryTrieBase(BinaryTrieBase&&)\
     \ noexcept = default;\r\n  BinaryTrieBase& operator=(BinaryTrieBase&& rhs) noexcept\
     \ {\r\n    _deinit();\r\n    root_ = std::move(rhs.root_);\r\n    dummy_ = std::move(rhs.dummy_);\r\
-    \n    size_ = std::move(rhs.size_);\r\n  }\r\n  ~BinaryTrieBase() {\r\n    _deinit();\r\
-    \n  }\r\n protected:\r\n  template<class InputIt>\r\n  void _insert_init(InputIt\
+    \n    size_ = std::move(rhs.size_);\r\n  }\r\n  virtual ~BinaryTrieBase() {\r\n\
+    \    _deinit();\r\n  }\r\n protected:\r\n  template<class InputIt>\r\n  void _insert_init(InputIt\
     \ begin, InputIt end) {\r\n    static_assert(std::is_convertible<typename std::iterator_traits<InputIt>::value_type,\
     \ value_type>::value, \"\");\r\n    _init();\r\n    if (begin == end) return;\r\
     \n    if (!std::is_sorted(begin, end, [](auto& l, auto& r) {\r\n      return types::key_of(l)\
@@ -367,7 +367,7 @@ data:
   path: include/mtl/xft.hpp
   requiredBy:
   - include/mtl/yft.hpp
-  timestamp: '2022-12-22 12:22:12+09:00'
+  timestamp: '2022-12-22 12:44:35+09:00'
   verificationStatus: LIBRARY_NO_TESTS
   verifiedWith: []
 documentation_of: include/mtl/xft.hpp

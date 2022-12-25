@@ -72,7 +72,7 @@ data:
     \ value_type& v) {\r\n    return Base::_insert(v);\r\n  }\r\n  template<typename=void>\r\
     \n  inline std::pair<iterator, bool> insert(value_type&& v) {\r\n    return Base::_insert(std::move(v));\r\
     \n  }\r\n  // TODO\r\n  template<class... Args>\r\n  inline std::pair<iterator,\
-    \ bool> emplace(Args&&... args) {\r\n    using emplace_type = std::conditional<\r\
+    \ bool> emplace(Args&&... args) {\r\n    using emplace_type = typename std::conditional<\r\
     \n        std::is_constructible<init_type, Args...>::value,\r\n            init_type,\r\
     \n            value_type\r\n        >::type;\r\n    return Base::_insert(emplace_type(std::forward<Args>(args)...));\r\
     \n  }\r\n  template<class Key>\r\n  inline bool erase(Key&& x) {\r\n    return\
@@ -128,8 +128,8 @@ data:
     \n    _insert_init(rhs.begin(), rhs.end());\r\n  }\r\n  BinaryTrieBase(BinaryTrieBase&&)\
     \ noexcept = default;\r\n  BinaryTrieBase& operator=(BinaryTrieBase&& rhs) noexcept\
     \ {\r\n    _deinit();\r\n    root_ = std::move(rhs.root_);\r\n    dummy_ = std::move(rhs.dummy_);\r\
-    \n    size_ = std::move(rhs.size_);\r\n  }\r\n  ~BinaryTrieBase() {\r\n    _deinit();\r\
-    \n  }\r\n protected:\r\n  template<class InputIt>\r\n  void _insert_init(InputIt\
+    \n    size_ = std::move(rhs.size_);\r\n  }\r\n  virtual ~BinaryTrieBase() {\r\n\
+    \    _deinit();\r\n  }\r\n protected:\r\n  template<class InputIt>\r\n  void _insert_init(InputIt\
     \ begin, InputIt end) {\r\n    static_assert(std::is_convertible<typename std::iterator_traits<InputIt>::value_type,\
     \ value_type>::value, \"\");\r\n    _init();\r\n    if (begin == end) return;\r\
     \n    if (!std::is_sorted(begin, end, [](auto& l, auto& r) {\r\n      return types::key_of(l)\
@@ -239,13 +239,13 @@ data:
     \ void, W>>;\r\ntemplate<typename T, typename V, uint8_t W = sizeof(T)*8>\r\n\
     using BinaryTrieMap = BinaryTrie<T, V, W>;\r\n#line 5 \"include/mtl/treap.hpp\"\
     \n#include <exception>\r\n#include <random>\r\n#line 8 \"include/mtl/treap.hpp\"\
-    \n\r\ntemplate<typename T, typename V=void>\r\nclass Treap {\r\n public:\r\n \
-    \ using key_type = T;\r\n  static constexpr bool kKeyOnly = std::is_same<V, void>::value;\r\
-    \n  using mapped_type = typename std::conditional<kKeyOnly, T, V>::type;\r\n \
-    \ using value_type = typename std::conditional<\r\n      kKeyOnly,\r\n      T,\r\
-    \n      std::pair<T const, V>\r\n  >::type;\r\n  using raw_key_type = typename\
-    \ std::conditional<kKeyOnly, T, typename std::remove_const<T>::type>::type;\r\n\
-    \  using raw_value_type = typename std::conditional<kKeyOnly, T, typename std::remove_const<V>::type>::type;\r\
+    \n\r\ntemplate<class T, class V=void,\r\n    class Compare = std::less<>>\r\n\
+    class Treap {\r\n public:\r\n  using key_type = T;\r\n  static constexpr bool\
+    \ kKeyOnly = std::is_same<V, void>::value;\r\n  using mapped_type = typename std::conditional<kKeyOnly,\
+    \ T, V>::type;\r\n  using value_type = typename std::conditional<\r\n      kKeyOnly,\r\
+    \n      T,\r\n      std::pair<T const, V>\r\n  >::type;\r\n  using raw_key_type\
+    \ = typename std::conditional<kKeyOnly, T, typename std::remove_const<T>::type>::type;\r\
+    \n  using raw_value_type = typename std::conditional<kKeyOnly, T, typename std::remove_const<V>::type>::type;\r\
     \n  using init_type = typename std::conditional<\r\n      kKeyOnly,\r\n      T,\r\
     \n      std::pair<raw_key_type, raw_value_type>\r\n  >::type;\r\n  using priority_type\
     \ = uint32_t;\r\n  struct iterator;\r\n private:\r\n  struct Node;\r\n  using\
@@ -261,14 +261,15 @@ data:
     \ inline const raw_key_type& key() const {\r\n      if constexpr (kKeyOnly)\r\n\
     \        return v;\r\n      else\r\n        return v.first;\r\n    }\r\n  };\r\
     \n  node_ptr sentinel_;\r\n  size_t size_;\r\n  std::default_random_engine eng;\r\
-    \n  std::uniform_int_distribution<priority_type> dist;\r\n\r\n public:\r\n  Treap()\
-    \ : sentinel_(std::make_shared<Node>(0)), size_(0) {}\r\n  template<typename It>\r\
-    \n  explicit Treap(It begin, It end) : Treap() {\r\n    insert(begin, end);\r\n\
-    \  }\r\n  template<typename I>\r\n  Treap(std::initializer_list<I> list) : Treap(list.begin(),\
-    \ list.end()) {}\r\n private:\r\n  void _clone(node_ptr u, const node_ptr ru)\
-    \ {\r\n    if (ru->left) {\r\n      u->left = std::make_shared<Node>(ru->left->p,\
-    \ ru->left->v);\r\n      u->left->parent = u;\r\n      _clone(u->left, ru->left);\r\
-    \n    }\r\n    if (ru->right) {\r\n      u->right = std::make_shared<Node>(ru->right->p,\
+    \n  std::uniform_int_distribution<priority_type> dist;\r\n  Compare comp_;\r\n\
+    \r\n public:\r\n  Treap(const Compare& comp = Compare())\r\n      : sentinel_(std::make_shared<Node>(0)),\
+    \ size_(0),\r\n        comp_(comp) {}\r\n  template<typename It>\r\n  explicit\
+    \ Treap(It begin, It end) : Treap() {\r\n    insert(begin, end);\r\n  }\r\n  template<typename\
+    \ I>\r\n  Treap(std::initializer_list<I> list) : Treap(list.begin(), list.end())\
+    \ {}\r\n private:\r\n  void _clone(node_ptr u, const node_ptr ru) {\r\n    if\
+    \ (ru->left) {\r\n      u->left = std::make_shared<Node>(ru->left->p, ru->left->v);\r\
+    \n      u->left->parent = u;\r\n      _clone(u->left, ru->left);\r\n    }\r\n\
+    \    if (ru->right) {\r\n      u->right = std::make_shared<Node>(ru->right->p,\
     \ ru->right->v);\r\n      u->right->parent = u;\r\n      _clone(u->right, ru->right);\r\
     \n    }\r\n  }\r\n public:\r\n  Treap(const Treap& r) : Treap() {\r\n    _clone(sentinel_,\
     \ r.sentinel_);\r\n    size_ = r.size_;\r\n  }\r\n  Treap& operator=(const Treap&\
@@ -318,10 +319,10 @@ data:
     \ = sentinel_;\r\n  }\r\n  inline std::pair<iterator, bool> _insert_node_subtree(node_ptr\
     \ u, node_ptr new_node) {\r\n    auto x = new_node->key();\r\n    while (true)\
     \ {\r\n      if (u != sentinel_ and x == u->key())\r\n        return std::make_pair(iterator(u),\
-    \ false);\r\n      auto& c = u == sentinel_ or x < u->key() ? u->left : u->right;\r\
-    \n      if (!c) {\r\n        c = new_node;\r\n        c->parent = u;\r\n     \
-    \   u = c;\r\n        break;\r\n      } else {\r\n        u = c;\r\n      }\r\n\
-    \    }\r\n    _bubble_up(u);\r\n    ++size_;\r\n    return std::make_pair(iterator(u),\
+    \ false);\r\n      auto& c = u == sentinel_ or comp_(x, u->key()) ? u->left :\
+    \ u->right;\r\n      if (!c) {\r\n        c = new_node;\r\n        c->parent =\
+    \ u;\r\n        u = c;\r\n        break;\r\n      } else {\r\n        u = c;\r\
+    \n      }\r\n    }\r\n    _bubble_up(u);\r\n    ++size_;\r\n    return std::make_pair(iterator(u),\
     \ true);\r\n  }\r\n  inline std::pair<iterator, bool> _insert_node(node_ptr new_node)\
     \ {\r\n    return _insert_node_subtree(sentinel_, new_node);\r\n  }\r\n  inline\
     \ iterator _insert_node_hint(iterator hint, node_ptr new_node) {\r\n    auto x\
@@ -329,33 +330,34 @@ data:
     \ {\r\n      auto p = u->parent.lock();\r\n      if (p != sentinel_) {\r\n   \
     \     T xp = p->key();\r\n        if (xp == x) [[unlikely]]\r\n          return\
     \ iterator(p);\r\n        // Check hint is malicious\r\n        if (   (p->left\
-    \ == u and xp < x)\r\n            or (p->right == u and x < xp)) [[unlikely]]\r\
+    \ == u and comp_(xp, x))\r\n            or (p->right == u and comp_(x, xp))) [[unlikely]]\r\
     \n          return _insert_node(new_node).first;\r\n        //\r\n      }\r\n\
     \    }\r\n    return _insert_node_subtree(u, new_node).first;\r\n  }\r\n\r\n public:\r\
     \n  inline size_t size() const { return size_; } // TODO: split break size\r\n\
     \  inline bool empty() const { return _root() == nullptr; }\r\n  inline void clear()\
     \ {\r\n    sentinel_->left = nullptr;\r\n    size_ = 0;\r\n  }\r\n\r\n  inline\
     \ iterator find(T x) const {\r\n    node_ptr u = _root();\r\n    while (u) {\r\
-    \n      if (u->key() == x)\r\n        return iterator(u);\r\n      if (x < u->key())\r\
-    \n        u = u->left;\r\n      else\r\n        u = u->right;\r\n    }\r\n   \
-    \ return end();\r\n  }\r\n  inline size_t count(T x) const { return (size_t) (find(x)\
-    \ != end()); }\r\n  inline iterator lower_bound(T x) const {\r\n    node_ptr u\
-    \ = _root();\r\n    node_ptr lb = sentinel_;\r\n    while (u) {\r\n      if (u->key()\
-    \ == x)\r\n        return iterator(u);\r\n      if (x < u->key()) {\r\n      \
-    \  lb = u;\r\n        u = u->left;\r\n      } else {\r\n        u = u->right;\r\
-    \n      }\r\n    }\r\n    return iterator(lb);\r\n  }\r\n  inline iterator upper_bound(T\
-    \ x) const {\r\n    node_ptr u = _root();\r\n    node_ptr ub = sentinel_;\r\n\
-    \    while (u) {\r\n      if (x < u->key()) {\r\n        ub = u;\r\n        u\
-    \ = u->left;\r\n      } else {\r\n        u = u->right;\r\n      }\r\n    }\r\n\
-    \    return iterator(ub);\r\n  }\r\n  inline iterator successor(T x) const { return\
-    \ upper_bound(x); }\r\n  inline iterator predecessor(T x) const {\r\n    auto\
-    \ u = _root();\r\n    node_ptr pr = sentinel_;\r\n    while (u) {\r\n      if\
-    \ (x <= u->key()) {\r\n        u = u->left;\r\n      } else {\r\n        pr =\
-    \ u;\r\n        u = u->right;\r\n      }\r\n    }\r\n    return iterator(pr);\r\
-    \n  }\r\n\r\n private:\r\n  template<typename... Args>\r\n  inline node_ptr _create_node(Args&&...\
-    \ args) {\r\n    auto p = _pick_priority();\r\n    return std::make_shared<Node>(p,\
-    \ std::forward<Args>(args)...);\r\n  }\r\n public:\r\n  template<typename ...Args>\r\
-    \n  inline std::pair<iterator, bool> emplace(Args&&... args) {\r\n    return _insert_node(_create_node(std::forward<Args>(args)...));\r\
+    \n      if (u->key() == x)\r\n        return iterator(u);\r\n      if (comp_(x,\
+    \ u->key()))\r\n        u = u->left;\r\n      else\r\n        u = u->right;\r\n\
+    \    }\r\n    return end();\r\n  }\r\n  inline size_t count(T x) const { return\
+    \ (size_t) (find(x) != end()); }\r\n  inline iterator lower_bound(T x) const {\r\
+    \n    node_ptr u = _root();\r\n    node_ptr lb = sentinel_;\r\n    while (u) {\r\
+    \n      if (u->key() == x)\r\n        return iterator(u);\r\n      if (comp_(x,\
+    \ u->key())) {\r\n        lb = u;\r\n        u = u->left;\r\n      } else {\r\n\
+    \        u = u->right;\r\n      }\r\n    }\r\n    return iterator(lb);\r\n  }\r\
+    \n  inline iterator upper_bound(T x) const {\r\n    node_ptr u = _root();\r\n\
+    \    node_ptr ub = sentinel_;\r\n    while (u) {\r\n      if (comp_(x, u->key()))\
+    \ {\r\n        ub = u;\r\n        u = u->left;\r\n      } else {\r\n        u\
+    \ = u->right;\r\n      }\r\n    }\r\n    return iterator(ub);\r\n  }\r\n  inline\
+    \ iterator successor(T x) const { return upper_bound(x); }\r\n  inline iterator\
+    \ predecessor(T x) const {\r\n    auto u = _root();\r\n    node_ptr pr = sentinel_;\r\
+    \n    while (u) {\r\n      if (!comp_(u->key(), x)) {\r\n        u = u->left;\r\
+    \n      } else {\r\n        pr = u;\r\n        u = u->right;\r\n      }\r\n  \
+    \  }\r\n    return iterator(pr);\r\n  }\r\n\r\n private:\r\n  template<typename...\
+    \ Args>\r\n  inline node_ptr _create_node(Args&&... args) {\r\n    auto p = _pick_priority();\r\
+    \n    return std::make_shared<Node>(p, std::forward<Args>(args)...);\r\n  }\r\n\
+    \ public:\r\n  template<typename ...Args>\r\n  inline std::pair<iterator, bool>\
+    \ emplace(Args&&... args) {\r\n    return _insert_node(_create_node(std::forward<Args>(args)...));\r\
     \n  }\r\n  template<typename ...Args>\r\n  inline iterator emplace_hint(iterator\
     \ hint, Args&&... args) {\r\n    return _insert_node_hint(hint, _create_node(std::forward<Args>(args)...));\r\
     \n  }\r\n  inline std::pair<iterator, bool> insert(const init_type& e) {\r\n \
@@ -385,8 +387,8 @@ data:
     \n    auto r = d->right;\r\n    sentinel_->left = r;\r\n    if (r) r->parent =\
     \ sentinel_;\r\n    if (l) l->parent.reset();\r\n    return Treap(l);\r\n  }\r\
     \n  inline iterator absorb(Treap* s) {\r\n    assert((s and s->empty()) or empty()\
-    \ or *--s->end() < *begin());\r\n    if (s->count(147253) or count(147253)) {\r\
-    \n      std::cerr<<\"absorb \"<<*(s->begin())<<' '<<*begin()<<' '<<*--end()<<std::endl;\r\
+    \ or comp_(*--s->end(), *begin()));\r\n    if (s->count(147253) or count(147253))\
+    \ {\r\n      std::cerr<<\"absorb \"<<*(s->begin())<<' '<<*begin()<<' '<<*--end()<<std::endl;\r\
     \n    }\r\n    auto it = begin();\r\n    if (!s or s->empty()) return it;\r\n\
     \    if (empty()) {\r\n      sentinel_->left = s->_root();\r\n      sentinel_->left->parent\
     \ = sentinel_;\r\n      size_ = s->size_;\r\n      s->clear();\r\n      return\
@@ -429,15 +431,14 @@ data:
     \ u->right->key() << std::endl;\r\n      else\r\n        std::cout << \"---\"\
     \ << std::endl;\r\n      f(f, u->left, d+1);\r\n      f(f, u->right, d+1);\r\n\
     \    };\r\n    if (!u)\r\n      u = _root();\r\n    show(show, u, 0);\r\n    std::cout<<std::endl;\r\
-    \n  }\r\n\r\n};\r\n\r\ntemplate<typename T, typename V>\r\nconstexpr bool Treap<T,\
-    \ V>::kKeyOnly;\r\ntemplate<typename T>\r\nusing TreapSet = Treap<T, void>;\r\n\
-    \r\ntemplate<typename T, typename V>\r\nclass TreapMap : public Treap<T, V> {\r\
-    \n  static_assert(!std::is_same<V, void>::value, \"\");\r\n  using _base = Treap<T,\
-    \ V>;\r\n public:\r\n  using typename _base::mapped_type;\r\n  using reference\
-    \ = mapped_type&;\r\n  inline reference operator[](const T& x) {\r\n    // TODO\r\
-    \n//    return _base::try_emplace(std::move(x)).first->second;\r\n    return _base::insert({x,\
-    \ mapped_type()}).first->second;\r\n  }\r\n  inline reference operator[](T&& x)\
-    \ {\r\n    // TODO\r\n//    return _base::try_emplace(std::move(x)).first->second;\r\
+    \n  }\r\n\r\n};\r\n\r\ntemplate<typename T>\r\nusing TreapSet = Treap<T, void>;\r\
+    \n\r\ntemplate<typename T, typename V>\r\nclass TreapMap : public Treap<T, V>\
+    \ {\r\n  static_assert(!std::is_same<V, void>::value, \"\");\r\n  using _base\
+    \ = Treap<T, V>;\r\n public:\r\n  using typename _base::mapped_type;\r\n  using\
+    \ reference = mapped_type&;\r\n  inline reference operator[](const T& x) {\r\n\
+    \    // TODO\r\n//    return _base::try_emplace(std::move(x)).first->second;\r\
+    \n    return _base::insert({x, mapped_type()}).first->second;\r\n  }\r\n  inline\
+    \ reference operator[](T&& x) {\r\n    // TODO\r\n//    return _base::try_emplace(std::move(x)).first->second;\r\
     \n    return _base::insert({std::move(x), mapped_type()}).first->second;\r\n \
     \ }\r\n};\n#line 7 \"include/mtl/xft.hpp\"\n#include <unordered_map>\r\n#line\
     \ 9 \"include/mtl/xft.hpp\"\n\r\ntemplate<class T, class M, int8_t W>\r\nusing\
@@ -725,7 +726,7 @@ data:
   isVerificationFile: false
   path: include/mtl/yft.hpp
   requiredBy: []
-  timestamp: '2022-12-22 12:22:12+09:00'
+  timestamp: '2022-12-22 12:44:35+09:00'
   verificationStatus: LIBRARY_NO_TESTS
   verifiedWith: []
 documentation_of: include/mtl/yft.hpp

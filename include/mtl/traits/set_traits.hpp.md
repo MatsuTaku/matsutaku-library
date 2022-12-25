@@ -69,7 +69,7 @@ data:
     \ value_type& v) {\r\n    return Base::_insert(v);\r\n  }\r\n  template<typename=void>\r\
     \n  inline std::pair<iterator, bool> insert(value_type&& v) {\r\n    return Base::_insert(std::move(v));\r\
     \n  }\r\n  // TODO\r\n  template<class... Args>\r\n  inline std::pair<iterator,\
-    \ bool> emplace(Args&&... args) {\r\n    using emplace_type = std::conditional<\r\
+    \ bool> emplace(Args&&... args) {\r\n    using emplace_type = typename std::conditional<\r\
     \n        std::is_constructible<init_type, Args...>::value,\r\n            init_type,\r\
     \n            value_type\r\n        >::type;\r\n    return Base::_insert(emplace_type(std::forward<Args>(args)...));\r\
     \n  }\r\n  template<class Key>\r\n  inline bool erase(Key&& x) {\r\n    return\
@@ -142,7 +142,7 @@ data:
     \ value_type& v) {\r\n    return Base::_insert(v);\r\n  }\r\n  template<typename=void>\r\
     \n  inline std::pair<iterator, bool> insert(value_type&& v) {\r\n    return Base::_insert(std::move(v));\r\
     \n  }\r\n  // TODO\r\n  template<class... Args>\r\n  inline std::pair<iterator,\
-    \ bool> emplace(Args&&... args) {\r\n    using emplace_type = std::conditional<\r\
+    \ bool> emplace(Args&&... args) {\r\n    using emplace_type = typename std::conditional<\r\
     \n        std::is_constructible<init_type, Args...>::value,\r\n            init_type,\r\
     \n            value_type\r\n        >::type;\r\n    return Base::_insert(emplace_type(std::forward<Args>(args)...));\r\
     \n  }\r\n  template<class Key>\r\n  inline bool erase(Key&& x) {\r\n    return\
@@ -170,7 +170,7 @@ data:
   - include/mtl/xft.hpp
   - include/mtl/yft.hpp
   - include/mtl/binary_trie.hpp
-  timestamp: '2022-12-22 12:22:12+09:00'
+  timestamp: '2022-12-22 12:39:47+09:00'
   verificationStatus: LIBRARY_NO_TESTS
   verifiedWith: []
 documentation_of: include/mtl/traits/set_traits.hpp
