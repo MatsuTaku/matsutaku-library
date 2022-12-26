@@ -1,63 +1,68 @@
 ---
 data:
   _extendedDependsOn:
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/bit_manip.hpp
     title: include/mtl/bit_manip.hpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/modular.hpp
     title: include/mtl/modular.hpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':x:'
     path: include/mtl/ntt.hpp
     title: include/mtl/ntt.hpp
   _extendedRequiredBy: []
   _extendedVerifiedWith:
-  - icon: ':heavy_check_mark:'
+  - icon: ':x:'
     path: test/convolution.test.cpp
     title: test/convolution.test.cpp
-  _isVerificationFailed: false
+  _isVerificationFailed: true
   _pathExtension: hpp
-  _verificationStatusIcon: ':heavy_check_mark:'
+  _verificationStatusIcon: ':x:'
   attributes:
     links: []
   bundledCode: "#line 2 \"include/mtl/modular.hpp\"\n#include <iostream>\n\ntemplate\
-    \ <long long MOD>\nclass Modular {\n private:\n  long long val_;\n\n public:\n\
-    \  Modular() : val_(0) {}\n  Modular(long long v) : val_(v%MOD) {\n    if (val_\
-    \ < 0) val_ += MOD;\n  }\n\n  long long val() const { return val_; }\n  Modular&\
-    \ operator+=(Modular x) {\n    val_ += x.val();\n    if (val_ >= MOD) val_ %=\
-    \ MOD;\n    return *this;\n  }\n  Modular operator-() const { return {MOD - val_};\
-    \ }\n  Modular& operator-=(Modular x) {\n    val_ -= x.val();\n    if (val_ <\
-    \ 0) val_ += MOD;\n    return *this;\n  }\n  Modular& operator*=(Modular x) {\n\
-    \    val_ *= x.val();\n    if (val_ >= MOD) val_ %= MOD;\n    return *this;\n\
-    \  }\n  Modular pow(long long p) const {\n    Modular t = 1;\n    Modular u =\
-    \ *this;\n    while (p) {\n      if (p & 1)\n        t *= u;\n      u *= u;\n\
-    \      p >>= 1;\n    }\n    return t;\n  }\n  friend Modular pow(Modular x, long\
-    \ long p) {\n    return x.pow(p);\n  }\n  Modular inv() const { return pow(MOD-2);\
-    \ }\n  Modular& operator/=(Modular x) { return *this *= x.inv(); }\n  Modular\
-    \ operator+(Modular x) const { return Modular(*this) += x; }\n  Modular operator-(Modular\
-    \ x) const { return Modular(*this) -= x; }\n  Modular operator*(Modular x) const\
-    \ { return Modular(*this) *= x; }\n  Modular operator/(Modular x) const { return\
-    \ Modular(*this) /= x; }\n  Modular& operator++() { return *this += 1; }\n  Modular\
-    \ operator++(int) { Modular c = *this; ++(*this); return c; }\n  Modular& operator--()\
-    \ { return *this -= 1; }\n  Modular operator--(int) { Modular c = *this; --(*this);\
-    \ return c; }\n\n  bool operator==(Modular x) const { return val() == x.val();\
-    \ }\n  bool operator!=(Modular x) const { return val() != x.val(); }\n  bool operator<(Modular\
-    \ x) const { return val() < x.val(); };\n  bool operator<=(Modular x) const {\
-    \ return val() <= x.val(); };\n  bool operator>(Modular x) const { return val()\
-    \ > x.val(); };\n  bool operator>=(Modular x) const { return val() >= x.val();\
-    \ };\n\n  friend std::ostream& operator<<(std::ostream& os, const Modular& x)\
-    \ {\n    return os << x.val();\n  }\n  friend std::istream& operator>>(std::istream&\
-    \ is, Modular& x) {\n    return is >> x.val_;\n  }\n\n};\n\nusing Modular998244353\
-    \ = Modular<998244353>;\nusing Modular1000000007 = Modular<(int)1e9+7>;\n#line\
-    \ 2 \"include/mtl/bit_manip.hpp\"\n#include <cstdint>\n#include <cassert>\n\n\
-    namespace bm {\n\ninline constexpr uint64_t popcnt_e8(uint64_t x) {\n  x = (x\
-    \ & 0x5555555555555555) + ((x>>1) & 0x5555555555555555);\n  x = (x & 0x3333333333333333)\
-    \ + ((x>>2) & 0x3333333333333333);\n  x = (x & 0x0F0F0F0F0F0F0F0F) + ((x>>4) &\
-    \ 0x0F0F0F0F0F0F0F0F);\n  return x;\n}\n// Count 1s\ninline constexpr unsigned\
-    \ popcnt(uint64_t x) {\n  return (popcnt_e8(x) * 0x0101010101010101) >> 56;\n\
-    }\n// Count trailing 0s. ...01101000 -> 3\ninline constexpr unsigned ctz(uint64_t\
-    \ x) {\n  return popcnt((x & (-x)) - 1);\n}\ninline constexpr unsigned ctz8(uint8_t\
-    \ x) {\n  return x == 0 ? 8 : popcnt_e8((x & (-x)) - 1);\n}\n// [00..0](8bit)\
+    \ <int MOD>\nclass Modular {\n private:\n  unsigned int val_;\n\n public:\n  static\
+    \ constexpr int mod() { return MOD; }\n\n  constexpr Modular() : val_(0) {}\n\
+    \  template<class T>\n  constexpr Modular(T v) {\n    auto x = (long long)(v%(long\
+    \ long)MOD);\n    if (x < 0) x += MOD;\n    val_ = x;\n  }\n\n  constexpr unsigned\
+    \ int val() const { return val_; }\n  constexpr Modular& operator+=(Modular x)\
+    \ {\n    val_ += x.val();\n    if (val_ >= MOD) val_ -= MOD;\n    return *this;\n\
+    \  }\n  constexpr Modular operator-() const { return {MOD - val_}; }\n  constexpr\
+    \ Modular& operator-=(Modular x) {\n    val_ -= x.val();\n    if (val_ < 0) val_\
+    \ += MOD;\n    return *this;\n  }\n  constexpr Modular& operator*=(Modular x)\
+    \ {\n    auto v = (long long) val_ * x.val();\n    if (v >= MOD) v %= MOD;\n \
+    \   val_ = (int) v;\n    return *this;\n  }\n  constexpr Modular pow(long long\
+    \ p) const {\n    assert(p >= 0);\n    Modular t = 1;\n    Modular u = *this;\n\
+    \    while (p) {\n      if (p & 1)\n        t *= u;\n      u *= u;\n      p >>=\
+    \ 1;\n    }\n    return t;\n  }\n  friend constexpr Modular pow(Modular x, long\
+    \ long p) {\n    return x.pow(p);\n  }\n  constexpr Modular inv() const { return\
+    \ pow(MOD-2); }\n  constexpr Modular& operator/=(Modular x) { return *this *=\
+    \ x.inv(); }\n  constexpr Modular operator+(Modular x) const { return Modular(*this)\
+    \ += x; }\n  constexpr Modular operator-(Modular x) const { return Modular(*this)\
+    \ -= x; }\n  constexpr Modular operator*(Modular x) const { return Modular(*this)\
+    \ *= x; }\n  constexpr Modular operator/(Modular x) const { return Modular(*this)\
+    \ /= x; }\n  constexpr Modular& operator++() { return *this += 1; }\n  constexpr\
+    \ Modular operator++(int) { Modular c = *this; ++(*this); return c; }\n  constexpr\
+    \ Modular& operator--() { return *this -= 1; }\n  constexpr Modular operator--(int)\
+    \ { Modular c = *this; --(*this); return c; }\n\n  constexpr bool operator==(Modular\
+    \ x) const { return val() == x.val(); }\n  constexpr bool operator!=(Modular x)\
+    \ const { return val() != x.val(); }\n//  constexpr bool operator<(Modular x)\
+    \ const { return val() < x.val(); };\n//  constexpr bool operator<=(Modular x)\
+    \ const { return val() <= x.val(); };\n//  constexpr bool operator>(Modular x)\
+    \ const { return val() > x.val(); };\n//  constexpr bool operator>=(Modular x)\
+    \ const { return val() >= x.val(); };\n\n  friend std::ostream& operator<<(std::ostream&\
+    \ os, const Modular& x) {\n    return os << x.val();\n  }\n  friend std::istream&\
+    \ operator>>(std::istream& is, Modular& x) {\n    return is >> x.val_;\n  }\n\n\
+    };\n\nusing Modular998244353 = Modular<998244353>;\nusing Modular1000000007 =\
+    \ Modular<(int)1e9+7>;\n#line 2 \"include/mtl/bit_manip.hpp\"\n#include <cstdint>\n\
+    #include <cassert>\n\nnamespace bm {\n\ninline constexpr uint64_t popcnt_e8(uint64_t\
+    \ x) {\n  x = (x & 0x5555555555555555) + ((x>>1) & 0x5555555555555555);\n  x =\
+    \ (x & 0x3333333333333333) + ((x>>2) & 0x3333333333333333);\n  x = (x & 0x0F0F0F0F0F0F0F0F)\
+    \ + ((x>>4) & 0x0F0F0F0F0F0F0F0F);\n  return x;\n}\n// Count 1s\ninline constexpr\
+    \ unsigned popcnt(uint64_t x) {\n  return (popcnt_e8(x) * 0x0101010101010101)\
+    \ >> 56;\n}\n// Count trailing 0s. ...01101000 -> 3\ninline constexpr unsigned\
+    \ ctz(uint64_t x) {\n  return popcnt((x & (-x)) - 1);\n}\ninline constexpr unsigned\
+    \ ctz8(uint8_t x) {\n  return x == 0 ? 8 : popcnt_e8((x & (-x)) - 1);\n}\n// [00..0](8bit)\
     \ -> 0, [**..*](not only 0) -> 1\ninline constexpr uint8_t summary(uint64_t x)\
     \ {\n  constexpr uint64_t hmask = 0x8080808080808080ull;\n  constexpr uint64_t\
     \ lmask = 0x7F7F7F7F7F7F7F7Full;\n  auto a = x & hmask;\n  auto b = x & lmask;\n\
@@ -200,8 +205,8 @@ data:
   isVerificationFile: false
   path: include/mtl/fps.hpp
   requiredBy: []
-  timestamp: '2022-12-18 04:26:00+09:00'
-  verificationStatus: LIBRARY_ALL_AC
+  timestamp: '2022-12-23 17:56:06+09:00'
+  verificationStatus: LIBRARY_ALL_WA
   verifiedWith:
   - test/convolution.test.cpp
 documentation_of: include/mtl/fps.hpp

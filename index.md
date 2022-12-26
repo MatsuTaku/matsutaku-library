@@ -4,9 +4,12 @@ data:
   - name: include/mtl
     pages:
     - icon: ':warning:'
+      path: include/mtl/arbitrary_mod_binomial.hpp
+      title: include/mtl/arbitrary_mod_binomial.hpp
+    - icon: ':warning:'
       path: include/mtl/binary_trie.hpp
       title: include/mtl/binary_trie.hpp
-    - icon: ':heavy_check_mark:'
+    - icon: ':question:'
       path: include/mtl/bit_manip.hpp
       title: include/mtl/bit_manip.hpp
     - icon: ':warning:'
@@ -45,7 +48,7 @@ data:
     - icon: ':heavy_check_mark:'
       path: include/mtl/fibonacci_heap.hpp
       title: include/mtl/fibonacci_heap.hpp
-    - icon: ':heavy_check_mark:'
+    - icon: ':x:'
       path: include/mtl/fps.hpp
       title: include/mtl/fps.hpp
     - icon: ':warning:'
@@ -81,10 +84,10 @@ data:
     - icon: ':heavy_check_mark:'
       path: include/mtl/mo.hpp
       title: include/mtl/mo.hpp
-    - icon: ':heavy_check_mark:'
+    - icon: ':question:'
       path: include/mtl/modular.hpp
       title: include/mtl/modular.hpp
-    - icon: ':heavy_check_mark:'
+    - icon: ':x:'
       path: include/mtl/ntt.hpp
       title: include/mtl/ntt.hpp
     - icon: ':heavy_check_mark:'
@@ -273,7 +276,7 @@ data:
     - icon: ':heavy_check_mark:'
       path: test/aoj-time_table-cht.test.cpp
       title: test/aoj-time_table-cht.test.cpp
-    - icon: ':heavy_check_mark:'
+    - icon: ':x:'
       path: test/convolution.test.cpp
       title: test/convolution.test.cpp
     - icon: ':heavy_check_mark:'

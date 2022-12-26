@@ -4,7 +4,7 @@ data:
   - icon: ':warning:'
     path: include/mtl/dirichlet.hpp
     title: include/mtl/dirichlet.hpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/modular.hpp
     title: include/mtl/modular.hpp
   _extendedRequiredBy: []
@@ -68,35 +68,40 @@ data:
     \  for (int j = 1; j <= l; j++) {\n    int n = N / j;\n    int m = std::sqrt(n);\n\
     \    for (int i = 1; i <= m; i++) {\n      C[j] += a[i] * (n / i);\n      C[j]\
     \ += getA(n / i) - getA(m);\n    }\n  }\n  return std::make_pair(c, C);\n}\n#line\
-    \ 2 \"include/mtl/modular.hpp\"\n#include <iostream>\n\ntemplate <long long MOD>\n\
-    class Modular {\n private:\n  long long val_;\n\n public:\n  Modular() : val_(0)\
-    \ {}\n  Modular(long long v) : val_(v%MOD) {\n    if (val_ < 0) val_ += MOD;\n\
-    \  }\n\n  long long val() const { return val_; }\n  Modular& operator+=(Modular\
-    \ x) {\n    val_ += x.val();\n    if (val_ >= MOD) val_ %= MOD;\n    return *this;\n\
-    \  }\n  Modular operator-() const { return {MOD - val_}; }\n  Modular& operator-=(Modular\
+    \ 2 \"include/mtl/modular.hpp\"\n#include <iostream>\n\ntemplate <int MOD>\nclass\
+    \ Modular {\n private:\n  unsigned int val_;\n\n public:\n  static constexpr int\
+    \ mod() { return MOD; }\n\n  constexpr Modular() : val_(0) {}\n  template<class\
+    \ T>\n  constexpr Modular(T v) {\n    auto x = (long long)(v%(long long)MOD);\n\
+    \    if (x < 0) x += MOD;\n    val_ = x;\n  }\n\n  constexpr unsigned int val()\
+    \ const { return val_; }\n  constexpr Modular& operator+=(Modular x) {\n    val_\
+    \ += x.val();\n    if (val_ >= MOD) val_ -= MOD;\n    return *this;\n  }\n  constexpr\
+    \ Modular operator-() const { return {MOD - val_}; }\n  constexpr Modular& operator-=(Modular\
     \ x) {\n    val_ -= x.val();\n    if (val_ < 0) val_ += MOD;\n    return *this;\n\
-    \  }\n  Modular& operator*=(Modular x) {\n    val_ *= x.val();\n    if (val_ >=\
-    \ MOD) val_ %= MOD;\n    return *this;\n  }\n  Modular pow(long long p) const\
-    \ {\n    Modular t = 1;\n    Modular u = *this;\n    while (p) {\n      if (p\
-    \ & 1)\n        t *= u;\n      u *= u;\n      p >>= 1;\n    }\n    return t;\n\
-    \  }\n  friend Modular pow(Modular x, long long p) {\n    return x.pow(p);\n \
-    \ }\n  Modular inv() const { return pow(MOD-2); }\n  Modular& operator/=(Modular\
-    \ x) { return *this *= x.inv(); }\n  Modular operator+(Modular x) const { return\
-    \ Modular(*this) += x; }\n  Modular operator-(Modular x) const { return Modular(*this)\
-    \ -= x; }\n  Modular operator*(Modular x) const { return Modular(*this) *= x;\
-    \ }\n  Modular operator/(Modular x) const { return Modular(*this) /= x; }\n  Modular&\
-    \ operator++() { return *this += 1; }\n  Modular operator++(int) { Modular c =\
-    \ *this; ++(*this); return c; }\n  Modular& operator--() { return *this -= 1;\
-    \ }\n  Modular operator--(int) { Modular c = *this; --(*this); return c; }\n\n\
-    \  bool operator==(Modular x) const { return val() == x.val(); }\n  bool operator!=(Modular\
-    \ x) const { return val() != x.val(); }\n  bool operator<(Modular x) const { return\
-    \ val() < x.val(); };\n  bool operator<=(Modular x) const { return val() <= x.val();\
-    \ };\n  bool operator>(Modular x) const { return val() > x.val(); };\n  bool operator>=(Modular\
-    \ x) const { return val() >= x.val(); };\n\n  friend std::ostream& operator<<(std::ostream&\
-    \ os, const Modular& x) {\n    return os << x.val();\n  }\n  friend std::istream&\
-    \ operator>>(std::istream& is, Modular& x) {\n    return is >> x.val_;\n  }\n\n\
-    };\n\nusing Modular998244353 = Modular<998244353>;\nusing Modular1000000007 =\
-    \ Modular<(int)1e9+7>;\n#line 4 \"test/abc116-c-multiple_sequences-dirichlet.cpp\"\
+    \  }\n  constexpr Modular& operator*=(Modular x) {\n    auto v = (long long) val_\
+    \ * x.val();\n    if (v >= MOD) v %= MOD;\n    val_ = (int) v;\n    return *this;\n\
+    \  }\n  constexpr Modular pow(long long p) const {\n    assert(p >= 0);\n    Modular\
+    \ t = 1;\n    Modular u = *this;\n    while (p) {\n      if (p & 1)\n        t\
+    \ *= u;\n      u *= u;\n      p >>= 1;\n    }\n    return t;\n  }\n  friend constexpr\
+    \ Modular pow(Modular x, long long p) {\n    return x.pow(p);\n  }\n  constexpr\
+    \ Modular inv() const { return pow(MOD-2); }\n  constexpr Modular& operator/=(Modular\
+    \ x) { return *this *= x.inv(); }\n  constexpr Modular operator+(Modular x) const\
+    \ { return Modular(*this) += x; }\n  constexpr Modular operator-(Modular x) const\
+    \ { return Modular(*this) -= x; }\n  constexpr Modular operator*(Modular x) const\
+    \ { return Modular(*this) *= x; }\n  constexpr Modular operator/(Modular x) const\
+    \ { return Modular(*this) /= x; }\n  constexpr Modular& operator++() { return\
+    \ *this += 1; }\n  constexpr Modular operator++(int) { Modular c = *this; ++(*this);\
+    \ return c; }\n  constexpr Modular& operator--() { return *this -= 1; }\n  constexpr\
+    \ Modular operator--(int) { Modular c = *this; --(*this); return c; }\n\n  constexpr\
+    \ bool operator==(Modular x) const { return val() == x.val(); }\n  constexpr bool\
+    \ operator!=(Modular x) const { return val() != x.val(); }\n//  constexpr bool\
+    \ operator<(Modular x) const { return val() < x.val(); };\n//  constexpr bool\
+    \ operator<=(Modular x) const { return val() <= x.val(); };\n//  constexpr bool\
+    \ operator>(Modular x) const { return val() > x.val(); };\n//  constexpr bool\
+    \ operator>=(Modular x) const { return val() >= x.val(); };\n\n  friend std::ostream&\
+    \ operator<<(std::ostream& os, const Modular& x) {\n    return os << x.val();\n\
+    \  }\n  friend std::istream& operator>>(std::istream& is, Modular& x) {\n    return\
+    \ is >> x.val_;\n  }\n\n};\n\nusing Modular998244353 = Modular<998244353>;\nusing\
+    \ Modular1000000007 = Modular<(int)1e9+7>;\n#line 4 \"test/abc116-c-multiple_sequences-dirichlet.cpp\"\
     \n#include <bits/stdc++.h>\r\nusing namespace std;\r\nusing mint = Modular998244353;\r\
     \n\r\nint main() {\r\n  int n,m; cin>>n>>m;\r\n  auto z = Zeta<mint>(m);\r\n \
     \ auto t = Identity<mint>(m);\r\n  while (n) {\r\n    if (n&1) {\r\n      t =\
@@ -115,7 +120,7 @@ data:
   isVerificationFile: false
   path: test/abc116-c-multiple_sequences-dirichlet.cpp
   requiredBy: []
-  timestamp: '2022-11-27 16:09:45+09:00'
+  timestamp: '2022-12-23 17:56:06+09:00'
   verificationStatus: LIBRARY_NO_TESTS
   verifiedWith: []
 documentation_of: test/abc116-c-multiple_sequences-dirichlet.cpp

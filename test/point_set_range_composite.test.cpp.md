@@ -1,10 +1,10 @@
 ---
 data:
   _extendedDependsOn:
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/bit_manip.hpp
     title: include/mtl/bit_manip.hpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/modular.hpp
     title: include/mtl/modular.hpp
   - icon: ':heavy_check_mark:'
@@ -89,45 +89,51 @@ data:
     \ while ((r & -r) != r);\n    return 0;\n  }\n  template<bool (*F)(M)>\n  size_t\
     \ min_left(size_t begin) const {\n    return min_left(begin, [](M x) { return\
     \ F(x); });\n  }\n\n};\n\n#line 2 \"include/mtl/modular.hpp\"\n#include <iostream>\n\
-    \ntemplate <long long MOD>\nclass Modular {\n private:\n  long long val_;\n\n\
-    \ public:\n  Modular() : val_(0) {}\n  Modular(long long v) : val_(v%MOD) {\n\
-    \    if (val_ < 0) val_ += MOD;\n  }\n\n  long long val() const { return val_;\
-    \ }\n  Modular& operator+=(Modular x) {\n    val_ += x.val();\n    if (val_ >=\
-    \ MOD) val_ %= MOD;\n    return *this;\n  }\n  Modular operator-() const { return\
-    \ {MOD - val_}; }\n  Modular& operator-=(Modular x) {\n    val_ -= x.val();\n\
-    \    if (val_ < 0) val_ += MOD;\n    return *this;\n  }\n  Modular& operator*=(Modular\
-    \ x) {\n    val_ *= x.val();\n    if (val_ >= MOD) val_ %= MOD;\n    return *this;\n\
-    \  }\n  Modular pow(long long p) const {\n    Modular t = 1;\n    Modular u =\
-    \ *this;\n    while (p) {\n      if (p & 1)\n        t *= u;\n      u *= u;\n\
-    \      p >>= 1;\n    }\n    return t;\n  }\n  friend Modular pow(Modular x, long\
-    \ long p) {\n    return x.pow(p);\n  }\n  Modular inv() const { return pow(MOD-2);\
-    \ }\n  Modular& operator/=(Modular x) { return *this *= x.inv(); }\n  Modular\
-    \ operator+(Modular x) const { return Modular(*this) += x; }\n  Modular operator-(Modular\
-    \ x) const { return Modular(*this) -= x; }\n  Modular operator*(Modular x) const\
-    \ { return Modular(*this) *= x; }\n  Modular operator/(Modular x) const { return\
-    \ Modular(*this) /= x; }\n  Modular& operator++() { return *this += 1; }\n  Modular\
-    \ operator++(int) { Modular c = *this; ++(*this); return c; }\n  Modular& operator--()\
-    \ { return *this -= 1; }\n  Modular operator--(int) { Modular c = *this; --(*this);\
-    \ return c; }\n\n  bool operator==(Modular x) const { return val() == x.val();\
-    \ }\n  bool operator!=(Modular x) const { return val() != x.val(); }\n  bool operator<(Modular\
-    \ x) const { return val() < x.val(); };\n  bool operator<=(Modular x) const {\
-    \ return val() <= x.val(); };\n  bool operator>(Modular x) const { return val()\
-    \ > x.val(); };\n  bool operator>=(Modular x) const { return val() >= x.val();\
-    \ };\n\n  friend std::ostream& operator<<(std::ostream& os, const Modular& x)\
-    \ {\n    return os << x.val();\n  }\n  friend std::istream& operator>>(std::istream&\
-    \ is, Modular& x) {\n    return is >> x.val_;\n  }\n\n};\n\nusing Modular998244353\
-    \ = Modular<998244353>;\nusing Modular1000000007 = Modular<(int)1e9+7>;\n#line\
-    \ 5 \"test/point_set_range_composite.test.cpp\"\n#include <bits/stdc++.h>\nusing\
-    \ namespace std;\nusing ll = long long;\n\nconstexpr ll MOD = 998244353;\nusing\
-    \ mint = Modular<MOD>;\n\nstruct Monoid {\n  mint a=1, b=0;\n  Monoid operator*(Monoid\
-    \ r) const {\n    return {a*r.a, b*r.a+r.b};\n  }\n  Monoid& operator*=(Monoid\
-    \ r) {return *this = *this * r;}\n};\n\nint main() {\n  cin.tie(nullptr); ios::sync_with_stdio(false);\n\
-    \n  int N,Q; cin>>N>>Q;\n  vector<Monoid> F(N); for (auto& f : F) cin>>f.a>>f.b;\n\
-    \  SegmentTree<Monoid> st(F.begin(), F.end());\n\n  for (int q = 0; q < Q; q++)\
-    \ {\n    int t; cin>>t;\n    if (t == 0) {\n      int p,c,d; cin>>p>>c>>d;\n \
-    \     st.set(p, {c,d});\n    } else if (t == 1) {\n      int l,r,x; cin>>l>>r>>x;\n\
-    \      auto comp = st.query(l,r);\n      auto ans = comp.a*x + comp.b;\n     \
-    \ cout << ans << endl;\n    }\n  }\n\n  return 0;\n}\n"
+    \ntemplate <int MOD>\nclass Modular {\n private:\n  unsigned int val_;\n\n public:\n\
+    \  static constexpr int mod() { return MOD; }\n\n  constexpr Modular() : val_(0)\
+    \ {}\n  template<class T>\n  constexpr Modular(T v) {\n    auto x = (long long)(v%(long\
+    \ long)MOD);\n    if (x < 0) x += MOD;\n    val_ = x;\n  }\n\n  constexpr unsigned\
+    \ int val() const { return val_; }\n  constexpr Modular& operator+=(Modular x)\
+    \ {\n    val_ += x.val();\n    if (val_ >= MOD) val_ -= MOD;\n    return *this;\n\
+    \  }\n  constexpr Modular operator-() const { return {MOD - val_}; }\n  constexpr\
+    \ Modular& operator-=(Modular x) {\n    val_ -= x.val();\n    if (val_ < 0) val_\
+    \ += MOD;\n    return *this;\n  }\n  constexpr Modular& operator*=(Modular x)\
+    \ {\n    auto v = (long long) val_ * x.val();\n    if (v >= MOD) v %= MOD;\n \
+    \   val_ = (int) v;\n    return *this;\n  }\n  constexpr Modular pow(long long\
+    \ p) const {\n    assert(p >= 0);\n    Modular t = 1;\n    Modular u = *this;\n\
+    \    while (p) {\n      if (p & 1)\n        t *= u;\n      u *= u;\n      p >>=\
+    \ 1;\n    }\n    return t;\n  }\n  friend constexpr Modular pow(Modular x, long\
+    \ long p) {\n    return x.pow(p);\n  }\n  constexpr Modular inv() const { return\
+    \ pow(MOD-2); }\n  constexpr Modular& operator/=(Modular x) { return *this *=\
+    \ x.inv(); }\n  constexpr Modular operator+(Modular x) const { return Modular(*this)\
+    \ += x; }\n  constexpr Modular operator-(Modular x) const { return Modular(*this)\
+    \ -= x; }\n  constexpr Modular operator*(Modular x) const { return Modular(*this)\
+    \ *= x; }\n  constexpr Modular operator/(Modular x) const { return Modular(*this)\
+    \ /= x; }\n  constexpr Modular& operator++() { return *this += 1; }\n  constexpr\
+    \ Modular operator++(int) { Modular c = *this; ++(*this); return c; }\n  constexpr\
+    \ Modular& operator--() { return *this -= 1; }\n  constexpr Modular operator--(int)\
+    \ { Modular c = *this; --(*this); return c; }\n\n  constexpr bool operator==(Modular\
+    \ x) const { return val() == x.val(); }\n  constexpr bool operator!=(Modular x)\
+    \ const { return val() != x.val(); }\n//  constexpr bool operator<(Modular x)\
+    \ const { return val() < x.val(); };\n//  constexpr bool operator<=(Modular x)\
+    \ const { return val() <= x.val(); };\n//  constexpr bool operator>(Modular x)\
+    \ const { return val() > x.val(); };\n//  constexpr bool operator>=(Modular x)\
+    \ const { return val() >= x.val(); };\n\n  friend std::ostream& operator<<(std::ostream&\
+    \ os, const Modular& x) {\n    return os << x.val();\n  }\n  friend std::istream&\
+    \ operator>>(std::istream& is, Modular& x) {\n    return is >> x.val_;\n  }\n\n\
+    };\n\nusing Modular998244353 = Modular<998244353>;\nusing Modular1000000007 =\
+    \ Modular<(int)1e9+7>;\n#line 5 \"test/point_set_range_composite.test.cpp\"\n\
+    #include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nconstexpr\
+    \ ll MOD = 998244353;\nusing mint = Modular<MOD>;\n\nstruct Monoid {\n  mint a=1,\
+    \ b=0;\n  Monoid operator*(Monoid r) const {\n    return {a*r.a, b*r.a+r.b};\n\
+    \  }\n  Monoid& operator*=(Monoid r) {return *this = *this * r;}\n};\n\nint main()\
+    \ {\n  cin.tie(nullptr); ios::sync_with_stdio(false);\n\n  int N,Q; cin>>N>>Q;\n\
+    \  vector<Monoid> F(N); for (auto& f : F) cin>>f.a>>f.b;\n  SegmentTree<Monoid>\
+    \ st(F.begin(), F.end());\n\n  for (int q = 0; q < Q; q++) {\n    int t; cin>>t;\n\
+    \    if (t == 0) {\n      int p,c,d; cin>>p>>c>>d;\n      st.set(p, {c,d});\n\
+    \    } else if (t == 1) {\n      int l,r,x; cin>>l>>r>>x;\n      auto comp = st.query(l,r);\n\
+    \      auto ans = comp.a*x + comp.b;\n      cout << ans << endl;\n    }\n  }\n\
+    \n  return 0;\n}\n"
   code: "#define PROBLEM \"https://judge.yosupo.jp/problem/point_set_range_composite\"\
     \n\n#include \"../include/mtl/segment_tree.hpp\"\n#include \"../include/mtl/modular.hpp\"\
     \n#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nconstexpr\
@@ -148,7 +154,7 @@ data:
   isVerificationFile: true
   path: test/point_set_range_composite.test.cpp
   requiredBy: []
-  timestamp: '2022-12-20 20:34:44+09:00'
+  timestamp: '2022-12-23 17:56:06+09:00'
   verificationStatus: TEST_ACCEPTED
   verifiedWith: []
 documentation_of: test/point_set_range_composite.test.cpp
