@@ -8,7 +8,7 @@ data:
   - icon: ':heavy_check_mark:'
     path: include/mtl/fenwick_tree.hpp
     title: include/mtl/fenwick_tree.hpp
-  - icon: ':x:'
+  - icon: ':heavy_check_mark:'
     path: include/mtl/fps.hpp
     title: include/mtl/fps.hpp
   - icon: ':warning:'
@@ -20,7 +20,7 @@ data:
   - icon: ':heavy_check_mark:'
     path: include/mtl/li_chao_tree.hpp
     title: include/mtl/li_chao_tree.hpp
-  - icon: ':x:'
+  - icon: ':heavy_check_mark:'
     path: include/mtl/ntt.hpp
     title: include/mtl/ntt.hpp
   - icon: ':heavy_check_mark:'
@@ -54,7 +54,7 @@ data:
   - icon: ':heavy_check_mark:'
     path: test/aoj-do_use_segment_tree-binary_tree.test.cpp
     title: test/aoj-do_use_segment_tree-binary_tree.test.cpp
-  - icon: ':x:'
+  - icon: ':heavy_check_mark:'
     path: test/convolution.test.cpp
     title: test/convolution.test.cpp
   - icon: ':heavy_check_mark:'
@@ -87,9 +87,9 @@ data:
   - icon: ':heavy_check_mark:'
     path: test/yosupo-segment_add_get_min.test.cpp
     title: test/yosupo-segment_add_get_min.test.cpp
-  _isVerificationFailed: true
+  _isVerificationFailed: false
   _pathExtension: hpp
-  _verificationStatusIcon: ':question:'
+  _verificationStatusIcon: ':heavy_check_mark:'
   attributes:
     links: []
   bundledCode: "#line 2 \"include/mtl/bit_manip.hpp\"\n#include <cstdint>\n#include\
@@ -181,7 +181,7 @@ data:
   - include/mtl/lazy_segment_tree.hpp
   - include/mtl/li_chao_tree.hpp
   timestamp: '2022-12-18 04:26:00+09:00'
-  verificationStatus: LIBRARY_SOME_WA
+  verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
   - test/yosupo-line_add_get_min.test.cpp
   - test/succinct/range_kth_smallest.test.cpp

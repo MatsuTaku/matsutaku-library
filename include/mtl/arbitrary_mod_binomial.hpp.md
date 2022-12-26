@@ -25,27 +25,30 @@ data:
     \ std::vector<bool> isn_p(n+1);\r\n    buffer_type P{};\r\n    std::vector<int>\
     \ d(n+1), inv(n+1);\r\n    int k = 0;\r\n    for (int i = 2; i <= n; i++) {\r\n\
     \      if (isn_p[i]) continue;\r\n      for (int j = i+i; j <= n; j += i)\r\n\
-    \        isn_p[j] = 1;\r\n      if (mod() % i) continue;\r\n      P[++k] = prime;\r\
-    \n      for (int v = prime; v <= n; v += prime)\r\n        d[v] = k;\r\n    }\r\
-    \n    using mint = Modular<mod()>;\r\n    int mid = (n+1)/2;\r\n    std::vector<int>\
-    \ inv(mid+1);\r\n    inv[mid] = mint(mid).inv().val();\r\n    for (int i = mid-1;\
-    \ i > 0; i--)\r\n      inv[i] = (long long) inv[i+1] * (i+1) % mod();\r\n    int\
-    \ h = k+1;\r\n    int w = n/(P[1]-1) + 1;\r\n    std::vector<int> ptb(h * w);\r\
-    \n    for (int i = 1; i <= MAX_PRIME_FACTOR_NUM; i++) {\r\n      int t = n / (P[i]-1)\
-    \ + 1;\r\n      int v = 1;\r\n      ptb[i*h] = v;\r\n      for(int j = 1; j <\
-    \ t; j++) {\r\n        v = v * P[i] % mod();\r\n        ptb[i*h+j] = v;\r\n  \
-    \    }\r\n    }\r\n    int s = 1, ns = 1;\r\n    buffer_type t{}, nt{};\r\n  \
-    \  S[0] = T[0] = 1;\r\n    /* important equation\r\n     * \\binom(n,k) = (n-k+1)\
-    \ / k * \\binom(n,k-1)\r\n     */\r\n    auto make_st = [&](int k, buffer_type&\
-    \ q) {\r\n      std::fill(q.begin(), q.end(), 0);\r\n      if (k == 0)\r\n   \
-    \     return 1;\r\n      int x = k;\r\n      while (d[x]) {\r\n        q[d[x]]++;\r\
-    \n        x /= P[d[x]];\r\n      }\r\n      return x;\r\n    };\r\n    for (int\
-    \ k = 1; k <= mid; k++) {\r\n      s = (long long) s * ns % mod();\r\n      for\
-    \ (int i = 1; i <= MAX_PRIME_FACTOR_NUM; i++)\r\n        t[i] += nt[i];\r\n  \
-    \    ns = make_st(k, nt);\r\n      s = (long long) s * inv[ns] % mod();\r\n  \
-    \    for (int i = 1; i <= MAX_PRIME_FACTOR_NUM; i++)\r\n        t[i] -= nt[i];\r\
-    \n      st_[i] = s;\r\n      for (int i = 0; i <= MAX_PRIME_FACTOR_NUM; i++)\r\
-    \n        st_[i] = (long long) st_[i] * ptb[i][t[i]] % mod();\r\n    }\r\n  }\r\
+    \        isn_p[j] = 1;\r\n      if (mod() % i) continue;\r\n      P[++k] = i;\r\
+    \n      for (int v = i; v <= n; v += i)\r\n        d[v] = k;\r\n    }\r\n    int\
+    \ mid = (n+1)/2;\r\n    std::vector<int> inv(mid+1);\r\n    inv[mid] = mod_inv(mid);\r\
+    \n    for (int i = mid-1; i > 0; i--)\r\n      inv[i] = (long long) inv[i+1] *\
+    \ (i+1) % mod();\r\n    int h = k+1;\r\n    int w = n/(P[1]-1) + 1;\r\n    std::vector<int>\
+    \ ptb(h * w);\r\n    for (int i = 1; i <= MAX_PRIME_FACTOR_NUM; i++) {\r\n   \
+    \   int t = n / (P[i]-1) + 1;\r\n      int v = 1;\r\n      ptb[i*h] = v;\r\n \
+    \     for(int j = 1; j < t; j++) {\r\n        v = v * P[i] % mod();\r\n      \
+    \  ptb[i*h+j] = v;\r\n      }\r\n    }\r\n    /* important equation\r\n     *\
+    \ \\binom(n,k) = (n-k+1) / k * \\binom(n,k-1)\r\n     */\r\n    auto make_st =\
+    \ [&](int k, buffer_type& q) {\r\n      std::fill(q.begin(), q.end(), 0);\r\n\
+    \      if (k == 0)\r\n        return 1;\r\n      int x = k;\r\n      while (d[x])\
+    \ {\r\n        q[d[x]]++;\r\n        x /= P[d[x]];\r\n      }\r\n      return\
+    \ x;\r\n    };\r\n    int s = 1, ns = 1;\r\n    buffer_type t{}, nt{};\r\n   \
+    \ st_[0] = 1;\r\n    for (int k = 1; k <= mid; k++) {\r\n      ns = make_st(n-k+1,\
+    \ nt);\r\n      s = (long long) s * ns % mod();\r\n      for (int i = 1; i <=\
+    \ MAX_PRIME_FACTOR_NUM; i++)\r\n        t[i] += nt[i];\r\n      ns = make_st(k,\
+    \ nt);\r\n      s = (long long) s * inv[ns] % mod();\r\n      for (int i = 1;\
+    \ i <= MAX_PRIME_FACTOR_NUM; i++)\r\n        t[i] -= nt[i];\r\n      st_[i] =\
+    \ s;\r\n      for (int i = 1; i <= MAX_PRIME_FACTOR_NUM; i++)\r\n        st_[i]\
+    \ = (long long) st_[i] * ptb[i][t[i]] % mod();\r\n    }\r\n  }\r\n  constexpr\
+    \ inline int mod_inv(int x) const {\r\n    int t = 1;\r\n    int u = x;\r\n  \
+    \  int p = mod()-2;\r\n    while (p) {\r\n      if (p&1) t = t * u % mod();\r\n\
+    \      u = u * u % mod();\r\n      p >>= 1;\r\n    }\r\n    return t;\r\n  }\r\
     \n  constexpr inline int operator(int m) const {\r\n    assert(enabled());\r\n\
     \    if (m*2 > n_)\r\n      return operator()(n_-m);\r\n    return st_[m];\r\n\
     \  }\r\n};\r\n"
@@ -66,34 +69,37 @@ data:
     \ P{};\r\n    std::vector<int> d(n+1), inv(n+1);\r\n    int k = 0;\r\n    for\
     \ (int i = 2; i <= n; i++) {\r\n      if (isn_p[i]) continue;\r\n      for (int\
     \ j = i+i; j <= n; j += i)\r\n        isn_p[j] = 1;\r\n      if (mod() % i) continue;\r\
-    \n      P[++k] = prime;\r\n      for (int v = prime; v <= n; v += prime)\r\n \
-    \       d[v] = k;\r\n    }\r\n    using mint = Modular<mod()>;\r\n    int mid\
-    \ = (n+1)/2;\r\n    std::vector<int> inv(mid+1);\r\n    inv[mid] = mint(mid).inv().val();\r\
-    \n    for (int i = mid-1; i > 0; i--)\r\n      inv[i] = (long long) inv[i+1] *\
-    \ (i+1) % mod();\r\n    int h = k+1;\r\n    int w = n/(P[1]-1) + 1;\r\n    std::vector<int>\
-    \ ptb(h * w);\r\n    for (int i = 1; i <= MAX_PRIME_FACTOR_NUM; i++) {\r\n   \
-    \   int t = n / (P[i]-1) + 1;\r\n      int v = 1;\r\n      ptb[i*h] = v;\r\n \
-    \     for(int j = 1; j < t; j++) {\r\n        v = v * P[i] % mod();\r\n      \
-    \  ptb[i*h+j] = v;\r\n      }\r\n    }\r\n    int s = 1, ns = 1;\r\n    buffer_type\
-    \ t{}, nt{};\r\n    S[0] = T[0] = 1;\r\n    /* important equation\r\n     * \\\
-    binom(n,k) = (n-k+1) / k * \\binom(n,k-1)\r\n     */\r\n    auto make_st = [&](int\
-    \ k, buffer_type& q) {\r\n      std::fill(q.begin(), q.end(), 0);\r\n      if\
-    \ (k == 0)\r\n        return 1;\r\n      int x = k;\r\n      while (d[x]) {\r\n\
-    \        q[d[x]]++;\r\n        x /= P[d[x]];\r\n      }\r\n      return x;\r\n\
-    \    };\r\n    for (int k = 1; k <= mid; k++) {\r\n      s = (long long) s * ns\
-    \ % mod();\r\n      for (int i = 1; i <= MAX_PRIME_FACTOR_NUM; i++)\r\n      \
-    \  t[i] += nt[i];\r\n      ns = make_st(k, nt);\r\n      s = (long long) s * inv[ns]\
-    \ % mod();\r\n      for (int i = 1; i <= MAX_PRIME_FACTOR_NUM; i++)\r\n      \
-    \  t[i] -= nt[i];\r\n      st_[i] = s;\r\n      for (int i = 0; i <= MAX_PRIME_FACTOR_NUM;\
-    \ i++)\r\n        st_[i] = (long long) st_[i] * ptb[i][t[i]] % mod();\r\n    }\r\
-    \n  }\r\n  constexpr inline int operator(int m) const {\r\n    assert(enabled());\r\
+    \n      P[++k] = i;\r\n      for (int v = i; v <= n; v += i)\r\n        d[v] =\
+    \ k;\r\n    }\r\n    int mid = (n+1)/2;\r\n    std::vector<int> inv(mid+1);\r\n\
+    \    inv[mid] = mod_inv(mid);\r\n    for (int i = mid-1; i > 0; i--)\r\n     \
+    \ inv[i] = (long long) inv[i+1] * (i+1) % mod();\r\n    int h = k+1;\r\n    int\
+    \ w = n/(P[1]-1) + 1;\r\n    std::vector<int> ptb(h * w);\r\n    for (int i =\
+    \ 1; i <= MAX_PRIME_FACTOR_NUM; i++) {\r\n      int t = n / (P[i]-1) + 1;\r\n\
+    \      int v = 1;\r\n      ptb[i*h] = v;\r\n      for(int j = 1; j < t; j++) {\r\
+    \n        v = v * P[i] % mod();\r\n        ptb[i*h+j] = v;\r\n      }\r\n    }\r\
+    \n    /* important equation\r\n     * \\binom(n,k) = (n-k+1) / k * \\binom(n,k-1)\r\
+    \n     */\r\n    auto make_st = [&](int k, buffer_type& q) {\r\n      std::fill(q.begin(),\
+    \ q.end(), 0);\r\n      if (k == 0)\r\n        return 1;\r\n      int x = k;\r\
+    \n      while (d[x]) {\r\n        q[d[x]]++;\r\n        x /= P[d[x]];\r\n    \
+    \  }\r\n      return x;\r\n    };\r\n    int s = 1, ns = 1;\r\n    buffer_type\
+    \ t{}, nt{};\r\n    st_[0] = 1;\r\n    for (int k = 1; k <= mid; k++) {\r\n  \
+    \    ns = make_st(n-k+1, nt);\r\n      s = (long long) s * ns % mod();\r\n   \
+    \   for (int i = 1; i <= MAX_PRIME_FACTOR_NUM; i++)\r\n        t[i] += nt[i];\r\
+    \n      ns = make_st(k, nt);\r\n      s = (long long) s * inv[ns] % mod();\r\n\
+    \      for (int i = 1; i <= MAX_PRIME_FACTOR_NUM; i++)\r\n        t[i] -= nt[i];\r\
+    \n      st_[i] = s;\r\n      for (int i = 1; i <= MAX_PRIME_FACTOR_NUM; i++)\r\
+    \n        st_[i] = (long long) st_[i] * ptb[i][t[i]] % mod();\r\n    }\r\n  }\r\
+    \n  constexpr inline int mod_inv(int x) const {\r\n    int t = 1;\r\n    int u\
+    \ = x;\r\n    int p = mod()-2;\r\n    while (p) {\r\n      if (p&1) t = t * u\
+    \ % mod();\r\n      u = u * u % mod();\r\n      p >>= 1;\r\n    }\r\n    return\
+    \ t;\r\n  }\r\n  constexpr inline int operator(int m) const {\r\n    assert(enabled());\r\
     \n    if (m*2 > n_)\r\n      return operator()(n_-m);\r\n    return st_[m];\r\n\
     \  }\r\n};\r\n"
   dependsOn: []
   isVerificationFile: false
   path: include/mtl/arbitrary_mod_binomial.hpp
   requiredBy: []
-  timestamp: '2022-12-23 17:56:06+09:00'
+  timestamp: '2022-12-23 19:49:17+09:00'
   verificationStatus: LIBRARY_NO_TESTS
   verifiedWith: []
 documentation_of: include/mtl/arbitrary_mod_binomial.hpp

@@ -1,7 +1,7 @@
 ---
 data:
   _extendedDependsOn:
-  - icon: ':question:'
+  - icon: ':heavy_check_mark:'
     path: include/mtl/bit_manip.hpp
     title: include/mtl/bit_manip.hpp
   _extendedRequiredBy:

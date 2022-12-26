@@ -7,7 +7,7 @@ data:
   - icon: ':warning:'
     path: include/mtl/enumerate.hpp
     title: include/mtl/enumerate.hpp
-  - icon: ':question:'
+  - icon: ':heavy_check_mark:'
     path: include/mtl/modular.hpp
     title: include/mtl/modular.hpp
   _extendedRequiredBy: []
@@ -71,69 +71,69 @@ data:
     \  for (int j = 1; j <= l; j++) {\n    int n = N / j;\n    int m = std::sqrt(n);\n\
     \    for (int i = 1; i <= m; i++) {\n      C[j] += a[i] * (n / i);\n      C[j]\
     \ += getA(n / i) - getA(m);\n    }\n  }\n  return std::make_pair(c, C);\n}\n#line\
-    \ 2 \"include/mtl/modular.hpp\"\n#include <iostream>\n\ntemplate <int MOD>\nclass\
-    \ Modular {\n private:\n  unsigned int val_;\n\n public:\n  static constexpr int\
-    \ mod() { return MOD; }\n\n  constexpr Modular() : val_(0) {}\n  template<class\
-    \ T>\n  constexpr Modular(T v) {\n    auto x = (long long)(v%(long long)MOD);\n\
-    \    if (x < 0) x += MOD;\n    val_ = x;\n  }\n\n  constexpr unsigned int val()\
-    \ const { return val_; }\n  constexpr Modular& operator+=(Modular x) {\n    val_\
-    \ += x.val();\n    if (val_ >= MOD) val_ -= MOD;\n    return *this;\n  }\n  constexpr\
-    \ Modular operator-() const { return {MOD - val_}; }\n  constexpr Modular& operator-=(Modular\
-    \ x) {\n    val_ -= x.val();\n    if (val_ < 0) val_ += MOD;\n    return *this;\n\
-    \  }\n  constexpr Modular& operator*=(Modular x) {\n    auto v = (long long) val_\
-    \ * x.val();\n    if (v >= MOD) v %= MOD;\n    val_ = (int) v;\n    return *this;\n\
-    \  }\n  constexpr Modular pow(long long p) const {\n    assert(p >= 0);\n    Modular\
-    \ t = 1;\n    Modular u = *this;\n    while (p) {\n      if (p & 1)\n        t\
-    \ *= u;\n      u *= u;\n      p >>= 1;\n    }\n    return t;\n  }\n  friend constexpr\
-    \ Modular pow(Modular x, long long p) {\n    return x.pow(p);\n  }\n  constexpr\
-    \ Modular inv() const { return pow(MOD-2); }\n  constexpr Modular& operator/=(Modular\
-    \ x) { return *this *= x.inv(); }\n  constexpr Modular operator+(Modular x) const\
-    \ { return Modular(*this) += x; }\n  constexpr Modular operator-(Modular x) const\
-    \ { return Modular(*this) -= x; }\n  constexpr Modular operator*(Modular x) const\
-    \ { return Modular(*this) *= x; }\n  constexpr Modular operator/(Modular x) const\
-    \ { return Modular(*this) /= x; }\n  constexpr Modular& operator++() { return\
-    \ *this += 1; }\n  constexpr Modular operator++(int) { Modular c = *this; ++(*this);\
-    \ return c; }\n  constexpr Modular& operator--() { return *this -= 1; }\n  constexpr\
-    \ Modular operator--(int) { Modular c = *this; --(*this); return c; }\n\n  constexpr\
-    \ bool operator==(Modular x) const { return val() == x.val(); }\n  constexpr bool\
-    \ operator!=(Modular x) const { return val() != x.val(); }\n//  constexpr bool\
-    \ operator<(Modular x) const { return val() < x.val(); };\n//  constexpr bool\
-    \ operator<=(Modular x) const { return val() <= x.val(); };\n//  constexpr bool\
-    \ operator>(Modular x) const { return val() > x.val(); };\n//  constexpr bool\
-    \ operator>=(Modular x) const { return val() >= x.val(); };\n\n  friend std::ostream&\
-    \ operator<<(std::ostream& os, const Modular& x) {\n    return os << x.val();\n\
-    \  }\n  friend std::istream& operator>>(std::istream& is, Modular& x) {\n    return\
-    \ is >> x.val_;\n  }\n\n};\n\nusing Modular998244353 = Modular<998244353>;\nusing\
-    \ Modular1000000007 = Modular<(int)1e9+7>;\n#line 2 \"include/mtl/enumerate.hpp\"\
-    \n\n#line 5 \"include/mtl/enumerate.hpp\"\n\ntemplate <typename MODULAR>\nclass\
-    \ Enumerate {\n public:\n  using mint = MODULAR;\n private:\n  int max_n_ = 1;\n\
-    \  std::vector<mint> fact_, ifact_;\n\n  void _set_max_n(int n);\n\n public:\n\
-    \  Enumerate() : fact_({1, 1}), ifact_({1, 1}) {}\n  explicit Enumerate(int n)\
-    \ : fact_(std::max(2, n+1)), ifact_(std::max(2, n+1)) {\n    fact_[0] = fact_[1]\
-    \ = ifact_[0] = ifact_[1] = 1;\n    _set_max_n(n);\n  }\n\n  mint cmb(int p, int\
-    \ q) {\n    if (p < q) return 0;\n    return fact(p) * ifact(q) * ifact(p-q);\n\
-    \  }\n\n  mint prm(int p, int q) {\n    if (p < q) return 0;\n    return fact(p)\
-    \ * ifact(p-q);\n  }\n\n  mint fact(int p) {\n    if (p > max_n_)\n      _set_max_n(p);\n\
-    \    return fact_[p];\n  }\n  mint ifact(int p) {\n    if (p > max_n_)\n     \
-    \ _set_max_n(p);\n    return ifact_[p];\n  }\n\n};\n\ntemplate<typename MODULAR>\n\
-    void Enumerate<MODULAR>::_set_max_n(int n) {\n  if (n <= max_n_)\n    return;\n\
-    \  int nxtn = std::max(max_n_*2, n);\n  fact_.resize(nxtn+1);\n  ifact_.resize(nxtn+1);\n\
-    \  for (int i = max_n_+1; i <= nxtn; i++) {\n    fact_[i] = fact_[i-1] * i;\n\
-    \  }\n  ifact_[nxtn] = mint(1) / fact_[nxtn];\n  for (int i = nxtn-1; i > max_n_;\
-    \ i--) {\n    ifact_[i] = ifact_[i+1] * (i+1);\n  }\n  max_n_ = nxtn;\n}\n\n#line\
-    \ 5 \"test/abc116-c-multiple_sequences-dirichlet-optimized.cpp\"\n#include <bits/stdc++.h>\r\
-    \nusing namespace std;\r\nusing mint = Modular998244353;\r\n\r\nint main() {\r\
-    \n  int n,m; cin>>n>>m;\r\n  constexpr int max_logn = 30;\r\n  auto primes = Primes(m);\r\
-    \n  // Sum of zeta^k for m\r\n  auto f = Identity<mint>(m);\r\n  vector<mint>\
-    \ A(max_logn);\r\n  for (int k = 0; k < max_logn; k++) {\r\n    A[k] = f.second[1];\r\
-    \n    f = DirichletConvolveZeta(m, primes, f);\r\n  }\r\n  // Sum of (zeta-1)^k\
-    \ for m\r\n  vector<mint> B(max_logn);\r\n  Enumerate<mint> enm;\r\n  for (int\
-    \ k = 0; k < max_logn; k++) {\r\n    for (int i = 0; i <= k; i++) {\r\n      auto\
-    \ coef = enm.cmb(k, i);\r\n      if ((k-i)%2) coef = -coef;\r\n      B[k] += A[i]\
-    \ * coef;\r\n    }\r\n  }\r\n  // ans = sum_k B[k] binom(n, k)\r\n  mint binom\
-    \ = 1;\r\n  mint ans = 0;\r\n  for (int k = 0; k < max_logn; k++) {\r\n    ans\
-    \ += binom * B[k];\r\n    binom *= mint(n-k) * mint(k+1).inv();\r\n  }\r\n  cout\
-    \ << ans << endl;\r\n}\n"
+    \ 2 \"include/mtl/modular.hpp\"\n#include <iostream>\n#line 4 \"include/mtl/modular.hpp\"\
+    \n\ntemplate <int MOD>\nclass Modular {\n private:\n  unsigned int val_;\n\n public:\n\
+    \  static constexpr unsigned int mod() { return MOD; }\n\n  constexpr Modular()\
+    \ : val_(0) {}\n  template<class T,\n      std::enable_if_t<\n          std::is_integral<T>::value\
+    \ && std::is_unsigned<T>::value\n      > * = nullptr>\n  constexpr Modular(T v)\
+    \ : val_(v%mod()) {}\n  template<class T,\n      std::enable_if_t<\n         \
+    \ std::is_integral<T>::value && !std::is_unsigned<T>::value\n      > * = nullptr>\n\
+    \  constexpr Modular(T v) {\n    auto x = (long long)(v%(long long)mod());\n \
+    \   if (x < 0) x += mod();\n    val_ = (unsigned int)x;\n  }\n\n  constexpr unsigned\
+    \ int val() const { return val_; }\n  constexpr Modular& operator+=(Modular x)\
+    \ {\n    val_ += x.val();\n    if (val_ >= mod()) val_ -= mod();\n    return *this;\n\
+    \  }\n  constexpr Modular operator-() const { return {mod() - val_}; }\n  constexpr\
+    \ Modular& operator-=(Modular x) {\n    val_ += mod() - x.val();\n    if (val_\
+    \ >= mod()) val_ -= mod();\n    return *this;\n  }\n  constexpr Modular& operator*=(Modular\
+    \ x) {\n    auto v = (long long) val_ * x.val();\n    if (v >= mod()) v %= mod();\n\
+    \    val_ = v;\n    return *this;\n  }\n  constexpr Modular pow(long long p) const\
+    \ {\n    assert(p >= 0);\n    Modular t = 1;\n    Modular u = *this;\n    while\
+    \ (p) {\n      if (p & 1)\n        t *= u;\n      u *= u;\n      p >>= 1;\n  \
+    \  }\n    return t;\n  }\n  friend constexpr Modular pow(Modular x, long long\
+    \ p) {\n    return x.pow(p);\n  }\n  constexpr Modular inv() const { return pow(mod()-2);\
+    \ }\n  constexpr Modular& operator/=(Modular x) { return *this *= x.inv(); }\n\
+    \  constexpr Modular operator+(Modular x) const { return Modular(*this) += x;\
+    \ }\n  constexpr Modular operator-(Modular x) const { return Modular(*this) -=\
+    \ x; }\n  constexpr Modular operator*(Modular x) const { return Modular(*this)\
+    \ *= x; }\n  constexpr Modular operator/(Modular x) const { return Modular(*this)\
+    \ /= x; }\n  constexpr Modular& operator++() { return *this += 1; }\n  constexpr\
+    \ Modular operator++(int) { Modular c = *this; ++(*this); return c; }\n  constexpr\
+    \ Modular& operator--() { return *this -= 1; }\n  constexpr Modular operator--(int)\
+    \ { Modular c = *this; --(*this); return c; }\n\n  constexpr bool operator==(Modular\
+    \ x) const { return val() == x.val(); }\n  constexpr bool operator!=(Modular x)\
+    \ const { return val() != x.val(); }\n\n  friend std::ostream& operator<<(std::ostream&\
+    \ os, const Modular& x) {\n    return os << x.val();\n  }\n  friend std::istream&\
+    \ operator>>(std::istream& is, Modular& x) {\n    return is >> x.val_;\n  }\n\n\
+    };\n\nusing Modular998244353 = Modular<998244353>;\nusing Modular1000000007 =\
+    \ Modular<(int)1e9+7>;\n#line 2 \"include/mtl/enumerate.hpp\"\n\n#line 5 \"include/mtl/enumerate.hpp\"\
+    \n\ntemplate <typename MODULAR>\nclass Enumerate {\n public:\n  using mint = MODULAR;\n\
+    \ private:\n  int max_n_ = 1;\n  std::vector<mint> fact_, ifact_;\n\n  void _set_max_n(int\
+    \ n);\n\n public:\n  Enumerate() : fact_({1, 1}), ifact_({1, 1}) {}\n  explicit\
+    \ Enumerate(int n) : fact_(std::max(2, n+1)), ifact_(std::max(2, n+1)) {\n   \
+    \ fact_[0] = fact_[1] = ifact_[0] = ifact_[1] = 1;\n    _set_max_n(n);\n  }\n\n\
+    \  mint cmb(int p, int q) {\n    if (p < q) return 0;\n    return fact(p) * ifact(q)\
+    \ * ifact(p-q);\n  }\n\n  mint prm(int p, int q) {\n    if (p < q) return 0;\n\
+    \    return fact(p) * ifact(p-q);\n  }\n\n  mint fact(int p) {\n    if (p > max_n_)\n\
+    \      _set_max_n(p);\n    return fact_[p];\n  }\n  mint ifact(int p) {\n    if\
+    \ (p > max_n_)\n      _set_max_n(p);\n    return ifact_[p];\n  }\n\n};\n\ntemplate<typename\
+    \ MODULAR>\nvoid Enumerate<MODULAR>::_set_max_n(int n) {\n  if (n <= max_n_)\n\
+    \    return;\n  int nxtn = std::max(max_n_*2, n);\n  fact_.resize(nxtn+1);\n \
+    \ ifact_.resize(nxtn+1);\n  for (int i = max_n_+1; i <= nxtn; i++) {\n    fact_[i]\
+    \ = fact_[i-1] * i;\n  }\n  ifact_[nxtn] = mint(1) / fact_[nxtn];\n  for (int\
+    \ i = nxtn-1; i > max_n_; i--) {\n    ifact_[i] = ifact_[i+1] * (i+1);\n  }\n\
+    \  max_n_ = nxtn;\n}\n\n#line 5 \"test/abc116-c-multiple_sequences-dirichlet-optimized.cpp\"\
+    \n#include <bits/stdc++.h>\r\nusing namespace std;\r\nusing mint = Modular998244353;\r\
+    \n\r\nint main() {\r\n  int n,m; cin>>n>>m;\r\n  constexpr int max_logn = 30;\r\
+    \n  auto primes = Primes(m);\r\n  // Sum of zeta^k for m\r\n  auto f = Identity<mint>(m);\r\
+    \n  vector<mint> A(max_logn);\r\n  for (int k = 0; k < max_logn; k++) {\r\n  \
+    \  A[k] = f.second[1];\r\n    f = DirichletConvolveZeta(m, primes, f);\r\n  }\r\
+    \n  // Sum of (zeta-1)^k for m\r\n  vector<mint> B(max_logn);\r\n  Enumerate<mint>\
+    \ enm;\r\n  for (int k = 0; k < max_logn; k++) {\r\n    for (int i = 0; i <= k;\
+    \ i++) {\r\n      auto coef = enm.cmb(k, i);\r\n      if ((k-i)%2) coef = -coef;\r\
+    \n      B[k] += A[i] * coef;\r\n    }\r\n  }\r\n  // ans = sum_k B[k] binom(n,\
+    \ k)\r\n  mint binom = 1;\r\n  mint ans = 0;\r\n  for (int k = 0; k < max_logn;\
+    \ k++) {\r\n    ans += binom * B[k];\r\n    binom *= mint(n-k) * mint(k+1).inv();\r\
+    \n  }\r\n  cout << ans << endl;\r\n}\n"
   code: "#define PROBLEM \"https://atcoder.jp/contests/arc116/tasks/arc116_c\"\r\n\
     #include \"../include/mtl/dirichlet.hpp\"\r\n#include \"../include/mtl/modular.hpp\"\
     \r\n#include \"../include/mtl/enumerate.hpp\"\r\n#include <bits/stdc++.h>\r\n\
@@ -156,7 +156,7 @@ data:
   isVerificationFile: false
   path: test/abc116-c-multiple_sequences-dirichlet-optimized.cpp
   requiredBy: []
-  timestamp: '2022-12-23 17:56:06+09:00'
+  timestamp: '2022-12-23 19:49:17+09:00'
   verificationStatus: LIBRARY_NO_TESTS
   verifiedWith: []
 documentation_of: test/abc116-c-multiple_sequences-dirichlet-optimized.cpp

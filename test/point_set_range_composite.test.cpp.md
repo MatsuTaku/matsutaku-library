@@ -1,10 +1,10 @@
 ---
 data:
   _extendedDependsOn:
-  - icon: ':question:'
+  - icon: ':heavy_check_mark:'
     path: include/mtl/bit_manip.hpp
     title: include/mtl/bit_manip.hpp
-  - icon: ':question:'
+  - icon: ':heavy_check_mark:'
     path: include/mtl/modular.hpp
     title: include/mtl/modular.hpp
   - icon: ':heavy_check_mark:'
@@ -89,41 +89,41 @@ data:
     \ while ((r & -r) != r);\n    return 0;\n  }\n  template<bool (*F)(M)>\n  size_t\
     \ min_left(size_t begin) const {\n    return min_left(begin, [](M x) { return\
     \ F(x); });\n  }\n\n};\n\n#line 2 \"include/mtl/modular.hpp\"\n#include <iostream>\n\
-    \ntemplate <int MOD>\nclass Modular {\n private:\n  unsigned int val_;\n\n public:\n\
-    \  static constexpr int mod() { return MOD; }\n\n  constexpr Modular() : val_(0)\
-    \ {}\n  template<class T>\n  constexpr Modular(T v) {\n    auto x = (long long)(v%(long\
-    \ long)MOD);\n    if (x < 0) x += MOD;\n    val_ = x;\n  }\n\n  constexpr unsigned\
-    \ int val() const { return val_; }\n  constexpr Modular& operator+=(Modular x)\
-    \ {\n    val_ += x.val();\n    if (val_ >= MOD) val_ -= MOD;\n    return *this;\n\
-    \  }\n  constexpr Modular operator-() const { return {MOD - val_}; }\n  constexpr\
-    \ Modular& operator-=(Modular x) {\n    val_ -= x.val();\n    if (val_ < 0) val_\
-    \ += MOD;\n    return *this;\n  }\n  constexpr Modular& operator*=(Modular x)\
-    \ {\n    auto v = (long long) val_ * x.val();\n    if (v >= MOD) v %= MOD;\n \
-    \   val_ = (int) v;\n    return *this;\n  }\n  constexpr Modular pow(long long\
-    \ p) const {\n    assert(p >= 0);\n    Modular t = 1;\n    Modular u = *this;\n\
-    \    while (p) {\n      if (p & 1)\n        t *= u;\n      u *= u;\n      p >>=\
-    \ 1;\n    }\n    return t;\n  }\n  friend constexpr Modular pow(Modular x, long\
-    \ long p) {\n    return x.pow(p);\n  }\n  constexpr Modular inv() const { return\
-    \ pow(MOD-2); }\n  constexpr Modular& operator/=(Modular x) { return *this *=\
-    \ x.inv(); }\n  constexpr Modular operator+(Modular x) const { return Modular(*this)\
-    \ += x; }\n  constexpr Modular operator-(Modular x) const { return Modular(*this)\
-    \ -= x; }\n  constexpr Modular operator*(Modular x) const { return Modular(*this)\
-    \ *= x; }\n  constexpr Modular operator/(Modular x) const { return Modular(*this)\
-    \ /= x; }\n  constexpr Modular& operator++() { return *this += 1; }\n  constexpr\
-    \ Modular operator++(int) { Modular c = *this; ++(*this); return c; }\n  constexpr\
-    \ Modular& operator--() { return *this -= 1; }\n  constexpr Modular operator--(int)\
-    \ { Modular c = *this; --(*this); return c; }\n\n  constexpr bool operator==(Modular\
-    \ x) const { return val() == x.val(); }\n  constexpr bool operator!=(Modular x)\
-    \ const { return val() != x.val(); }\n//  constexpr bool operator<(Modular x)\
-    \ const { return val() < x.val(); };\n//  constexpr bool operator<=(Modular x)\
-    \ const { return val() <= x.val(); };\n//  constexpr bool operator>(Modular x)\
-    \ const { return val() > x.val(); };\n//  constexpr bool operator>=(Modular x)\
-    \ const { return val() >= x.val(); };\n\n  friend std::ostream& operator<<(std::ostream&\
-    \ os, const Modular& x) {\n    return os << x.val();\n  }\n  friend std::istream&\
-    \ operator>>(std::istream& is, Modular& x) {\n    return is >> x.val_;\n  }\n\n\
-    };\n\nusing Modular998244353 = Modular<998244353>;\nusing Modular1000000007 =\
-    \ Modular<(int)1e9+7>;\n#line 5 \"test/point_set_range_composite.test.cpp\"\n\
-    #include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nconstexpr\
+    #line 4 \"include/mtl/modular.hpp\"\n\ntemplate <int MOD>\nclass Modular {\n private:\n\
+    \  unsigned int val_;\n\n public:\n  static constexpr unsigned int mod() { return\
+    \ MOD; }\n\n  constexpr Modular() : val_(0) {}\n  template<class T,\n      std::enable_if_t<\n\
+    \          std::is_integral<T>::value && std::is_unsigned<T>::value\n      > *\
+    \ = nullptr>\n  constexpr Modular(T v) : val_(v%mod()) {}\n  template<class T,\n\
+    \      std::enable_if_t<\n          std::is_integral<T>::value && !std::is_unsigned<T>::value\n\
+    \      > * = nullptr>\n  constexpr Modular(T v) {\n    auto x = (long long)(v%(long\
+    \ long)mod());\n    if (x < 0) x += mod();\n    val_ = (unsigned int)x;\n  }\n\
+    \n  constexpr unsigned int val() const { return val_; }\n  constexpr Modular&\
+    \ operator+=(Modular x) {\n    val_ += x.val();\n    if (val_ >= mod()) val_ -=\
+    \ mod();\n    return *this;\n  }\n  constexpr Modular operator-() const { return\
+    \ {mod() - val_}; }\n  constexpr Modular& operator-=(Modular x) {\n    val_ +=\
+    \ mod() - x.val();\n    if (val_ >= mod()) val_ -= mod();\n    return *this;\n\
+    \  }\n  constexpr Modular& operator*=(Modular x) {\n    auto v = (long long) val_\
+    \ * x.val();\n    if (v >= mod()) v %= mod();\n    val_ = v;\n    return *this;\n\
+    \  }\n  constexpr Modular pow(long long p) const {\n    assert(p >= 0);\n    Modular\
+    \ t = 1;\n    Modular u = *this;\n    while (p) {\n      if (p & 1)\n        t\
+    \ *= u;\n      u *= u;\n      p >>= 1;\n    }\n    return t;\n  }\n  friend constexpr\
+    \ Modular pow(Modular x, long long p) {\n    return x.pow(p);\n  }\n  constexpr\
+    \ Modular inv() const { return pow(mod()-2); }\n  constexpr Modular& operator/=(Modular\
+    \ x) { return *this *= x.inv(); }\n  constexpr Modular operator+(Modular x) const\
+    \ { return Modular(*this) += x; }\n  constexpr Modular operator-(Modular x) const\
+    \ { return Modular(*this) -= x; }\n  constexpr Modular operator*(Modular x) const\
+    \ { return Modular(*this) *= x; }\n  constexpr Modular operator/(Modular x) const\
+    \ { return Modular(*this) /= x; }\n  constexpr Modular& operator++() { return\
+    \ *this += 1; }\n  constexpr Modular operator++(int) { Modular c = *this; ++(*this);\
+    \ return c; }\n  constexpr Modular& operator--() { return *this -= 1; }\n  constexpr\
+    \ Modular operator--(int) { Modular c = *this; --(*this); return c; }\n\n  constexpr\
+    \ bool operator==(Modular x) const { return val() == x.val(); }\n  constexpr bool\
+    \ operator!=(Modular x) const { return val() != x.val(); }\n\n  friend std::ostream&\
+    \ operator<<(std::ostream& os, const Modular& x) {\n    return os << x.val();\n\
+    \  }\n  friend std::istream& operator>>(std::istream& is, Modular& x) {\n    return\
+    \ is >> x.val_;\n  }\n\n};\n\nusing Modular998244353 = Modular<998244353>;\nusing\
+    \ Modular1000000007 = Modular<(int)1e9+7>;\n#line 5 \"test/point_set_range_composite.test.cpp\"\
+    \n#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nconstexpr\
     \ ll MOD = 998244353;\nusing mint = Modular<MOD>;\n\nstruct Monoid {\n  mint a=1,\
     \ b=0;\n  Monoid operator*(Monoid r) const {\n    return {a*r.a, b*r.a+r.b};\n\
     \  }\n  Monoid& operator*=(Monoid r) {return *this = *this * r;}\n};\n\nint main()\
@@ -154,7 +154,7 @@ data:
   isVerificationFile: true
   path: test/point_set_range_composite.test.cpp
   requiredBy: []
-  timestamp: '2022-12-23 17:56:06+09:00'
+  timestamp: '2022-12-23 19:49:17+09:00'
   verificationStatus: TEST_ACCEPTED
   verifiedWith: []
 documentation_of: test/point_set_range_composite.test.cpp
