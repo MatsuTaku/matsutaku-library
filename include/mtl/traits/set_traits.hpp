@@ -210,14 +210,12 @@ class MapTraits : public SetTraitsBase<Base> {
   reference operator[](const key_type& x) {
     // TODO
 //    return SBase::try_emplace(x).first->second;
-    auto it = SBase::insert({x, mapped_type()}).first;
-    return it->second;
+    return SBase::emplace(x, mapped_type()).first->second;
   }
   reference operator[](key_type&& x) {
     // TODO
 //    return SBase::try_emplace(std::move(x)).first->second;
-    auto it = SBase::insert({std::move(x), mapped_type()}).first;
-    return it->second;
+    return SBase::emplace(std::move(x), mapped_type()).first->second;
   }
 };
 
