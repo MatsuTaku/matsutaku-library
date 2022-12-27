@@ -167,10 +167,19 @@ class SetTraitsBase : public Base {
   std::pair<iterator, bool> emplace(Args&&... args) {
     using emplace_type = typename std::conditional<
         std::is_constructible<init_type, Args...>::value,
-            init_type,
-            value_type
-        >::type;
+        init_type,
+        value_type
+    >::type;
     return Base::_insert(emplace_type(std::forward<Args>(args)...));
+  }
+  template<class... Args>
+  iterator emplace_hint(const_iterator hint, Args&&... args) {
+    using emplace_type = typename std::conditional<
+        std::is_constructible<init_type, Args...>::value,
+        init_type,
+        value_type
+    >::type;
+    return Base::_emplace_hint(hint, emplace_type(std::forward<Args>(args)...));
   }
   size_t erase(const key_type& x) {
     return Base::_erase(x);

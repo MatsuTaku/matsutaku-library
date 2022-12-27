@@ -68,7 +68,8 @@ class Treap {
       : sentinel_(std::make_shared<Node>(0)), size_(0),
         comp_(comp) {}
   template<typename It>
-  explicit Treap(It begin, It end) : Treap() {
+  explicit Treap(It begin, It end,
+                 const Compare& comp = Compare()) : Treap(comp) {
     insert(begin, end);
   }
   template<typename I>
@@ -411,9 +412,6 @@ class Treap {
   }
   iterator absorb(Treap* s) {
     assert((s and s->empty()) or empty() or comp_(*--s->end(), *begin()));
-    if (s->count(147253) or count(147253)) {
-      std::cerr<<"absorb "<<*(s->begin())<<' '<<*begin()<<' '<<*--end()<<std::endl;
-    }
     auto it = begin();
     if (!s or s->empty()) return it;
     if (empty()) {

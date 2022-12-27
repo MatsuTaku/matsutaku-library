@@ -123,6 +123,17 @@ class XFastTrieBase : public BinaryTrieBase<T, M, W> {
     return l;
   }
   using Base::_insert;
+  std::pair<int, node_ptr> climb_to_lca(leaf_ptr l, key_type x) override {
+    key_type m = x ^ types::key_of(l->v);
+    if (m == 0)
+      return std::make_pair(W, std::static_pointer_cast<Node>(l));
+    int h = bm::clz(m) - (64 - W);
+    key_type y = x >> (W-h);
+    assert(tb_[h].count(y));
+    node_ptr f = tb_[h][y];
+    return std::make_pair(h, f);
+  }
+  using Base::_emplace_hint;
   void erase_node_at(const key_type& x, int i, node_ptr u) override {
     Base::erase_node_at(x, i, u);
     auto it = tb_[i].find(x >> (W-i));

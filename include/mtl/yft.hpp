@@ -40,8 +40,7 @@ class YFastTrieBase : public traits::AssociativeArrayDefinition<T, M> {
   std::uniform_int_distribution<uint8_t> dist_;
   void _init() {
     xft_.clear();
-    auto xit = xft_.emplace(kKeyMax, treap_type()).first; // TODO
-//    auto xit = xft_.insert({kKeyMax, treap_type()}).first;
+    auto xit = xft_.emplace(kKeyMax, treap_type()).first;
     end_ = iterator(&xft_, xit, xit->second.end());
     size_ = 0;
   }
@@ -68,7 +67,6 @@ class YFastTrieBase : public traits::AssociativeArrayDefinition<T, M> {
   template<typename InputIt>
   explicit YFastTrieBase(InputIt begin, InputIt end) : YFastTrieBase() {
     static_assert(std::is_convertible<typename std::iterator_traits<InputIt>::value_type, value_type>::value, "");
-    // TODO: needs test
     if (begin == end) return;
     if (!std::is_sorted(begin, end, [](auto& l, auto& r) {
       return Def::key_of(l) < Def::key_of(r);
@@ -88,14 +86,10 @@ class YFastTrieBase : public traits::AssociativeArrayDefinition<T, M> {
       if (e != end) {
         key_type x = Def::key_of(*e);
         ++e;
-//        xft_.emplace_hint(xft_.end(), x, treap_type(b, e)); // TODO: best
-        xft_.emplace(x, treap_type(b, e)); // TODO: better
-//        xft_.insert({x, treap_type(b, e)});
+        xft_.emplace_hint(xft_.end(), x, treap_type(b, e));
         b = e;
       } else {
-//        auto xe = xft_.emplace_hint(xft_.end(), kKeyMax, treap_type(b, e)); // TODO: best
-        auto xe = xft_.emplace(kKeyMax, treap_type(b, e)).first; // TODO: better
-//        auto xe = xft_.insert({kKeyMax, treap_type(b, e)}).first;
+        auto xe = xft_.emplace_hint(xft_.end(), kKeyMax, treap_type(b, e));
         end_ = iterator(&xft_, xe, xe->second.end());
         break;
       }
@@ -146,6 +140,16 @@ class YFastTrieBase : public traits::AssociativeArrayDefinition<T, M> {
   bool _pivot_selected() {
     return dist_(eng_) == 0;
   }
+  iterator activate_new_treap_node(key_type x,
+                                   typename xft_type::iterator xlb,
+                                   typename treap_type::iterator new_tit) {
+    size_++;
+    if (_pivot_selected()) [[unlikely]] {
+      auto lt = std::move(xlb->second.split(std::next(new_tit)));
+      xlb = xft_.emplace_hint(xlb, x, std::move(lt));
+    }
+    return iterator(&xft_, xlb, new_tit);
+  }
   template<class Value>
   std::pair<iterator, bool> _insert(Value&& value) {
     key_type x = Def::key_of(value);
@@ -154,16 +158,21 @@ class YFastTrieBase : public traits::AssociativeArrayDefinition<T, M> {
     auto& t = xlb->second;
     auto tins = t.insert(std::forward<Value>(value));
     if (tins.second) {
-      size_++;
-      if (_pivot_selected()) [[unlikely]] {
-        auto lt = std::move(t.split(std::next(tins.first)));
-//        xlb = xft_.emplace_hint(xlb, x, std::move(lt)); // TODO
-        xlb = xft_.emplace(x, std::move(lt)).first;
-//        xlb = xft_.insert({x, std::move(lt)}).first;
-      }
-      return std::make_pair(iterator(&xft_, xlb, tins.first), true);
+      return std::make_pair(activate_new_treap_node(x, xlb, tins.first), true);
     }
     return std::make_pair(iterator(&xft_, xlb, tins.first), false);
+  }
+  template<class Value>
+  iterator _emplace_hint(const_iterator hint, Value&& value) {
+    key_type x = Def::key_of(value);
+    if (hint != end() and x == Def::key_of(*hint)) [[unlikely]] {
+      return hint;
+    }
+    auto tins = hint.xit_->second.emplace_hint(hint.tit_, std::forward<Value>(value));
+    if (!tins.second) [[unlikely]] {
+      return _insert(std::forward<Value>(value)).first;
+    }
+    return activate_new_treap_node(x, hint.xit_, tins.first);
   }
   bool _erase(const key_type& key) {
     auto xlb = xft_.lower_bound(key);
