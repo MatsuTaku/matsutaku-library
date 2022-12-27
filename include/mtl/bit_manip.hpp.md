@@ -3,6 +3,9 @@ data:
   _extendedDependsOn: []
   _extendedRequiredBy:
   - icon: ':warning:'
+    path: include/mtl/binary_trie.hpp
+    title: include/mtl/binary_trie.hpp
+  - icon: ':warning:'
     path: include/mtl/bitmap.hpp
     title: include/mtl/bitmap.hpp
   - icon: ':heavy_check_mark:'
@@ -50,6 +53,12 @@ data:
   - icon: ':warning:'
     path: include/mtl/succinct/wavelet_tree.hpp
     title: include/mtl/succinct/wavelet_tree.hpp
+  - icon: ':warning:'
+    path: include/mtl/xft.hpp
+    title: include/mtl/xft.hpp
+  - icon: ':warning:'
+    path: include/mtl/yft.hpp
+    title: include/mtl/yft.hpp
   _extendedVerifiedWith:
   - icon: ':heavy_check_mark:'
     path: test/aoj-do_use_segment_tree-binary_tree.test.cpp
@@ -175,10 +184,13 @@ data:
   - include/mtl/ordinal_range_search.hpp
   - include/mtl/skiplist.hpp
   - include/mtl/sparse_table.hpp
+  - include/mtl/xft.hpp
   - include/mtl/ntt.hpp
   - include/mtl/integer_set.hpp
+  - include/mtl/yft.hpp
   - include/mtl/bitmap.hpp
   - include/mtl/lazy_segment_tree.hpp
+  - include/mtl/binary_trie.hpp
   - include/mtl/li_chao_tree.hpp
   timestamp: '2022-12-18 04:26:00+09:00'
   verificationStatus: LIBRARY_ALL_AC

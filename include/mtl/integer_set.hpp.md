@@ -42,14 +42,15 @@ data:
     \n  std::uniform_int_distribution<priority_type> dist;\r\n  Compare comp_;\r\n\
     \r\n public:\r\n  Treap(const Compare& comp = Compare())\r\n      : sentinel_(std::make_shared<Node>(0)),\
     \ size_(0),\r\n        comp_(comp) {}\r\n  template<typename It>\r\n  explicit\
-    \ Treap(It begin, It end) : Treap() {\r\n    insert(begin, end);\r\n  }\r\n  template<typename\
-    \ I>\r\n  Treap(std::initializer_list<I> list) : Treap(list.begin(), list.end())\
-    \ {}\r\n private:\r\n  void _clone(node_ptr u, const node_ptr ru) {\r\n    if\
-    \ (ru->left) {\r\n      u->left = std::make_shared<Node>(ru->left->p, ru->left->v);\r\
-    \n      u->left->parent = u;\r\n      _clone(u->left, ru->left);\r\n    }\r\n\
-    \    if (ru->right) {\r\n      u->right = std::make_shared<Node>(ru->right->p,\
-    \ ru->right->v);\r\n      u->right->parent = u;\r\n      _clone(u->right, ru->right);\r\
-    \n    }\r\n  }\r\n public:\r\n  Treap(const Treap& r) : Treap() {\r\n    _clone(sentinel_,\
+    \ Treap(It begin, It end,\r\n                 const Compare& comp = Compare())\
+    \ : Treap(comp) {\r\n    insert(begin, end);\r\n  }\r\n  template<typename I>\r\
+    \n  Treap(std::initializer_list<I> list) : Treap(list.begin(), list.end()) {}\r\
+    \n private:\r\n  void _clone(node_ptr u, const node_ptr ru) {\r\n    if (ru->left)\
+    \ {\r\n      u->left = std::make_shared<Node>(ru->left->p, ru->left->v);\r\n \
+    \     u->left->parent = u;\r\n      _clone(u->left, ru->left);\r\n    }\r\n  \
+    \  if (ru->right) {\r\n      u->right = std::make_shared<Node>(ru->right->p, ru->right->v);\r\
+    \n      u->right->parent = u;\r\n      _clone(u->right, ru->right);\r\n    }\r\
+    \n  }\r\n public:\r\n  Treap(const Treap& r) : Treap() {\r\n    _clone(sentinel_,\
     \ r.sentinel_);\r\n    size_ = r.size_;\r\n  }\r\n  Treap& operator=(const Treap&\
     \ r) {\r\n    clear();\r\n    _clone(sentinel_, r.sentinel_);\r\n    size_ = r.size_;\r\
     \n    return *this;\r\n  }\r\n  Treap(Treap&& r) noexcept = default;\r\n  Treap&\
@@ -161,71 +162,70 @@ data:
     \ l = d->left;\r\n    auto r = d->right;\r\n    sentinel_->left = r;\r\n    if\
     \ (r) r->parent = sentinel_;\r\n    if (l) l->parent.reset();\r\n    return Treap(l);\r\
     \n  }\r\n  iterator absorb(Treap* s) {\r\n    assert((s and s->empty()) or empty()\
-    \ or comp_(*--s->end(), *begin()));\r\n    if (s->count(147253) or count(147253))\
-    \ {\r\n      std::cerr<<\"absorb \"<<*(s->begin())<<' '<<*begin()<<' '<<*--end()<<std::endl;\r\
-    \n    }\r\n    auto it = begin();\r\n    if (!s or s->empty()) return it;\r\n\
-    \    if (empty()) {\r\n      sentinel_->left = s->_root();\r\n      sentinel_->left->parent\
-    \ = sentinel_;\r\n      size_ = s->size_;\r\n      s->clear();\r\n      return\
-    \ begin();\r\n    }\r\n    auto d = std::make_shared<Node>(0);\r\n    d->left\
-    \ = s->_root();\r\n    d->right = _root();\r\n    d->parent = sentinel_;\r\n \
-    \   if (d->left)\r\n      d->left->parent = d;\r\n    if (d->right)\r\n      d->right->parent\
-    \ = d;\r\n    sentinel_->left = d;\r\n    _tricle_down(d);\r\n    _splice(d);\r\
-    \n    size_ += s->size_;\r\n    s->clear();\r\n    return it;\r\n  }\r\n\r\n protected:\r\
-    \n  template<bool Const>\r\n  struct iterator_base {\r\n   public:\r\n    using\
-    \ difference_type = ptrdiff_t;\r\n    using value_type = Treap::value_type;\r\n\
-    \    using pointer = typename std::conditional<Const,\r\n                    \
-    \                          const value_type*,\r\n                            \
-    \                  value_type*>::type;\r\n    using reference = typename std::conditional<Const,\r\
-    \n                                                const value_type&,\r\n     \
-    \                                           value_type&>::type;\r\n    using iterator_category\
-    \ = std::bidirectional_iterator_tag;\r\n   private:\r\n    node_ptr ptr_;\r\n\
-    \    friend class Treap;\r\n   public:\r\n    explicit iterator_base(node_ptr\
-    \ ptr) : ptr_(ptr) {}\r\n    template<bool C>\r\n    iterator_base(const iterator_base<C>&\
-    \ rhs) : ptr_(rhs.ptr_) {}\r\n    template<bool C>\r\n    iterator_base& operator=(const\
-    \ iterator_base<C>& rhs) {\r\n      ptr_ = rhs.ptr_;\r\n    }\r\n    template<bool\
-    \ C>\r\n    iterator_base(iterator_base<C>&& rhs) : ptr_(std::move(rhs.ptr_))\
-    \ {}\r\n    template<bool C>\r\n    iterator_base& operator=(iterator_base<C>&&\
-    \ rhs) {\r\n      ptr_ = std::move(rhs.ptr_);\r\n    }\r\n    template<bool C>\r\
-    \n    bool operator==(const iterator_base<C>& r) const { \r\n      return ptr_\
-    \ == r.ptr_;\r\n    }\r\n    template<bool C>\r\n    bool operator!=(const iterator_base<C>&\
-    \ r) const { \r\n      return ptr_ != r.ptr_;\r\n    }\r\n    reference operator*()\
-    \ const { return ptr_->v; }\r\n    pointer operator->() const { return &(ptr_->v);\
-    \ }\r\n    iterator_base& operator++() {\r\n      auto u = ptr_;\r\n      if (u->right)\
-    \ {\r\n        u = u->right;\r\n        while (u->left)\r\n          u = u->left;\r\
-    \n        ptr_ = u;\r\n      } else {\r\n        node_ptr p;\r\n        while\
-    \ ((p = u->parent.lock()) and p->left != u) {\r\n          u = p;\r\n        }\r\
-    \n        assert(!u->parent.expired());\r\n        assert(u->parent.lock()->left\
-    \ == u);\r\n        ptr_ = u->parent.lock();\r\n      }\r\n      return *this;\r\
-    \n    }\r\n    iterator_base operator++(int) {\r\n      iterator ret = *this;\r\
-    \n      ++*this;\r\n      return ret;\r\n    }\r\n    iterator_base& operator--()\
-    \ {\r\n      auto u = ptr_;\r\n      if (u->left) {\r\n        u = u->left;\r\n\
-    \        while (u->right)\r\n          u = u->right;\r\n        ptr_ = u;\r\n\
-    \      } else {\r\n        node_ptr p;\r\n        while ((p = u->parent.lock())\
-    \ and p->right != u) {\r\n          u = p;\r\n        }\r\n        ptr_ = u->parent.lock();\r\
-    \n      }\r\n      return *this;\r\n    }\r\n    iterator_base operator--(int)\
-    \ {\r\n      iterator ret = *this;\r\n      --*this;\r\n      return ret;\r\n\
-    \    }\r\n  };\r\n public:\r\n  const_iterator begin() const {\r\n    auto u =\
-    \ sentinel_;\r\n    while (u->left)\r\n      u = u->left;\r\n    return const_iterator(u);\r\
-    \n  };\r\n  const_iterator end() const {\r\n    return const_iterator(sentinel_);\r\
-    \n  };\r\n  const_iterator cbegin() const {\r\n    return begin();\r\n  }\r\n\
-    \  const_iterator cend() const {\r\n    return end();\r\n  }\r\n  iterator begin()\
-    \ {\r\n    return iterator(cbegin());\r\n  };\r\n  iterator end() {\r\n    return\
-    \ iterator(cend());\r\n  };\r\n  void print_for_debug(node_ptr u = nullptr, int\
-    \ depth = -1) const {\r\n    if (_root())\r\n      std::cout<<_root()->key()<<std::endl;\r\
-    \n    auto show = [&](auto& f, node_ptr u, int d) {\r\n      if (d >= depth)\r\
-    \n        return;\r\n      if (!u)\r\n        return;\r\n      std::cout << u->key()\
-    \ << std::endl;\r\n      if (u->left)\r\n        std::cout << u->left->key() <<\
-    \ ' ';\r\n      else\r\n        std::cout << \"--- \";\r\n      if (u->right)\r\
-    \n        std::cout << u->right->key() << std::endl;\r\n      else\r\n       \
-    \ std::cout << \"---\" << std::endl;\r\n      f(f, u->left, d+1);\r\n      f(f,\
-    \ u->right, d+1);\r\n    };\r\n    if (!u)\r\n      u = _root();\r\n    show(show,\
-    \ u, 0);\r\n    std::cout<<std::endl;\r\n  }\r\n\r\n};\r\n\r\ntemplate<typename\
-    \ T>\r\nusing TreapSet = Treap<T, void>;\r\n\r\ntemplate<typename T, typename\
-    \ V>\r\nclass TreapMap : public Treap<T, V> {\r\n  static_assert(!std::is_same<V,\
-    \ void>::value, \"\");\r\n  using _base = Treap<T, V>;\r\n public:\r\n  using\
-    \ typename _base::mapped_type;\r\n  using reference = mapped_type&;\r\n  reference\
-    \ operator[](const T& x) {\r\n    // TODO\r\n//    return _base::try_emplace(std::move(x)).first->second;\r\
-    \n    return _base::insert({x, mapped_type()}).first->second;\r\n  }\r\n  reference\
+    \ or comp_(*--s->end(), *begin()));\r\n    auto it = begin();\r\n    if (!s or\
+    \ s->empty()) return it;\r\n    if (empty()) {\r\n      sentinel_->left = s->_root();\r\
+    \n      sentinel_->left->parent = sentinel_;\r\n      size_ = s->size_;\r\n  \
+    \    s->clear();\r\n      return begin();\r\n    }\r\n    auto d = std::make_shared<Node>(0);\r\
+    \n    d->left = s->_root();\r\n    d->right = _root();\r\n    d->parent = sentinel_;\r\
+    \n    if (d->left)\r\n      d->left->parent = d;\r\n    if (d->right)\r\n    \
+    \  d->right->parent = d;\r\n    sentinel_->left = d;\r\n    _tricle_down(d);\r\
+    \n    _splice(d);\r\n    size_ += s->size_;\r\n    s->clear();\r\n    return it;\r\
+    \n  }\r\n\r\n protected:\r\n  template<bool Const>\r\n  struct iterator_base {\r\
+    \n   public:\r\n    using difference_type = ptrdiff_t;\r\n    using value_type\
+    \ = Treap::value_type;\r\n    using pointer = typename std::conditional<Const,\r\
+    \n                                              const value_type*,\r\n       \
+    \                                       value_type*>::type;\r\n    using reference\
+    \ = typename std::conditional<Const,\r\n                                     \
+    \           const value_type&,\r\n                                           \
+    \     value_type&>::type;\r\n    using iterator_category = std::bidirectional_iterator_tag;\r\
+    \n   private:\r\n    node_ptr ptr_;\r\n    friend class Treap;\r\n   public:\r\
+    \n    explicit iterator_base(node_ptr ptr) : ptr_(ptr) {}\r\n    template<bool\
+    \ C>\r\n    iterator_base(const iterator_base<C>& rhs) : ptr_(rhs.ptr_) {}\r\n\
+    \    template<bool C>\r\n    iterator_base& operator=(const iterator_base<C>&\
+    \ rhs) {\r\n      ptr_ = rhs.ptr_;\r\n    }\r\n    template<bool C>\r\n    iterator_base(iterator_base<C>&&\
+    \ rhs) : ptr_(std::move(rhs.ptr_)) {}\r\n    template<bool C>\r\n    iterator_base&\
+    \ operator=(iterator_base<C>&& rhs) {\r\n      ptr_ = std::move(rhs.ptr_);\r\n\
+    \    }\r\n    template<bool C>\r\n    bool operator==(const iterator_base<C>&\
+    \ r) const { \r\n      return ptr_ == r.ptr_;\r\n    }\r\n    template<bool C>\r\
+    \n    bool operator!=(const iterator_base<C>& r) const { \r\n      return ptr_\
+    \ != r.ptr_;\r\n    }\r\n    reference operator*() const { return ptr_->v; }\r\
+    \n    pointer operator->() const { return &(ptr_->v); }\r\n    iterator_base&\
+    \ operator++() {\r\n      auto u = ptr_;\r\n      if (u->right) {\r\n        u\
+    \ = u->right;\r\n        while (u->left)\r\n          u = u->left;\r\n       \
+    \ ptr_ = u;\r\n      } else {\r\n        node_ptr p;\r\n        while ((p = u->parent.lock())\
+    \ and p->left != u) {\r\n          u = p;\r\n        }\r\n        assert(!u->parent.expired());\r\
+    \n        assert(u->parent.lock()->left == u);\r\n        ptr_ = u->parent.lock();\r\
+    \n      }\r\n      return *this;\r\n    }\r\n    iterator_base operator++(int)\
+    \ {\r\n      iterator ret = *this;\r\n      ++*this;\r\n      return ret;\r\n\
+    \    }\r\n    iterator_base& operator--() {\r\n      auto u = ptr_;\r\n      if\
+    \ (u->left) {\r\n        u = u->left;\r\n        while (u->right)\r\n        \
+    \  u = u->right;\r\n        ptr_ = u;\r\n      } else {\r\n        node_ptr p;\r\
+    \n        while ((p = u->parent.lock()) and p->right != u) {\r\n          u =\
+    \ p;\r\n        }\r\n        ptr_ = u->parent.lock();\r\n      }\r\n      return\
+    \ *this;\r\n    }\r\n    iterator_base operator--(int) {\r\n      iterator ret\
+    \ = *this;\r\n      --*this;\r\n      return ret;\r\n    }\r\n  };\r\n public:\r\
+    \n  const_iterator begin() const {\r\n    auto u = sentinel_;\r\n    while (u->left)\r\
+    \n      u = u->left;\r\n    return const_iterator(u);\r\n  };\r\n  const_iterator\
+    \ end() const {\r\n    return const_iterator(sentinel_);\r\n  };\r\n  const_iterator\
+    \ cbegin() const {\r\n    return begin();\r\n  }\r\n  const_iterator cend() const\
+    \ {\r\n    return end();\r\n  }\r\n  iterator begin() {\r\n    return iterator(cbegin());\r\
+    \n  };\r\n  iterator end() {\r\n    return iterator(cend());\r\n  };\r\n  void\
+    \ print_for_debug(node_ptr u = nullptr, int depth = -1) const {\r\n    if (_root())\r\
+    \n      std::cout<<_root()->key()<<std::endl;\r\n    auto show = [&](auto& f,\
+    \ node_ptr u, int d) {\r\n      if (d >= depth)\r\n        return;\r\n      if\
+    \ (!u)\r\n        return;\r\n      std::cout << u->key() << std::endl;\r\n   \
+    \   if (u->left)\r\n        std::cout << u->left->key() << ' ';\r\n      else\r\
+    \n        std::cout << \"--- \";\r\n      if (u->right)\r\n        std::cout <<\
+    \ u->right->key() << std::endl;\r\n      else\r\n        std::cout << \"---\"\
+    \ << std::endl;\r\n      f(f, u->left, d+1);\r\n      f(f, u->right, d+1);\r\n\
+    \    };\r\n    if (!u)\r\n      u = _root();\r\n    show(show, u, 0);\r\n    std::cout<<std::endl;\r\
+    \n  }\r\n\r\n};\r\n\r\ntemplate<typename T>\r\nusing TreapSet = Treap<T, void>;\r\
+    \n\r\ntemplate<typename T, typename V>\r\nclass TreapMap : public Treap<T, V>\
+    \ {\r\n  static_assert(!std::is_same<V, void>::value, \"\");\r\n  using _base\
+    \ = Treap<T, V>;\r\n public:\r\n  using typename _base::mapped_type;\r\n  using\
+    \ reference = mapped_type&;\r\n  reference operator[](const T& x) {\r\n    //\
+    \ TODO\r\n//    return _base::try_emplace(std::move(x)).first->second;\r\n   \
+    \ return _base::insert({x, mapped_type()}).first->second;\r\n  }\r\n  reference\
     \ operator[](T&& x) {\r\n    // TODO\r\n//    return _base::try_emplace(std::move(x)).first->second;\r\
     \n    return _base::insert({std::move(x), mapped_type()}).first->second;\r\n \
     \ }\r\n};\n#line 2 \"include/mtl/bit_manip.hpp\"\n#include <cstdint>\n#line 4\
@@ -767,7 +767,7 @@ data:
   isVerificationFile: false
   path: include/mtl/integer_set.hpp
   requiredBy: []
-  timestamp: '2022-12-28 04:08:50+09:00'
+  timestamp: '2022-12-28 06:09:16+09:00'
   verificationStatus: LIBRARY_NO_TESTS
   verifiedWith: []
 documentation_of: include/mtl/integer_set.hpp

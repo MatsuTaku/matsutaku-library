@@ -82,8 +82,12 @@ data:
     \ v) {\r\n    return Base::_insert(std::move(v));\r\n  }\r\n  template<class...\
     \ Args>\r\n  std::pair<iterator, bool> emplace(Args&&... args) {\r\n    using\
     \ emplace_type = typename std::conditional<\r\n        std::is_constructible<init_type,\
-    \ Args...>::value,\r\n            init_type,\r\n            value_type\r\n   \
-    \     >::type;\r\n    return Base::_insert(emplace_type(std::forward<Args>(args)...));\r\
+    \ Args...>::value,\r\n        init_type,\r\n        value_type\r\n    >::type;\r\
+    \n    return Base::_insert(emplace_type(std::forward<Args>(args)...));\r\n  }\r\
+    \n  template<class... Args>\r\n  iterator emplace_hint(const_iterator hint, Args&&...\
+    \ args) {\r\n    using emplace_type = typename std::conditional<\r\n        std::is_constructible<init_type,\
+    \ Args...>::value,\r\n        init_type,\r\n        value_type\r\n    >::type;\r\
+    \n    return Base::_emplace_hint(hint, emplace_type(std::forward<Args>(args)...));\r\
     \n  }\r\n  size_t erase(const key_type& x) {\r\n    return Base::_erase(x);\r\n\
     \  }\r\n  iterator erase(iterator it) {\r\n    return Base::_erase(it);\r\n  }\r\
     \n  iterator erase(const_iterator it) {\r\n    return Base::_erase(it);\r\n  }\r\
@@ -164,8 +168,12 @@ data:
     \ v) {\r\n    return Base::_insert(std::move(v));\r\n  }\r\n  template<class...\
     \ Args>\r\n  std::pair<iterator, bool> emplace(Args&&... args) {\r\n    using\
     \ emplace_type = typename std::conditional<\r\n        std::is_constructible<init_type,\
-    \ Args...>::value,\r\n            init_type,\r\n            value_type\r\n   \
-    \     >::type;\r\n    return Base::_insert(emplace_type(std::forward<Args>(args)...));\r\
+    \ Args...>::value,\r\n        init_type,\r\n        value_type\r\n    >::type;\r\
+    \n    return Base::_insert(emplace_type(std::forward<Args>(args)...));\r\n  }\r\
+    \n  template<class... Args>\r\n  iterator emplace_hint(const_iterator hint, Args&&...\
+    \ args) {\r\n    using emplace_type = typename std::conditional<\r\n        std::is_constructible<init_type,\
+    \ Args...>::value,\r\n        init_type,\r\n        value_type\r\n    >::type;\r\
+    \n    return Base::_emplace_hint(hint, emplace_type(std::forward<Args>(args)...));\r\
     \n  }\r\n  size_t erase(const key_type& x) {\r\n    return Base::_erase(x);\r\n\
     \  }\r\n  iterator erase(iterator it) {\r\n    return Base::_erase(it);\r\n  }\r\
     \n  iterator erase(const_iterator it) {\r\n    return Base::_erase(it);\r\n  }\r\
@@ -189,7 +197,7 @@ data:
   - include/mtl/xft.hpp
   - include/mtl/yft.hpp
   - include/mtl/binary_trie.hpp
-  timestamp: '2022-12-28 04:08:50+09:00'
+  timestamp: '2022-12-28 06:09:16+09:00'
   verificationStatus: LIBRARY_NO_TESTS
   verifiedWith: []
 documentation_of: include/mtl/traits/set_traits.hpp
