@@ -16,7 +16,7 @@ struct AssociativeArrayDefinition {
   using init_type = std::pair<raw_key_type, raw_mapped_type>;
   using moved_type = std::pair<raw_key_type&&, raw_mapped_type&&>;
   template<class K, class V>
-  static inline key_type const& key_of(std::pair<K,V> const& kv) {
+  static key_type const& key_of(std::pair<K,V> const& kv) {
     return kv.first;
   }
 };
@@ -25,7 +25,20 @@ struct AssociativeArrayDefinition<T, void> {
   using key_type = T;
   using value_type = T;
   using init_type = T;
-  static inline key_type const& key_of(value_type const& k) { return k; }
+  static key_type const& key_of(value_type const& k) { return k; }
+};
+
+template<class T, typename = std::void_t<>>
+struct get_const_iterator {
+  using base = typename T::iterator;
+  struct type : base {
+    type(const base& r) : base(r) {}
+    type(base&& r) : base(std::move(r)) {}
+  };
+};
+template<class T>
+struct get_const_iterator<T, std::void_t<typename T::const_iterator>> {
+  using type = typename T::const_iterator;
 };
 
 #if __cplusplus >= 202002L
@@ -62,72 +75,96 @@ class SetTraitsBase : public Base {
   using Base::size;
   bool empty() const { return size() == 0; }
   using Base::clear;
-  using Base::begin;
-  using Base::end;
-  using reverse_iterator = std::reverse_iterator<iterator>;
-  inline reverse_iterator rbegin() const {
-    return reverse_iterator(begin());
+  using const_iterator = typename get_const_iterator<Base>::type;
+  iterator begin() {
+    return Base::begin();
   }
-  inline reverse_iterator rend() const {
-    return reverse_iterator(end());
+  iterator end() {
+    return Base::end();
+  }
+  const_iterator begin() const {
+    return const_iterator(Base::begin());
+  }
+  const_iterator end() const {
+    return const_iterator(Base::end());
+  }
+  const_iterator cbegin() const {
+    return begin();
+  }
+  const_iterator cend() const {
+    return end();
+  }
+  using reverse_iterator = std::reverse_iterator<iterator>;
+  using reverse_const_iterator = std::reverse_iterator<const_iterator>;
+  reverse_iterator rbegin() {
+    return std::make_reverse_iterator(end());
+  }
+  reverse_iterator rend() {
+    return std::make_reverse_iterator(begin());
+  }
+  reverse_const_iterator rbegin() const {
+    return std::make_reverse_iterator(end());
+  }
+  reverse_const_iterator rend() const {
+    return std::make_reverse_iterator(begin());
+  }
+  reverse_const_iterator crbegin() const {
+    return rbegin();
+  }
+  reverse_const_iterator crend() const {
+    return rend();
   }
   template<class Key>
-  inline iterator lower_bound(Key&& x) const {
-    return Base::_lower_bound(std::forward<Key>(x));
-  }
-  inline iterator lower_bound(const key_type& x) const {
+  iterator lower_bound(const Key& x) const {
     return Base::_lower_bound(x);
   }
-  inline iterator lower_bound(key_type&& x) const {
-    return Base::_lower_bound(std::move(x));
+  iterator lower_bound(const key_type& x) const {
+    return Base::_lower_bound(x);
   }
   template<class Key>
-  inline iterator upper_bound(Key&& x) const {
-    return Base::_upper_bound(std::forward<Key>(x));
-  }
-  inline iterator upper_bound(const key_type& x) const {
+  iterator upper_bound(const Key& x) const {
     return Base::_upper_bound(x);
   }
-  inline iterator upper_bound(key_type&& x) const {
-    return Base::_upper_bound(std::move(x));
+  iterator upper_bound(const key_type& x) const {
+    return Base::_upper_bound(x);
   }
   template<class Key>
-  inline iterator find(Key&& x) const {
-    return Base::_find(std::forward<Key>(x));
-  }
-  inline iterator find(const key_type& x) const {
+  iterator find(const Key& x) {
     return Base::_find(x);
   }
-  inline iterator find(key_type&& x) const {
-    return Base::_find(std::move(x));
+  iterator find(const key_type& x) {
+    return Base::_find(x);
   }
   template<class Key>
-  inline size_t count(Key&& x) const {
-    return find(std::forward<Key>(x)) != end();
+  const_iterator find(const Key& x) const {
+    return Base::_find(x);
   }
-  inline size_t count(const key_type& x) const {
+  const_iterator find(const key_type& x) const {
+    return Base::_find(x);
+  }
+  template<class Key>
+  size_t count(const Key& x) const {
     return find(x) != end();
   }
-  inline size_t count(key_type&& x) const {
-    return find(std::move(x)) != end();
+  size_t count(const key_type& x) const {
+    return find(x) != end();
   }
-  inline std::pair<iterator, bool> insert(const init_type& v) {
+  std::pair<iterator, bool> insert(const init_type& v) {
     return Base::_insert(v);
   }
-  inline std::pair<iterator, bool> insert(init_type&& v) {
+  std::pair<iterator, bool> insert(init_type&& v) {
     return Base::_insert(std::move(v));
   }
   template<typename=void>
-  inline std::pair<iterator, bool> insert(const value_type& v) {
+  std::pair<iterator, bool> insert(const value_type& v) {
     return Base::_insert(v);
   }
   template<typename=void>
-  inline std::pair<iterator, bool> insert(value_type&& v) {
+  std::pair<iterator, bool> insert(value_type&& v) {
     return Base::_insert(std::move(v));
   }
-  // TODO
   template<class... Args>
-  inline std::pair<iterator, bool> emplace(Args&&... args) {
+  std::pair<iterator, bool> emplace(Args&&... args) {
     using emplace_type = typename std::conditional<
         std::is_constructible<init_type, Args...>::value,
             init_type,
@@ -135,17 +172,13 @@ class SetTraitsBase : public Base {
         >::type;
     return Base::_insert(emplace_type(std::forward<Args>(args)...));
   }
-  template<class Key>
-  inline bool erase(Key&& x) {
-    return Base::_erase(std::forward<Key>(x));
-  }
-  inline bool erase(const key_type& x) {
+  size_t erase(const key_type& x) {
     return Base::_erase(x);
   }
-  inline bool erase(key_type&& x) {
-    return Base::_erase(std::move(x));
+  iterator erase(iterator it) {
+    return Base::_erase(it);
   }
-  inline iterator erase(iterator it) {
+  iterator erase(const_iterator it) {
     return Base::_erase(it);
   }
 };
@@ -165,13 +198,13 @@ class MapTraits : public SetTraitsBase<Base> {
   template<typename InputIt>
   explicit MapTraits(InputIt begin, InputIt end) : SBase(begin, end) {}
   MapTraits(std::initializer_list<value_type> init) : SBase(init) {}
-  inline reference operator[](const key_type& x) {
+  reference operator[](const key_type& x) {
     // TODO
 //    return SBase::try_emplace(x).first->second;
     auto it = SBase::insert({x, mapped_type()}).first;
     return it->second;
   }
-  inline reference operator[](key_type&& x) {
+  reference operator[](key_type&& x) {
     // TODO
 //    return SBase::try_emplace(std::move(x)).first->second;
     auto it = SBase::insert({std::move(x), mapped_type()}).first;

@@ -31,28 +31,28 @@ class BinaryTrieBase : public traits::AssociativeArrayDefinition<T, M> {
     leaf_ptr jump;
     node_weak_ptr parent;
     Node() = default;
-    inline node_ptr& left() { return c[0]; }
-    inline node_ptr& right()  { return c[1]; }
+    node_ptr& left() { return c[0]; }
+    node_ptr& right()  { return c[1]; }
   };
   struct Leaf : Node {
     value_type v;
     Leaf() = default;
     Leaf(const value_type& v) : Node(), v(v) {}
     Leaf(value_type&& v) : Node(), v(std::forward<value_type>(v)) {}
-    inline key_type key() const {
+    key_type key() const {
       return types::key_of(v);
     }
     using Node::c;
-    inline leaf_ptr prev() const {
+    leaf_ptr prev() const {
       return std::static_pointer_cast<Leaf>(c[0]);
     }
-    inline leaf_ptr next() const {
+    leaf_ptr next() const {
       return std::static_pointer_cast<Leaf>(c[1]);
     }
-    inline void set_prev(leaf_ptr l) {
+    void set_prev(leaf_ptr l) {
       c[0] = std::static_pointer_cast<Node>(l);
     }
-    inline void set_next(leaf_ptr l) {
+    void set_next(leaf_ptr l) {
       c[1] = std::static_pointer_cast<Node>(l);
     }
   };
@@ -60,7 +60,7 @@ class BinaryTrieBase : public traits::AssociativeArrayDefinition<T, M> {
   node_ptr root_;
   leaf_ptr dummy_;
   size_t size_;
-  virtual inline void _init() {
+  virtual void _init() {
     root_ = create_node_at(0, 0);
     dummy_ = std::make_shared<Leaf>();
     root_->jump = dummy_;
@@ -68,7 +68,7 @@ class BinaryTrieBase : public traits::AssociativeArrayDefinition<T, M> {
     dummy_->set_prev(dummy_);
     size_ = 0;
   }
-  inline void _deinit() {
+  void _deinit() {
     root_ = nullptr;
     auto u = dummy_->next();
     dummy_->set_next(nullptr);
@@ -88,16 +88,18 @@ class BinaryTrieBase : public traits::AssociativeArrayDefinition<T, M> {
   BinaryTrieBase(const BinaryTrieBase& rhs) {
     _insert_init(rhs.begin(), rhs.end());
   }
-  BinaryTrieBase& operator=(const BinaryTrieBase& rhs) {
+  virtual BinaryTrieBase& operator=(const BinaryTrieBase& rhs) {
     _deinit();
     _insert_init(rhs.begin(), rhs.end());
+    return *this;
   }
   BinaryTrieBase(BinaryTrieBase&&) noexcept = default;
-  BinaryTrieBase& operator=(BinaryTrieBase&& rhs) noexcept {
+  virtual BinaryTrieBase& operator=(BinaryTrieBase&& rhs) noexcept {
     _deinit();
     root_ = std::move(rhs.root_);
     dummy_ = std::move(rhs.dummy_);
     size_ = std::move(rhs.size_);
+    return *this;
   }
   virtual ~BinaryTrieBase() {
     _deinit();
@@ -168,23 +170,27 @@ class BinaryTrieBase : public traits::AssociativeArrayDefinition<T, M> {
   explicit BinaryTrieBase(InputIt begin, InputIt end) {
     _insert_init(begin, end);
   }
-  inline size_t size() const {
+  size_t size() const {
     return size_;
   }
-  inline bool empty() const { return size() == 0; }
-  inline void clear() {
+  bool empty() const { return size() == 0; }
+  void clear() {
     _deinit();
     _init();
   }
-  struct iterator;
-  inline iterator begin() const {
+ protected:
+  template<bool> struct iterator_base;
+ public:
+  using iterator = iterator_base<false>;
+  using const_iterator = iterator_base<true>;
+  iterator begin() const {
     return iterator(dummy_->next());
   }
-  inline iterator end() const {
+  iterator end() const {
     return iterator(dummy_);
   }
  protected:
-  virtual inline std::pair<int, node_ptr> _traverse(const key_type& key) const {
+  virtual std::pair<int, node_ptr> _traverse(const key_type& key) const {
     int i, c;
     key_type x = key;
     auto u = root_;
@@ -196,7 +202,7 @@ class BinaryTrieBase : public traits::AssociativeArrayDefinition<T, M> {
     return std::make_pair(i, u);
   }
   template<typename Key>
-  inline iterator _lower_bound(Key&& key) const {
+  iterator _lower_bound(Key&& key) const {
     static_assert(std::is_convertible<Key, key_type>::value, "");
     key_type x = std::forward<Key>(key);
     auto reached = _traverse(x);
@@ -208,7 +214,7 @@ class BinaryTrieBase : public traits::AssociativeArrayDefinition<T, M> {
   }
  protected:
   template<typename Key>
-  inline iterator _upper_bound(Key&& key) const {
+  iterator _upper_bound(Key&& key) const {
     static_assert(std::is_convertible<Key, key_type>::value, "");
     key_type x = std::forward<Key>(key);
     auto it = _lower_bound(x);
@@ -217,7 +223,7 @@ class BinaryTrieBase : public traits::AssociativeArrayDefinition<T, M> {
     return it;
   }
   template<typename Key>
-  inline iterator _find(Key&& key) const {
+  iterator _find(Key&& key) const {
     static_assert(std::is_convertible<Key, key_type>::value, "");
     key_type x = std::forward<Key>(key);
     auto reached = _traverse(x);
@@ -229,17 +235,17 @@ class BinaryTrieBase : public traits::AssociativeArrayDefinition<T, M> {
       return end();
   }
  protected:
-  virtual inline node_ptr create_node_at(const key_type&, int) {
+  virtual node_ptr create_node_at(const key_type&, int) {
     return std::make_shared<Node>();
   }
-  virtual inline leaf_ptr create_leaf_at(const key_type&, const init_type& value) {
+  virtual leaf_ptr create_leaf_at(const key_type&, const init_type& value) {
     return std::make_shared<Leaf>(value);
   }
-  virtual inline leaf_ptr create_leaf_at(const key_type&, init_type&& value) {
+  virtual leaf_ptr create_leaf_at(const key_type&, init_type&& value) {
     return std::make_shared<Leaf>(std::move(value));
   }
   template<typename Value>
-  inline std::pair<iterator, bool> _insert(Value&& value) {
+  std::pair<iterator, bool> _insert(Value&& value) {
     static_assert(std::is_convertible<Value, value_type>::value, "");
     key_type x = types::key_of(value);
     auto reached = _traverse(x);
@@ -290,10 +296,8 @@ class BinaryTrieBase : public traits::AssociativeArrayDefinition<T, M> {
   }
 
   virtual void erase_node_at(const key_type&, int, node_ptr) {}
-  template<typename Key>
-  bool _erase(Key&& x) {
-    static_assert(std::is_convertible<Key, key_type>::value, "");
-    auto it = _find(x);
+  bool _erase(const key_type& key) {
+    auto it = _find(key);
     if (it != end()) {
       _erase(it);
       return true;
@@ -302,7 +306,7 @@ class BinaryTrieBase : public traits::AssociativeArrayDefinition<T, M> {
     }
   }
   template<typename Key>
-  inline iterator _erase_from_leaf(Key&& key, leaf_ptr l) {
+  iterator _erase_from_leaf(Key&& key, leaf_ptr l) {
     static_assert(std::is_convertible<Key, key_type>::value, "");
     key_type x = std::forward<Key>(key);
     assert(x == l->key());
@@ -334,50 +338,79 @@ class BinaryTrieBase : public traits::AssociativeArrayDefinition<T, M> {
     size_--;
     return iterator(l->next());
   }
-  inline iterator _erase(iterator it) {
+  iterator iterator_remove_const(const const_iterator& it) {
+    return iterator(it.ptr_);
+  }
+  iterator iterator_remove_const(const_iterator&& it) {
+    return iterator(std::move(it.ptr_));
+  }
+  iterator _erase(iterator it) {
     if (it == end()) return it;
     return _erase_from_leaf(types::key_of(*it), it.ptr_);
   }
-};
-template<typename T, typename M, int8_t W>
-struct BinaryTrieBase<T,M,W>::iterator {
-  using difference_type = ptrdiff_t;
-  using value_type = BinaryTrieBase::value_type;
-  using pointer = value_type*;
-  using reference = value_type&;
-  using iterator_category = std::bidirectional_iterator_tag;
-  leaf_ptr ptr_;
-  iterator(leaf_ptr p) : ptr_(p) {}
-  inline reference operator*() {
-    return ptr_->v;
+  iterator _erase(const_iterator it) {
+    if (it == end()) return iterator_remove_const(it);
+    return _erase_from_leaf(types::key_of(*it), it.ptr_);
   }
-  inline pointer operator->() {
-    return &(ptr_->v);
-  }
-  inline bool operator==(const iterator& rhs) const {
-    return ptr_ == rhs.ptr_;
-  }
-  inline bool operator!=(const iterator& rhs) const {
-    return !operator==(rhs);
-  }
-  inline iterator& operator++() {
-    ptr_ = ptr_->next();
-    return *this;
-  }
-  inline iterator operator++(int) const {
-    iterator ret = *this;
-    operator++();
-    return ret;
-  }
-  inline iterator& operator--() {
-    ptr_ = ptr_->prev();
-    return *this;
-  }
-  inline iterator operator--(int) const {
-    iterator ret = *this;
-    operator--();
-    return ret;
-  }
+ protected:
+  template<bool Const>
+  struct iterator_base {
+    using difference_type = ptrdiff_t;
+    using value_type = BinaryTrieBase::value_type;
+    using pointer = typename std::conditional<Const,
+                                              const value_type*,
+                                              value_type*>::type;
+    using reference = typename std::conditional<Const,
+                                                const value_type&,
+                                                value_type&>::type;
+    using iterator_category = std::bidirectional_iterator_tag;
+    leaf_ptr ptr_;
+    iterator_base(leaf_ptr p) : ptr_(p) {}
+    template<bool C>
+    iterator_base(const iterator_base<C>& rhs) : ptr_(rhs.ptr_) {}
+    template<bool C>
+    iterator_base& operator=(const iterator_base<C>& rhs) {
+      ptr_ = rhs.ptr_;
+    }
+    template<bool C>
+    iterator_base(iterator_base<C>&& rhs) : ptr_(std::move(rhs.ptr_)) {}
+    template<bool C>
+    iterator_base& operator=(iterator_base<C>&& rhs) {
+      ptr_ = std::move(rhs.ptr_);
+    }
+    reference operator*() {
+      return ptr_->v;
+    }
+    pointer operator->() {
+      return &(ptr_->v);
+    }
+    template<bool C>
+    bool operator==(const iterator_base<C>& rhs) const {
+      return ptr_ == rhs.ptr_;
+    }
+    template<bool C>
+    bool operator!=(const iterator_base<C>& rhs) const {
+      return !operator==(rhs);
+    }
+    iterator_base& operator++() {
+      ptr_ = ptr_->next();
+      return *this;
+    }
+    iterator_base operator++(int) const {
+      iterator_base ret = *this;
+      operator++();
+      return ret;
+    }
+    iterator_base& operator--() {
+      ptr_ = ptr_->prev();
+      return *this;
+    }
+    iterator_base operator--(int) const {
+      iterator_base ret = *this;
+      operator--();
+      return ret;
+    }
+  };
 };
 
 template<typename T, typename V, uint8_t W = sizeof(T)*8>
