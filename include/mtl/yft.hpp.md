@@ -105,17 +105,16 @@ data:
     \ InputIt>\r\n  explicit MapTraits(InputIt begin, InputIt end) : SBase(begin,\
     \ end) {}\r\n  MapTraits(std::initializer_list<value_type> init) : SBase(init)\
     \ {}\r\n  reference operator[](const key_type& x) {\r\n    // TODO\r\n//    return\
-    \ SBase::try_emplace(x).first->second;\r\n    auto it = SBase::insert({x, mapped_type()}).first;\r\
-    \n    return it->second;\r\n  }\r\n  reference operator[](key_type&& x) {\r\n\
-    \    // TODO\r\n//    return SBase::try_emplace(std::move(x)).first->second;\r\
-    \n    auto it = SBase::insert({std::move(x), mapped_type()}).first;\r\n    return\
-    \ it->second;\r\n  }\r\n};\r\n\r\n} // namespace traits\n#line 2 \"include/mtl/treap.hpp\"\
-    \n#include <memory>\r\n#line 4 \"include/mtl/treap.hpp\"\n#include <cassert>\r\
-    \n#include <exception>\r\n#include <random>\r\n#include <iostream>\r\n\r\ntemplate<class\
-    \ T, class V=void,\r\n    class Compare = std::less<>>\r\nclass Treap {\r\n public:\r\
-    \n  using key_type = T;\r\n  static constexpr bool kKeyOnly = std::is_same<V,\
-    \ void>::value;\r\n  using mapped_type = typename std::conditional<kKeyOnly, T,\
-    \ V>::type;\r\n  using value_type = typename std::conditional<\r\n      kKeyOnly,\r\
+    \ SBase::try_emplace(x).first->second;\r\n    return SBase::emplace(x, mapped_type()).first->second;\r\
+    \n  }\r\n  reference operator[](key_type&& x) {\r\n    // TODO\r\n//    return\
+    \ SBase::try_emplace(std::move(x)).first->second;\r\n    return SBase::emplace(std::move(x),\
+    \ mapped_type()).first->second;\r\n  }\r\n};\r\n\r\n} // namespace traits\n#line\
+    \ 2 \"include/mtl/treap.hpp\"\n#include <memory>\r\n#line 4 \"include/mtl/treap.hpp\"\
+    \n#include <cassert>\r\n#include <exception>\r\n#include <random>\r\n#include\
+    \ <iostream>\r\n\r\ntemplate<class T, class V=void,\r\n    class Compare = std::less<>>\r\
+    \nclass Treap {\r\n public:\r\n  using key_type = T;\r\n  static constexpr bool\
+    \ kKeyOnly = std::is_same<V, void>::value;\r\n  using mapped_type = typename std::conditional<kKeyOnly,\
+    \ T, V>::type;\r\n  using value_type = typename std::conditional<\r\n      kKeyOnly,\r\
     \n      T,\r\n      std::pair<T const, V>\r\n  >::type;\r\n  using raw_key_type\
     \ = typename std::conditional<kKeyOnly, T, typename std::remove_const<T>::type>::type;\r\
     \n  using raw_value_type = typename std::conditional<kKeyOnly, T, typename std::remove_const<V>::type>::type;\r\
@@ -879,7 +878,7 @@ data:
   isVerificationFile: false
   path: include/mtl/yft.hpp
   requiredBy: []
-  timestamp: '2022-12-28 06:09:16+09:00'
+  timestamp: '2022-12-28 06:13:01+09:00'
   verificationStatus: LIBRARY_NO_TESTS
   verifiedWith: []
 documentation_of: include/mtl/yft.hpp

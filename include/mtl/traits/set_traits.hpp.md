@@ -99,11 +99,10 @@ data:
     \ InputIt>\r\n  explicit MapTraits(InputIt begin, InputIt end) : SBase(begin,\
     \ end) {}\r\n  MapTraits(std::initializer_list<value_type> init) : SBase(init)\
     \ {}\r\n  reference operator[](const key_type& x) {\r\n    // TODO\r\n//    return\
-    \ SBase::try_emplace(x).first->second;\r\n    auto it = SBase::insert({x, mapped_type()}).first;\r\
-    \n    return it->second;\r\n  }\r\n  reference operator[](key_type&& x) {\r\n\
-    \    // TODO\r\n//    return SBase::try_emplace(std::move(x)).first->second;\r\
-    \n    auto it = SBase::insert({std::move(x), mapped_type()}).first;\r\n    return\
-    \ it->second;\r\n  }\r\n};\r\n\r\n} // namespace traits\n"
+    \ SBase::try_emplace(x).first->second;\r\n    return SBase::emplace(x, mapped_type()).first->second;\r\
+    \n  }\r\n  reference operator[](key_type&& x) {\r\n    // TODO\r\n//    return\
+    \ SBase::try_emplace(std::move(x)).first->second;\r\n    return SBase::emplace(std::move(x),\
+    \ mapped_type()).first->second;\r\n  }\r\n};\r\n\r\n} // namespace traits\n"
   code: "#pragma once\r\n#include <cstddef>\r\n#include <initializer_list>\r\n#include\
     \ <type_traits>\r\n#include <iterator>\r\n\r\nnamespace traits {\r\n\r\ntemplate<typename\
     \ T, typename M>\r\nstruct AssociativeArrayDefinition {\r\n  using key_type =\
@@ -185,11 +184,10 @@ data:
     \ InputIt>\r\n  explicit MapTraits(InputIt begin, InputIt end) : SBase(begin,\
     \ end) {}\r\n  MapTraits(std::initializer_list<value_type> init) : SBase(init)\
     \ {}\r\n  reference operator[](const key_type& x) {\r\n    // TODO\r\n//    return\
-    \ SBase::try_emplace(x).first->second;\r\n    auto it = SBase::insert({x, mapped_type()}).first;\r\
-    \n    return it->second;\r\n  }\r\n  reference operator[](key_type&& x) {\r\n\
-    \    // TODO\r\n//    return SBase::try_emplace(std::move(x)).first->second;\r\
-    \n    auto it = SBase::insert({std::move(x), mapped_type()}).first;\r\n    return\
-    \ it->second;\r\n  }\r\n};\r\n\r\n} // namespace traits"
+    \ SBase::try_emplace(x).first->second;\r\n    return SBase::emplace(x, mapped_type()).first->second;\r\
+    \n  }\r\n  reference operator[](key_type&& x) {\r\n    // TODO\r\n//    return\
+    \ SBase::try_emplace(std::move(x)).first->second;\r\n    return SBase::emplace(std::move(x),\
+    \ mapped_type()).first->second;\r\n  }\r\n};\r\n\r\n} // namespace traits"
   dependsOn: []
   isVerificationFile: false
   path: include/mtl/traits/set_traits.hpp
@@ -197,7 +195,7 @@ data:
   - include/mtl/xft.hpp
   - include/mtl/yft.hpp
   - include/mtl/binary_trie.hpp
-  timestamp: '2022-12-28 06:09:16+09:00'
+  timestamp: '2022-12-28 06:13:01+09:00'
   verificationStatus: LIBRARY_NO_TESTS
   verifiedWith: []
 documentation_of: include/mtl/traits/set_traits.hpp
