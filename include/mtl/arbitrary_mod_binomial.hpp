@@ -2,6 +2,7 @@
 #include <vector>
 #include <array>
 #include <type_traits>
+#include <cassert>
 
 namespace math {
 
@@ -33,14 +34,14 @@ struct ArbitraryModBinomial {
   bool enabled_;
   int n_, mod_;
   constexpr bool enabled() const { return enabled_; }
-  constexpr int mod() { return mod_; }
+  constexpr int mod() const { return mod_; }
   std::vector<int> st_;
-  constexpr ArbitraryModBinomial(int n, int mod)
-    : enabled_(math::is_coprime(n, mod)), n_(n), mod_(mod), st_((n+1)/2) {
-    if (!enabled) return;
+  ArbitraryModBinomial(int n, int _mod)
+    : enabled_(math::is_coprime(n, _mod)), n_(n), mod_(_mod), st_((n+1)/2) {
+    if (!enabled()) return;
     std::vector<bool> isn_p(n+1);
     buffer_type P{};
-    std::vector<int> d(n+1), inv(n+1);
+    std::vector<int> d(n+1);
     int k = 0;
     for (int i = 2; i <= n; i++) {
       if (isn_p[i]) continue;
@@ -62,10 +63,10 @@ struct ArbitraryModBinomial {
     for (int i = 1; i <= MAX_PRIME_FACTOR_NUM; i++) {
       int t = n / (P[i]-1) + 1;
       int v = 1;
-      ptb[i*h] = v;
+      ptb[i*w] = v;
       for(int j = 1; j < t; j++) {
         v = v * P[i] % mod();
-        ptb[i*h+j] = v;
+        ptb[i*w+j] = v;
       }
     }
     /* important equation
@@ -94,12 +95,12 @@ struct ArbitraryModBinomial {
       s = (long long) s * inv[ns] % mod();
       for (int i = 1; i <= MAX_PRIME_FACTOR_NUM; i++)
         t[i] -= nt[i];
-      st_[i] = s;
+      st_[k] = s;
       for (int i = 1; i <= MAX_PRIME_FACTOR_NUM; i++)
-        st_[i] = (long long) st_[i] * ptb[i][t[i]] % mod();
+        st_[k] = (long long) st_[k] * ptb[i*w+t[i]] % mod();
     }
   }
-  constexpr inline int mod_inv(int x) const {
+  constexpr int mod_inv(int x) const {
     int t = 1;
     int u = x;
     int p = mod()-2;
@@ -110,7 +111,7 @@ struct ArbitraryModBinomial {
     }
     return t;
   }
-  constexpr inline int operator(int m) const {
+  constexpr int operator()(int m) const {
     assert(enabled());
     if (m*2 > n_)
       return operator()(n_-m);
