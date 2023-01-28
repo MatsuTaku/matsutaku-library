@@ -97,8 +97,8 @@ data:
   timestamp: '2022-12-20 20:34:44+09:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
-  - test/aoj-do_use_segment_tree-balanced_tree.test.cpp
   - test/aoj-do_use_segment_tree-binary_tree.test.cpp
+  - test/aoj-do_use_segment_tree-balanced_tree.test.cpp
 documentation_of: include/mtl/hld.hpp
 layout: document
 redirect_from:

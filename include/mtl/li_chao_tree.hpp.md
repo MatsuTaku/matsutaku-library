@@ -139,8 +139,8 @@ data:
   timestamp: '2022-12-20 20:34:44+09:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
-  - test/yosupo-line_add_get_min.test.cpp
   - test/yosupo-segment_add_get_min.test.cpp
+  - test/yosupo-line_add_get_min.test.cpp
 documentation_of: include/mtl/li_chao_tree.hpp
 layout: document
 redirect_from:

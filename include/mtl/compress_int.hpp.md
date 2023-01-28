@@ -56,9 +56,9 @@ data:
   timestamp: '2022-11-27 16:09:45+09:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
+  - test/yosupo-segment_add_get_min.test.cpp
   - test/yosupo-line_add_get_min.test.cpp
   - test/yosupo-point_add_rectangle_sum-wm.test.cpp
-  - test/yosupo-segment_add_get_min.test.cpp
 documentation_of: include/mtl/compress_int.hpp
 layout: document
 redirect_from:

@@ -47,7 +47,7 @@ data:
     \n          break;\r\n        i++; j++;\r\n      }\r\n      return true;\r\n \
     \   };\r\n    int lms_ord = 0;\r\n    int plms = n-1;\r\n    auto cmp = [&](int\
     \ i) -> int& {\r\n      return lmss[cnt_lms + i/2];\r\n    };\r\n    assert(A[0]\
-    \ = n-1);\r\n    cmp(A[0]) = 0;\r\n    for (int i = 1; i < n; i++) if (is_lms(A[i]))\
+    \ == n-1);\r\n    cmp(A[0]) = 0;\r\n    for (int i = 1; i < n; i++) if (is_lms(A[i]))\
     \ {\r\n      if (!are_same_lms_substr(plms, A[i]))\r\n        ++lms_ord;\r\n \
     \     cmp(A[i]) = lms_ord;\r\n      plms = A[i];\r\n    }\r\n    int k = 0;\r\n\
     \    for (int i = 1; i < n; i++) if (is_lms(i))\r\n      lmss[k++] = cmp(i);\r\
@@ -105,7 +105,7 @@ data:
     \n          break;\r\n        i++; j++;\r\n      }\r\n      return true;\r\n \
     \   };\r\n    int lms_ord = 0;\r\n    int plms = n-1;\r\n    auto cmp = [&](int\
     \ i) -> int& {\r\n      return lmss[cnt_lms + i/2];\r\n    };\r\n    assert(A[0]\
-    \ = n-1);\r\n    cmp(A[0]) = 0;\r\n    for (int i = 1; i < n; i++) if (is_lms(A[i]))\
+    \ == n-1);\r\n    cmp(A[0]) = 0;\r\n    for (int i = 1; i < n; i++) if (is_lms(A[i]))\
     \ {\r\n      if (!are_same_lms_substr(plms, A[i]))\r\n        ++lms_ord;\r\n \
     \     cmp(A[i]) = lms_ord;\r\n      plms = A[i];\r\n    }\r\n    int k = 0;\r\n\
     \    for (int i = 1; i < n; i++) if (is_lms(i))\r\n      lmss[k++] = cmp(i);\r\
@@ -131,7 +131,7 @@ data:
   isVerificationFile: false
   path: include/mtl/string/suffix_array.hpp
   requiredBy: []
-  timestamp: '2022-11-27 16:09:45+09:00'
+  timestamp: '2023-01-28 19:00:09+00:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
   - test/string/suffix_array.test.cpp

@@ -192,9 +192,9 @@ data:
   isVerificationFile: false
   path: include/mtl/traits/set_traits.hpp
   requiredBy:
-  - include/mtl/xft.hpp
   - include/mtl/yft.hpp
   - include/mtl/binary_trie.hpp
+  - include/mtl/xft.hpp
   timestamp: '2022-12-28 06:13:01+09:00'
   verificationStatus: LIBRARY_NO_TESTS
   verifiedWith: []
