@@ -9,6 +9,12 @@ class Modular {
 
  public:
   static constexpr unsigned int mod() { return MOD; }
+  template<class T>
+  static constexpr unsigned int safe_mod(T v) {
+    auto x = (long long)(v%(long long)mod());
+    if (x < 0) x += mod();
+    return (unsigned int) x;
+  }
 
   constexpr Modular() : val_(0) {}
   template<class T,
@@ -20,11 +26,7 @@ class Modular {
       std::enable_if_t<
           std::is_integral<T>::value && !std::is_unsigned<T>::value
       > * = nullptr>
-  constexpr Modular(T v) {
-    auto x = (long long)(v%(long long)mod());
-    if (x < 0) x += mod();
-    val_ = (unsigned int)x;
-  }
+  constexpr Modular(T v) : val_(safe_mod(v)) {}
 
   constexpr unsigned int val() const { return val_; }
   constexpr Modular& operator+=(Modular x) {
@@ -84,3 +86,54 @@ class Modular {
 
 using Modular998244353 = Modular<998244353>;
 using Modular1000000007 = Modular<(int)1e9+7>;
+
+#include <array>
+
+namespace math {
+
+constexpr int mod_pow_constexpr(int x, int p, int m) {
+  int t = 1;
+  int u = x;
+  while (p) {
+    if (p & 1) {
+      t *= u;
+      t %= m;
+    }
+    u *= u;
+    u %= m;
+    p >>= 1;
+  }
+  return t;
+}
+
+constexpr int primitive_root_constexpr(int m) {
+  if (m == 2) return 1;
+  if (m == 998244353) return 3;
+
+  std::array<int, 20> divs{2};
+  int cnt = 1;
+  int x = (m-1) / 2;
+  for (int d = 3; d*d <= x; d += 2) {
+    if (x % d == 0) {
+      divs[cnt++] = d;
+      while (x % d == 0)
+        x /= d;
+    }
+  }
+  if (x > 1) divs[cnt++] = x;
+  for (int g = 2; ; g++) {
+    bool ok = true;
+    for (int i = 0; i < cnt; i++) {
+      if (mod_pow_constexpr(g, (m-1) / divs[cnt], m) == 1) {
+        ok = false;
+        break;
+      }
+    }
+    if (ok) return g;
+  }
+}
+
+template<int m>
+constexpr int primitive_root = primitive_root_constexpr(m);
+
+}

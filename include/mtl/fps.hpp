@@ -3,31 +3,33 @@
 #include <vector>
 #include <initializer_list>
 
-class Fps : public std::vector<_ntt::mint> {
+template<int Mod = 998244353>
+class Fps : public std::vector<Modular<Mod>> {
+  using _base = std::vector<Modular<Mod>>;
  public:
-  using mint = _ntt::mint;
+  using mint = Modular<Mod>;
   using f = std::vector<mint>;
   explicit Fps(size_t n=0, mint v=0) : f(n, v) {}
   template<typename It> Fps(It begin, It end) : f(begin, end) {}
   Fps(std::initializer_list<mint> l) : f(l) {}
   explicit Fps(const std::vector<mint>& l) : f(l) {}
+  explicit Fps(std::vector<mint>&& l) : f(std::move(l)) {}
 
   Fps& normalize() {
-    int n = (int) size();
+    int n = (int) _base::size();
     while (n-1 >= 0 and (*this)[n-1] == 0) n--;
-    resize(n);
+    _base::resize(n);
     return *this;
   }
   Fps& operator+=(mint x) {
-    if (empty())
-      resize(1);
+    if (_base::empty())
+      _base::resize(1);
     (*this)[0] += x;
     return *this;
   }
   Fps& operator-=(mint x) { return *this += -x; }
   Fps& operator*=(mint x) {
-    for (int i = 0; i < (int) size(); i++)
-      (*this)[i] *= x;
+    for (auto& v : *this) v *= x;
     return *this;
   }
   Fps& operator/=(mint x) { return *this *= x.inv(); }
@@ -41,45 +43,63 @@ class Fps : public std::vector<_ntt::mint> {
     return g;
   }
   Fps& operator+=(const Fps& r) {
-    if (r.size() > size())
-      resize(r.size());
+    if (r.size() > _base::size())
+      _base::resize(r.size());
+    for (int i = 0; i < (int) r.size(); i++)
+      (*this)[i] += r[i];
+    return *this;
+  }
+  Fps& operator+=(Fps&& r) {
+    if (r.size() > _base::size())
+      std::swap(*this, r);
     for (int i = 0; i < (int) r.size(); i++)
       (*this)[i] += r[i];
     return *this;
   }
   Fps& operator-=(const Fps& r) {
-    if (r.size() > size())
+    if (r.size() > _base::size())
       resize(r.size());
     for (int i = 0; i < (int) r.size(); i++)
       (*this)[i] -= r[i];
     return *this;
   }
+  Fps& operator-=(Fps&& r) {
+    if (r.size() > _base::size())
+      std::swap(*this, r);
+    for (int i = 0; i < (int) r.size(); i++)
+      (*this)[i] -= r[i];
+    return *this;
+  }
   Fps& dot(const Fps& r) {
-    if (size() > r.size())
-      resize(r.size());
-    for (int i = 0; i < (int) size(); i++)
+    if (_base::size() > r.size())
+      _base::resize(r.size());
+    for (int i = 0; i < (int) _base::size(); i++)
       (*this)[i] *= r[i];
     return *this;
   }
-  Fps& operator*=(const Fps& r) {
-    int n = (int) (size() + r.size()) - 1;
-    resize(n);
-    ntt_inline(*this);
-    Fps Fr = r;
-    Fr.resize(n);
-    ntt_inline(Fr);
-    dot(Fr);
-    intt_inline(*this);
-    return *this /= (int) size();
-  }
-  Fps& mod(int k) {
-    resize(k);
+  Fps& dot(Fps&& r) {
+    if (_base::size() > r.size())
+      std::swap(*this, r);
+    for (int i = 0; i < (int) _base::size(); i++)
+      (*this)[i] *= r[i];
     return *this;
+  }
+ private:
+  template<class F>
+  Fps& _mul_set(F&& r) {
+    return *this = Fps(convolution(std::move(*this), std::forward<F>(r)));
+  }
+ public:
+  Fps& operator*=(const Fps& r) {
+    return _mul_set(r);
+  }
+  Fps& operator*=(Fps&& r) {
+    return _mul_set(std::move(r));
   }
   Fps inv(int n = -1) const {
     if (n == -1)
-      n = (int) size();
-    assert(!empty() and (*this)[0] != 0);
+      n = (int) _base::size();
+    assert(!_base::empty() and (*this)[0] != 0);
     Fps g,fm;
     g.reserve(n); fm.reserve(n);
     g.push_back((*this)[0].inv());
@@ -87,7 +107,7 @@ class Fps : public std::vector<_ntt::mint> {
     for (int m = 1; m < n; m <<= 1) {
       int nm = std::min(m*2, n);
       for (int i = m; i < nm; i++)
-        fm.push_back(i < (int) size() ? (*this)[i] : 0);
+        fm.push_back(i < (int) _base::size() ? (*this)[i] : 0);
       auto fgg = g * g * fm;
       for (int i = m; i < nm; i++)
         g.push_back(-fgg[i]);
@@ -97,14 +117,28 @@ class Fps : public std::vector<_ntt::mint> {
   Fps& operator/=(const Fps& r) {
     return *this *= r.inv();
   }
-  Fps& operator%=(const Fps& r) {
+ private:
+  template<class F>
+  Fps& _mod_set(F&& r) {
     normalize();
     Fps q = *this / r;
-    return *this -= q * r;
+    return *this -= q * std::forward<F>(r);
+  }
+ public:
+  Fps& operator%=(const Fps& r) {
+    return _mod_set(r);
+  }
+  Fps& operator%=(Fps&& r) {
+    return _mod_set(std::move(r));
   }
   Fps operator+(const Fps& r) const { return Fps(*this) += r; }
+  Fps operator+(Fps&& r) const { return Fps(*this) += std::move(r); }
   Fps operator-(const Fps& r) const { return Fps(*this) -= r; }
+  Fps operator-(Fps&& r) const { return Fps(*this) -= std::move(r); }
   Fps operator*(const Fps& r) const { return Fps(*this) *= r; }
+  Fps operator*(Fps&& r) const { return Fps(*this) *= std::move(r); }
   Fps operator/(const Fps& r) const { return Fps(*this) /= r; }
+  Fps operator/(Fps&& r) const { return Fps(*this) /= std::move(r); }
   Fps operator%(const Fps& r) const { return Fps(*this) %= r; }
+  Fps operator%(Fps&& r) const { return Fps(*this) %= std::move(r); }
 };

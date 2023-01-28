@@ -106,7 +106,7 @@ void sa_is(const std::vector<int>& S, std::vector<std::pair<int, int>>& bucket, 
     auto cmp = [&](int i) -> int& {
       return lmss[cnt_lms + i/2];
     };
-    assert(A[0] = n-1);
+    assert(A[0] == n-1);
     cmp(A[0]) = 0;
     for (int i = 1; i < n; i++) if (is_lms(A[i])) {
       if (!are_same_lms_substr(plms, A[i]))
