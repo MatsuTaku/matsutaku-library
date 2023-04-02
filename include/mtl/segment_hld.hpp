@@ -101,7 +101,7 @@ class SegmentHld : private SegmentHldBase<SegmentHldNode<M>> {
  public:
   explicit SegmentHld(const Hld& tree) : Base(tree) {}
   template<typename InputIt>
-  explicit SegmentHld(const Hld& tree, InputIt begin, InputIt end) : SegmentHld(tree, begin, end) {}
+  explicit SegmentHld(const Hld& tree, InputIt begin, InputIt end) : Base(tree, begin, end) {}
   template<typename T>
   void set(int index, T&& v) {
     int i = target_[index];
