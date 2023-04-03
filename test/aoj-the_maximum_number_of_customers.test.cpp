@@ -6,10 +6,11 @@ using namespace std;
 int sum(int a, int b) {
     return a+b;
 }
+int e() {return 0;}
 
 int main() {
     int n,t; cin>>n>>t;
-    DualDisjointSparseTable<int, sum, 0> st(t);
+    DualDisjointSparseTable<int, sum, e> st(t);
     for (int i = 0; i < n; i++) {
         int l,r; cin>>l>>r;
         st.apply(l, r, 1);

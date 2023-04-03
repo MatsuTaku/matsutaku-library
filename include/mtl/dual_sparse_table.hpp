@@ -17,7 +17,7 @@ class DualSparseTable {
   template <typename Iter>
   DualSparseTable(Iter begin, Iter end) :
       DualSparseTable(std::distance(begin, end)) {
-    std::transform(begin, end, table_[0].begin());
+    std::transform(begin, end, table_[0].begin(), [](const auto& v) {return v;});
   }
 
 /***

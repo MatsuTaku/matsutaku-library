@@ -6,7 +6,7 @@ using namespace std;
 using P = pair<int,int>;
 P f(P a, P b) {return min(a,b);}
 constexpr int INF = 1e9;
-P e() {return {INF, 0};}
+P e() {return {INF, 3};}
 using DST = DualSparseTable<P, f, e>;
 
 int main() {
@@ -24,11 +24,10 @@ int main() {
         dst.apply(l, r, {i, mp[t]});
     } 
     dst.build();
-    array<int,3> ans{};
+    array<int,4> ans{};
     for (int i = 0; i < n; i++) {
         auto [id,t] = dst.get(i);
-        if (id != INF)
-            ans[t]++;
+        ans[t]++;
     }
     cout << ans[0] << ' ' << ans[1] << ' ' << ans[2] << endl;
 }
