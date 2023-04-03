@@ -1,7 +1,7 @@
 #pragma once
+#include "bit_manip.hpp"
 #include <cstddef>
 #include <vector>
-#include "bit_manip.hpp"
 
 template <typename T>
 class FenwickTree {

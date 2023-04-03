@@ -460,12 +460,14 @@ class Treap {
     template<bool C>
     iterator_base& operator=(const iterator_base<C>& rhs) {
       ptr_ = rhs.ptr_;
+      return *this;
     }
     template<bool C>
     iterator_base(iterator_base<C>&& rhs) : ptr_(std::move(rhs.ptr_)) {}
     template<bool C>
     iterator_base& operator=(iterator_base<C>&& rhs) {
       ptr_ = std::move(rhs.ptr_);
+      return *this;
     }
     template<bool C>
     bool operator==(const iterator_base<C>& r) const { 

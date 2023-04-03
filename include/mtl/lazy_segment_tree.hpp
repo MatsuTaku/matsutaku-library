@@ -13,7 +13,7 @@ concept LazySegmentTreeMonoid = requires (M m) {
 template<typename A, typename M>
 concept LazySegmentTreeOperatorMonoid = requires(A a, M m) {
   {a()} -> std::same_as<bool>;
-  {a *= a} -> std::convertible_to<A>;
+  {a *= a} -> std::same_as<A>;
   {a.act(m, 1)} -> std::same_as<M>;
 };
 #endif

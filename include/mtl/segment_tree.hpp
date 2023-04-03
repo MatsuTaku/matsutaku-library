@@ -31,8 +31,11 @@ class SegmentTree {
       tree_[i] = tree_[i * 2] * tree_[i * 2 + 1];
   }
 
-  M operator[](size_t index) const {
+  M get(size_t index) const {
     return tree_[size_ + index];
+  }
+  M operator[](size_t index) const {
+    return get(index);
   }
 
   void set(size_t index, M val) {
@@ -110,3 +113,14 @@ class SegmentTree {
 
 };
 
+template<typename T, T (*op)(T, T), T E>
+struct Monoid {
+  T x;
+  Monoid(T x=E) : x(x) {}
+  Monoid operator*(const Monoid& rhs) const {
+    return Monoid(op(x, rhs.x));
+  }
+  Monoid& operator*=(const Monoid& rhs) {
+    return *this = *this * rhs;
+  }
+};

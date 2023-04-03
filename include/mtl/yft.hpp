@@ -61,6 +61,7 @@ class YFastTrieBase : public traits::AssociativeArrayDefinition<T, M> {
     size_ = rhs.size_;
     eng_ = rhs.eng_;
     dist_ = rhs.dist_;
+    return *this;
   }
   YFastTrieBase(YFastTrieBase&&) noexcept = default;
   YFastTrieBase& operator=(YFastTrieBase&&) noexcept = default;
@@ -242,6 +243,7 @@ class YFastTrieBase : public traits::AssociativeArrayDefinition<T, M> {
       xft_ = rhs.xft_;
       xit_ = rhs.xit_;
       tit_ = rhs.tit_;
+      return *this;
     }
     template<bool C>
     iterator_base(iterator_base<C>&& rhs)
@@ -251,6 +253,7 @@ class YFastTrieBase : public traits::AssociativeArrayDefinition<T, M> {
       xft_ = std::move(rhs.xft_);
       xit_ = std::move(rhs.xit_);
       tit_ = std::move(rhs.tit_);
+      return *this;
     }
     reference operator*() const {
       return *tit_;

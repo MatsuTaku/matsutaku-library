@@ -1,6 +1,6 @@
 #pragma once
-#include <vector>
 #include "bit_manip.hpp"
+#include <vector>
 
 template <typename T, typename Predicate>
 class SparseTable {

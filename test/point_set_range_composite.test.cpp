@@ -9,20 +9,20 @@ using ll = long long;
 constexpr ll MOD = 998244353;
 using mint = Modular<MOD>;
 
-struct Monoid {
+struct M {
   mint a=1, b=0;
-  Monoid operator*(Monoid r) const {
+  M operator*(M r) const {
     return {a*r.a, b*r.a+r.b};
   }
-  Monoid& operator*=(Monoid r) {return *this = *this * r;}
+  M& operator*=(M r) {return *this = *this * r;}
 };
 
 int main() {
   cin.tie(nullptr); ios::sync_with_stdio(false);
 
   int N,Q; cin>>N>>Q;
-  vector<Monoid> F(N); for (auto& f : F) cin>>f.a>>f.b;
-  SegmentTree<Monoid> st(F.begin(), F.end());
+  vector<M> F(N); for (auto& f : F) cin>>f.a>>f.b;
+  SegmentTree<M> st(F.begin(), F.end());
 
   for (int q = 0; q < Q; q++) {
     int t; cin>>t;
