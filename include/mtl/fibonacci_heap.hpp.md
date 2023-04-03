@@ -203,8 +203,8 @@ data:
   timestamp: '2022-12-20 20:34:44+09:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
-  - test/dijkstra_fibonacci.test.cpp
   - test/min_cost_flow.test.cpp
+  - test/dijkstra_fibonacci.test.cpp
 documentation_of: include/mtl/fibonacci_heap.hpp
 layout: document
 redirect_from:

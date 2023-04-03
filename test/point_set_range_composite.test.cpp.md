@@ -21,8 +21,8 @@ data:
     links:
     - https://judge.yosupo.jp/problem/point_set_range_composite
   bundledCode: "#line 1 \"test/point_set_range_composite.test.cpp\"\n#define PROBLEM\
-    \ \"https://judge.yosupo.jp/problem/point_set_range_composite\"\n\n#line 2 \"\
-    include/mtl/bit_manip.hpp\"\n#include <cstdint>\n#include <cassert>\n\nnamespace\
+    \ \"https://judge.yosupo.jp/problem/point_set_range_composite\"\r\n\r\n#line 2\
+    \ \"include/mtl/bit_manip.hpp\"\n#include <cstdint>\n#include <cassert>\n\nnamespace\
     \ bm {\n\ninline constexpr uint64_t popcnt_e8(uint64_t x) {\n  x = (x & 0x5555555555555555)\
     \ + ((x>>1) & 0x5555555555555555);\n  x = (x & 0x3333333333333333) + ((x>>2) &\
     \ 0x3333333333333333);\n  x = (x & 0x0F0F0F0F0F0F0F0F) + ((x>>4) & 0x0F0F0F0F0F0F0F0F);\n\
@@ -135,30 +135,31 @@ data:
     \ < cnt; i++) {\n      if (mod_pow_constexpr(g, (m-1) / divs[cnt], m) == 1) {\n\
     \        ok = false;\n        break;\n      }\n    }\n    if (ok) return g;\n\
     \  }\n}\n\ntemplate<int m>\nconstexpr int primitive_root = primitive_root_constexpr(m);\n\
-    \n}\n#line 5 \"test/point_set_range_composite.test.cpp\"\n#include <bits/stdc++.h>\n\
-    using namespace std;\nusing ll = long long;\n\nconstexpr ll MOD = 998244353;\n\
-    using mint = Modular<MOD>;\n\nstruct Monoid {\n  mint a=1, b=0;\n  Monoid operator*(Monoid\
-    \ r) const {\n    return {a*r.a, b*r.a+r.b};\n  }\n  Monoid& operator*=(Monoid\
-    \ r) {return *this = *this * r;}\n};\n\nint main() {\n  cin.tie(nullptr); ios::sync_with_stdio(false);\n\
-    \n  int N,Q; cin>>N>>Q;\n  vector<Monoid> F(N); for (auto& f : F) cin>>f.a>>f.b;\n\
-    \  SegmentTree<Monoid> st(F.begin(), F.end());\n\n  for (int q = 0; q < Q; q++)\
-    \ {\n    int t; cin>>t;\n    if (t == 0) {\n      int p,c,d; cin>>p>>c>>d;\n \
-    \     st.set(p, {c,d});\n    } else if (t == 1) {\n      int l,r,x; cin>>l>>r>>x;\n\
-    \      auto comp = st.query(l,r);\n      auto ans = comp.a*x + comp.b;\n     \
-    \ cout << ans << endl;\n    }\n  }\n\n  return 0;\n}\n"
+    \n}\n#line 5 \"test/point_set_range_composite.test.cpp\"\n#include <bits/stdc++.h>\r\
+    \nusing namespace std;\r\nusing ll = long long;\r\n\r\nconstexpr ll MOD = 998244353;\r\
+    \nusing mint = Modular<MOD>;\r\n\r\nstruct Monoid {\r\n  mint a=1, b=0;\r\n  Monoid\
+    \ operator*(Monoid r) const {\r\n    return {a*r.a, b*r.a+r.b};\r\n  }\r\n  Monoid&\
+    \ operator*=(Monoid r) {return *this = *this * r;}\r\n};\r\n\r\nint main() {\r\
+    \n  cin.tie(nullptr); ios::sync_with_stdio(false);\r\n\r\n  int N,Q; cin>>N>>Q;\r\
+    \n  vector<Monoid> F(N); for (auto& f : F) cin>>f.a>>f.b;\r\n  SegmentTree<Monoid>\
+    \ st(F.begin(), F.end());\r\n\r\n  for (int q = 0; q < Q; q++) {\r\n    int t;\
+    \ cin>>t;\r\n    if (t == 0) {\r\n      int p,c,d; cin>>p>>c>>d;\r\n      st.set(p,\
+    \ {c,d});\r\n    } else if (t == 1) {\r\n      int l,r,x; cin>>l>>r>>x;\r\n  \
+    \    auto comp = st.query(l,r);\r\n      auto ans = comp.a*x + comp.b;\r\n   \
+    \   cout << ans << endl;\r\n    }\r\n  }\r\n\r\n  return 0;\r\n}\r\n"
   code: "#define PROBLEM \"https://judge.yosupo.jp/problem/point_set_range_composite\"\
-    \n\n#include \"../include/mtl/segment_tree.hpp\"\n#include \"../include/mtl/modular.hpp\"\
-    \n#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nconstexpr\
-    \ ll MOD = 998244353;\nusing mint = Modular<MOD>;\n\nstruct Monoid {\n  mint a=1,\
-    \ b=0;\n  Monoid operator*(Monoid r) const {\n    return {a*r.a, b*r.a+r.b};\n\
-    \  }\n  Monoid& operator*=(Monoid r) {return *this = *this * r;}\n};\n\nint main()\
-    \ {\n  cin.tie(nullptr); ios::sync_with_stdio(false);\n\n  int N,Q; cin>>N>>Q;\n\
-    \  vector<Monoid> F(N); for (auto& f : F) cin>>f.a>>f.b;\n  SegmentTree<Monoid>\
-    \ st(F.begin(), F.end());\n\n  for (int q = 0; q < Q; q++) {\n    int t; cin>>t;\n\
-    \    if (t == 0) {\n      int p,c,d; cin>>p>>c>>d;\n      st.set(p, {c,d});\n\
-    \    } else if (t == 1) {\n      int l,r,x; cin>>l>>r>>x;\n      auto comp = st.query(l,r);\n\
-    \      auto ans = comp.a*x + comp.b;\n      cout << ans << endl;\n    }\n  }\n\
-    \n  return 0;\n}\n"
+    \r\n\r\n#include \"../include/mtl/segment_tree.hpp\"\r\n#include \"../include/mtl/modular.hpp\"\
+    \r\n#include <bits/stdc++.h>\r\nusing namespace std;\r\nusing ll = long long;\r\
+    \n\r\nconstexpr ll MOD = 998244353;\r\nusing mint = Modular<MOD>;\r\n\r\nstruct\
+    \ Monoid {\r\n  mint a=1, b=0;\r\n  Monoid operator*(Monoid r) const {\r\n   \
+    \ return {a*r.a, b*r.a+r.b};\r\n  }\r\n  Monoid& operator*=(Monoid r) {return\
+    \ *this = *this * r;}\r\n};\r\n\r\nint main() {\r\n  cin.tie(nullptr); ios::sync_with_stdio(false);\r\
+    \n\r\n  int N,Q; cin>>N>>Q;\r\n  vector<Monoid> F(N); for (auto& f : F) cin>>f.a>>f.b;\r\
+    \n  SegmentTree<Monoid> st(F.begin(), F.end());\r\n\r\n  for (int q = 0; q < Q;\
+    \ q++) {\r\n    int t; cin>>t;\r\n    if (t == 0) {\r\n      int p,c,d; cin>>p>>c>>d;\r\
+    \n      st.set(p, {c,d});\r\n    } else if (t == 1) {\r\n      int l,r,x; cin>>l>>r>>x;\r\
+    \n      auto comp = st.query(l,r);\r\n      auto ans = comp.a*x + comp.b;\r\n\
+    \      cout << ans << endl;\r\n    }\r\n  }\r\n\r\n  return 0;\r\n}\r\n"
   dependsOn:
   - include/mtl/segment_tree.hpp
   - include/mtl/bit_manip.hpp
@@ -166,7 +167,7 @@ data:
   isVerificationFile: true
   path: test/point_set_range_composite.test.cpp
   requiredBy: []
-  timestamp: '2023-01-28 19:00:09+00:00'
+  timestamp: '2023-04-03 03:00:14+09:00'
   verificationStatus: TEST_ACCEPTED
   verifiedWith: []
 documentation_of: test/point_set_range_composite.test.cpp

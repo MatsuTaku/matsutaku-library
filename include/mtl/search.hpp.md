@@ -97,8 +97,8 @@ data:
   isVerificationFile: false
   path: include/mtl/search.hpp
   requiredBy:
-  - test/tenka1-2016-final-open-e.cpp
   - include/mtl/convex_hull_trick.hpp
+  - test/tenka1-2016-final-open-e.cpp
   timestamp: '2022-11-27 16:09:45+09:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:

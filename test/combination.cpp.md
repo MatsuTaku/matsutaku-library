@@ -8,28 +8,28 @@ data:
   _verificationStatusIcon: ':warning:'
   attributes:
     links: []
-  bundledCode: "#line 1 \"test/combination.cpp\"\n#include <iostream>\n\n#include\
-    \ <enumerate.hpp>\n#include <modular.hpp>\n\nusing namespace std;\nusing ll =\
-    \ long long;\n\nint main() {\n  cin.tie(nullptr);\n  ios::sync_with_stdio(false);\n\
-    \n  Enumerate<Modular<int(1e9) + 7>> enm(1e5);\n  auto a = enm.cmb(4, 2);\n  if\
-    \ (a != 6) {\n    cerr << \"Error cmb(4,2) is not equal to \" << a << endl;\n\
-    \  }\n  auto b = enm.cmb(5, 3);\n  if (b != 10) {\n    cerr << \"Error cmb(5,3)\
-    \ is not equal to \" << b << endl;\n  }\n  auto c = enm.cmb(6, 3);\n  if (c !=\
-    \ 20) {\n    cerr << \"Error cmb(6,3) is not equal to \" << c << endl;\n  }\n\n\
-    \  return 0;\n}\n"
-  code: "#include <iostream>\n\n#include <enumerate.hpp>\n#include <modular.hpp>\n\
-    \nusing namespace std;\nusing ll = long long;\n\nint main() {\n  cin.tie(nullptr);\n\
-    \  ios::sync_with_stdio(false);\n\n  Enumerate<Modular<int(1e9) + 7>> enm(1e5);\n\
-    \  auto a = enm.cmb(4, 2);\n  if (a != 6) {\n    cerr << \"Error cmb(4,2) is not\
-    \ equal to \" << a << endl;\n  }\n  auto b = enm.cmb(5, 3);\n  if (b != 10) {\n\
-    \    cerr << \"Error cmb(5,3) is not equal to \" << b << endl;\n  }\n  auto c\
-    \ = enm.cmb(6, 3);\n  if (c != 20) {\n    cerr << \"Error cmb(6,3) is not equal\
-    \ to \" << c << endl;\n  }\n\n  return 0;\n}\n"
+  bundledCode: "#line 1 \"test/combination.cpp\"\n#include <iostream>\r\n\r\n#include\
+    \ <enumerate.hpp>\r\n#include <modular.hpp>\r\n\r\nusing namespace std;\r\nusing\
+    \ ll = long long;\r\n\r\nint main() {\r\n  cin.tie(nullptr);\r\n  ios::sync_with_stdio(false);\r\
+    \n\r\n  Enumerate<Modular<int(1e9) + 7>> enm(1e5);\r\n  auto a = enm.cmb(4, 2);\r\
+    \n  if (a != 6) {\r\n    cerr << \"Error cmb(4,2) is not equal to \" << a << endl;\r\
+    \n  }\r\n  auto b = enm.cmb(5, 3);\r\n  if (b != 10) {\r\n    cerr << \"Error\
+    \ cmb(5,3) is not equal to \" << b << endl;\r\n  }\r\n  auto c = enm.cmb(6, 3);\r\
+    \n  if (c != 20) {\r\n    cerr << \"Error cmb(6,3) is not equal to \" << c <<\
+    \ endl;\r\n  }\r\n\r\n  return 0;\r\n}\r\n"
+  code: "#include <iostream>\r\n\r\n#include <enumerate.hpp>\r\n#include <modular.hpp>\r\
+    \n\r\nusing namespace std;\r\nusing ll = long long;\r\n\r\nint main() {\r\n  cin.tie(nullptr);\r\
+    \n  ios::sync_with_stdio(false);\r\n\r\n  Enumerate<Modular<int(1e9) + 7>> enm(1e5);\r\
+    \n  auto a = enm.cmb(4, 2);\r\n  if (a != 6) {\r\n    cerr << \"Error cmb(4,2)\
+    \ is not equal to \" << a << endl;\r\n  }\r\n  auto b = enm.cmb(5, 3);\r\n  if\
+    \ (b != 10) {\r\n    cerr << \"Error cmb(5,3) is not equal to \" << b << endl;\r\
+    \n  }\r\n  auto c = enm.cmb(6, 3);\r\n  if (c != 20) {\r\n    cerr << \"Error\
+    \ cmb(6,3) is not equal to \" << c << endl;\r\n  }\r\n\r\n  return 0;\r\n}\r\n"
   dependsOn: []
   isVerificationFile: false
   path: test/combination.cpp
   requiredBy: []
-  timestamp: '2022-11-27 14:51:20+09:00'
+  timestamp: '2023-04-03 03:00:14+09:00'
   verificationStatus: LIBRARY_NO_TESTS
   verifiedWith: []
 documentation_of: test/combination.cpp

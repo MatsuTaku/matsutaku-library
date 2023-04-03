@@ -18,7 +18,7 @@ data:
     links:
     - https://judge.yosupo.jp/problem/staticrmq
   bundledCode: "#line 1 \"test/static_rmq.test.cpp\"\n#define PROBLEM \"https://judge.yosupo.jp/problem/staticrmq\"\
-    \n\n#line 2 \"include/mtl/bit_manip.hpp\"\n#include <cstdint>\n#include <cassert>\n\
+    \r\n\r\n#line 2 \"include/mtl/bit_manip.hpp\"\n#include <cstdint>\n#include <cassert>\n\
     \nnamespace bm {\n\ninline constexpr uint64_t popcnt_e8(uint64_t x) {\n  x = (x\
     \ & 0x5555555555555555) + ((x>>1) & 0x5555555555555555);\n  x = (x & 0x3333333333333333)\
     \ + ((x>>2) & 0x3333333333333333);\n  x = (x & 0x0F0F0F0F0F0F0F0F) + ((x>>4) &\
@@ -84,30 +84,31 @@ data:
     \    }\n        return r + 1 - size_;\n      }\n      p = tree_[r] * p;\n    }\
     \ while ((r & -r) != r);\n    return 0;\n  }\n  template<bool (*F)(M)>\n  size_t\
     \ min_left(size_t begin) const {\n    return min_left(begin, [](M x) { return\
-    \ F(x); });\n  }\n\n};\n\n#line 4 \"test/static_rmq.test.cpp\"\n#include <bits/stdc++.h>\n\
-    using namespace std;\nusing ll = long long;\n\nconstexpr int INF = 11e8;\nstruct\
-    \ Min {\n  int x = INF;\n  Min operator*(const Min& r) const {\n    return {std::min(x,\
-    \ r.x)};\n  }\n};\n\nint main() {\n  cin.tie(nullptr); ios::sync_with_stdio(false);\n\
-    \n  int N,Q; cin>>N>>Q;\n\n  std::vector<Min> A(N); for (auto& a : A) cin>>a.x;\n\
-    \  SegmentTree<Min> rmq(A.begin(), A.end());\n\n  for (int q = 0; q < Q; q++)\
-    \ {\n    int l,r; cin>>l>>r;\n    auto ans = rmq.query(l, r).x;\n    cout << ans\
-    \ << endl;\n  }\n\n  return 0;\n}\n"
-  code: "#define PROBLEM \"https://judge.yosupo.jp/problem/staticrmq\"\n\n#include\
-    \ \"../include/mtl/segment_tree.hpp\"\n#include <bits/stdc++.h>\nusing namespace\
-    \ std;\nusing ll = long long;\n\nconstexpr int INF = 11e8;\nstruct Min {\n  int\
-    \ x = INF;\n  Min operator*(const Min& r) const {\n    return {std::min(x, r.x)};\n\
-    \  }\n};\n\nint main() {\n  cin.tie(nullptr); ios::sync_with_stdio(false);\n\n\
-    \  int N,Q; cin>>N>>Q;\n\n  std::vector<Min> A(N); for (auto& a : A) cin>>a.x;\n\
-    \  SegmentTree<Min> rmq(A.begin(), A.end());\n\n  for (int q = 0; q < Q; q++)\
-    \ {\n    int l,r; cin>>l>>r;\n    auto ans = rmq.query(l, r).x;\n    cout << ans\
-    \ << endl;\n  }\n\n  return 0;\n}\n"
+    \ F(x); });\n  }\n\n};\n\n#line 4 \"test/static_rmq.test.cpp\"\n#include <bits/stdc++.h>\r\
+    \nusing namespace std;\r\nusing ll = long long;\r\n\r\nconstexpr int INF = 11e8;\r\
+    \nstruct Min {\r\n  int x = INF;\r\n  Min operator*(const Min& r) const {\r\n\
+    \    return {std::min(x, r.x)};\r\n  }\r\n};\r\n\r\nint main() {\r\n  cin.tie(nullptr);\
+    \ ios::sync_with_stdio(false);\r\n\r\n  int N,Q; cin>>N>>Q;\r\n\r\n  std::vector<Min>\
+    \ A(N); for (auto& a : A) cin>>a.x;\r\n  SegmentTree<Min> rmq(A.begin(), A.end());\r\
+    \n\r\n  for (int q = 0; q < Q; q++) {\r\n    int l,r; cin>>l>>r;\r\n    auto ans\
+    \ = rmq.query(l, r).x;\r\n    cout << ans << endl;\r\n  }\r\n\r\n  return 0;\r\
+    \n}\r\n"
+  code: "#define PROBLEM \"https://judge.yosupo.jp/problem/staticrmq\"\r\n\r\n#include\
+    \ \"../include/mtl/segment_tree.hpp\"\r\n#include <bits/stdc++.h>\r\nusing namespace\
+    \ std;\r\nusing ll = long long;\r\n\r\nconstexpr int INF = 11e8;\r\nstruct Min\
+    \ {\r\n  int x = INF;\r\n  Min operator*(const Min& r) const {\r\n    return {std::min(x,\
+    \ r.x)};\r\n  }\r\n};\r\n\r\nint main() {\r\n  cin.tie(nullptr); ios::sync_with_stdio(false);\r\
+    \n\r\n  int N,Q; cin>>N>>Q;\r\n\r\n  std::vector<Min> A(N); for (auto& a : A)\
+    \ cin>>a.x;\r\n  SegmentTree<Min> rmq(A.begin(), A.end());\r\n\r\n  for (int q\
+    \ = 0; q < Q; q++) {\r\n    int l,r; cin>>l>>r;\r\n    auto ans = rmq.query(l,\
+    \ r).x;\r\n    cout << ans << endl;\r\n  }\r\n\r\n  return 0;\r\n}\r\n"
   dependsOn:
   - include/mtl/segment_tree.hpp
   - include/mtl/bit_manip.hpp
   isVerificationFile: true
   path: test/static_rmq.test.cpp
   requiredBy: []
-  timestamp: '2022-12-20 20:34:44+09:00'
+  timestamp: '2023-04-03 03:00:14+09:00'
   verificationStatus: TEST_ACCEPTED
   verifiedWith: []
 documentation_of: test/static_rmq.test.cpp

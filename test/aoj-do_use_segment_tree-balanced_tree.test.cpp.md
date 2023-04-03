@@ -92,8 +92,8 @@ data:
     \n  using Base::n_;\r\n  using Base::tree_;\r\n  using Base::target_;\r\n public:\r\
     \n  explicit SegmentHld(const Hld& tree) : Base(tree) {}\r\n  template<typename\
     \ InputIt>\r\n  explicit SegmentHld(const Hld& tree, InputIt begin, InputIt end)\
-    \ : SegmentHld(tree, begin, end) {}\r\n  template<typename T>\r\n  void set(int\
-    \ index, T&& v) {\r\n    int i = target_[index];\r\n    tree_[i].m = std::forward<T>(v);\r\
+    \ : Base(tree, begin, end) {}\r\n  template<typename T>\r\n  void set(int index,\
+    \ T&& v) {\r\n    int i = target_[index];\r\n    tree_[i].m = std::forward<T>(v);\r\
     \n    i = tree_[i].p;\r\n    while (i != -1) {\r\n      tree_[i].m = tree_[tree_[i].lc].m\
     \ * tree_[tree_[i].rc].m;\r\n      i = tree_[i].p;\r\n    }\r\n  }\r\n  M query(int\
     \ l, int r) const {\r\n    return _query(l,r,0);\r\n  }\r\n private:\r\n  M _query(int\
@@ -197,7 +197,7 @@ data:
   isVerificationFile: true
   path: test/aoj-do_use_segment_tree-balanced_tree.test.cpp
   requiredBy: []
-  timestamp: '2022-12-20 20:34:44+09:00'
+  timestamp: '2023-04-03 03:43:28+09:00'
   verificationStatus: TEST_ACCEPTED
   verifiedWith: []
 documentation_of: test/aoj-do_use_segment_tree-balanced_tree.test.cpp

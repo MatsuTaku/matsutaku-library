@@ -129,8 +129,8 @@ data:
   timestamp: '2022-12-20 20:34:44+09:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
-  - test/point_set_range_composite.test.cpp
   - test/static_rmq.test.cpp
+  - test/point_set_range_composite.test.cpp
 documentation_of: include/mtl/segment_tree.hpp
 layout: document
 redirect_from:

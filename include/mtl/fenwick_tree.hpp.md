@@ -106,9 +106,9 @@ data:
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
   - test/point_add_range_sum.test.cpp
-  - test/static_range_sum.test.cpp
-  - test/static_range_inversions_query.test.cpp
   - test/yosupo-point_add_rectangle_sum-wm.test.cpp
+  - test/static_range_inversions_query.test.cpp
+  - test/static_range_sum.test.cpp
 documentation_of: include/mtl/fenwick_tree.hpp
 layout: document
 redirect_from:

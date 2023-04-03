@@ -8,21 +8,22 @@ data:
   _verificationStatusIcon: ':warning:'
   attributes:
     links: []
-  bundledCode: "#line 1 \"test/manyplus.cpp\"\n#include <bits/stdc++.h>\n\nusing namespace\
-    \ std;\nusing ll = long long;\n\ntemplate <typename T>\nT plus(T a, T b) {\n \
-    \ return a + b;\n}\n\nint main() {\n  cin.tie(nullptr); ios::sync_with_stdio(false);\n\
-    \n  int T; cin >> T;\n  for (int t = 0; t < T; t++) {\n    ll A,B; cin>>A>>B;\n\
-    \    cout << ::plus(A,B) << endl;\n  }\n\n  return 0;\n}\n"
-  code: "#include <bits/stdc++.h>\n\nusing namespace std;\nusing ll = long long;\n\
-    \ntemplate <typename T>\nT plus(T a, T b) {\n  return a + b;\n}\n\nint main()\
-    \ {\n  cin.tie(nullptr); ios::sync_with_stdio(false);\n\n  int T; cin >> T;\n\
-    \  for (int t = 0; t < T; t++) {\n    ll A,B; cin>>A>>B;\n    cout << ::plus(A,B)\
-    \ << endl;\n  }\n\n  return 0;\n}\n"
+  bundledCode: "#line 1 \"test/manyplus.cpp\"\n#include <bits/stdc++.h>\r\n\r\nusing\
+    \ namespace std;\r\nusing ll = long long;\r\n\r\ntemplate <typename T>\r\nT plus(T\
+    \ a, T b) {\r\n  return a + b;\r\n}\r\n\r\nint main() {\r\n  cin.tie(nullptr);\
+    \ ios::sync_with_stdio(false);\r\n\r\n  int T; cin >> T;\r\n  for (int t = 0;\
+    \ t < T; t++) {\r\n    ll A,B; cin>>A>>B;\r\n    cout << ::plus(A,B) << endl;\r\
+    \n  }\r\n\r\n  return 0;\r\n}\r\n"
+  code: "#include <bits/stdc++.h>\r\n\r\nusing namespace std;\r\nusing ll = long long;\r\
+    \n\r\ntemplate <typename T>\r\nT plus(T a, T b) {\r\n  return a + b;\r\n}\r\n\r\
+    \nint main() {\r\n  cin.tie(nullptr); ios::sync_with_stdio(false);\r\n\r\n  int\
+    \ T; cin >> T;\r\n  for (int t = 0; t < T; t++) {\r\n    ll A,B; cin>>A>>B;\r\n\
+    \    cout << ::plus(A,B) << endl;\r\n  }\r\n\r\n  return 0;\r\n}\r\n"
   dependsOn: []
   isVerificationFile: false
   path: test/manyplus.cpp
   requiredBy: []
-  timestamp: '2022-11-27 14:51:20+09:00'
+  timestamp: '2023-04-03 03:00:14+09:00'
   verificationStatus: LIBRARY_NO_TESTS
   verifiedWith: []
 documentation_of: test/manyplus.cpp

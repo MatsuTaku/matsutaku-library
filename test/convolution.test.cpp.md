@@ -24,7 +24,7 @@ data:
     links:
     - https://judge.yosupo.jp/problem/convolution_mod
   bundledCode: "#line 1 \"test/convolution.test.cpp\"\n#define PROBLEM \"https://judge.yosupo.jp/problem/convolution_mod\"\
-    \n#line 2 \"include/mtl/modular.hpp\"\n#include <iostream>\n#include <cassert>\n\
+    \r\n#line 2 \"include/mtl/modular.hpp\"\n#include <iostream>\n#include <cassert>\n\
     \ntemplate <int MOD>\nclass Modular {\n private:\n  unsigned int val_;\n\n public:\n\
     \  static constexpr unsigned int mod() { return MOD; }\n  template<class T>\n\
     \  static constexpr unsigned int safe_mod(T v) {\n    auto x = (long long)(v%(long\
@@ -195,17 +195,19 @@ data:
     \ Fps(*this) /= r; }\n  Fps operator/(Fps&& r) const { return Fps(*this) /= std::move(r);\
     \ }\n  Fps operator%(const Fps& r) const { return Fps(*this) %= r; }\n  Fps operator%(Fps&&\
     \ r) const { return Fps(*this) %= std::move(r); }\n};\n#line 3 \"test/convolution.test.cpp\"\
-    \n#include <bits/stdc++.h>\n\nusing namespace std;\nusing ll = long long;\n\n\
-    int main() {\n  cin.tie(nullptr); ios::sync_with_stdio(false);\n\n  int N,M; cin>>N>>M;\n\
-    \  Fps A(N), B(M);\n  for (auto& a : A) cin>>a;\n  for (auto& b : B) cin>>b;\n\
-    \  auto C = A * B;\n  for (int i = 0; i < N+M-1; i++)\n    cout << C[i] << \"\
-    \ \";\n  cout << endl;\n\n  return 0;\n}\n"
-  code: "#define PROBLEM \"https://judge.yosupo.jp/problem/convolution_mod\"\n#include\
-    \ \"../include/mtl/fps.hpp\"\n#include <bits/stdc++.h>\n\nusing namespace std;\n\
-    using ll = long long;\n\nint main() {\n  cin.tie(nullptr); ios::sync_with_stdio(false);\n\
-    \n  int N,M; cin>>N>>M;\n  Fps A(N), B(M);\n  for (auto& a : A) cin>>a;\n  for\
-    \ (auto& b : B) cin>>b;\n  auto C = A * B;\n  for (int i = 0; i < N+M-1; i++)\n\
-    \    cout << C[i] << \" \";\n  cout << endl;\n\n  return 0;\n}\n"
+    \n#include <bits/stdc++.h>\r\n\r\nusing namespace std;\r\nusing ll = long long;\r\
+    \n\r\nint main() {\r\n  cin.tie(nullptr); ios::sync_with_stdio(false);\r\n\r\n\
+    \  int N,M; cin>>N>>M;\r\n  Fps A(N), B(M);\r\n  for (auto& a : A) cin>>a;\r\n\
+    \  for (auto& b : B) cin>>b;\r\n  auto C = A * B;\r\n  for (int i = 0; i < N+M-1;\
+    \ i++)\r\n    cout << C[i] << \" \";\r\n  cout << endl;\r\n\r\n  return 0;\r\n\
+    }\r\n"
+  code: "#define PROBLEM \"https://judge.yosupo.jp/problem/convolution_mod\"\r\n#include\
+    \ \"../include/mtl/fps.hpp\"\r\n#include <bits/stdc++.h>\r\n\r\nusing namespace\
+    \ std;\r\nusing ll = long long;\r\n\r\nint main() {\r\n  cin.tie(nullptr); ios::sync_with_stdio(false);\r\
+    \n\r\n  int N,M; cin>>N>>M;\r\n  Fps A(N), B(M);\r\n  for (auto& a : A) cin>>a;\r\
+    \n  for (auto& b : B) cin>>b;\r\n  auto C = A * B;\r\n  for (int i = 0; i < N+M-1;\
+    \ i++)\r\n    cout << C[i] << \" \";\r\n  cout << endl;\r\n\r\n  return 0;\r\n\
+    }\r\n"
   dependsOn:
   - include/mtl/fps.hpp
   - include/mtl/ntt.hpp
@@ -214,7 +216,7 @@ data:
   isVerificationFile: true
   path: test/convolution.test.cpp
   requiredBy: []
-  timestamp: '2023-01-28 19:00:09+00:00'
+  timestamp: '2023-04-03 03:00:14+09:00'
   verificationStatus: TEST_ACCEPTED
   verifiedWith: []
 documentation_of: test/convolution.test.cpp

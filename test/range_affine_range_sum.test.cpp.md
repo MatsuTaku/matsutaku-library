@@ -21,7 +21,7 @@ data:
     links:
     - https://judge.yosupo.jp/problem/range_affine_range_sum
   bundledCode: "#line 1 \"test/range_affine_range_sum.test.cpp\"\n#define PROBLEM\
-    \ \"https://judge.yosupo.jp/problem/range_affine_range_sum\"\n#line 2 \"include/mtl/bit_manip.hpp\"\
+    \ \"https://judge.yosupo.jp/problem/range_affine_range_sum\"\r\n#line 2 \"include/mtl/bit_manip.hpp\"\
     \n#include <cstdint>\n#include <cassert>\n\nnamespace bm {\n\ninline constexpr\
     \ uint64_t popcnt_e8(uint64_t x) {\n  x = (x & 0x5555555555555555) + ((x>>1) &\
     \ 0x5555555555555555);\n  x = (x & 0x3333333333333333) + ((x>>2) & 0x3333333333333333);\n\
@@ -151,38 +151,39 @@ data:
     \ < cnt; i++) {\n      if (mod_pow_constexpr(g, (m-1) / divs[cnt], m) == 1) {\n\
     \        ok = false;\n        break;\n      }\n    }\n    if (ok) return g;\n\
     \  }\n}\n\ntemplate<int m>\nconstexpr int primitive_root = primitive_root_constexpr(m);\n\
-    \n}\n#line 4 \"test/range_affine_range_sum.test.cpp\"\n#include <bits/stdc++.h>\n\
-    \nusing namespace std;\nusing ll = long long;\nconstexpr ll MOD = 998244353;\n\
-    using mint = Modular<MOD>;\n\nstruct SumMonoid {\n  mint a=0;\n  SumMonoid operator*(SumMonoid\
-    \ r) const {\n    return {a+r.a};\n  }\n  SumMonoid& operator*=(SumMonoid r) {return\
-    \ *this = *this * r;}\n};\n\nstruct FnMonoid {\n  mint b=1, c=0;\n  FnMonoid operator*(FnMonoid\
-    \ r) const {\n    return {b*r.b, c*r.b+r.c};\n  }\n  FnMonoid& operator*=(FnMonoid\
-    \ r) {return *this = *this * r;}\n  bool operator()() const {return !(b == 1 and\
-    \ c == 0);}\n  SumMonoid act(SumMonoid a, size_t num) const {\n    return {b*a.a\
-    \ + c*num};\n  }\n};\n\nint main() {\n  cin.tie(nullptr); ios::sync_with_stdio(false);\n\
-    \n  int N,Q; cin>>N>>Q;\n  vector<SumMonoid> A(N); for (auto& a : A) cin>>a.a;\n\
-    \  LazySegmentTree<SumMonoid, FnMonoid> rsq(A.begin(), A.end());\n\n  for (int\
-    \ q = 0; q < Q; q++) {\n    int t; cin>>t;\n    if (t == 0) {\n      int l,r,b,c;\
-    \ cin>>l>>r>>b>>c;\n      rsq.range_update(l,r, {b,c});\n    } else if (t == 1)\
-    \ {\n      int l,r; cin>>l>>r;\n      auto ans = rsq.query(l,r);\n      cout <<\
-    \ ans.a << endl;\n    }\n  }\n\n  return 0;\n}\n"
+    \n}\n#line 4 \"test/range_affine_range_sum.test.cpp\"\n#include <bits/stdc++.h>\r\
+    \n\r\nusing namespace std;\r\nusing ll = long long;\r\nconstexpr ll MOD = 998244353;\r\
+    \nusing mint = Modular<MOD>;\r\n\r\nstruct SumMonoid {\r\n  mint a=0;\r\n  SumMonoid\
+    \ operator*(SumMonoid r) const {\r\n    return {a+r.a};\r\n  }\r\n  SumMonoid&\
+    \ operator*=(SumMonoid r) {return *this = *this * r;}\r\n};\r\n\r\nstruct FnMonoid\
+    \ {\r\n  mint b=1, c=0;\r\n  FnMonoid operator*(FnMonoid r) const {\r\n    return\
+    \ {b*r.b, c*r.b+r.c};\r\n  }\r\n  FnMonoid& operator*=(FnMonoid r) {return *this\
+    \ = *this * r;}\r\n  bool operator()() const {return !(b == 1 and c == 0);}\r\n\
+    \  SumMonoid act(SumMonoid a, size_t num) const {\r\n    return {b*a.a + c*num};\r\
+    \n  }\r\n};\r\n\r\nint main() {\r\n  cin.tie(nullptr); ios::sync_with_stdio(false);\r\
+    \n\r\n  int N,Q; cin>>N>>Q;\r\n  vector<SumMonoid> A(N); for (auto& a : A) cin>>a.a;\r\
+    \n  LazySegmentTree<SumMonoid, FnMonoid> rsq(A.begin(), A.end());\r\n\r\n  for\
+    \ (int q = 0; q < Q; q++) {\r\n    int t; cin>>t;\r\n    if (t == 0) {\r\n   \
+    \   int l,r,b,c; cin>>l>>r>>b>>c;\r\n      rsq.range_update(l,r, {b,c});\r\n \
+    \   } else if (t == 1) {\r\n      int l,r; cin>>l>>r;\r\n      auto ans = rsq.query(l,r);\r\
+    \n      cout << ans.a << endl;\r\n    }\r\n  }\r\n\r\n  return 0;\r\n}\r\n"
   code: "#define PROBLEM \"https://judge.yosupo.jp/problem/range_affine_range_sum\"\
-    \n#include \"../include/mtl/lazy_segment_tree.hpp\"\n#include \"../include/mtl/modular.hpp\"\
-    \n#include <bits/stdc++.h>\n\nusing namespace std;\nusing ll = long long;\nconstexpr\
-    \ ll MOD = 998244353;\nusing mint = Modular<MOD>;\n\nstruct SumMonoid {\n  mint\
-    \ a=0;\n  SumMonoid operator*(SumMonoid r) const {\n    return {a+r.a};\n  }\n\
-    \  SumMonoid& operator*=(SumMonoid r) {return *this = *this * r;}\n};\n\nstruct\
-    \ FnMonoid {\n  mint b=1, c=0;\n  FnMonoid operator*(FnMonoid r) const {\n   \
-    \ return {b*r.b, c*r.b+r.c};\n  }\n  FnMonoid& operator*=(FnMonoid r) {return\
-    \ *this = *this * r;}\n  bool operator()() const {return !(b == 1 and c == 0);}\n\
-    \  SumMonoid act(SumMonoid a, size_t num) const {\n    return {b*a.a + c*num};\n\
-    \  }\n};\n\nint main() {\n  cin.tie(nullptr); ios::sync_with_stdio(false);\n\n\
-    \  int N,Q; cin>>N>>Q;\n  vector<SumMonoid> A(N); for (auto& a : A) cin>>a.a;\n\
-    \  LazySegmentTree<SumMonoid, FnMonoid> rsq(A.begin(), A.end());\n\n  for (int\
-    \ q = 0; q < Q; q++) {\n    int t; cin>>t;\n    if (t == 0) {\n      int l,r,b,c;\
-    \ cin>>l>>r>>b>>c;\n      rsq.range_update(l,r, {b,c});\n    } else if (t == 1)\
-    \ {\n      int l,r; cin>>l>>r;\n      auto ans = rsq.query(l,r);\n      cout <<\
-    \ ans.a << endl;\n    }\n  }\n\n  return 0;\n}\n"
+    \r\n#include \"../include/mtl/lazy_segment_tree.hpp\"\r\n#include \"../include/mtl/modular.hpp\"\
+    \r\n#include <bits/stdc++.h>\r\n\r\nusing namespace std;\r\nusing ll = long long;\r\
+    \nconstexpr ll MOD = 998244353;\r\nusing mint = Modular<MOD>;\r\n\r\nstruct SumMonoid\
+    \ {\r\n  mint a=0;\r\n  SumMonoid operator*(SumMonoid r) const {\r\n    return\
+    \ {a+r.a};\r\n  }\r\n  SumMonoid& operator*=(SumMonoid r) {return *this = *this\
+    \ * r;}\r\n};\r\n\r\nstruct FnMonoid {\r\n  mint b=1, c=0;\r\n  FnMonoid operator*(FnMonoid\
+    \ r) const {\r\n    return {b*r.b, c*r.b+r.c};\r\n  }\r\n  FnMonoid& operator*=(FnMonoid\
+    \ r) {return *this = *this * r;}\r\n  bool operator()() const {return !(b == 1\
+    \ and c == 0);}\r\n  SumMonoid act(SumMonoid a, size_t num) const {\r\n    return\
+    \ {b*a.a + c*num};\r\n  }\r\n};\r\n\r\nint main() {\r\n  cin.tie(nullptr); ios::sync_with_stdio(false);\r\
+    \n\r\n  int N,Q; cin>>N>>Q;\r\n  vector<SumMonoid> A(N); for (auto& a : A) cin>>a.a;\r\
+    \n  LazySegmentTree<SumMonoid, FnMonoid> rsq(A.begin(), A.end());\r\n\r\n  for\
+    \ (int q = 0; q < Q; q++) {\r\n    int t; cin>>t;\r\n    if (t == 0) {\r\n   \
+    \   int l,r,b,c; cin>>l>>r>>b>>c;\r\n      rsq.range_update(l,r, {b,c});\r\n \
+    \   } else if (t == 1) {\r\n      int l,r; cin>>l>>r;\r\n      auto ans = rsq.query(l,r);\r\
+    \n      cout << ans.a << endl;\r\n    }\r\n  }\r\n\r\n  return 0;\r\n}\r\n"
   dependsOn:
   - include/mtl/lazy_segment_tree.hpp
   - include/mtl/bit_manip.hpp
@@ -190,7 +191,7 @@ data:
   isVerificationFile: true
   path: test/range_affine_range_sum.test.cpp
   requiredBy: []
-  timestamp: '2023-01-28 19:00:09+00:00'
+  timestamp: '2023-04-03 03:00:14+09:00'
   verificationStatus: TEST_ACCEPTED
   verifiedWith: []
 documentation_of: test/range_affine_range_sum.test.cpp

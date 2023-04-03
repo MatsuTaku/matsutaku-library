@@ -399,8 +399,8 @@ data:
   isVerificationFile: false
   path: include/mtl/succinct/bit_vector.hpp
   requiredBy:
-  - include/mtl/succinct/wavelet_tree.hpp
   - include/mtl/succinct/wavelet_matrix.hpp
+  - include/mtl/succinct/wavelet_tree.hpp
   - include/mtl/ordinal_range_search.hpp
   timestamp: '2022-12-18 04:26:00+09:00'
   verificationStatus: LIBRARY_ALL_AC

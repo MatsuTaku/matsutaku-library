@@ -15,43 +15,43 @@ data:
     links:
     - https://onlinejudge.u-aizu.ac.jp/problems/GRL_1_A
   bundledCode: "#line 1 \"test/dijkstra_fibonacci.test.cpp\"\n#define PROBLEM \"https://onlinejudge.u-aizu.ac.jp/problems/GRL_1_A\"\
-    \n\n#line 2 \"include/mtl/fibonacci_heap.hpp\"\n#include <memory>\n#include <cassert>\n\
-    #include <vector>\n#include <array>\n#include <list>\n#include <iostream>\n\n\
-    template<typename T, typename Cond = std::less<>>\nclass FibonacciHeap {\n  Cond\
-    \ cond_;\n\n public:\n  struct Node;\n  using node_ptr = Node*;\n  using const_node_ptr\
-    \ = const Node*;\n  struct Node {\n    node_ptr next = nullptr;\n    node_ptr\
-    \ prev = nullptr;\n    node_ptr child = nullptr;\n    node_ptr parent = nullptr;\n\
-    \    int deg = 0;\n    bool marked = false;\n    bool enabled = false;\n    std::pair<int,\
-    \ T> value;\n\n    Node() = default;\n    void init(int k, T v) {\n      next\
-    \ = prev = this;\n      child = parent = nullptr;\n      deg = 0;\n      marked\
-    \ = false;\n      enabled = true;\n      value = {k, v};\n    }\n    T priority()\
-    \ const { return value.second; }\n    void free() {\n      enabled = false;\n\
-    \    }\n  };\n\n private:\n  node_ptr root_ = nullptr;\n  size_t sz_ = 0;\n  std::vector<node_ptr>\
-    \ map_;\n  std::vector<Node> container_;\n  std::vector<node_ptr> deg_table_;\n\
-    \n public:\n  explicit FibonacciHeap(size_t size) : map_(size) {\n    container_.reserve(size);\n\
-    \    std::array<size_t,2> tb{1,1};\n    int k = 2;\n    while (tb[1] < size) {\n\
-    \      auto x = tb[0]+tb[1];\n      tb[0] = tb[1];\n      tb[1] = x;\n      ++k;\n\
-    \    }\n    deg_table_.resize(k);\n  }\n\n  inline std::pair<int, T> top() const\
-    \ {\n    assert(root_ and root_->enabled);\n    return root_->value;\n  }\n\n\
-    \  inline std::pair<int, T> get(int key) const {\n    assert(map_[key] and map_[key]->enabled);\n\
-    \    return map_[key]->value;\n  }\n\n  // Time complexity: O(1)\n  void push(int\
-    \ key, T value) {\n    if (map_[key] and map_[key]->enabled) {\n      update(key,\
-    \ value);\n      return;\n    }\n    if (!map_[key]) {\n      container_.emplace_back();\n\
-    \      map_[key] = &container_.back();\n    }\n    node_ptr node = map_[key];\n\
-    \    node->init(key, value);\n    _PushLink(node, &deg_table_[0]);\n    if (!root_\
-    \ or _CompareNodePriority(root_, node))\n      root_ = node;\n    ++sz_;\n  }\n\
-    \n  // Time complexity: O(log n)\n  void update(int key, T updated_value) {\n\
-    \    if (!map_[key] or !map_[key]->enabled) {\n      push(key, updated_value);\n\
-    \      return;\n    }\n    auto node = map_[key];\n    if (!cond_(node->priority(),\
-    \ updated_value)) {\n      return;\n    }\n    node->value.second = updated_value;\n\
-    \    if (node->parent and _CompareNodePriority(node->parent, node)) {\n      _Consolidate(node);\n\
-    \    }\n    assert(root_);\n    if (_CompareNodePriority(root_, node)) {\n   \
-    \   root_ = node;\n    }\n  }\n\n  // Time complexity: O(log n)\n  void pop()\
-    \ {\n    assert(root_);\n    auto r = root_;\n    root_ = nullptr;\n    _PopLink(r,\
-    \ &deg_table_[r->deg]);\n    _ExpandChildren(r);\n    _ExtractTop();\n    r->free();\n\
-    \    --sz_;\n  }\n\n  // Time complexity: O(log n)\n  void erase(int key) {\n\
-    \    assert(map_[key] and map_[key]->enabled);\n    auto node = map_[key];\n \
-    \   bool needs_extraction = root_ == node;\n    if (node->parent) {\n      _Consolidate(node);\n\
+    \r\n\r\n#line 2 \"include/mtl/fibonacci_heap.hpp\"\n#include <memory>\n#include\
+    \ <cassert>\n#include <vector>\n#include <array>\n#include <list>\n#include <iostream>\n\
+    \ntemplate<typename T, typename Cond = std::less<>>\nclass FibonacciHeap {\n \
+    \ Cond cond_;\n\n public:\n  struct Node;\n  using node_ptr = Node*;\n  using\
+    \ const_node_ptr = const Node*;\n  struct Node {\n    node_ptr next = nullptr;\n\
+    \    node_ptr prev = nullptr;\n    node_ptr child = nullptr;\n    node_ptr parent\
+    \ = nullptr;\n    int deg = 0;\n    bool marked = false;\n    bool enabled = false;\n\
+    \    std::pair<int, T> value;\n\n    Node() = default;\n    void init(int k, T\
+    \ v) {\n      next = prev = this;\n      child = parent = nullptr;\n      deg\
+    \ = 0;\n      marked = false;\n      enabled = true;\n      value = {k, v};\n\
+    \    }\n    T priority() const { return value.second; }\n    void free() {\n \
+    \     enabled = false;\n    }\n  };\n\n private:\n  node_ptr root_ = nullptr;\n\
+    \  size_t sz_ = 0;\n  std::vector<node_ptr> map_;\n  std::vector<Node> container_;\n\
+    \  std::vector<node_ptr> deg_table_;\n\n public:\n  explicit FibonacciHeap(size_t\
+    \ size) : map_(size) {\n    container_.reserve(size);\n    std::array<size_t,2>\
+    \ tb{1,1};\n    int k = 2;\n    while (tb[1] < size) {\n      auto x = tb[0]+tb[1];\n\
+    \      tb[0] = tb[1];\n      tb[1] = x;\n      ++k;\n    }\n    deg_table_.resize(k);\n\
+    \  }\n\n  inline std::pair<int, T> top() const {\n    assert(root_ and root_->enabled);\n\
+    \    return root_->value;\n  }\n\n  inline std::pair<int, T> get(int key) const\
+    \ {\n    assert(map_[key] and map_[key]->enabled);\n    return map_[key]->value;\n\
+    \  }\n\n  // Time complexity: O(1)\n  void push(int key, T value) {\n    if (map_[key]\
+    \ and map_[key]->enabled) {\n      update(key, value);\n      return;\n    }\n\
+    \    if (!map_[key]) {\n      container_.emplace_back();\n      map_[key] = &container_.back();\n\
+    \    }\n    node_ptr node = map_[key];\n    node->init(key, value);\n    _PushLink(node,\
+    \ &deg_table_[0]);\n    if (!root_ or _CompareNodePriority(root_, node))\n   \
+    \   root_ = node;\n    ++sz_;\n  }\n\n  // Time complexity: O(log n)\n  void update(int\
+    \ key, T updated_value) {\n    if (!map_[key] or !map_[key]->enabled) {\n    \
+    \  push(key, updated_value);\n      return;\n    }\n    auto node = map_[key];\n\
+    \    if (!cond_(node->priority(), updated_value)) {\n      return;\n    }\n  \
+    \  node->value.second = updated_value;\n    if (node->parent and _CompareNodePriority(node->parent,\
+    \ node)) {\n      _Consolidate(node);\n    }\n    assert(root_);\n    if (_CompareNodePriority(root_,\
+    \ node)) {\n      root_ = node;\n    }\n  }\n\n  // Time complexity: O(log n)\n\
+    \  void pop() {\n    assert(root_);\n    auto r = root_;\n    root_ = nullptr;\n\
+    \    _PopLink(r, &deg_table_[r->deg]);\n    _ExpandChildren(r);\n    _ExtractTop();\n\
+    \    r->free();\n    --sz_;\n  }\n\n  // Time complexity: O(log n)\n  void erase(int\
+    \ key) {\n    assert(map_[key] and map_[key]->enabled);\n    auto node = map_[key];\n\
+    \    bool needs_extraction = root_ == node;\n    if (node->parent) {\n      _Consolidate(node);\n\
     \    }\n    assert(!node->parent);\n    _PopLink(node, &deg_table_[node->deg]);\n\
     \    _ExpandChildren(node);\n    if (needs_extraction)\n      _ExtractTop();\n\
     \    node->free();\n    --sz_;\n  }\n\n  size_t size() const { return sz_; }\n\
@@ -102,33 +102,35 @@ data:
     \      _PushLink(p, &deg_table_[p->deg-1]);\n    }\n    _PopLink(node, &p->child);\n\
     \    p->deg--;\n    node->parent = nullptr;\n    node->marked = false;\n    _PushLink(node,\
     \ &deg_table_[node->deg]);\n  }\n\n};\n#line 4 \"test/dijkstra_fibonacci.test.cpp\"\
-    \n#include <bits/stdc++.h>\nusing namespace std;\n\nconstexpr int INF = 11e8;\n\
-    \nint main() {\n  int v,e,r; cin>>v>>e>>r;\n  vector<pair<int,int>> G[v];\n  for\
-    \ (int i = 0; i < e; i++) {\n    int s,t,d; cin>>s>>t>>d;\n    G[s].emplace_back(t,\
-    \ d);\n  }\n\n  vector<int> dist(v, INF);\n  FibonacciHeap<int, greater<>> qs(v);\n\
-    \  dist[r] = 0;\n  qs.push(r, 0);\n  while (!qs.empty()) {\n    auto [s, c] =\
-    \ qs.top(); qs.pop();\n    assert(c == dist[s]);\n    for (auto [t, d] : G[s])\
-    \ {\n      if (dist[t] <= c + d) continue;\n      dist[t] = c + d;\n      qs.push(t,\
-    \ c + d);\n    }\n  }\n  for (int i = 0; i < v; i++) {\n    if (dist[i] != INF)\
-    \ {\n      cout << dist[i] << endl;\n    } else {\n      cout << \"INF\" << endl;\n\
-    \    }\n  }\n\n}\n"
-  code: "#define PROBLEM \"https://onlinejudge.u-aizu.ac.jp/problems/GRL_1_A\"\n\n\
-    #include \"../include/mtl/fibonacci_heap.hpp\"\n#include <bits/stdc++.h>\nusing\
-    \ namespace std;\n\nconstexpr int INF = 11e8;\n\nint main() {\n  int v,e,r; cin>>v>>e>>r;\n\
-    \  vector<pair<int,int>> G[v];\n  for (int i = 0; i < e; i++) {\n    int s,t,d;\
-    \ cin>>s>>t>>d;\n    G[s].emplace_back(t, d);\n  }\n\n  vector<int> dist(v, INF);\n\
-    \  FibonacciHeap<int, greater<>> qs(v);\n  dist[r] = 0;\n  qs.push(r, 0);\n  while\
-    \ (!qs.empty()) {\n    auto [s, c] = qs.top(); qs.pop();\n    assert(c == dist[s]);\n\
-    \    for (auto [t, d] : G[s]) {\n      if (dist[t] <= c + d) continue;\n     \
-    \ dist[t] = c + d;\n      qs.push(t, c + d);\n    }\n  }\n  for (int i = 0; i\
-    \ < v; i++) {\n    if (dist[i] != INF) {\n      cout << dist[i] << endl;\n   \
-    \ } else {\n      cout << \"INF\" << endl;\n    }\n  }\n\n}\n"
+    \n#include <bits/stdc++.h>\r\nusing namespace std;\r\n\r\nconstexpr int INF =\
+    \ 11e8;\r\n\r\nint main() {\r\n  int v,e,r; cin>>v>>e>>r;\r\n  vector<pair<int,int>>\
+    \ G[v];\r\n  for (int i = 0; i < e; i++) {\r\n    int s,t,d; cin>>s>>t>>d;\r\n\
+    \    G[s].emplace_back(t, d);\r\n  }\r\n\r\n  vector<int> dist(v, INF);\r\n  FibonacciHeap<int,\
+    \ greater<>> qs(v);\r\n  dist[r] = 0;\r\n  qs.push(r, 0);\r\n  while (!qs.empty())\
+    \ {\r\n    auto [s, c] = qs.top(); qs.pop();\r\n    assert(c == dist[s]);\r\n\
+    \    for (auto [t, d] : G[s]) {\r\n      if (dist[t] <= c + d) continue;\r\n \
+    \     dist[t] = c + d;\r\n      qs.push(t, c + d);\r\n    }\r\n  }\r\n  for (int\
+    \ i = 0; i < v; i++) {\r\n    if (dist[i] != INF) {\r\n      cout << dist[i] <<\
+    \ endl;\r\n    } else {\r\n      cout << \"INF\" << endl;\r\n    }\r\n  }\r\n\r\
+    \n}\r\n"
+  code: "#define PROBLEM \"https://onlinejudge.u-aizu.ac.jp/problems/GRL_1_A\"\r\n\
+    \r\n#include \"../include/mtl/fibonacci_heap.hpp\"\r\n#include <bits/stdc++.h>\r\
+    \nusing namespace std;\r\n\r\nconstexpr int INF = 11e8;\r\n\r\nint main() {\r\n\
+    \  int v,e,r; cin>>v>>e>>r;\r\n  vector<pair<int,int>> G[v];\r\n  for (int i =\
+    \ 0; i < e; i++) {\r\n    int s,t,d; cin>>s>>t>>d;\r\n    G[s].emplace_back(t,\
+    \ d);\r\n  }\r\n\r\n  vector<int> dist(v, INF);\r\n  FibonacciHeap<int, greater<>>\
+    \ qs(v);\r\n  dist[r] = 0;\r\n  qs.push(r, 0);\r\n  while (!qs.empty()) {\r\n\
+    \    auto [s, c] = qs.top(); qs.pop();\r\n    assert(c == dist[s]);\r\n    for\
+    \ (auto [t, d] : G[s]) {\r\n      if (dist[t] <= c + d) continue;\r\n      dist[t]\
+    \ = c + d;\r\n      qs.push(t, c + d);\r\n    }\r\n  }\r\n  for (int i = 0; i\
+    \ < v; i++) {\r\n    if (dist[i] != INF) {\r\n      cout << dist[i] << endl;\r\
+    \n    } else {\r\n      cout << \"INF\" << endl;\r\n    }\r\n  }\r\n\r\n}\r\n"
   dependsOn:
   - include/mtl/fibonacci_heap.hpp
   isVerificationFile: true
   path: test/dijkstra_fibonacci.test.cpp
   requiredBy: []
-  timestamp: '2022-12-20 20:34:44+09:00'
+  timestamp: '2023-04-03 03:00:14+09:00'
   verificationStatus: TEST_ACCEPTED
   verifiedWith: []
 documentation_of: test/dijkstra_fibonacci.test.cpp

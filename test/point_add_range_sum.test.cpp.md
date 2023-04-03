@@ -18,7 +18,7 @@ data:
     links:
     - https://judge.yosupo.jp/problem/point_add_range_sum
   bundledCode: "#line 1 \"test/point_add_range_sum.test.cpp\"\n#define PROBLEM \"\
-    https://judge.yosupo.jp/problem/point_add_range_sum\"\n\n#line 2 \"include/mtl/fenwick_tree.hpp\"\
+    https://judge.yosupo.jp/problem/point_add_range_sum\"\r\n\r\n#line 2 \"include/mtl/fenwick_tree.hpp\"\
     \n#include <cstddef>\n#include <vector>\n#line 2 \"include/mtl/bit_manip.hpp\"\
     \n#include <cstdint>\n#include <cassert>\n\nnamespace bm {\n\ninline constexpr\
     \ uint64_t popcnt_e8(uint64_t x) {\n  x = (x & 0x5555555555555555) + ((x>>1) &\
@@ -68,29 +68,30 @@ data:
     \ = 0;\n    T s = 0;\n    for (int k = 63-bm::clz(size()); k >= 0; k--) {\n  \
     \    size_t j = ret | (1ull<<k);\n      if (j < tree_.size() and s + tree_[j]\
     \ < _sum) {\n        s += tree_[j];\n        ret = j;\n      }\n    }\n    return\
-    \ ret;\n  }\n\n};\n\n#line 4 \"test/point_add_range_sum.test.cpp\"\n#include <bits/stdc++.h>\n\
-    using namespace std;\nusing ll = long long;\n\nint main() {\n  cin.tie(nullptr);\
-    \ ios::sync_with_stdio(false);\n\n  int N,Q; cin>>N>>Q;\n  std::vector<int> A(N);\
-    \ for (auto& a : A) cin>>a;\n  FenwickTree<ll> bit(A.begin(), A.end());\n\n  for\
-    \ (int q = 0; q < Q; q++) {\n    int t; cin>>t;\n    if (t == 0) {\n      int\
-    \ p,x; cin>>p>>x;\n      bit.add(p, x);\n    } else if (t == 1) {\n      int l,r;\
-    \ cin>>l>>r;\n      auto ans = bit.range_sum(l,r);\n      cout << ans << endl;\n\
-    \    }\n  }\n\n  return 0;\n}\n"
-  code: "#define PROBLEM \"https://judge.yosupo.jp/problem/point_add_range_sum\"\n\
-    \n#include \"../include/mtl/fenwick_tree.hpp\"\n#include <bits/stdc++.h>\nusing\
-    \ namespace std;\nusing ll = long long;\n\nint main() {\n  cin.tie(nullptr); ios::sync_with_stdio(false);\n\
-    \n  int N,Q; cin>>N>>Q;\n  std::vector<int> A(N); for (auto& a : A) cin>>a;\n\
-    \  FenwickTree<ll> bit(A.begin(), A.end());\n\n  for (int q = 0; q < Q; q++) {\n\
-    \    int t; cin>>t;\n    if (t == 0) {\n      int p,x; cin>>p>>x;\n      bit.add(p,\
-    \ x);\n    } else if (t == 1) {\n      int l,r; cin>>l>>r;\n      auto ans = bit.range_sum(l,r);\n\
-    \      cout << ans << endl;\n    }\n  }\n\n  return 0;\n}\n"
+    \ ret;\n  }\n\n};\n\n#line 4 \"test/point_add_range_sum.test.cpp\"\n#include <bits/stdc++.h>\r\
+    \nusing namespace std;\r\nusing ll = long long;\r\n\r\nint main() {\r\n  cin.tie(nullptr);\
+    \ ios::sync_with_stdio(false);\r\n\r\n  int N,Q; cin>>N>>Q;\r\n  std::vector<int>\
+    \ A(N); for (auto& a : A) cin>>a;\r\n  FenwickTree<ll> bit(A.begin(), A.end());\r\
+    \n\r\n  for (int q = 0; q < Q; q++) {\r\n    int t; cin>>t;\r\n    if (t == 0)\
+    \ {\r\n      int p,x; cin>>p>>x;\r\n      bit.add(p, x);\r\n    } else if (t ==\
+    \ 1) {\r\n      int l,r; cin>>l>>r;\r\n      auto ans = bit.range_sum(l,r);\r\n\
+    \      cout << ans << endl;\r\n    }\r\n  }\r\n\r\n  return 0;\r\n}\r\n"
+  code: "#define PROBLEM \"https://judge.yosupo.jp/problem/point_add_range_sum\"\r\
+    \n\r\n#include \"../include/mtl/fenwick_tree.hpp\"\r\n#include <bits/stdc++.h>\r\
+    \nusing namespace std;\r\nusing ll = long long;\r\n\r\nint main() {\r\n  cin.tie(nullptr);\
+    \ ios::sync_with_stdio(false);\r\n\r\n  int N,Q; cin>>N>>Q;\r\n  std::vector<int>\
+    \ A(N); for (auto& a : A) cin>>a;\r\n  FenwickTree<ll> bit(A.begin(), A.end());\r\
+    \n\r\n  for (int q = 0; q < Q; q++) {\r\n    int t; cin>>t;\r\n    if (t == 0)\
+    \ {\r\n      int p,x; cin>>p>>x;\r\n      bit.add(p, x);\r\n    } else if (t ==\
+    \ 1) {\r\n      int l,r; cin>>l>>r;\r\n      auto ans = bit.range_sum(l,r);\r\n\
+    \      cout << ans << endl;\r\n    }\r\n  }\r\n\r\n  return 0;\r\n}\r\n"
   dependsOn:
   - include/mtl/fenwick_tree.hpp
   - include/mtl/bit_manip.hpp
   isVerificationFile: true
   path: test/point_add_range_sum.test.cpp
   requiredBy: []
-  timestamp: '2022-12-18 04:26:00+09:00'
+  timestamp: '2023-04-03 03:00:14+09:00'
   verificationStatus: TEST_ACCEPTED
   verifiedWith: []
 documentation_of: test/point_add_range_sum.test.cpp
