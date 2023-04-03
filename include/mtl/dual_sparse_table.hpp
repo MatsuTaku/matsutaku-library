@@ -2,8 +2,8 @@
 #include "bit_manip.hpp"
 #include <vector>
 #include <algorithm>
-
-template <typename T, T (*op)(T, T), T E>
+#include <iostream>
+template <typename T, T (*op)(T, T), T (*e)()>
 class DualSparseTable {
  private:
   size_t size_, log_n_;
@@ -13,7 +13,7 @@ class DualSparseTable {
   DualSparseTable(size_t size) :
       size_(size),
       log_n_(63-bm::clz(size)),
-      table_(log_n_+1, std::vector<T>(size, E)) {}
+      table_(log_n_+1, std::vector<T>(size, e())) {}
   template <typename Iter>
   DualSparseTable(Iter begin, Iter end) :
       DualSparseTable(std::distance(begin, end)) {
@@ -45,14 +45,6 @@ class DualSparseTable {
     }
   }
 
-/***
- * @brief Query of [l, r)
- * @note Complexity: O(1)
- */
-  T query(size_t l, size_t r) const {
-    size_t p = 63-bm::clz(r-l);
-    return op(table_[p][l], table_[p][r-(1ull<<p)]);
-  }
   T get(size_t i) const {
     return table_[0][i];
   }

@@ -1,11 +1,10 @@
 #pragma once
-
+#include "bit_manip.hpp"
 #include <memory>
 #include <vector>
 #include <random>
 #include <cassert>
 #include <iostream>
-#include "bit_manip.hpp"
 
 template<typename T>
 class Skiplist {
@@ -45,6 +44,7 @@ class Skiplist {
     }
     iterator operator++() {
       ptr_ = ptr_->next[0];
+      return *this;
     }
     iterator operator++(int) {
       iterator ret = *this;
