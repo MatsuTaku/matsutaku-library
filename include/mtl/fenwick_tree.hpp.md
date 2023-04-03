@@ -29,8 +29,7 @@ data:
   _verificationStatusIcon: ':heavy_check_mark:'
   attributes:
     links: []
-  bundledCode: "#line 2 \"include/mtl/fenwick_tree.hpp\"\n#include <cstddef>\n#include\
-    \ <vector>\n#line 2 \"include/mtl/bit_manip.hpp\"\n#include <cstdint>\n#include\
+  bundledCode: "#line 2 \"include/mtl/bit_manip.hpp\"\n#include <cstdint>\n#include\
     \ <cassert>\n\nnamespace bm {\n\ninline constexpr uint64_t popcnt_e8(uint64_t\
     \ x) {\n  x = (x & 0x5555555555555555) + ((x>>1) & 0x5555555555555555);\n  x =\
     \ (x & 0x3333333333333333) + ((x>>2) & 0x3333333333333333);\n  x = (x & 0x0F0F0F0F0F0F0F0F)\
@@ -64,23 +63,24 @@ data:
     \ 4) | ((x & 0xF0F0F0F0F0F0F0F0) >> 4);\n  x = ((x & 0x3333333333333333) << 2)\
     \ | ((x & 0xCCCCCCCCCCCCCCCC) >> 2);\n  x = ((x & 0x5555555555555555) << 1) |\
     \ ((x & 0xAAAAAAAAAAAAAAAA) >> 1);\n  return x;\n}\n\n} // namespace bm\n#line\
-    \ 5 \"include/mtl/fenwick_tree.hpp\"\n\ntemplate <typename T>\nclass FenwickTree\
-    \ {\n private:\n  std::vector<T> tree_;\n\n public:\n  FenwickTree() = default;\n\
-    \  explicit FenwickTree(size_t size) : tree_(size+1) {}\n\n  size_t size() const\
-    \ { return tree_.size()-1; }\n\n  template <typename Iter>\n  explicit FenwickTree(Iter\
-    \ begin, Iter end) : FenwickTree(end-begin) {\n    for (auto it = begin; it !=\
-    \ end; ++it)\n      add(it-begin, *it);\n  }\n\n  void add(size_t index, T x)\
-    \ {\n    for (size_t i = index+1; i < tree_.size(); i += i&(-i))\n      tree_[i]\
-    \ += x;\n  }\n\n  T sum(size_t index) const {\n    T sum = 0;\n    for (size_t\
-    \ i = index+1; i > 0; i -= i&(-i))\n      sum += tree_[i];\n    return sum;\n\
-    \  }\n\n  T range_sum(size_t l, size_t r) const {\n    auto sl = l > 0 ? sum(l-1)\
-    \ : 0;\n    auto sr = r > 0 ? sum(r-1) : 0;\n    return sr - sl;\n  }\n\n  size_t\
-    \ lower_bound(T _sum) const {\n    size_t ret = 0;\n    T s = 0;\n    for (int\
-    \ k = 63-bm::clz(size()); k >= 0; k--) {\n      size_t j = ret | (1ull<<k);\n\
-    \      if (j < tree_.size() and s + tree_[j] < _sum) {\n        s += tree_[j];\n\
-    \        ret = j;\n      }\n    }\n    return ret;\n  }\n\n};\n\n"
-  code: "#pragma once\n#include <cstddef>\n#include <vector>\n#include \"bit_manip.hpp\"\
-    \n\ntemplate <typename T>\nclass FenwickTree {\n private:\n  std::vector<T> tree_;\n\
+    \ 3 \"include/mtl/fenwick_tree.hpp\"\n#include <cstddef>\n#include <vector>\n\n\
+    template <typename T>\nclass FenwickTree {\n private:\n  std::vector<T> tree_;\n\
+    \n public:\n  FenwickTree() = default;\n  explicit FenwickTree(size_t size) :\
+    \ tree_(size+1) {}\n\n  size_t size() const { return tree_.size()-1; }\n\n  template\
+    \ <typename Iter>\n  explicit FenwickTree(Iter begin, Iter end) : FenwickTree(end-begin)\
+    \ {\n    for (auto it = begin; it != end; ++it)\n      add(it-begin, *it);\n \
+    \ }\n\n  void add(size_t index, T x) {\n    for (size_t i = index+1; i < tree_.size();\
+    \ i += i&(-i))\n      tree_[i] += x;\n  }\n\n  T sum(size_t index) const {\n \
+    \   T sum = 0;\n    for (size_t i = index+1; i > 0; i -= i&(-i))\n      sum +=\
+    \ tree_[i];\n    return sum;\n  }\n\n  T range_sum(size_t l, size_t r) const {\n\
+    \    auto sl = l > 0 ? sum(l-1) : 0;\n    auto sr = r > 0 ? sum(r-1) : 0;\n  \
+    \  return sr - sl;\n  }\n\n  size_t lower_bound(T _sum) const {\n    size_t ret\
+    \ = 0;\n    T s = 0;\n    for (int k = 63-bm::clz(size()); k >= 0; k--) {\n  \
+    \    size_t j = ret | (1ull<<k);\n      if (j < tree_.size() and s + tree_[j]\
+    \ < _sum) {\n        s += tree_[j];\n        ret = j;\n      }\n    }\n    return\
+    \ ret;\n  }\n\n};\n\n"
+  code: "#pragma once\n#include \"bit_manip.hpp\"\n#include <cstddef>\n#include <vector>\n\
+    \ntemplate <typename T>\nclass FenwickTree {\n private:\n  std::vector<T> tree_;\n\
     \n public:\n  FenwickTree() = default;\n  explicit FenwickTree(size_t size) :\
     \ tree_(size+1) {}\n\n  size_t size() const { return tree_.size()-1; }\n\n  template\
     \ <typename Iter>\n  explicit FenwickTree(Iter begin, Iter end) : FenwickTree(end-begin)\
@@ -102,7 +102,7 @@ data:
   requiredBy:
   - include/mtl/ordinal_range_search.hpp
   - include/mtl/bitmap.hpp
-  timestamp: '2022-12-18 04:26:00+09:00'
+  timestamp: '2023-04-04 01:01:39+09:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
   - test/point_add_range_sum.test.cpp

@@ -542,7 +542,7 @@ data:
   isVerificationFile: false
   path: include/mtl/ordinal_range_search.hpp
   requiredBy: []
-  timestamp: '2022-12-18 04:26:00+09:00'
+  timestamp: '2023-04-04 01:01:39+09:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
   - test/yosupo-point_add_rectangle_sum-wm.test.cpp

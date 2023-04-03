@@ -136,7 +136,7 @@ data:
   isVerificationFile: false
   path: include/mtl/bitmap.hpp
   requiredBy: []
-  timestamp: '2022-12-18 04:26:00+09:00'
+  timestamp: '2023-04-04 01:01:39+09:00'
   verificationStatus: LIBRARY_NO_TESTS
   verifiedWith: []
 documentation_of: include/mtl/bitmap.hpp

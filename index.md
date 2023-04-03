@@ -34,8 +34,20 @@ data:
       path: include/mtl/dirichlet.hpp
       title: include/mtl/dirichlet.hpp
     - icon: ':warning:'
+      path: include/mtl/disjoint_sparse_table.hpp
+      title: include/mtl/disjoint_sparse_table.hpp
+    - icon: ':warning:'
       path: include/mtl/double_ended_priority_queue.hpp
       title: include/mtl/double_ended_priority_queue.hpp
+    - icon: ':heavy_check_mark:'
+      path: include/mtl/dual_disjoint_sparse_table.hpp
+      title: include/mtl/dual_disjoint_sparse_table.hpp
+    - icon: ':heavy_check_mark:'
+      path: include/mtl/dual_segment_tree.hpp
+      title: include/mtl/dual_segment_tree.hpp
+    - icon: ':heavy_check_mark:'
+      path: include/mtl/dual_sparse_table.hpp
+      title: Apply to [l, r)
     - icon: ':warning:'
       path: include/mtl/enumerate.hpp
       title: include/mtl/enumerate.hpp
@@ -274,6 +286,12 @@ data:
       path: test/aoj-do_use_segment_tree-binary_tree.test.cpp
       title: test/aoj-do_use_segment_tree-binary_tree.test.cpp
     - icon: ':heavy_check_mark:'
+      path: test/aoj-range_update_query.test.cpp
+      title: test/aoj-range_update_query.test.cpp
+    - icon: ':heavy_check_mark:'
+      path: test/aoj-the_maximum_number_of_customers.test.cpp
+      title: test/aoj-the_maximum_number_of_customers.test.cpp
+    - icon: ':heavy_check_mark:'
       path: test/aoj-time_table-cht.test.cpp
       title: test/aoj-time_table-cht.test.cpp
     - icon: ':heavy_check_mark:'
@@ -327,6 +345,9 @@ data:
     - icon: ':heavy_check_mark:'
       path: test/yosupo-segment_add_get_min.test.cpp
       title: test/yosupo-segment_add_get_min.test.cpp
+    - icon: ':heavy_check_mark:'
+      path: test/yuki-no945_ykc_manju.test.cpp
+      title: test/yuki-no945_ykc_manju.test.cpp
   - name: test/string
     pages:
     - icon: ':heavy_check_mark:'

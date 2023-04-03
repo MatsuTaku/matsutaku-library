@@ -60,7 +60,7 @@ data:
     \n#if __cplusplus >= 202002L\n#include <concepts>\n\ntemplate<typename M>\nconcept\
     \ LazySegmentTreeMonoid = requires (M m) {\n  {m * m} -> std::same_as<M>;\n};\n\
     template<typename A, typename M>\nconcept LazySegmentTreeOperatorMonoid = requires(A\
-    \ a, M m) {\n  {a()} -> std::same_as<bool>;\n  {a *= a} -> std::convertible_to<A>;\n\
+    \ a, M m) {\n  {a()} -> std::same_as<bool>;\n  {a *= a} -> std::same_as<A>;\n\
     \  {a.act(m, 1)} -> std::same_as<M>;\n};\n#endif\n\ntemplate <typename M, typename\
     \ A>\nclass LazySegmentTree {\n#if __cplusplus >= 202002L\n  static_assert(LazySegmentTreeMonoid<M>);\n\
     \  static_assert(LazySegmentTreeOperatorMonoid<A,M>);\n#endif\n private:\n  size_t\
@@ -191,7 +191,7 @@ data:
   isVerificationFile: true
   path: test/range_affine_range_sum.test.cpp
   requiredBy: []
-  timestamp: '2023-04-03 03:00:14+09:00'
+  timestamp: '2023-04-03 11:10:35+09:00'
   verificationStatus: TEST_ACCEPTED
   verifiedWith: []
 documentation_of: test/range_affine_range_sum.test.cpp

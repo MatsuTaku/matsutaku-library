@@ -182,17 +182,18 @@ data:
     \n    explicit iterator_base(node_ptr ptr) : ptr_(ptr) {}\r\n    template<bool\
     \ C>\r\n    iterator_base(const iterator_base<C>& rhs) : ptr_(rhs.ptr_) {}\r\n\
     \    template<bool C>\r\n    iterator_base& operator=(const iterator_base<C>&\
-    \ rhs) {\r\n      ptr_ = rhs.ptr_;\r\n    }\r\n    template<bool C>\r\n    iterator_base(iterator_base<C>&&\
-    \ rhs) : ptr_(std::move(rhs.ptr_)) {}\r\n    template<bool C>\r\n    iterator_base&\
-    \ operator=(iterator_base<C>&& rhs) {\r\n      ptr_ = std::move(rhs.ptr_);\r\n\
-    \    }\r\n    template<bool C>\r\n    bool operator==(const iterator_base<C>&\
-    \ r) const { \r\n      return ptr_ == r.ptr_;\r\n    }\r\n    template<bool C>\r\
-    \n    bool operator!=(const iterator_base<C>& r) const { \r\n      return ptr_\
-    \ != r.ptr_;\r\n    }\r\n    reference operator*() const { return ptr_->v; }\r\
-    \n    pointer operator->() const { return &(ptr_->v); }\r\n    iterator_base&\
-    \ operator++() {\r\n      auto u = ptr_;\r\n      if (u->right) {\r\n        u\
-    \ = u->right;\r\n        while (u->left)\r\n          u = u->left;\r\n       \
-    \ ptr_ = u;\r\n      } else {\r\n        node_ptr p;\r\n        while ((p = u->parent.lock())\
+    \ rhs) {\r\n      ptr_ = rhs.ptr_;\r\n      return *this;\r\n    }\r\n    template<bool\
+    \ C>\r\n    iterator_base(iterator_base<C>&& rhs) : ptr_(std::move(rhs.ptr_))\
+    \ {}\r\n    template<bool C>\r\n    iterator_base& operator=(iterator_base<C>&&\
+    \ rhs) {\r\n      ptr_ = std::move(rhs.ptr_);\r\n      return *this;\r\n    }\r\
+    \n    template<bool C>\r\n    bool operator==(const iterator_base<C>& r) const\
+    \ { \r\n      return ptr_ == r.ptr_;\r\n    }\r\n    template<bool C>\r\n    bool\
+    \ operator!=(const iterator_base<C>& r) const { \r\n      return ptr_ != r.ptr_;\r\
+    \n    }\r\n    reference operator*() const { return ptr_->v; }\r\n    pointer\
+    \ operator->() const { return &(ptr_->v); }\r\n    iterator_base& operator++()\
+    \ {\r\n      auto u = ptr_;\r\n      if (u->right) {\r\n        u = u->right;\r\
+    \n        while (u->left)\r\n          u = u->left;\r\n        ptr_ = u;\r\n \
+    \     } else {\r\n        node_ptr p;\r\n        while ((p = u->parent.lock())\
     \ and p->left != u) {\r\n          u = p;\r\n        }\r\n        assert(!u->parent.expired());\r\
     \n        assert(u->parent.lock()->left == u);\r\n        ptr_ = u->parent.lock();\r\
     \n      }\r\n      return *this;\r\n    }\r\n    iterator_base operator++(int)\
@@ -767,7 +768,7 @@ data:
   isVerificationFile: false
   path: include/mtl/integer_set.hpp
   requiredBy: []
-  timestamp: '2022-12-28 06:09:16+09:00'
+  timestamp: '2023-04-04 01:01:39+09:00'
   verificationStatus: LIBRARY_NO_TESTS
   verifiedWith: []
 documentation_of: include/mtl/integer_set.hpp

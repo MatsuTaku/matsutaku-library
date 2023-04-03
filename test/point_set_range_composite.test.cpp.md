@@ -65,39 +65,43 @@ data:
     \ Iter>\n  explicit SegmentTree(Iter begin, Iter end) : SegmentTree(end-begin)\
     \ {\n    for (auto it = begin; it != end; ++it)\n      tree_[size_ + it - begin]\
     \ = *it;\n    for (size_t i = size_-1; i > 0; i--)\n      tree_[i] = tree_[i *\
-    \ 2] * tree_[i * 2 + 1];\n  }\n\n  M operator[](size_t index) const {\n    return\
-    \ tree_[size_ + index];\n  }\n\n  void set(size_t index, M val) {\n    auto i\
-    \ = size_ + index;\n    tree_[i] = val;\n    i >>= 1;\n    while (i > 0) {\n \
-    \     tree_[i] = tree_[i*2] * tree_[i*2+1];\n      i >>= 1;\n    }\n  }\n\n  M\
-    \ query(size_t l, size_t r) const {\n    M lhs,rhs;\n    for (auto _l = l+size_,\
-    \ _r = r+size_; _l < _r; _l>>=1, _r>>=1) {\n      if (_l&1) lhs = lhs * tree_[_l++];\n\
-    \      if (_r&1) rhs = tree_[--_r] * rhs;\n    }\n    return lhs * rhs;\n  }\n\
-    \n  template<typename F>\n  size_t max_right(size_t begin, F f) const {\n    if\
-    \ (begin == size_) return size_;\n    M p;\n    auto l = begin + size_;\n    do\
-    \ {\n      while (l % 2 == 0) l >>= 1;\n      if (!f(p * tree_[l])) {\n      \
-    \  while (l < size_) {\n          l = l*2;\n          if (f(p * tree_[l])) {\n\
-    \            p = p * tree_[l];\n            l++;\n          }\n        }\n   \
-    \     return l - size_;\n      }\n      p = p * tree_[l];\n      l++;\n    } while\
-    \ ((l & -l) != l);\n    return size_;\n  }\n  template<bool (*F)(M)>\n  size_t\
-    \ max_right(size_t begin) const {\n    return find_last(begin, [](M x) { return\
-    \ F(x); });\n  }\n\n  template<typename F>\n  size_t min_left(size_t end, F f)\
-    \ const {\n    if (end == 0) return 0;\n    M p;\n    auto r = end + size_;\n\
-    \    do {\n      r--;\n      while (r > 1 and r % 2 == 1) r >>= 1;\n      if (!f(tree_[r]\
-    \ * p)) {\n        while (r < size_) {\n          r = r*2+1;\n          if (f(tree_[r]\
-    \ * p)) {\n            p = tree_[r] * p;\n            r--;\n          }\n    \
-    \    }\n        return r + 1 - size_;\n      }\n      p = tree_[r] * p;\n    }\
-    \ while ((r & -r) != r);\n    return 0;\n  }\n  template<bool (*F)(M)>\n  size_t\
-    \ min_left(size_t begin) const {\n    return min_left(begin, [](M x) { return\
-    \ F(x); });\n  }\n\n};\n\n#line 2 \"include/mtl/modular.hpp\"\n#include <iostream>\n\
-    #line 4 \"include/mtl/modular.hpp\"\n\ntemplate <int MOD>\nclass Modular {\n private:\n\
-    \  unsigned int val_;\n\n public:\n  static constexpr unsigned int mod() { return\
-    \ MOD; }\n  template<class T>\n  static constexpr unsigned int safe_mod(T v) {\n\
-    \    auto x = (long long)(v%(long long)mod());\n    if (x < 0) x += mod();\n \
-    \   return (unsigned int) x;\n  }\n\n  constexpr Modular() : val_(0) {}\n  template<class\
-    \ T,\n      std::enable_if_t<\n          std::is_integral<T>::value && std::is_unsigned<T>::value\n\
-    \      > * = nullptr>\n  constexpr Modular(T v) : val_(v%mod()) {}\n  template<class\
-    \ T,\n      std::enable_if_t<\n          std::is_integral<T>::value && !std::is_unsigned<T>::value\n\
-    \      > * = nullptr>\n  constexpr Modular(T v) : val_(safe_mod(v)) {}\n\n  constexpr\
+    \ 2] * tree_[i * 2 + 1];\n  }\n\n  M get(size_t index) const {\n    return tree_[size_\
+    \ + index];\n  }\n  M operator[](size_t index) const {\n    return get(index);\n\
+    \  }\n\n  void set(size_t index, M val) {\n    auto i = size_ + index;\n    tree_[i]\
+    \ = val;\n    i >>= 1;\n    while (i > 0) {\n      tree_[i] = tree_[i*2] * tree_[i*2+1];\n\
+    \      i >>= 1;\n    }\n  }\n\n  M query(size_t l, size_t r) const {\n    M lhs,rhs;\n\
+    \    for (auto _l = l+size_, _r = r+size_; _l < _r; _l>>=1, _r>>=1) {\n      if\
+    \ (_l&1) lhs = lhs * tree_[_l++];\n      if (_r&1) rhs = tree_[--_r] * rhs;\n\
+    \    }\n    return lhs * rhs;\n  }\n\n  template<typename F>\n  size_t max_right(size_t\
+    \ begin, F f) const {\n    if (begin == size_) return size_;\n    M p;\n    auto\
+    \ l = begin + size_;\n    do {\n      while (l % 2 == 0) l >>= 1;\n      if (!f(p\
+    \ * tree_[l])) {\n        while (l < size_) {\n          l = l*2;\n          if\
+    \ (f(p * tree_[l])) {\n            p = p * tree_[l];\n            l++;\n     \
+    \     }\n        }\n        return l - size_;\n      }\n      p = p * tree_[l];\n\
+    \      l++;\n    } while ((l & -l) != l);\n    return size_;\n  }\n  template<bool\
+    \ (*F)(M)>\n  size_t max_right(size_t begin) const {\n    return find_last(begin,\
+    \ [](M x) { return F(x); });\n  }\n\n  template<typename F>\n  size_t min_left(size_t\
+    \ end, F f) const {\n    if (end == 0) return 0;\n    M p;\n    auto r = end +\
+    \ size_;\n    do {\n      r--;\n      while (r > 1 and r % 2 == 1) r >>= 1;\n\
+    \      if (!f(tree_[r] * p)) {\n        while (r < size_) {\n          r = r*2+1;\n\
+    \          if (f(tree_[r] * p)) {\n            p = tree_[r] * p;\n           \
+    \ r--;\n          }\n        }\n        return r + 1 - size_;\n      }\n     \
+    \ p = tree_[r] * p;\n    } while ((r & -r) != r);\n    return 0;\n  }\n  template<bool\
+    \ (*F)(M)>\n  size_t min_left(size_t begin) const {\n    return min_left(begin,\
+    \ [](M x) { return F(x); });\n  }\n\n};\n\ntemplate<typename T, T (*op)(T, T),\
+    \ T E>\nstruct Monoid {\n  T x;\n  Monoid(T x=E) : x(x) {}\n  Monoid operator*(const\
+    \ Monoid& rhs) const {\n    return Monoid(op(x, rhs.x));\n  }\n  Monoid& operator*=(const\
+    \ Monoid& rhs) {\n    return *this = *this * rhs;\n  }\n};\n#line 2 \"include/mtl/modular.hpp\"\
+    \n#include <iostream>\n#line 4 \"include/mtl/modular.hpp\"\n\ntemplate <int MOD>\n\
+    class Modular {\n private:\n  unsigned int val_;\n\n public:\n  static constexpr\
+    \ unsigned int mod() { return MOD; }\n  template<class T>\n  static constexpr\
+    \ unsigned int safe_mod(T v) {\n    auto x = (long long)(v%(long long)mod());\n\
+    \    if (x < 0) x += mod();\n    return (unsigned int) x;\n  }\n\n  constexpr\
+    \ Modular() : val_(0) {}\n  template<class T,\n      std::enable_if_t<\n     \
+    \     std::is_integral<T>::value && std::is_unsigned<T>::value\n      > * = nullptr>\n\
+    \  constexpr Modular(T v) : val_(v%mod()) {}\n  template<class T,\n      std::enable_if_t<\n\
+    \          std::is_integral<T>::value && !std::is_unsigned<T>::value\n      >\
+    \ * = nullptr>\n  constexpr Modular(T v) : val_(safe_mod(v)) {}\n\n  constexpr\
     \ unsigned int val() const { return val_; }\n  constexpr Modular& operator+=(Modular\
     \ x) {\n    val_ += x.val();\n    if (val_ >= mod()) val_ -= mod();\n    return\
     \ *this;\n  }\n  constexpr Modular operator-() const { return {mod() - val_};\
@@ -137,26 +141,26 @@ data:
     \  }\n}\n\ntemplate<int m>\nconstexpr int primitive_root = primitive_root_constexpr(m);\n\
     \n}\n#line 5 \"test/point_set_range_composite.test.cpp\"\n#include <bits/stdc++.h>\r\
     \nusing namespace std;\r\nusing ll = long long;\r\n\r\nconstexpr ll MOD = 998244353;\r\
-    \nusing mint = Modular<MOD>;\r\n\r\nstruct Monoid {\r\n  mint a=1, b=0;\r\n  Monoid\
-    \ operator*(Monoid r) const {\r\n    return {a*r.a, b*r.a+r.b};\r\n  }\r\n  Monoid&\
-    \ operator*=(Monoid r) {return *this = *this * r;}\r\n};\r\n\r\nint main() {\r\
-    \n  cin.tie(nullptr); ios::sync_with_stdio(false);\r\n\r\n  int N,Q; cin>>N>>Q;\r\
-    \n  vector<Monoid> F(N); for (auto& f : F) cin>>f.a>>f.b;\r\n  SegmentTree<Monoid>\
-    \ st(F.begin(), F.end());\r\n\r\n  for (int q = 0; q < Q; q++) {\r\n    int t;\
-    \ cin>>t;\r\n    if (t == 0) {\r\n      int p,c,d; cin>>p>>c>>d;\r\n      st.set(p,\
-    \ {c,d});\r\n    } else if (t == 1) {\r\n      int l,r,x; cin>>l>>r>>x;\r\n  \
-    \    auto comp = st.query(l,r);\r\n      auto ans = comp.a*x + comp.b;\r\n   \
-    \   cout << ans << endl;\r\n    }\r\n  }\r\n\r\n  return 0;\r\n}\r\n"
+    \nusing mint = Modular<MOD>;\r\n\r\nstruct M {\r\n  mint a=1, b=0;\r\n  M operator*(M\
+    \ r) const {\r\n    return {a*r.a, b*r.a+r.b};\r\n  }\r\n  M& operator*=(M r)\
+    \ {return *this = *this * r;}\r\n};\r\n\r\nint main() {\r\n  cin.tie(nullptr);\
+    \ ios::sync_with_stdio(false);\r\n\r\n  int N,Q; cin>>N>>Q;\r\n  vector<M> F(N);\
+    \ for (auto& f : F) cin>>f.a>>f.b;\r\n  SegmentTree<M> st(F.begin(), F.end());\r\
+    \n\r\n  for (int q = 0; q < Q; q++) {\r\n    int t; cin>>t;\r\n    if (t == 0)\
+    \ {\r\n      int p,c,d; cin>>p>>c>>d;\r\n      st.set(p, {c,d});\r\n    } else\
+    \ if (t == 1) {\r\n      int l,r,x; cin>>l>>r>>x;\r\n      auto comp = st.query(l,r);\r\
+    \n      auto ans = comp.a*x + comp.b;\r\n      cout << ans << endl;\r\n    }\r\
+    \n  }\r\n\r\n  return 0;\r\n}\r\n"
   code: "#define PROBLEM \"https://judge.yosupo.jp/problem/point_set_range_composite\"\
     \r\n\r\n#include \"../include/mtl/segment_tree.hpp\"\r\n#include \"../include/mtl/modular.hpp\"\
     \r\n#include <bits/stdc++.h>\r\nusing namespace std;\r\nusing ll = long long;\r\
     \n\r\nconstexpr ll MOD = 998244353;\r\nusing mint = Modular<MOD>;\r\n\r\nstruct\
-    \ Monoid {\r\n  mint a=1, b=0;\r\n  Monoid operator*(Monoid r) const {\r\n   \
-    \ return {a*r.a, b*r.a+r.b};\r\n  }\r\n  Monoid& operator*=(Monoid r) {return\
-    \ *this = *this * r;}\r\n};\r\n\r\nint main() {\r\n  cin.tie(nullptr); ios::sync_with_stdio(false);\r\
-    \n\r\n  int N,Q; cin>>N>>Q;\r\n  vector<Monoid> F(N); for (auto& f : F) cin>>f.a>>f.b;\r\
-    \n  SegmentTree<Monoid> st(F.begin(), F.end());\r\n\r\n  for (int q = 0; q < Q;\
-    \ q++) {\r\n    int t; cin>>t;\r\n    if (t == 0) {\r\n      int p,c,d; cin>>p>>c>>d;\r\
+    \ M {\r\n  mint a=1, b=0;\r\n  M operator*(M r) const {\r\n    return {a*r.a,\
+    \ b*r.a+r.b};\r\n  }\r\n  M& operator*=(M r) {return *this = *this * r;}\r\n};\r\
+    \n\r\nint main() {\r\n  cin.tie(nullptr); ios::sync_with_stdio(false);\r\n\r\n\
+    \  int N,Q; cin>>N>>Q;\r\n  vector<M> F(N); for (auto& f : F) cin>>f.a>>f.b;\r\
+    \n  SegmentTree<M> st(F.begin(), F.end());\r\n\r\n  for (int q = 0; q < Q; q++)\
+    \ {\r\n    int t; cin>>t;\r\n    if (t == 0) {\r\n      int p,c,d; cin>>p>>c>>d;\r\
     \n      st.set(p, {c,d});\r\n    } else if (t == 1) {\r\n      int l,r,x; cin>>l>>r>>x;\r\
     \n      auto comp = st.query(l,r);\r\n      auto ans = comp.a*x + comp.b;\r\n\
     \      cout << ans << endl;\r\n    }\r\n  }\r\n\r\n  return 0;\r\n}\r\n"
@@ -167,7 +171,7 @@ data:
   isVerificationFile: true
   path: test/point_set_range_composite.test.cpp
   requiredBy: []
-  timestamp: '2023-04-03 03:00:14+09:00'
+  timestamp: '2023-04-04 01:01:39+09:00'
   verificationStatus: TEST_ACCEPTED
   verifiedWith: []
 documentation_of: test/point_set_range_composite.test.cpp

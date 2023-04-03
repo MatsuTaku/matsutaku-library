@@ -56,9 +56,9 @@ data:
     \ <concepts>\n\ntemplate<typename M>\nconcept LazySegmentTreeMonoid = requires\
     \ (M m) {\n  {m * m} -> std::same_as<M>;\n};\ntemplate<typename A, typename M>\n\
     concept LazySegmentTreeOperatorMonoid = requires(A a, M m) {\n  {a()} -> std::same_as<bool>;\n\
-    \  {a *= a} -> std::convertible_to<A>;\n  {a.act(m, 1)} -> std::same_as<M>;\n\
-    };\n#endif\n\ntemplate <typename M, typename A>\nclass LazySegmentTree {\n#if\
-    \ __cplusplus >= 202002L\n  static_assert(LazySegmentTreeMonoid<M>);\n  static_assert(LazySegmentTreeOperatorMonoid<A,M>);\n\
+    \  {a *= a} -> std::same_as<A>;\n  {a.act(m, 1)} -> std::same_as<M>;\n};\n#endif\n\
+    \ntemplate <typename M, typename A>\nclass LazySegmentTree {\n#if __cplusplus\
+    \ >= 202002L\n  static_assert(LazySegmentTreeMonoid<M>);\n  static_assert(LazySegmentTreeOperatorMonoid<A,M>);\n\
     #endif\n private:\n  size_t size_;\n  std::vector<std::pair<M,A>> tree_;\n  std::vector<std::pair<size_t,\
     \ size_t>> ids_;\n\n public:\n  explicit LazySegmentTree(size_t size) :\n    \
     \  size_(1ull<<(64-bm::clz(size-1))),\n      tree_(size_*2) {\n    ids_.reserve((64-bm::clz(size-1))*2);\n\
@@ -104,7 +104,7 @@ data:
     #include <cassert>\n#if __cplusplus >= 202002L\n#include <concepts>\n\ntemplate<typename\
     \ M>\nconcept LazySegmentTreeMonoid = requires (M m) {\n  {m * m} -> std::same_as<M>;\n\
     };\ntemplate<typename A, typename M>\nconcept LazySegmentTreeOperatorMonoid =\
-    \ requires(A a, M m) {\n  {a()} -> std::same_as<bool>;\n  {a *= a} -> std::convertible_to<A>;\n\
+    \ requires(A a, M m) {\n  {a()} -> std::same_as<bool>;\n  {a *= a} -> std::same_as<A>;\n\
     \  {a.act(m, 1)} -> std::same_as<M>;\n};\n#endif\n\ntemplate <typename M, typename\
     \ A>\nclass LazySegmentTree {\n#if __cplusplus >= 202002L\n  static_assert(LazySegmentTreeMonoid<M>);\n\
     \  static_assert(LazySegmentTreeOperatorMonoid<A,M>);\n#endif\n private:\n  size_t\
@@ -154,7 +154,7 @@ data:
   isVerificationFile: false
   path: include/mtl/lazy_segment_tree.hpp
   requiredBy: []
-  timestamp: '2022-12-20 20:34:44+09:00'
+  timestamp: '2023-04-03 11:10:35+09:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
   - test/range_affine_range_sum.test.cpp

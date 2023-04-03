@@ -11,17 +11,15 @@ data:
   _verificationStatusIcon: ':warning:'
   attributes:
     links: []
-  bundledCode: "#line 2 \"include/mtl/skiplist.hpp\"\n\r\n#include <memory>\r\n#include\
-    \ <vector>\r\n#include <random>\r\n#include <cassert>\r\n#include <iostream>\r\
-    \n#line 2 \"include/mtl/bit_manip.hpp\"\n#include <cstdint>\n#line 4 \"include/mtl/bit_manip.hpp\"\
-    \n\nnamespace bm {\n\ninline constexpr uint64_t popcnt_e8(uint64_t x) {\n  x =\
-    \ (x & 0x5555555555555555) + ((x>>1) & 0x5555555555555555);\n  x = (x & 0x3333333333333333)\
-    \ + ((x>>2) & 0x3333333333333333);\n  x = (x & 0x0F0F0F0F0F0F0F0F) + ((x>>4) &\
-    \ 0x0F0F0F0F0F0F0F0F);\n  return x;\n}\n// Count 1s\ninline constexpr unsigned\
-    \ popcnt(uint64_t x) {\n  return (popcnt_e8(x) * 0x0101010101010101) >> 56;\n\
-    }\n// Count trailing 0s. ...01101000 -> 3\ninline constexpr unsigned ctz(uint64_t\
-    \ x) {\n  return popcnt((x & (-x)) - 1);\n}\ninline constexpr unsigned ctz8(uint8_t\
-    \ x) {\n  return x == 0 ? 8 : popcnt_e8((x & (-x)) - 1);\n}\n// [00..0](8bit)\
+  bundledCode: "#line 2 \"include/mtl/bit_manip.hpp\"\n#include <cstdint>\n#include\
+    \ <cassert>\n\nnamespace bm {\n\ninline constexpr uint64_t popcnt_e8(uint64_t\
+    \ x) {\n  x = (x & 0x5555555555555555) + ((x>>1) & 0x5555555555555555);\n  x =\
+    \ (x & 0x3333333333333333) + ((x>>2) & 0x3333333333333333);\n  x = (x & 0x0F0F0F0F0F0F0F0F)\
+    \ + ((x>>4) & 0x0F0F0F0F0F0F0F0F);\n  return x;\n}\n// Count 1s\ninline constexpr\
+    \ unsigned popcnt(uint64_t x) {\n  return (popcnt_e8(x) * 0x0101010101010101)\
+    \ >> 56;\n}\n// Count trailing 0s. ...01101000 -> 3\ninline constexpr unsigned\
+    \ ctz(uint64_t x) {\n  return popcnt((x & (-x)) - 1);\n}\ninline constexpr unsigned\
+    \ ctz8(uint8_t x) {\n  return x == 0 ? 8 : popcnt_e8((x & (-x)) - 1);\n}\n// [00..0](8bit)\
     \ -> 0, [**..*](not only 0) -> 1\ninline constexpr uint8_t summary(uint64_t x)\
     \ {\n  constexpr uint64_t hmask = 0x8080808080808080ull;\n  constexpr uint64_t\
     \ lmask = 0x7F7F7F7F7F7F7F7Full;\n  auto a = x & hmask;\n  auto b = x & lmask;\n\
@@ -47,25 +45,27 @@ data:
     \ 4) | ((x & 0xF0F0F0F0F0F0F0F0) >> 4);\n  x = ((x & 0x3333333333333333) << 2)\
     \ | ((x & 0xCCCCCCCCCCCCCCCC) >> 2);\n  x = ((x & 0x5555555555555555) << 1) |\
     \ ((x & 0xAAAAAAAAAAAAAAAA) >> 1);\n  return x;\n}\n\n} // namespace bm\n#line\
-    \ 9 \"include/mtl/skiplist.hpp\"\n\r\ntemplate<typename T>\r\nclass Skiplist {\r\
-    \n protected:\r\n  struct Node {\r\n   private:\r\n    struct Path {\r\n     \
-    \ int length;\r\n      std::shared_ptr<Node> next;\r\n      Path(int l, std::shared_ptr<Node>\
-    \ n) : length(l), next(n) {}\r\n    };\r\n   public:\r\n    T v;\r\n    std::vector<std::shared_ptr<Node>>\
-    \ next;\r\n    std::vector<int> length;\r\n    Node(T v, int h) : v(v), next(h+1,\
-    \ nullptr), length(h+1, 0) {}\r\n  };\r\n\r\n public:\r\n  static constexpr int\
-    \ kMaxHeight = 32;\r\n\r\n  class iterator {\r\n   public:\r\n    using value_type\
-    \ = T;\r\n    using pointer = T*;\r\n    using reference = T&;\r\n    using iterator_category\
+    \ 3 \"include/mtl/skiplist.hpp\"\n#include <memory>\r\n#include <vector>\r\n#include\
+    \ <random>\r\n#line 7 \"include/mtl/skiplist.hpp\"\n#include <iostream>\r\n\r\n\
+    template<typename T>\r\nclass Skiplist {\r\n protected:\r\n  struct Node {\r\n\
+    \   private:\r\n    struct Path {\r\n      int length;\r\n      std::shared_ptr<Node>\
+    \ next;\r\n      Path(int l, std::shared_ptr<Node> n) : length(l), next(n) {}\r\
+    \n    };\r\n   public:\r\n    T v;\r\n    std::vector<std::shared_ptr<Node>> next;\r\
+    \n    std::vector<int> length;\r\n    Node(T v, int h) : v(v), next(h+1, nullptr),\
+    \ length(h+1, 0) {}\r\n  };\r\n\r\n public:\r\n  static constexpr int kMaxHeight\
+    \ = 32;\r\n\r\n  class iterator {\r\n   public:\r\n    using value_type = T;\r\
+    \n    using pointer = T*;\r\n    using reference = T&;\r\n    using iterator_category\
     \ = std::forward_iterator_tag;\r\n   private:\r\n    std::shared_ptr<Node> ptr_;\r\
     \n   public:\r\n    iterator(std::shared_ptr<Node> ptr) : ptr_(ptr) {}\r\n   \
     \ T& operator*() {\r\n      return ptr_->v;\r\n    }\r\n    T* operator&() {\r\
     \n      return &(ptr_->v);\r\n    }\r\n    iterator operator++() {\r\n      ptr_\
-    \ = ptr_->next[0];\r\n    }\r\n    iterator operator++(int) {\r\n      iterator\
-    \ ret = *this;\r\n      operator++();\r\n      return ret;\r\n    }\r\n    bool\
-    \ operator==(iterator r) const {\r\n      return ptr_ == r.ptr_;\r\n    }\r\n\
-    \    bool operator!=(iterator r) const {\r\n      return ptr_ != r.ptr_;\r\n \
-    \   }\r\n  };\r\n\r\n protected:\r\n  std::shared_ptr<Node> sentinel_;\r\n  int\
-    \ height_;\r\n  size_t size_;\r\n\r\n  std::default_random_engine rnd_gen;\r\n\
-    \  std::uniform_int_distribution<uint32_t> dist;\r\n\r\n public:\r\n  Skiplist()\
+    \ = ptr_->next[0];\r\n      return *this;\r\n    }\r\n    iterator operator++(int)\
+    \ {\r\n      iterator ret = *this;\r\n      operator++();\r\n      return ret;\r\
+    \n    }\r\n    bool operator==(iterator r) const {\r\n      return ptr_ == r.ptr_;\r\
+    \n    }\r\n    bool operator!=(iterator r) const {\r\n      return ptr_ != r.ptr_;\r\
+    \n    }\r\n  };\r\n\r\n protected:\r\n  std::shared_ptr<Node> sentinel_;\r\n \
+    \ int height_;\r\n  size_t size_;\r\n\r\n  std::default_random_engine rnd_gen;\r\
+    \n  std::uniform_int_distribution<uint32_t> dist;\r\n\r\n public:\r\n  Skiplist()\
     \ :\r\n      sentinel_(std::make_shared<Node>(T(), kMaxHeight)),\r\n      height_(0),\r\
     \n      size_(0),\r\n      rnd_gen(std::random_device()()),\r\n      dist(0, (1ull<<kMaxHeight)-1)\
     \ {}\r\n\r\n  size_t size() const {return size_;}\r\n  bool empty() const {return\
@@ -152,10 +152,10 @@ data:
     \     u->next[r] = u->next[r]->next[r];\r\n      } else if (u->next[r]) {\r\n\
     \        u->length[r]--;\r\n      }\r\n    }\r\n    if (erased)\r\n      _base::size_--;\r\
     \n    return iterator(u->next[0]);\r\n  }\r\n};\r\n"
-  code: "#pragma once\r\n\r\n#include <memory>\r\n#include <vector>\r\n#include <random>\r\
-    \n#include <cassert>\r\n#include <iostream>\r\n#include \"bit_manip.hpp\"\r\n\r\
-    \ntemplate<typename T>\r\nclass Skiplist {\r\n protected:\r\n  struct Node {\r\
-    \n   private:\r\n    struct Path {\r\n      int length;\r\n      std::shared_ptr<Node>\
+  code: "#pragma once\r\n#include \"bit_manip.hpp\"\r\n#include <memory>\r\n#include\
+    \ <vector>\r\n#include <random>\r\n#include <cassert>\r\n#include <iostream>\r\
+    \n\r\ntemplate<typename T>\r\nclass Skiplist {\r\n protected:\r\n  struct Node\
+    \ {\r\n   private:\r\n    struct Path {\r\n      int length;\r\n      std::shared_ptr<Node>\
     \ next;\r\n      Path(int l, std::shared_ptr<Node> n) : length(l), next(n) {}\r\
     \n    };\r\n   public:\r\n    T v;\r\n    std::vector<std::shared_ptr<Node>> next;\r\
     \n    std::vector<int> length;\r\n    Node(T v, int h) : v(v), next(h+1, nullptr),\
@@ -166,13 +166,13 @@ data:
     \n   public:\r\n    iterator(std::shared_ptr<Node> ptr) : ptr_(ptr) {}\r\n   \
     \ T& operator*() {\r\n      return ptr_->v;\r\n    }\r\n    T* operator&() {\r\
     \n      return &(ptr_->v);\r\n    }\r\n    iterator operator++() {\r\n      ptr_\
-    \ = ptr_->next[0];\r\n    }\r\n    iterator operator++(int) {\r\n      iterator\
-    \ ret = *this;\r\n      operator++();\r\n      return ret;\r\n    }\r\n    bool\
-    \ operator==(iterator r) const {\r\n      return ptr_ == r.ptr_;\r\n    }\r\n\
-    \    bool operator!=(iterator r) const {\r\n      return ptr_ != r.ptr_;\r\n \
-    \   }\r\n  };\r\n\r\n protected:\r\n  std::shared_ptr<Node> sentinel_;\r\n  int\
-    \ height_;\r\n  size_t size_;\r\n\r\n  std::default_random_engine rnd_gen;\r\n\
-    \  std::uniform_int_distribution<uint32_t> dist;\r\n\r\n public:\r\n  Skiplist()\
+    \ = ptr_->next[0];\r\n      return *this;\r\n    }\r\n    iterator operator++(int)\
+    \ {\r\n      iterator ret = *this;\r\n      operator++();\r\n      return ret;\r\
+    \n    }\r\n    bool operator==(iterator r) const {\r\n      return ptr_ == r.ptr_;\r\
+    \n    }\r\n    bool operator!=(iterator r) const {\r\n      return ptr_ != r.ptr_;\r\
+    \n    }\r\n  };\r\n\r\n protected:\r\n  std::shared_ptr<Node> sentinel_;\r\n \
+    \ int height_;\r\n  size_t size_;\r\n\r\n  std::default_random_engine rnd_gen;\r\
+    \n  std::uniform_int_distribution<uint32_t> dist;\r\n\r\n public:\r\n  Skiplist()\
     \ :\r\n      sentinel_(std::make_shared<Node>(T(), kMaxHeight)),\r\n      height_(0),\r\
     \n      size_(0),\r\n      rnd_gen(std::random_device()()),\r\n      dist(0, (1ull<<kMaxHeight)-1)\
     \ {}\r\n\r\n  size_t size() const {return size_;}\r\n  bool empty() const {return\
@@ -264,7 +264,7 @@ data:
   isVerificationFile: false
   path: include/mtl/skiplist.hpp
   requiredBy: []
-  timestamp: '2022-12-18 04:26:00+09:00'
+  timestamp: '2023-04-04 01:01:39+09:00'
   verificationStatus: LIBRARY_NO_TESTS
   verifiedWith: []
 documentation_of: include/mtl/skiplist.hpp

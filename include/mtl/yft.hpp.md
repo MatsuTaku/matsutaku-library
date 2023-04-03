@@ -277,17 +277,18 @@ data:
     \n    explicit iterator_base(node_ptr ptr) : ptr_(ptr) {}\r\n    template<bool\
     \ C>\r\n    iterator_base(const iterator_base<C>& rhs) : ptr_(rhs.ptr_) {}\r\n\
     \    template<bool C>\r\n    iterator_base& operator=(const iterator_base<C>&\
-    \ rhs) {\r\n      ptr_ = rhs.ptr_;\r\n    }\r\n    template<bool C>\r\n    iterator_base(iterator_base<C>&&\
-    \ rhs) : ptr_(std::move(rhs.ptr_)) {}\r\n    template<bool C>\r\n    iterator_base&\
-    \ operator=(iterator_base<C>&& rhs) {\r\n      ptr_ = std::move(rhs.ptr_);\r\n\
-    \    }\r\n    template<bool C>\r\n    bool operator==(const iterator_base<C>&\
-    \ r) const { \r\n      return ptr_ == r.ptr_;\r\n    }\r\n    template<bool C>\r\
-    \n    bool operator!=(const iterator_base<C>& r) const { \r\n      return ptr_\
-    \ != r.ptr_;\r\n    }\r\n    reference operator*() const { return ptr_->v; }\r\
-    \n    pointer operator->() const { return &(ptr_->v); }\r\n    iterator_base&\
-    \ operator++() {\r\n      auto u = ptr_;\r\n      if (u->right) {\r\n        u\
-    \ = u->right;\r\n        while (u->left)\r\n          u = u->left;\r\n       \
-    \ ptr_ = u;\r\n      } else {\r\n        node_ptr p;\r\n        while ((p = u->parent.lock())\
+    \ rhs) {\r\n      ptr_ = rhs.ptr_;\r\n      return *this;\r\n    }\r\n    template<bool\
+    \ C>\r\n    iterator_base(iterator_base<C>&& rhs) : ptr_(std::move(rhs.ptr_))\
+    \ {}\r\n    template<bool C>\r\n    iterator_base& operator=(iterator_base<C>&&\
+    \ rhs) {\r\n      ptr_ = std::move(rhs.ptr_);\r\n      return *this;\r\n    }\r\
+    \n    template<bool C>\r\n    bool operator==(const iterator_base<C>& r) const\
+    \ { \r\n      return ptr_ == r.ptr_;\r\n    }\r\n    template<bool C>\r\n    bool\
+    \ operator!=(const iterator_base<C>& r) const { \r\n      return ptr_ != r.ptr_;\r\
+    \n    }\r\n    reference operator*() const { return ptr_->v; }\r\n    pointer\
+    \ operator->() const { return &(ptr_->v); }\r\n    iterator_base& operator++()\
+    \ {\r\n      auto u = ptr_;\r\n      if (u->right) {\r\n        u = u->right;\r\
+    \n        while (u->left)\r\n          u = u->left;\r\n        ptr_ = u;\r\n \
+    \     } else {\r\n        node_ptr p;\r\n        while ((p = u->parent.lock())\
     \ and p->left != u) {\r\n          u = p;\r\n        }\r\n        assert(!u->parent.expired());\r\
     \n        assert(u->parent.lock()->left == u);\r\n        ptr_ = u->parent.lock();\r\
     \n      }\r\n      return *this;\r\n    }\r\n    iterator_base operator++(int)\
@@ -622,15 +623,15 @@ data:
     \n      size_(rhs.size_),\r\n      dist_(0, W-1) {}\r\n  YFastTrieBase& operator=(const\
     \ YFastTrieBase& rhs) {\r\n    xft_ = rhs.xft_;\r\n    end_ = iterator(&xft_,\
     \ std::prev(xft_.end()), std::prev(xft_.end())->second.end());\r\n    size_ =\
-    \ rhs.size_;\r\n    eng_ = rhs.eng_;\r\n    dist_ = rhs.dist_;\r\n  }\r\n  YFastTrieBase(YFastTrieBase&&)\
-    \ noexcept = default;\r\n  YFastTrieBase& operator=(YFastTrieBase&&) noexcept\
-    \ = default;\r\n  template<typename InputIt>\r\n  explicit YFastTrieBase(InputIt\
-    \ begin, InputIt end) : YFastTrieBase() {\r\n    static_assert(std::is_convertible<typename\
-    \ std::iterator_traits<InputIt>::value_type, value_type>::value, \"\");\r\n  \
-    \  if (begin == end) return;\r\n    if (!std::is_sorted(begin, end, [](auto& l,\
-    \ auto& r) {\r\n      return Def::key_of(l) < Def::key_of(r);\r\n    })) {\r\n\
-    \      for (auto it = begin; it != end; ++it)\r\n        _insert(*it);\r\n   \
-    \   return;\r\n    }\r\n    xft_.clear();\r\n    auto b = begin;\r\n    while\
+    \ rhs.size_;\r\n    eng_ = rhs.eng_;\r\n    dist_ = rhs.dist_;\r\n    return *this;\r\
+    \n  }\r\n  YFastTrieBase(YFastTrieBase&&) noexcept = default;\r\n  YFastTrieBase&\
+    \ operator=(YFastTrieBase&&) noexcept = default;\r\n  template<typename InputIt>\r\
+    \n  explicit YFastTrieBase(InputIt begin, InputIt end) : YFastTrieBase() {\r\n\
+    \    static_assert(std::is_convertible<typename std::iterator_traits<InputIt>::value_type,\
+    \ value_type>::value, \"\");\r\n    if (begin == end) return;\r\n    if (!std::is_sorted(begin,\
+    \ end, [](auto& l, auto& r) {\r\n      return Def::key_of(l) < Def::key_of(r);\r\
+    \n    })) {\r\n      for (auto it = begin; it != end; ++it)\r\n        _insert(*it);\r\
+    \n      return;\r\n    }\r\n    xft_.clear();\r\n    auto b = begin;\r\n    while\
     \ (b != end) {\r\n      auto e = std::next(b);\r\n      key_type px = Def::key_of(*b);\r\
     \n      while (e != end and (px == Def::key_of(*e) or !_pivot_selected())) {\r\
     \n        px = Def::key_of(*(e++));\r\n      }\r\n      if (e != end) {\r\n  \
@@ -700,33 +701,33 @@ data:
     \ {}\r\n    template<bool C>\r\n    iterator_base(const iterator_base<C>& rhs)\r\
     \n        : xft_(rhs.xft_), xit_(rhs.xit_), tit_(rhs.tit_) {}\r\n    template<bool\
     \ C>\r\n    iterator_base& operator=(const iterator_base<C>& rhs) {\r\n      xft_\
-    \ = rhs.xft_;\r\n      xit_ = rhs.xit_;\r\n      tit_ = rhs.tit_;\r\n    }\r\n\
-    \    template<bool C>\r\n    iterator_base(iterator_base<C>&& rhs)\r\n       \
-    \ : xft_(std::move(rhs.xft_)), xit_(std::move(rhs.xit_)), tit_(std::move(rhs.tit_))\
+    \ = rhs.xft_;\r\n      xit_ = rhs.xit_;\r\n      tit_ = rhs.tit_;\r\n      return\
+    \ *this;\r\n    }\r\n    template<bool C>\r\n    iterator_base(iterator_base<C>&&\
+    \ rhs)\r\n        : xft_(std::move(rhs.xft_)), xit_(std::move(rhs.xit_)), tit_(std::move(rhs.tit_))\
     \ {}\r\n    template<bool C>\r\n    iterator_base& operator=(iterator_base<C>&&\
     \ rhs) {\r\n      xft_ = std::move(rhs.xft_);\r\n      xit_ = std::move(rhs.xit_);\r\
-    \n      tit_ = std::move(rhs.tit_);\r\n    }\r\n    reference operator*() const\
-    \ {\r\n      return *tit_;\r\n    }\r\n    pointer operator->() const {\r\n  \
-    \    return tit_.operator->();\r\n    }\r\n    template<bool C>\r\n    bool operator==(const\
-    \ iterator_base<C>& rhs) const {\r\n      return xit_ == rhs.xit_ and tit_ ==\
-    \ rhs.tit_;\r\n    }\r\n    template<bool C>\r\n    bool operator!=(const iterator_base<C>&\
-    \ rhs) const {\r\n      return !operator==(rhs);\r\n    }\r\n    iterator_base&\
-    \ operator++() {\r\n      ++tit_;\r\n      if (tit_ == xit_->second.end() and\
-    \ std::next(xit_) != xft_->end()) {\r\n        ++xit_;\r\n        tit_ = xit_->second.begin();\r\
-    \n      }\r\n      return *this;\r\n    }\r\n    iterator_base operator++(int)\
-    \ {\r\n      iterator_base ret = *this;\r\n      operator++();\r\n      return\
-    \ ret;\r\n    }\r\n    iterator_base& operator--() {\r\n      if (tit_ == xit_->second.begin())\
-    \ {\r\n        --xit_;\r\n        tit_ = std::prev(xit_->second.end());\r\n  \
-    \    } else {\r\n        --tit_;\r\n      }\r\n      return *this;\r\n    }\r\n\
-    \    iterator_base operator--(int) {\r\n      iterator_base ret = *this;\r\n \
-    \     operator--();\r\n      return ret;\r\n    }\r\n  };\r\n protected:\r\n \
-    \ using xft_pointer = xft_type*;\r\n  using xft_iterator = typename xft_type::iterator;\r\
-    \n  using treap_iterator = typename treap_type::iterator;\r\n  using const_xft_pointer\
-    \ = const xft_type*;\r\n  using const_xft_iterator = typename xft_type::const_iterator;\r\
-    \n  using const_treap_iterator = typename treap_type::const_iterator;\r\n  static\
-    \ iterator make_raw_iterator(const_xft_pointer xft,\r\n                      \
-    \              const_xft_iterator xit,\r\n                                   \
-    \ const_treap_iterator tit) {\r\n    return iterator(const_cast<xft_pointer>(xft),\
+    \n      tit_ = std::move(rhs.tit_);\r\n      return *this;\r\n    }\r\n    reference\
+    \ operator*() const {\r\n      return *tit_;\r\n    }\r\n    pointer operator->()\
+    \ const {\r\n      return tit_.operator->();\r\n    }\r\n    template<bool C>\r\
+    \n    bool operator==(const iterator_base<C>& rhs) const {\r\n      return xit_\
+    \ == rhs.xit_ and tit_ == rhs.tit_;\r\n    }\r\n    template<bool C>\r\n    bool\
+    \ operator!=(const iterator_base<C>& rhs) const {\r\n      return !operator==(rhs);\r\
+    \n    }\r\n    iterator_base& operator++() {\r\n      ++tit_;\r\n      if (tit_\
+    \ == xit_->second.end() and std::next(xit_) != xft_->end()) {\r\n        ++xit_;\r\
+    \n        tit_ = xit_->second.begin();\r\n      }\r\n      return *this;\r\n \
+    \   }\r\n    iterator_base operator++(int) {\r\n      iterator_base ret = *this;\r\
+    \n      operator++();\r\n      return ret;\r\n    }\r\n    iterator_base& operator--()\
+    \ {\r\n      if (tit_ == xit_->second.begin()) {\r\n        --xit_;\r\n      \
+    \  tit_ = std::prev(xit_->second.end());\r\n      } else {\r\n        --tit_;\r\
+    \n      }\r\n      return *this;\r\n    }\r\n    iterator_base operator--(int)\
+    \ {\r\n      iterator_base ret = *this;\r\n      operator--();\r\n      return\
+    \ ret;\r\n    }\r\n  };\r\n protected:\r\n  using xft_pointer = xft_type*;\r\n\
+    \  using xft_iterator = typename xft_type::iterator;\r\n  using treap_iterator\
+    \ = typename treap_type::iterator;\r\n  using const_xft_pointer = const xft_type*;\r\
+    \n  using const_xft_iterator = typename xft_type::const_iterator;\r\n  using const_treap_iterator\
+    \ = typename treap_type::const_iterator;\r\n  static iterator make_raw_iterator(const_xft_pointer\
+    \ xft,\r\n                                    const_xft_iterator xit,\r\n    \
+    \                                const_treap_iterator tit) {\r\n    return iterator(const_cast<xft_pointer>(xft),\
     \ xit, tit);\r\n  }\r\n};\r\n\r\ntemplate<typename Key, typename T, uint8_t W\
     \ = sizeof(Key)*8>\r\nusing YFastTrie = traits::MapTraits<YFastTrieBase<Key, T,\
     \ W>>;\r\ntemplate<typename T, uint8_t W = sizeof(T)*8>\r\nusing YFastTrieSet\
@@ -758,15 +759,15 @@ data:
     \n      size_(rhs.size_),\r\n      dist_(0, W-1) {}\r\n  YFastTrieBase& operator=(const\
     \ YFastTrieBase& rhs) {\r\n    xft_ = rhs.xft_;\r\n    end_ = iterator(&xft_,\
     \ std::prev(xft_.end()), std::prev(xft_.end())->second.end());\r\n    size_ =\
-    \ rhs.size_;\r\n    eng_ = rhs.eng_;\r\n    dist_ = rhs.dist_;\r\n  }\r\n  YFastTrieBase(YFastTrieBase&&)\
-    \ noexcept = default;\r\n  YFastTrieBase& operator=(YFastTrieBase&&) noexcept\
-    \ = default;\r\n  template<typename InputIt>\r\n  explicit YFastTrieBase(InputIt\
-    \ begin, InputIt end) : YFastTrieBase() {\r\n    static_assert(std::is_convertible<typename\
-    \ std::iterator_traits<InputIt>::value_type, value_type>::value, \"\");\r\n  \
-    \  if (begin == end) return;\r\n    if (!std::is_sorted(begin, end, [](auto& l,\
-    \ auto& r) {\r\n      return Def::key_of(l) < Def::key_of(r);\r\n    })) {\r\n\
-    \      for (auto it = begin; it != end; ++it)\r\n        _insert(*it);\r\n   \
-    \   return;\r\n    }\r\n    xft_.clear();\r\n    auto b = begin;\r\n    while\
+    \ rhs.size_;\r\n    eng_ = rhs.eng_;\r\n    dist_ = rhs.dist_;\r\n    return *this;\r\
+    \n  }\r\n  YFastTrieBase(YFastTrieBase&&) noexcept = default;\r\n  YFastTrieBase&\
+    \ operator=(YFastTrieBase&&) noexcept = default;\r\n  template<typename InputIt>\r\
+    \n  explicit YFastTrieBase(InputIt begin, InputIt end) : YFastTrieBase() {\r\n\
+    \    static_assert(std::is_convertible<typename std::iterator_traits<InputIt>::value_type,\
+    \ value_type>::value, \"\");\r\n    if (begin == end) return;\r\n    if (!std::is_sorted(begin,\
+    \ end, [](auto& l, auto& r) {\r\n      return Def::key_of(l) < Def::key_of(r);\r\
+    \n    })) {\r\n      for (auto it = begin; it != end; ++it)\r\n        _insert(*it);\r\
+    \n      return;\r\n    }\r\n    xft_.clear();\r\n    auto b = begin;\r\n    while\
     \ (b != end) {\r\n      auto e = std::next(b);\r\n      key_type px = Def::key_of(*b);\r\
     \n      while (e != end and (px == Def::key_of(*e) or !_pivot_selected())) {\r\
     \n        px = Def::key_of(*(e++));\r\n      }\r\n      if (e != end) {\r\n  \
@@ -836,33 +837,33 @@ data:
     \ {}\r\n    template<bool C>\r\n    iterator_base(const iterator_base<C>& rhs)\r\
     \n        : xft_(rhs.xft_), xit_(rhs.xit_), tit_(rhs.tit_) {}\r\n    template<bool\
     \ C>\r\n    iterator_base& operator=(const iterator_base<C>& rhs) {\r\n      xft_\
-    \ = rhs.xft_;\r\n      xit_ = rhs.xit_;\r\n      tit_ = rhs.tit_;\r\n    }\r\n\
-    \    template<bool C>\r\n    iterator_base(iterator_base<C>&& rhs)\r\n       \
-    \ : xft_(std::move(rhs.xft_)), xit_(std::move(rhs.xit_)), tit_(std::move(rhs.tit_))\
+    \ = rhs.xft_;\r\n      xit_ = rhs.xit_;\r\n      tit_ = rhs.tit_;\r\n      return\
+    \ *this;\r\n    }\r\n    template<bool C>\r\n    iterator_base(iterator_base<C>&&\
+    \ rhs)\r\n        : xft_(std::move(rhs.xft_)), xit_(std::move(rhs.xit_)), tit_(std::move(rhs.tit_))\
     \ {}\r\n    template<bool C>\r\n    iterator_base& operator=(iterator_base<C>&&\
     \ rhs) {\r\n      xft_ = std::move(rhs.xft_);\r\n      xit_ = std::move(rhs.xit_);\r\
-    \n      tit_ = std::move(rhs.tit_);\r\n    }\r\n    reference operator*() const\
-    \ {\r\n      return *tit_;\r\n    }\r\n    pointer operator->() const {\r\n  \
-    \    return tit_.operator->();\r\n    }\r\n    template<bool C>\r\n    bool operator==(const\
-    \ iterator_base<C>& rhs) const {\r\n      return xit_ == rhs.xit_ and tit_ ==\
-    \ rhs.tit_;\r\n    }\r\n    template<bool C>\r\n    bool operator!=(const iterator_base<C>&\
-    \ rhs) const {\r\n      return !operator==(rhs);\r\n    }\r\n    iterator_base&\
-    \ operator++() {\r\n      ++tit_;\r\n      if (tit_ == xit_->second.end() and\
-    \ std::next(xit_) != xft_->end()) {\r\n        ++xit_;\r\n        tit_ = xit_->second.begin();\r\
-    \n      }\r\n      return *this;\r\n    }\r\n    iterator_base operator++(int)\
-    \ {\r\n      iterator_base ret = *this;\r\n      operator++();\r\n      return\
-    \ ret;\r\n    }\r\n    iterator_base& operator--() {\r\n      if (tit_ == xit_->second.begin())\
-    \ {\r\n        --xit_;\r\n        tit_ = std::prev(xit_->second.end());\r\n  \
-    \    } else {\r\n        --tit_;\r\n      }\r\n      return *this;\r\n    }\r\n\
-    \    iterator_base operator--(int) {\r\n      iterator_base ret = *this;\r\n \
-    \     operator--();\r\n      return ret;\r\n    }\r\n  };\r\n protected:\r\n \
-    \ using xft_pointer = xft_type*;\r\n  using xft_iterator = typename xft_type::iterator;\r\
-    \n  using treap_iterator = typename treap_type::iterator;\r\n  using const_xft_pointer\
-    \ = const xft_type*;\r\n  using const_xft_iterator = typename xft_type::const_iterator;\r\
-    \n  using const_treap_iterator = typename treap_type::const_iterator;\r\n  static\
-    \ iterator make_raw_iterator(const_xft_pointer xft,\r\n                      \
-    \              const_xft_iterator xit,\r\n                                   \
-    \ const_treap_iterator tit) {\r\n    return iterator(const_cast<xft_pointer>(xft),\
+    \n      tit_ = std::move(rhs.tit_);\r\n      return *this;\r\n    }\r\n    reference\
+    \ operator*() const {\r\n      return *tit_;\r\n    }\r\n    pointer operator->()\
+    \ const {\r\n      return tit_.operator->();\r\n    }\r\n    template<bool C>\r\
+    \n    bool operator==(const iterator_base<C>& rhs) const {\r\n      return xit_\
+    \ == rhs.xit_ and tit_ == rhs.tit_;\r\n    }\r\n    template<bool C>\r\n    bool\
+    \ operator!=(const iterator_base<C>& rhs) const {\r\n      return !operator==(rhs);\r\
+    \n    }\r\n    iterator_base& operator++() {\r\n      ++tit_;\r\n      if (tit_\
+    \ == xit_->second.end() and std::next(xit_) != xft_->end()) {\r\n        ++xit_;\r\
+    \n        tit_ = xit_->second.begin();\r\n      }\r\n      return *this;\r\n \
+    \   }\r\n    iterator_base operator++(int) {\r\n      iterator_base ret = *this;\r\
+    \n      operator++();\r\n      return ret;\r\n    }\r\n    iterator_base& operator--()\
+    \ {\r\n      if (tit_ == xit_->second.begin()) {\r\n        --xit_;\r\n      \
+    \  tit_ = std::prev(xit_->second.end());\r\n      } else {\r\n        --tit_;\r\
+    \n      }\r\n      return *this;\r\n    }\r\n    iterator_base operator--(int)\
+    \ {\r\n      iterator_base ret = *this;\r\n      operator--();\r\n      return\
+    \ ret;\r\n    }\r\n  };\r\n protected:\r\n  using xft_pointer = xft_type*;\r\n\
+    \  using xft_iterator = typename xft_type::iterator;\r\n  using treap_iterator\
+    \ = typename treap_type::iterator;\r\n  using const_xft_pointer = const xft_type*;\r\
+    \n  using const_xft_iterator = typename xft_type::const_iterator;\r\n  using const_treap_iterator\
+    \ = typename treap_type::const_iterator;\r\n  static iterator make_raw_iterator(const_xft_pointer\
+    \ xft,\r\n                                    const_xft_iterator xit,\r\n    \
+    \                                const_treap_iterator tit) {\r\n    return iterator(const_cast<xft_pointer>(xft),\
     \ xit, tit);\r\n  }\r\n};\r\n\r\ntemplate<typename Key, typename T, uint8_t W\
     \ = sizeof(Key)*8>\r\nusing YFastTrie = traits::MapTraits<YFastTrieBase<Key, T,\
     \ W>>;\r\ntemplate<typename T, uint8_t W = sizeof(T)*8>\r\nusing YFastTrieSet\
@@ -878,7 +879,7 @@ data:
   isVerificationFile: false
   path: include/mtl/yft.hpp
   requiredBy: []
-  timestamp: '2022-12-28 06:13:01+09:00'
+  timestamp: '2023-04-04 01:01:39+09:00'
   verificationStatus: LIBRARY_NO_TESTS
   verifiedWith: []
 documentation_of: include/mtl/yft.hpp

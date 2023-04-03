@@ -495,7 +495,7 @@ data:
   isVerificationFile: true
   path: test/yosupo-point_add_rectangle_sum-wm.test.cpp
   requiredBy: []
-  timestamp: '2022-12-18 04:26:00+09:00'
+  timestamp: '2023-04-04 01:01:39+09:00'
   verificationStatus: TEST_ACCEPTED
   verifiedWith: []
 documentation_of: test/yosupo-point_add_rectangle_sum-wm.test.cpp

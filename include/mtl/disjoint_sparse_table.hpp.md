@@ -45,52 +45,50 @@ data:
     \ 4) | ((x & 0xF0F0F0F0F0F0F0F0) >> 4);\n  x = ((x & 0x3333333333333333) << 2)\
     \ | ((x & 0xCCCCCCCCCCCCCCCC) >> 2);\n  x = ((x & 0x5555555555555555) << 1) |\
     \ ((x & 0xAAAAAAAAAAAAAAAA) >> 1);\n  return x;\n}\n\n} // namespace bm\n#line\
-    \ 3 \"include/mtl/sparse_table.hpp\"\n#include <vector>\n\ntemplate <typename\
-    \ T, typename Predicate>\nclass SparseTable {\n private:\n  Predicate predicate_;\n\
-    \  size_t size_;\n  size_t log_n_;\n  std::vector<std::vector<T>> table_;\n\n\
-    \ public:\n  template <typename Iter>\n  SparseTable(Iter begin, Iter end) {\n\
-    \    size_ = end - begin;\n    log_n_ = 63-clz(size_);\n    table_.resize(log_n_+1,\
-    \ std::vector<T>(size_));\n    {\n      for (size_t i = 0; i < size_; i++) {\n\
-    \        table_[0][i] = *(begin+i);\n      }\n    }\n    for (size_t log_n = 1;\
-    \ log_n <= log_n_; log_n++) {\n      size_t width = 1ull<<log_n;\n      for (size_t\
-    \ i = 0; i + width <= size_; i++) {\n        table_[log_n][i] = predicate_(table_[log_n-1][i],\n\
-    \                                      table_[log_n-1][i+width/2]);\n      }\n\
-    \    }\n  }\n\n  T query(size_t l, size_t r) const {\n    size_t p = 63-clz(r-l);\n\
-    \    return predicate_(table_[p][l], table_[p][r-(1ull<<p)]);\n  }\n\n};\n\ntemplate\
-    \ <typename T>\nstruct _max {\n  T operator()(T a, T b) const { return std::max(a,b);\
-    \ }\n};\ntemplate <typename T>\nusing max_SparseTable = SparseTable<T, _max<T>>;\n\
-    \ntemplate <typename T>\nstruct _min {\n  T operator()(T a, T b) const { return\
-    \ std::min(a,b); }\n};\ntemplate <typename T>\nusing min_SparseTable = SparseTable<T,\
-    \ _min<T>>;\n\n"
-  code: "#pragma once\n#include \"bit_manip.hpp\"\n#include <vector>\n\ntemplate <typename\
-    \ T, typename Predicate>\nclass SparseTable {\n private:\n  Predicate predicate_;\n\
-    \  size_t size_;\n  size_t log_n_;\n  std::vector<std::vector<T>> table_;\n\n\
-    \ public:\n  template <typename Iter>\n  SparseTable(Iter begin, Iter end) {\n\
-    \    size_ = end - begin;\n    log_n_ = 63-clz(size_);\n    table_.resize(log_n_+1,\
-    \ std::vector<T>(size_));\n    {\n      for (size_t i = 0; i < size_; i++) {\n\
-    \        table_[0][i] = *(begin+i);\n      }\n    }\n    for (size_t log_n = 1;\
-    \ log_n <= log_n_; log_n++) {\n      size_t width = 1ull<<log_n;\n      for (size_t\
-    \ i = 0; i + width <= size_; i++) {\n        table_[log_n][i] = predicate_(table_[log_n-1][i],\n\
-    \                                      table_[log_n-1][i+width/2]);\n      }\n\
-    \    }\n  }\n\n  T query(size_t l, size_t r) const {\n    size_t p = 63-clz(r-l);\n\
-    \    return predicate_(table_[p][l], table_[p][r-(1ull<<p)]);\n  }\n\n};\n\ntemplate\
-    \ <typename T>\nstruct _max {\n  T operator()(T a, T b) const { return std::max(a,b);\
-    \ }\n};\ntemplate <typename T>\nusing max_SparseTable = SparseTable<T, _max<T>>;\n\
-    \ntemplate <typename T>\nstruct _min {\n  T operator()(T a, T b) const { return\
-    \ std::min(a,b); }\n};\ntemplate <typename T>\nusing min_SparseTable = SparseTable<T,\
-    \ _min<T>>;\n\n"
+    \ 3 \"include/mtl/disjoint_sparse_table.hpp\"\n#include <vector>\n#include <algorithm>\n\
+    \ntemplate<typename T, T (*op)(T, T), T (*e)()>\nclass DisjointSparseTable {\n\
+    private:\n    int log_n_;\n    size_t n_;\n    std::vector<std::vector<T>> tb_;\n\
+    public:\n    template<typename It> \n    DisjointSparseTable(It begin, It end)\
+    \ : \n            log_n_(64-bm::clz(std::distance(begin, end)-1)),\n         \
+    \   n_(1ull<<log_n_), \n            table_(std::max(log_n_, 1), std::vector<T>(n_,\
+    \ e())) {\n        std::transform(begin, end, tb_[0].begin());\n        for (int\
+    \ i = 1; i < log_n_; i++) {\n            auto d = 1<<i;\n            for (size_t\
+    \ j = 0; j < n_; j += d*2) {\n                tb_[i][j+d-1] = tb_[i-1][j+d-1];\n\
+    \                for (long long k = j+d-2; k >= j; k--)\n                    tb_[i][k]\
+    \ = op(tb_[i-1][k], tb_[i][k+1]);\n                tb_[i][j+d] = tb_[i-1][j+d];\n\
+    \                for (long long k = j+d+1; k < j+d*2; k++)\n                 \
+    \   tb_[i][k] = op(tb_[i-1][k], tb_[i][k-1]);\n            }\n        }\n    }\n\
+    \n    T query(size_t l, size_t r) const {\n        if (l >= r) return E;\n   \
+    \     if (l+1 == r) return tb_[0][l];\n        size_t p = 63-bm::clz((r-1)^l);\n\
+    \        return op(tb_[p][l], tb_[p][r-1]);\n    }\n}\n"
+  code: "#pragma once\n#include \"bit_manip.hpp\"\n#include <vector>\n#include <algorithm>\n\
+    \ntemplate<typename T, T (*op)(T, T), T (*e)()>\nclass DisjointSparseTable {\n\
+    private:\n    int log_n_;\n    size_t n_;\n    std::vector<std::vector<T>> tb_;\n\
+    public:\n    template<typename It> \n    DisjointSparseTable(It begin, It end)\
+    \ : \n            log_n_(64-bm::clz(std::distance(begin, end)-1)),\n         \
+    \   n_(1ull<<log_n_), \n            table_(std::max(log_n_, 1), std::vector<T>(n_,\
+    \ e())) {\n        std::transform(begin, end, tb_[0].begin());\n        for (int\
+    \ i = 1; i < log_n_; i++) {\n            auto d = 1<<i;\n            for (size_t\
+    \ j = 0; j < n_; j += d*2) {\n                tb_[i][j+d-1] = tb_[i-1][j+d-1];\n\
+    \                for (long long k = j+d-2; k >= j; k--)\n                    tb_[i][k]\
+    \ = op(tb_[i-1][k], tb_[i][k+1]);\n                tb_[i][j+d] = tb_[i-1][j+d];\n\
+    \                for (long long k = j+d+1; k < j+d*2; k++)\n                 \
+    \   tb_[i][k] = op(tb_[i-1][k], tb_[i][k-1]);\n            }\n        }\n    }\n\
+    \n    T query(size_t l, size_t r) const {\n        if (l >= r) return E;\n   \
+    \     if (l+1 == r) return tb_[0][l];\n        size_t p = 63-bm::clz((r-1)^l);\n\
+    \        return op(tb_[p][l], tb_[p][r-1]);\n    }\n}"
   dependsOn:
   - include/mtl/bit_manip.hpp
   isVerificationFile: false
-  path: include/mtl/sparse_table.hpp
+  path: include/mtl/disjoint_sparse_table.hpp
   requiredBy: []
   timestamp: '2023-04-04 01:01:39+09:00'
   verificationStatus: LIBRARY_NO_TESTS
   verifiedWith: []
-documentation_of: include/mtl/sparse_table.hpp
+documentation_of: include/mtl/disjoint_sparse_table.hpp
 layout: document
 redirect_from:
-- /library/include/mtl/sparse_table.hpp
-- /library/include/mtl/sparse_table.hpp.html
-title: include/mtl/sparse_table.hpp
+- /library/include/mtl/disjoint_sparse_table.hpp
+- /library/include/mtl/disjoint_sparse_table.hpp.html
+title: include/mtl/disjoint_sparse_table.hpp
 ---
