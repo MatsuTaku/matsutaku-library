@@ -72,8 +72,7 @@ class Treap {
                  const Compare& comp = Compare()) : Treap(comp) {
     insert(begin, end);
   }
-  template<typename I>
-  Treap(std::initializer_list<I> list) : Treap(list.begin(), list.end()) {}
+  Treap(std::initializer_list<value_type> list) : Treap(list.begin(), list.end()) {}
  private:
   void _clone(node_ptr u, const node_ptr ru) {
     if (ru->left) {

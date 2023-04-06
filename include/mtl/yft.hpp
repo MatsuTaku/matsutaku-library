@@ -76,22 +76,27 @@ class YFastTrieBase : public traits::AssociativeArrayDefinition<T, M> {
         _insert(*it);
       return;
     }
-    xft_.clear();
     auto b = begin;
     while (b != end) {
+      auto px = Def::key_of(*b);
       auto e = std::next(b);
-      key_type px = Def::key_of(*b);
-      while (e != end and (px == Def::key_of(*e) or !_pivot_selected())) {
+      while (e != end and !_pivot_selected()) {
         px = Def::key_of(*(e++));
+        while (e != end and Def::key_of(*e) == px)
+          px = Def::key_of(*(e++));
+      }
+      if (e != end) { // shift on pivot
+        px = Def::key_of(*(e++));
+        while (e != end and Def::key_of(*e) == px)
+          px = Def::key_of(*(e++));
       }
       if (e != end) {
-        key_type x = Def::key_of(*e);
-        ++e;
-        xft_.emplace_hint(xft_.end(), x, treap_type(b, e));
+        assert(px < end_.xit_->first);
+        xft_.emplace_hint(end_.xit_, px, treap_type(b, e));
         b = e;
       } else {
-        auto xe = xft_.emplace_hint(xft_.end(), kKeyMax, treap_type(b, e));
-        end_ = iterator(&xft_, xe, xe->second.end());
+        end_.xit_->second.insert(b,e);
+        end_.tit_ = end_.xit_->second.end();
         break;
       }
     }
@@ -281,6 +286,7 @@ class YFastTrieBase : public traits::AssociativeArrayDefinition<T, M> {
     iterator_base& operator--() {
       if (tit_ == xit_->second.begin()) {
         --xit_;
+        assert(!xit_->second.empty());
         tit_ = std::prev(xit_->second.end());
       } else {
         --tit_;
