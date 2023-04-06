@@ -8,10 +8,6 @@
 #include <initializer_list>
 #include <algorithm>
 #include <cassert>
-#include <bitset>
-#include <iostream>
-using std::cerr;
-using std::endl;
 
 template<typename T, typename M,
     int8_t W = sizeof(T) * 8>
@@ -184,28 +180,33 @@ class BinaryTrieBase : public traits::AssociativeArrayDefinition<T, M> {
  public:
   using iterator = iterator_base<false>;
   using const_iterator = iterator_base<true>;
-  iterator begin() const {
+  iterator begin() {
     return iterator(dummy_->next());
   }
-  iterator end() const {
+  iterator end() {
     return iterator(dummy_);
   }
+  const_iterator begin() const {
+    return const_iterator(dummy_->next());
+  }
+  const_iterator end() const {
+    return const_iterator(dummy_);
+  }
  protected:
-  virtual std::pair<int, node_ptr> _traverse(const key_type& key) const {
+  virtual std::pair<int, node_ptr> _traverse(const key_type& key, 
+                                             int depth = 0, 
+                                             node_ptr root = nullptr) const {
     int i, c;
     key_type x = key;
-    auto u = root_;
-    for (i = 0; i < W; i++) {
+    auto u = !root ? root_ : root;
+    for (i = depth; i < W; i++) {
       c = (x >> (W-i-1)) & 1;
       if (!u->c[c]) break;
       u = u->c[c];
     }
     return std::make_pair(i, u);
   }
-  template<typename Key>
-  iterator _lower_bound(Key&& key) const {
-    static_assert(std::is_convertible<Key, key_type>::value, "");
-    key_type x = std::forward<Key>(key);
+  iterator _lower_bound(const key_type& x) const {
     auto reached = _traverse(x);
     int i = reached.first;
     node_ptr u = reached.second;
@@ -213,20 +214,13 @@ class BinaryTrieBase : public traits::AssociativeArrayDefinition<T, M> {
     auto l = (((x >> (W-i-1)) & 1) == 0) ? u->jump : u->jump->next();
     return iterator(l);
   }
- protected:
-  template<typename Key>
-  iterator _upper_bound(Key&& key) const {
-    static_assert(std::is_convertible<Key, key_type>::value, "");
-    key_type x = std::forward<Key>(key);
+  iterator _upper_bound(const key_type& x) const {
     auto it = _lower_bound(x);
     if (types::key_of(*it) == x)
       ++it;
     return it;
   }
-  template<typename Key>
-  iterator _find(Key&& key) const {
-    static_assert(std::is_convertible<Key, key_type>::value, "");
-    key_type x = std::forward<Key>(key);
+  virtual iterator _find(const key_type& x) const {
     auto reached = _traverse(x);
     int i = reached.first;
     node_ptr u = reached.second;
@@ -235,7 +229,6 @@ class BinaryTrieBase : public traits::AssociativeArrayDefinition<T, M> {
     else
       return end();
   }
- protected:
   virtual node_ptr create_node_at(const key_type&, int) {
     return std::make_shared<Node>();
   }
@@ -263,6 +256,7 @@ class BinaryTrieBase : public traits::AssociativeArrayDefinition<T, M> {
     l->next()->set_prev(l);
     for (; i < W-1; i++) {
       c = (x >> (W-i-1)) & 1;
+      assert(!u->c[c]);
       u->c[c] = create_node_at(x, i+1);
       u->c[c]->parent = u;
       u->c[c]->jump = l;
@@ -304,7 +298,7 @@ class BinaryTrieBase : public traits::AssociativeArrayDefinition<T, M> {
   }
   virtual std::pair<int, node_ptr> climb_to_lca(leaf_ptr l, key_type x) {
     key_type m = x ^ types::key_of(l->v);
-    if (m == 0) [[unlikely]]
+    if (m == 0)
       return std::make_pair(W, std::static_pointer_cast<Node>(l));
     int h = bm::clz(m) - (64 - W);
     node_ptr f = std::static_pointer_cast<Node>(l);
@@ -315,28 +309,24 @@ class BinaryTrieBase : public traits::AssociativeArrayDefinition<T, M> {
   template<class Value>
   iterator _emplace_hint(const_iterator hint, Value&& value) {
     key_type x = types::key_of(value);
-    if (empty()) [[unlikely]]
+    if (empty())
       return _emplace_impl(x, 0, root_, std::forward<Value>(value));
-    if (hint.ptr_ == dummy_)
+    if (hint == end())
       --hint;
-    auto lca = climb_to_lca(hint.ptr_, x);
-    int h = std::move(lca.first);
-    node_ptr f = std::move(lca.second);
-    for (; h < W; ++h) {
-      int c = (x >> (W-h-1)) & 1;
-      if (!f->c[c]) [[likely]] break;
-      f = f->c[c];
-    }
-    if (h == W) [[unlikely]]
+    int h;
+    node_ptr f;
+    std::tie(h, f) = climb_to_lca(hint.ptr_, x);
+    std::tie(h, f) = _traverse(x, h, f);
+    if (h == W)
       return iterator(std::static_pointer_cast<Leaf>(f));
     return _emplace_impl(x, h, f, std::forward<Value>(value));
   }
 
   virtual void erase_node_at(const key_type&, int, node_ptr) {}
-  bool _erase(const key_type& key) {
+  virtual bool _erase(const key_type& key) {
     auto it = _find(key);
     if (it != end()) {
-      _erase(it);
+      _erase_from_leaf(types::key_of(*it), it.ptr_);
       return true;
     } else {
       return false;

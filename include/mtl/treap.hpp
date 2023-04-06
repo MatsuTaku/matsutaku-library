@@ -243,7 +243,7 @@ class Treap {
   std::pair<iterator, bool> _insert_node(node_ptr new_node) {
     return _insert_node_subtree(sentinel_, new_node);
   }
-  iterator _insert_node_hint(iterator hint, node_ptr new_node) {
+  iterator _insert_node_hint(const_iterator hint, node_ptr new_node) {
     auto x = new_node->key();
     auto u = hint.ptr_;
     if (!u->parent.expired()) {
@@ -338,7 +338,7 @@ class Treap {
     return _insert_node(_create_node(std::forward<Args>(args)...));
   }
   template<typename ...Args>
-  iterator emplace_hint(iterator hint, Args&&... args) {
+  iterator emplace_hint(const_iterator hint, Args&&... args) {
     return _insert_node_hint(hint, _create_node(std::forward<Args>(args)...));
   }
   std::pair<iterator, bool> insert(const init_type& e) {
@@ -585,13 +585,9 @@ class TreapMap : public Treap<T, V> {
   using typename _base::mapped_type;
   using reference = mapped_type&;
   reference operator[](const T& x) {
-    // TODO
-//    return _base::try_emplace(std::move(x)).first->second;
     return _base::insert({x, mapped_type()}).first->second;
   }
   reference operator[](T&& x) {
-    // TODO
-//    return _base::try_emplace(std::move(x)).first->second;
     return _base::insert({std::move(x), mapped_type()}).first->second;
   }
 };

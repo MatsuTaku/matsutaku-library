@@ -17,7 +17,7 @@ public:
     template<typename It>
     DualDisjointSparseTable(It begin, It end) : 
             DualDisjointSparseTable(std::distance(begin, end)) {
-        std::transform(begin, end, tb_[0].begin(), [](const auto& v) {return v;});
+        std::copy(begin, end, tb_[0].begin());
     }
 
     void apply(size_t l, size_t r, T a) {

@@ -141,7 +141,7 @@ class YFastTrieBase : public traits::AssociativeArrayDefinition<T, M> {
   bool _pivot_selected() {
     return dist_(eng_) == 0;
   }
-  iterator activate_new_treap_node(key_type x,
+  iterator activate_new_treap_node(const key_type& x,
                                    typename xft_type::iterator xlb,
                                    typename treap_type::iterator new_tit) {
     size_++;
@@ -164,16 +164,19 @@ class YFastTrieBase : public traits::AssociativeArrayDefinition<T, M> {
     return std::make_pair(iterator(&xft_, xlb, tins.first), false);
   }
   template<class Value>
+  iterator _emplace_hint_unique(const_iterator hint, Value&& value) {
+    assert(hint == end() || Def::key_of(value) < hint->first);
+    auto xit = hint.xit_;
+    auto tins = xit->second.emplace_hint(hint.tit_, std::forward<Value>(value));
+    return activate_new_treap_node(tins->first, xit, tins);
+  }
+  template<class Value>
   iterator _emplace_hint(const_iterator hint, Value&& value) {
     key_type x = Def::key_of(value);
-    if (hint != end() and x == Def::key_of(*hint)) [[unlikely]] {
+    if (hint != end() and x == hint->first) {
       return hint;
     }
-    auto tins = hint.xit_->second.emplace_hint(hint.tit_, std::forward<Value>(value));
-    if (!tins.second) [[unlikely]] {
-      return _insert(std::forward<Value>(value)).first;
-    }
-    return activate_new_treap_node(x, hint.xit_, tins.first);
+    return _emplace_hint_unique(hint, std::forward<Value>(value));
   }
   bool _erase(const key_type& key) {
     auto xlb = xft_.lower_bound(key);
@@ -218,26 +221,17 @@ class YFastTrieBase : public traits::AssociativeArrayDefinition<T, M> {
         const value_type&,
         value_type&>::type;
     using iterator_category = std::bidirectional_iterator_tag;
-    using xft_pointer = typename std::conditional<
-        Const,
-        const xft_type*,
-        xft_type*>::type;
-    using xiterator = typename std::conditional<
-        Const,
-        typename xft_type::const_iterator,
-        typename xft_type::iterator>::type;
-    using titerator = typename std::conditional<
-        Const,
-        typename treap_type::const_iterator,
-        typename treap_type::iterator>::type;
+    using xft_pointer = xft_type*;
+    using xiterator = typename xft_type::iterator;
+    using titerator = typename treap_type::iterator;
     xft_pointer xft_;
     xiterator xit_;
     titerator tit_;
-    iterator_base(xft_pointer xft, xiterator xit, titerator tit)
-        : xft_(xft), xit_(xit), tit_(tit) {}
+    iterator_base(xft_pointer xft, xiterator xit, titerator tit) : 
+        xft_(xft), xit_(xit), tit_(tit) {}
     template<bool C>
-    iterator_base(const iterator_base<C>& rhs)
-        : xft_(rhs.xft_), xit_(rhs.xit_), tit_(rhs.tit_) {}
+    iterator_base(const iterator_base<C>& rhs) : 
+        xft_(rhs.xft_), xit_(rhs.xit_), tit_(rhs.tit_) {}
     template<bool C>
     iterator_base& operator=(const iterator_base<C>& rhs) {
       xft_ = rhs.xft_;
@@ -246,8 +240,10 @@ class YFastTrieBase : public traits::AssociativeArrayDefinition<T, M> {
       return *this;
     }
     template<bool C>
-    iterator_base(iterator_base<C>&& rhs)
-        : xft_(std::move(rhs.xft_)), xit_(std::move(rhs.xit_)), tit_(std::move(rhs.tit_)) {}
+    iterator_base(iterator_base<C>&& rhs) : 
+        xft_(std::move(rhs.xft_)), 
+        xit_(std::move(rhs.xit_)), 
+        tit_(std::move(rhs.tit_)) {}
     template<bool C>
     iterator_base& operator=(iterator_base<C>&& rhs) {
       xft_ = std::move(rhs.xft_);
