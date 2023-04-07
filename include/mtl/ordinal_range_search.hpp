@@ -1,18 +1,18 @@
 #pragma once
+#include "fenwick_tree.hpp"
 #include "succinct/wavelet_matrix.hpp"
 #include "compress_int.hpp"
 #include "fenwick_tree.hpp"
 #include <cstddef>
 #include <vector>
-#include <algorithm>
-#include <tuple>
-#include <queue>
+#include <cstddef>
+#include <vector>
 
 /**
  * @brief Ordinal Range Search
  *   Maintain 2-dimential points (x,y) and their weights.
 */
-template<typename T, typename W = long long>
+template<typename T, typename W = size_t>
 struct ORS {
   std::vector<std::tuple<T,T,W>> ps;
   WaveletMatrix<int> wm;
@@ -20,6 +20,8 @@ struct ORS {
   std::vector<size_t> ls;
   std::vector<T> xs, ys;
   std::unordered_map<T, int> xc, yc;
+
+  static constexpr T IndexMax = std::numeric_limits<T>::max();
 
   ORS() = default;
   void add(T x, T y, W w = 1) {
@@ -33,28 +35,25 @@ struct ORS {
     });
 
     xs.clear();
-    std::vector<std::tuple<T, size_t, W>> yi;
+    ys.clear();
     for (size_t i = 0; i < ps.size(); i++) {
       T x,y;
       W w;
       std::tie(x,y,w) = ps[i];
       if (xs.empty() or xs.back() != x)
         xs.push_back(x);
-      yi.emplace_back(y, i, w);
+      ys.push_back(y);
     }
-    if (xs.empty() or xs.back() != std::numeric_limits<T>::max())
-      xs.push_back(std::numeric_limits<T>::max());
+    if (xs.empty() or xs.back() != IndexMax)
+      xs.push_back(IndexMax);
 
     xc.clear();
     xc.reserve(xs.size());
     for (size_t i = 0; i < xs.size(); i++)
       xc[xs[i]] = i;
 
-    std::sort(yi.begin(), yi.end());
-    ys.resize(yi.size());
-    for (size_t i = 0; i < yi.size(); i++)
-      ys[i] = std::get<0>(yi[i]);
-    ys.push_back(std::numeric_limits<T>::max());
+    std::sort(ys.begin(), ys.end());
+    ys.push_back(IndexMax);
     ys.erase(std::unique(ys.begin(), ys.end()), ys.end());
 
     yc.clear();
