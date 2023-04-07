@@ -13,8 +13,8 @@ class PersistentArray {
     T v;
     std::array<node_ptr, M> ch;
     Node() = default;
-    explicit Node(const T& v) : v(v) {}
-    explicit Node(T&& v) : v(std::move(v)) {}
+    explicit Node(const T& v) : v(v), ch({}) {}
+    explicit Node(T&& v) : v(std::move(v)), ch({}) {}
   };
   node_ptr root_;
   T init_v_;
