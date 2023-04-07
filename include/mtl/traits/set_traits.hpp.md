@@ -2,25 +2,19 @@
 data:
   _extendedDependsOn: []
   _extendedRequiredBy:
-  - icon: ':heavy_check_mark:'
+  - icon: ':warning:'
     path: include/mtl/binary_trie.hpp
     title: include/mtl/binary_trie.hpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':warning:'
     path: include/mtl/xft.hpp
     title: include/mtl/xft.hpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':warning:'
     path: include/mtl/yft.hpp
     title: include/mtl/yft.hpp
-  - icon: ':warning:'
-    path: test/yosupo/test_binary_trie.cpp
-    title: test/yosupo/test_binary_trie.cpp
-  _extendedVerifiedWith:
-  - icon: ':heavy_check_mark:'
-    path: test/yosupo/associative_array-yft.test.cpp
-    title: test/yosupo/associative_array-yft.test.cpp
+  _extendedVerifiedWith: []
   _isVerificationFailed: false
   _pathExtension: hpp
-  _verificationStatusIcon: ':heavy_check_mark:'
+  _verificationStatusIcon: ':warning:'
   attributes:
     links: []
   bundledCode: "#line 2 \"include/mtl/traits/set_traits.hpp\"\n#include <cstddef>\r\
@@ -104,16 +98,11 @@ data:
     \n  using reference = mapped_type&;\r\n  MapTraits() = default;\r\n  template<typename\
     \ InputIt>\r\n  explicit MapTraits(InputIt begin, InputIt end) : SBase(begin,\
     \ end) {}\r\n  MapTraits(std::initializer_list<value_type> init) : SBase(init)\
-    \ {}\r\n  template<typename Key>\r\n  reference operator[](Key&& x) {\r\n    auto\
-    \ i = SBase::lower_bound(x);\r\n    if (i == SBase::end() || x < i->first) {\r\
-    \n      i = SBase::emplace_hint(i, std::forward<Key>(x), mapped_type());\r\n \
-    \   }\r\n    return i->second;\r\n  }\r\n  reference operator[](const key_type&\
-    \ x) {\r\n    auto i = SBase::lower_bound(x);\r\n    if (i == SBase::end() ||\
-    \ x < i->first) {\r\n      i = SBase::emplace_hint(i, x, mapped_type());\r\n \
-    \   }\r\n    return i->second;\r\n  }\r\n  reference operator[](key_type&& x)\
-    \ {\r\n    auto i = SBase::lower_bound(x);\r\n    if (i == SBase::end() || x <\
-    \ i->first) {\r\n      i = SBase::emplace_hint(i, std::move(x), mapped_type());\r\
-    \n    }\r\n    return i->second;\r\n  }\r\n};\r\n\r\n} // namespace traits\n"
+    \ {}\r\n  reference operator[](const key_type& x) {\r\n    // TODO\r\n//    return\
+    \ SBase::try_emplace(x).first->second;\r\n    return SBase::emplace(x, mapped_type()).first->second;\r\
+    \n  }\r\n  reference operator[](key_type&& x) {\r\n    // TODO\r\n//    return\
+    \ SBase::try_emplace(std::move(x)).first->second;\r\n    return SBase::emplace(std::move(x),\
+    \ mapped_type()).first->second;\r\n  }\r\n};\r\n\r\n} // namespace traits\n"
   code: "#pragma once\r\n#include <cstddef>\r\n#include <initializer_list>\r\n#include\
     \ <type_traits>\r\n#include <iterator>\r\n\r\nnamespace traits {\r\n\r\ntemplate<typename\
     \ T, typename M>\r\nstruct AssociativeArrayDefinition {\r\n  using key_type =\
@@ -194,16 +183,11 @@ data:
     \n  using reference = mapped_type&;\r\n  MapTraits() = default;\r\n  template<typename\
     \ InputIt>\r\n  explicit MapTraits(InputIt begin, InputIt end) : SBase(begin,\
     \ end) {}\r\n  MapTraits(std::initializer_list<value_type> init) : SBase(init)\
-    \ {}\r\n  template<typename Key>\r\n  reference operator[](Key&& x) {\r\n    auto\
-    \ i = SBase::lower_bound(x);\r\n    if (i == SBase::end() || x < i->first) {\r\
-    \n      i = SBase::emplace_hint(i, std::forward<Key>(x), mapped_type());\r\n \
-    \   }\r\n    return i->second;\r\n  }\r\n  reference operator[](const key_type&\
-    \ x) {\r\n    auto i = SBase::lower_bound(x);\r\n    if (i == SBase::end() ||\
-    \ x < i->first) {\r\n      i = SBase::emplace_hint(i, x, mapped_type());\r\n \
-    \   }\r\n    return i->second;\r\n  }\r\n  reference operator[](key_type&& x)\
-    \ {\r\n    auto i = SBase::lower_bound(x);\r\n    if (i == SBase::end() || x <\
-    \ i->first) {\r\n      i = SBase::emplace_hint(i, std::move(x), mapped_type());\r\
-    \n    }\r\n    return i->second;\r\n  }\r\n};\r\n\r\n} // namespace traits"
+    \ {}\r\n  reference operator[](const key_type& x) {\r\n    // TODO\r\n//    return\
+    \ SBase::try_emplace(x).first->second;\r\n    return SBase::emplace(x, mapped_type()).first->second;\r\
+    \n  }\r\n  reference operator[](key_type&& x) {\r\n    // TODO\r\n//    return\
+    \ SBase::try_emplace(std::move(x)).first->second;\r\n    return SBase::emplace(std::move(x),\
+    \ mapped_type()).first->second;\r\n  }\r\n};\r\n\r\n} // namespace traits"
   dependsOn: []
   isVerificationFile: false
   path: include/mtl/traits/set_traits.hpp
@@ -211,11 +195,9 @@ data:
   - include/mtl/yft.hpp
   - include/mtl/xft.hpp
   - include/mtl/binary_trie.hpp
-  - test/yosupo/test_binary_trie.cpp
-  timestamp: '2023-04-06 14:40:12+09:00'
-  verificationStatus: LIBRARY_ALL_AC
-  verifiedWith:
-  - test/yosupo/associative_array-yft.test.cpp
+  timestamp: '2022-12-28 06:13:01+09:00'
+  verificationStatus: LIBRARY_NO_TESTS
+  verifiedWith: []
 documentation_of: include/mtl/traits/set_traits.hpp
 layout: document
 redirect_from:

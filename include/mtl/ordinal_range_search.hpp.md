@@ -19,8 +19,8 @@ data:
   _extendedRequiredBy: []
   _extendedVerifiedWith:
   - icon: ':heavy_check_mark:'
-    path: test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
-    title: test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
+    path: test/yosupo-point_add_rectangle_sum-wm.test.cpp
+    title: test/yosupo-point_add_rectangle_sum-wm.test.cpp
   _isVerificationFailed: false
   _pathExtension: hpp
   _verificationStatusIcon: ':heavy_check_mark:'
@@ -545,7 +545,7 @@ data:
   timestamp: '2023-04-04 01:01:39+09:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
-  - test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
+  - test/yosupo-point_add_rectangle_sum-wm.test.cpp
 documentation_of: include/mtl/ordinal_range_search.hpp
 layout: document
 redirect_from:

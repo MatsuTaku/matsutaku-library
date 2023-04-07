@@ -17,7 +17,7 @@ data:
     PROBLEM: https://onlinejudge.u-aizu.ac.jp/problems/GRL_6_B
     links:
     - https://onlinejudge.u-aizu.ac.jp/problems/GRL_6_B
-  bundledCode: "#line 1 \"test/aoj/min_cost_flow.test.cpp\"\n#define PROBLEM \"https://onlinejudge.u-aizu.ac.jp/problems/GRL_6_B\"\
+  bundledCode: "#line 1 \"test/min_cost_flow.test.cpp\"\n#define PROBLEM \"https://onlinejudge.u-aizu.ac.jp/problems/GRL_6_B\"\
     \r\n#line 2 \"include/mtl/min_cost_flow.hpp\"\n#include <vector>\r\n#include <limits>\r\
     \n#line 2 \"include/mtl/fibonacci_heap.hpp\"\n#include <memory>\n#include <cassert>\n\
     #line 5 \"include/mtl/fibonacci_heap.hpp\"\n#include <array>\n#include <list>\n\
@@ -133,31 +133,30 @@ data:
     \ d * cost_sum;\r\n      for (int i = t; i != s; i = prevv[i]) {\r\n        auto&\
     \ e = g[prevv[i]][preve[i]];\r\n        e.cap -= d;\r\n        g[i][e.rev].cap\
     \ += d;\r\n      }\r\n    }\r\n    return std::make_pair(f, res);\r\n  }\r\n};\n\
-    #line 3 \"test/aoj/min_cost_flow.test.cpp\"\n#include <bits/stdc++.h>\r\nusing\
-    \ namespace std;\r\n\r\nint main() {\r\n  int V,E,F; cin>>V>>E>>F;\r\n  MinCostFlowGraph<int>\
+    #line 3 \"test/min_cost_flow.test.cpp\"\n#include <bits/stdc++.h>\r\nusing namespace\
+    \ std;\r\n\r\nint main() {\r\n  int V,E,F; cin>>V>>E>>F;\r\n  MinCostFlowGraph<int>\
     \ mcfg(V);\r\n  for (int i = 0; i < E; i++) {\r\n    int u,v,c,d; cin>>u>>v>>c>>d;\r\
     \n    mcfg.add_edge(u, v, c, d);\r\n  }\r\n  auto res = mcfg.flow(0, V-1, F);\r\
     \n  cout << (res.first == F ? res.second : -1) << endl;\r\n}\r\n"
   code: "#define PROBLEM \"https://onlinejudge.u-aizu.ac.jp/problems/GRL_6_B\"\r\n\
-    #include \"../../include/mtl/min_cost_flow.hpp\"\r\n#include <bits/stdc++.h>\r\
-    \nusing namespace std;\r\n\r\nint main() {\r\n  int V,E,F; cin>>V>>E>>F;\r\n \
-    \ MinCostFlowGraph<int> mcfg(V);\r\n  for (int i = 0; i < E; i++) {\r\n    int\
-    \ u,v,c,d; cin>>u>>v>>c>>d;\r\n    mcfg.add_edge(u, v, c, d);\r\n  }\r\n  auto\
-    \ res = mcfg.flow(0, V-1, F);\r\n  cout << (res.first == F ? res.second : -1)\
-    \ << endl;\r\n}\r\n"
+    #include \"../include/mtl/min_cost_flow.hpp\"\r\n#include <bits/stdc++.h>\r\n\
+    using namespace std;\r\n\r\nint main() {\r\n  int V,E,F; cin>>V>>E>>F;\r\n  MinCostFlowGraph<int>\
+    \ mcfg(V);\r\n  for (int i = 0; i < E; i++) {\r\n    int u,v,c,d; cin>>u>>v>>c>>d;\r\
+    \n    mcfg.add_edge(u, v, c, d);\r\n  }\r\n  auto res = mcfg.flow(0, V-1, F);\r\
+    \n  cout << (res.first == F ? res.second : -1) << endl;\r\n}\r\n"
   dependsOn:
   - include/mtl/min_cost_flow.hpp
   - include/mtl/fibonacci_heap.hpp
   isVerificationFile: true
-  path: test/aoj/min_cost_flow.test.cpp
+  path: test/min_cost_flow.test.cpp
   requiredBy: []
-  timestamp: '2023-04-08 02:15:04+09:00'
+  timestamp: '2022-12-20 20:34:44+09:00'
   verificationStatus: TEST_ACCEPTED
   verifiedWith: []
-documentation_of: test/aoj/min_cost_flow.test.cpp
+documentation_of: test/min_cost_flow.test.cpp
 layout: document
 redirect_from:
-- /verify/test/aoj/min_cost_flow.test.cpp
-- /verify/test/aoj/min_cost_flow.test.cpp.html
-title: test/aoj/min_cost_flow.test.cpp
+- /verify/test/min_cost_flow.test.cpp
+- /verify/test/min_cost_flow.test.cpp.html
+title: test/min_cost_flow.test.cpp
 ---

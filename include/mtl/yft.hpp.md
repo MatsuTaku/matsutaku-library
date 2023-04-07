@@ -1,29 +1,26 @@
 ---
 data:
   _extendedDependsOn:
-  - icon: ':heavy_check_mark:'
+  - icon: ':warning:'
     path: include/mtl/binary_trie.hpp
     title: include/mtl/binary_trie.hpp
   - icon: ':heavy_check_mark:'
     path: include/mtl/bit_manip.hpp
     title: include/mtl/bit_manip.hpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':warning:'
     path: include/mtl/traits/set_traits.hpp
     title: include/mtl/traits/set_traits.hpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':warning:'
     path: include/mtl/treap.hpp
     title: include/mtl/treap.hpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':warning:'
     path: include/mtl/xft.hpp
     title: include/mtl/xft.hpp
   _extendedRequiredBy: []
-  _extendedVerifiedWith:
-  - icon: ':heavy_check_mark:'
-    path: test/yosupo/associative_array-yft.test.cpp
-    title: test/yosupo/associative_array-yft.test.cpp
+  _extendedVerifiedWith: []
   _isVerificationFailed: false
   _pathExtension: hpp
-  _verificationStatusIcon: ':heavy_check_mark:'
+  _verificationStatusIcon: ':warning:'
   attributes:
     links: []
   bundledCode: "#line 2 \"include/mtl/traits/set_traits.hpp\"\n#include <cstddef>\r\
@@ -107,16 +104,11 @@ data:
     \n  using reference = mapped_type&;\r\n  MapTraits() = default;\r\n  template<typename\
     \ InputIt>\r\n  explicit MapTraits(InputIt begin, InputIt end) : SBase(begin,\
     \ end) {}\r\n  MapTraits(std::initializer_list<value_type> init) : SBase(init)\
-    \ {}\r\n  template<typename Key>\r\n  reference operator[](Key&& x) {\r\n    auto\
-    \ i = SBase::lower_bound(x);\r\n    if (i == SBase::end() || x < i->first) {\r\
-    \n      i = SBase::emplace_hint(i, std::forward<Key>(x), mapped_type());\r\n \
-    \   }\r\n    return i->second;\r\n  }\r\n  reference operator[](const key_type&\
-    \ x) {\r\n    auto i = SBase::lower_bound(x);\r\n    if (i == SBase::end() ||\
-    \ x < i->first) {\r\n      i = SBase::emplace_hint(i, x, mapped_type());\r\n \
-    \   }\r\n    return i->second;\r\n  }\r\n  reference operator[](key_type&& x)\
-    \ {\r\n    auto i = SBase::lower_bound(x);\r\n    if (i == SBase::end() || x <\
-    \ i->first) {\r\n      i = SBase::emplace_hint(i, std::move(x), mapped_type());\r\
-    \n    }\r\n    return i->second;\r\n  }\r\n};\r\n\r\n} // namespace traits\n#line\
+    \ {}\r\n  reference operator[](const key_type& x) {\r\n    // TODO\r\n//    return\
+    \ SBase::try_emplace(x).first->second;\r\n    return SBase::emplace(x, mapped_type()).first->second;\r\
+    \n  }\r\n  reference operator[](key_type&& x) {\r\n    // TODO\r\n//    return\
+    \ SBase::try_emplace(std::move(x)).first->second;\r\n    return SBase::emplace(std::move(x),\
+    \ mapped_type()).first->second;\r\n  }\r\n};\r\n\r\n} // namespace traits\n#line\
     \ 2 \"include/mtl/treap.hpp\"\n#include <memory>\r\n#line 4 \"include/mtl/treap.hpp\"\
     \n#include <cassert>\r\n#include <exception>\r\n#include <random>\r\n#include\
     \ <iostream>\r\n\r\ntemplate<class T, class V=void,\r\n    class Compare = std::less<>>\r\
@@ -206,19 +198,19 @@ data:
     \n      }\r\n    }\r\n    _bubble_up(u);\r\n    ++size_;\r\n    return std::make_pair(iterator(u),\
     \ true);\r\n  }\r\n  std::pair<iterator, bool> _insert_node(node_ptr new_node)\
     \ {\r\n    return _insert_node_subtree(sentinel_, new_node);\r\n  }\r\n  iterator\
-    \ _insert_node_hint(const_iterator hint, node_ptr new_node) {\r\n    auto x =\
-    \ new_node->key();\r\n    auto u = hint.ptr_;\r\n    if (!u->parent.expired())\
-    \ {\r\n      auto p = u->parent.lock();\r\n      if (p != sentinel_) {\r\n   \
-    \     T xp = p->key();\r\n        if (xp == x) [[unlikely]]\r\n          return\
-    \ iterator(p);\r\n        // Check hint is malicious\r\n        if (   (p->left\
-    \ == u and comp_(xp, x))\r\n            or (p->right == u and comp_(x, xp))) [[unlikely]]\r\
-    \n          return _insert_node(new_node).first;\r\n        //\r\n      }\r\n\
-    \    }\r\n    return _insert_node_subtree(u, new_node).first;\r\n  }\r\n\r\n public:\r\
-    \n  size_t size() const { return size_; } // TODO: split break size\r\n  bool\
-    \ empty() const { return _root() == nullptr; }\r\n  void clear() {\r\n    sentinel_->left\
-    \ = nullptr;\r\n    size_ = 0;\r\n  }\r\n\r\n  iterator find(T x) const {\r\n\
-    \    node_ptr u = _root();\r\n    while (u) {\r\n      if (u->key() == x)\r\n\
-    \        return iterator(u);\r\n      if (comp_(x, u->key()))\r\n        u = u->left;\r\
+    \ _insert_node_hint(iterator hint, node_ptr new_node) {\r\n    auto x = new_node->key();\r\
+    \n    auto u = hint.ptr_;\r\n    if (!u->parent.expired()) {\r\n      auto p =\
+    \ u->parent.lock();\r\n      if (p != sentinel_) {\r\n        T xp = p->key();\r\
+    \n        if (xp == x) [[unlikely]]\r\n          return iterator(p);\r\n     \
+    \   // Check hint is malicious\r\n        if (   (p->left == u and comp_(xp, x))\r\
+    \n            or (p->right == u and comp_(x, xp))) [[unlikely]]\r\n          return\
+    \ _insert_node(new_node).first;\r\n        //\r\n      }\r\n    }\r\n    return\
+    \ _insert_node_subtree(u, new_node).first;\r\n  }\r\n\r\n public:\r\n  size_t\
+    \ size() const { return size_; } // TODO: split break size\r\n  bool empty() const\
+    \ { return _root() == nullptr; }\r\n  void clear() {\r\n    sentinel_->left =\
+    \ nullptr;\r\n    size_ = 0;\r\n  }\r\n\r\n  iterator find(T x) const {\r\n  \
+    \  node_ptr u = _root();\r\n    while (u) {\r\n      if (u->key() == x)\r\n  \
+    \      return iterator(u);\r\n      if (comp_(x, u->key()))\r\n        u = u->left;\r\
     \n      else\r\n        u = u->right;\r\n    }\r\n    return end();\r\n  }\r\n\
     \  size_t count(T x) const { return (size_t) (find(x) != end()); }\r\n  iterator\
     \ lower_bound(T x) const {\r\n    node_ptr u = _root();\r\n    node_ptr lb = sentinel_;\r\
@@ -238,8 +230,8 @@ data:
     \n    return std::make_shared<Node>(p, std::forward<Args>(args)...);\r\n  }\r\n\
     \ public:\r\n  template<typename ...Args>\r\n  std::pair<iterator, bool> emplace(Args&&...\
     \ args) {\r\n    return _insert_node(_create_node(std::forward<Args>(args)...));\r\
-    \n  }\r\n  template<typename ...Args>\r\n  iterator emplace_hint(const_iterator\
-    \ hint, Args&&... args) {\r\n    return _insert_node_hint(hint, _create_node(std::forward<Args>(args)...));\r\
+    \n  }\r\n  template<typename ...Args>\r\n  iterator emplace_hint(iterator hint,\
+    \ Args&&... args) {\r\n    return _insert_node_hint(hint, _create_node(std::forward<Args>(args)...));\r\
     \n  }\r\n  std::pair<iterator, bool> insert(const init_type& e) {\r\n    return\
     \ emplace(e);\r\n  }\r\n  std::pair<iterator, bool> insert(init_type&& e) {\r\n\
     \    return emplace(std::move(e));\r\n  }\r\n  template<typename=void>\r\n  std::pair<iterator,\
@@ -327,11 +319,13 @@ data:
     \n\r\ntemplate<typename T, typename V>\r\nclass TreapMap : public Treap<T, V>\
     \ {\r\n  static_assert(!std::is_same<V, void>::value, \"\");\r\n  using _base\
     \ = Treap<T, V>;\r\n public:\r\n  using typename _base::mapped_type;\r\n  using\
-    \ reference = mapped_type&;\r\n  reference operator[](const T& x) {\r\n    return\
-    \ _base::insert({x, mapped_type()}).first->second;\r\n  }\r\n  reference operator[](T&&\
-    \ x) {\r\n    return _base::insert({std::move(x), mapped_type()}).first->second;\r\
-    \n  }\r\n};\n#line 2 \"include/mtl/bit_manip.hpp\"\n#include <cstdint>\n#line\
-    \ 4 \"include/mtl/bit_manip.hpp\"\n\nnamespace bm {\n\ninline constexpr uint64_t\
+    \ reference = mapped_type&;\r\n  reference operator[](const T& x) {\r\n    //\
+    \ TODO\r\n//    return _base::try_emplace(std::move(x)).first->second;\r\n   \
+    \ return _base::insert({x, mapped_type()}).first->second;\r\n  }\r\n  reference\
+    \ operator[](T&& x) {\r\n    // TODO\r\n//    return _base::try_emplace(std::move(x)).first->second;\r\
+    \n    return _base::insert({std::move(x), mapped_type()}).first->second;\r\n \
+    \ }\r\n};\n#line 2 \"include/mtl/bit_manip.hpp\"\n#include <cstdint>\n#line 4\
+    \ \"include/mtl/bit_manip.hpp\"\n\nnamespace bm {\n\ninline constexpr uint64_t\
     \ popcnt_e8(uint64_t x) {\n  x = (x & 0x5555555555555555) + ((x>>1) & 0x5555555555555555);\n\
     \  x = (x & 0x3333333333333333) + ((x>>2) & 0x3333333333333333);\n  x = (x & 0x0F0F0F0F0F0F0F0F)\
     \ + ((x>>4) & 0x0F0F0F0F0F0F0F0F);\n  return x;\n}\n// Count 1s\ninline constexpr\
@@ -365,9 +359,10 @@ data:
     \ | ((x & 0xCCCCCCCCCCCCCCCC) >> 2);\n  x = ((x & 0x5555555555555555) << 1) |\
     \ ((x & 0xAAAAAAAAAAAAAAAA) >> 1);\n  return x;\n}\n\n} // namespace bm\n#line\
     \ 4 \"include/mtl/binary_trie.hpp\"\n#include <array>\r\n#line 9 \"include/mtl/binary_trie.hpp\"\
-    \n#include <algorithm>\r\n#line 11 \"include/mtl/binary_trie.hpp\"\n\r\ntemplate<typename\
-    \ T, typename M,\r\n    int8_t W = sizeof(T) * 8>\r\nclass BinaryTrieBase : public\
-    \ traits::AssociativeArrayDefinition<T, M> {\r\n  static_assert(std::is_unsigned<T>::value,\
+    \n#include <algorithm>\r\n#line 11 \"include/mtl/binary_trie.hpp\"\n#include <bitset>\r\
+    \n#line 13 \"include/mtl/binary_trie.hpp\"\nusing std::cerr;\r\nusing std::endl;\r\
+    \n\r\ntemplate<typename T, typename M,\r\n    int8_t W = sizeof(T) * 8>\r\nclass\
+    \ BinaryTrieBase : public traits::AssociativeArrayDefinition<T, M> {\r\n  static_assert(std::is_unsigned<T>::value,\
     \ \"\");\r\n public:\r\n  using types = traits::AssociativeArrayDefinition<T,\
     \ M>;\r\n  using key_type = typename types::key_type;\r\n  using value_type =\
     \ typename types::value_type;\r\n  using init_type = typename types::init_type;\r\
@@ -427,67 +422,70 @@ data:
     \ empty() const { return size() == 0; }\r\n  void clear() {\r\n    _deinit();\r\
     \n    _init();\r\n  }\r\n protected:\r\n  template<bool> struct iterator_base;\r\
     \n public:\r\n  using iterator = iterator_base<false>;\r\n  using const_iterator\
-    \ = iterator_base<true>;\r\n  iterator begin() {\r\n    return iterator(dummy_->next());\r\
-    \n  }\r\n  iterator end() {\r\n    return iterator(dummy_);\r\n  }\r\n  const_iterator\
-    \ begin() const {\r\n    return const_iterator(dummy_->next());\r\n  }\r\n  const_iterator\
-    \ end() const {\r\n    return const_iterator(dummy_);\r\n  }\r\n protected:\r\n\
-    \  virtual std::pair<int, node_ptr> _traverse(const key_type& key, \r\n      \
-    \                                       int depth = 0, \r\n                  \
-    \                           node_ptr root = nullptr) const {\r\n    int i, c;\r\
-    \n    key_type x = key;\r\n    auto u = !root ? root_ : root;\r\n    for (i =\
-    \ depth; i < W; i++) {\r\n      c = (x >> (W-i-1)) & 1;\r\n      if (!u->c[c])\
-    \ break;\r\n      u = u->c[c];\r\n    }\r\n    return std::make_pair(i, u);\r\n\
-    \  }\r\n  iterator _lower_bound(const key_type& x) const {\r\n    auto reached\
-    \ = _traverse(x);\r\n    int i = reached.first;\r\n    node_ptr u = reached.second;\r\
-    \n    if (i == W) return iterator(std::static_pointer_cast<Leaf>(u));\r\n    auto\
-    \ l = (((x >> (W-i-1)) & 1) == 0) ? u->jump : u->jump->next();\r\n    return iterator(l);\r\
-    \n  }\r\n  iterator _upper_bound(const key_type& x) const {\r\n    auto it = _lower_bound(x);\r\
+    \ = iterator_base<true>;\r\n  iterator begin() const {\r\n    return iterator(dummy_->next());\r\
+    \n  }\r\n  iterator end() const {\r\n    return iterator(dummy_);\r\n  }\r\n protected:\r\
+    \n  virtual std::pair<int, node_ptr> _traverse(const key_type& key) const {\r\n\
+    \    int i, c;\r\n    key_type x = key;\r\n    auto u = root_;\r\n    for (i =\
+    \ 0; i < W; i++) {\r\n      c = (x >> (W-i-1)) & 1;\r\n      if (!u->c[c]) break;\r\
+    \n      u = u->c[c];\r\n    }\r\n    return std::make_pair(i, u);\r\n  }\r\n \
+    \ template<typename Key>\r\n  iterator _lower_bound(Key&& key) const {\r\n   \
+    \ static_assert(std::is_convertible<Key, key_type>::value, \"\");\r\n    key_type\
+    \ x = std::forward<Key>(key);\r\n    auto reached = _traverse(x);\r\n    int i\
+    \ = reached.first;\r\n    node_ptr u = reached.second;\r\n    if (i == W) return\
+    \ iterator(std::static_pointer_cast<Leaf>(u));\r\n    auto l = (((x >> (W-i-1))\
+    \ & 1) == 0) ? u->jump : u->jump->next();\r\n    return iterator(l);\r\n  }\r\n\
+    \ protected:\r\n  template<typename Key>\r\n  iterator _upper_bound(Key&& key)\
+    \ const {\r\n    static_assert(std::is_convertible<Key, key_type>::value, \"\"\
+    );\r\n    key_type x = std::forward<Key>(key);\r\n    auto it = _lower_bound(x);\r\
     \n    if (types::key_of(*it) == x)\r\n      ++it;\r\n    return it;\r\n  }\r\n\
-    \  virtual iterator _find(const key_type& x) const {\r\n    auto reached = _traverse(x);\r\
-    \n    int i = reached.first;\r\n    node_ptr u = reached.second;\r\n    if (i\
-    \ == W)\r\n      return iterator(std::static_pointer_cast<Leaf>(u));\r\n    else\r\
-    \n      return end();\r\n  }\r\n  virtual node_ptr create_node_at(const key_type&,\
-    \ int) {\r\n    return std::make_shared<Node>();\r\n  }\r\n  virtual leaf_ptr\
-    \ create_leaf_at(const key_type&, const init_type& value) {\r\n    return std::make_shared<Leaf>(value);\r\
-    \n  }\r\n  virtual leaf_ptr create_leaf_at(const key_type&, init_type&& value)\
-    \ {\r\n    return std::make_shared<Leaf>(std::move(value));\r\n  }\r\n  template<typename\
-    \ Value>\r\n  iterator _emplace_impl(key_type x, int height, node_ptr forked,\
-    \ Value&& value) {\r\n    assert(height < W);\r\n    int i = height;\r\n    node_ptr\
-    \ u = forked;\r\n    auto f = u;\r\n    int c = (x >> (W-i-1)) & 1;\r\n    auto\
-    \ fc = c;\r\n    auto fi = i;\r\n    auto pred = c == 1 ? u->jump : u->jump->prev();\r\
-    \n    u->jump = nullptr;\r\n    auto l = create_leaf_at(x, std::forward<Value>(value));\r\
-    \n    l->set_prev(pred);\r\n    l->set_next(pred->next());\r\n    l->prev()->set_next(l);\r\
-    \n    l->next()->set_prev(l);\r\n    for (; i < W-1; i++) {\r\n      c = (x >>\
-    \ (W-i-1)) & 1;\r\n      assert(!u->c[c]);\r\n      u->c[c] = create_node_at(x,\
-    \ i+1);\r\n      u->c[c]->parent = u;\r\n      u->c[c]->jump = l;\r\n      u =\
-    \ u->c[c];\r\n    }\r\n    {\r\n      c = (x >> (W-i-1)) & 1;\r\n      u->c[c]\
-    \ = l;\r\n      u->c[c]->parent = u;\r\n    }\r\n    if (f == root_) [[unlikely]]\
-    \ {\r\n      f->jump = l;\r\n    } else [[likely]] {\r\n      auto v = f->parent.lock();\r\
-    \n      fi--;\r\n      while (v) {\r\n        c = x >> (W-fi-1) & 1;\r\n     \
-    \   if (c != fc and !v->jump)\r\n          break;\r\n        if (!v->c[fc])\r\n\
-    \          v->jump = l;\r\n        v = v->parent.lock();\r\n        fi--;\r\n\
-    \      }\r\n    }\r\n    size_++;\r\n    return iterator(l);\r\n  }\r\n  template<typename\
-    \ Value>\r\n  std::pair<iterator, bool> _insert(Value&& value) {\r\n    static_assert(std::is_convertible<Value,\
-    \ value_type>::value, \"\");\r\n    key_type x = types::key_of(value);\r\n   \
+    \  template<typename Key>\r\n  iterator _find(Key&& key) const {\r\n    static_assert(std::is_convertible<Key,\
+    \ key_type>::value, \"\");\r\n    key_type x = std::forward<Key>(key);\r\n   \
     \ auto reached = _traverse(x);\r\n    int i = reached.first;\r\n    node_ptr u\
-    \ = reached.second;\r\n    if (i == W)\r\n      return std::make_pair(iterator(std::static_pointer_cast<Leaf>(u)),\
+    \ = reached.second;\r\n    if (i == W)\r\n      return iterator(std::static_pointer_cast<Leaf>(u));\r\
+    \n    else\r\n      return end();\r\n  }\r\n protected:\r\n  virtual node_ptr\
+    \ create_node_at(const key_type&, int) {\r\n    return std::make_shared<Node>();\r\
+    \n  }\r\n  virtual leaf_ptr create_leaf_at(const key_type&, const init_type& value)\
+    \ {\r\n    return std::make_shared<Leaf>(value);\r\n  }\r\n  virtual leaf_ptr\
+    \ create_leaf_at(const key_type&, init_type&& value) {\r\n    return std::make_shared<Leaf>(std::move(value));\r\
+    \n  }\r\n  template<typename Value>\r\n  iterator _emplace_impl(key_type x, int\
+    \ height, node_ptr forked, Value&& value) {\r\n    assert(height < W);\r\n   \
+    \ int i = height;\r\n    node_ptr u = forked;\r\n    auto f = u;\r\n    int c\
+    \ = (x >> (W-i-1)) & 1;\r\n    auto fc = c;\r\n    auto fi = i;\r\n    auto pred\
+    \ = c == 1 ? u->jump : u->jump->prev();\r\n    u->jump = nullptr;\r\n    auto\
+    \ l = create_leaf_at(x, std::forward<Value>(value));\r\n    l->set_prev(pred);\r\
+    \n    l->set_next(pred->next());\r\n    l->prev()->set_next(l);\r\n    l->next()->set_prev(l);\r\
+    \n    for (; i < W-1; i++) {\r\n      c = (x >> (W-i-1)) & 1;\r\n      u->c[c]\
+    \ = create_node_at(x, i+1);\r\n      u->c[c]->parent = u;\r\n      u->c[c]->jump\
+    \ = l;\r\n      u = u->c[c];\r\n    }\r\n    {\r\n      c = (x >> (W-i-1)) & 1;\r\
+    \n      u->c[c] = l;\r\n      u->c[c]->parent = u;\r\n    }\r\n    if (f == root_)\
+    \ [[unlikely]] {\r\n      f->jump = l;\r\n    } else [[likely]] {\r\n      auto\
+    \ v = f->parent.lock();\r\n      fi--;\r\n      while (v) {\r\n        c = x >>\
+    \ (W-fi-1) & 1;\r\n        if (c != fc and !v->jump)\r\n          break;\r\n \
+    \       if (!v->c[fc])\r\n          v->jump = l;\r\n        v = v->parent.lock();\r\
+    \n        fi--;\r\n      }\r\n    }\r\n    size_++;\r\n    return iterator(l);\r\
+    \n  }\r\n  template<typename Value>\r\n  std::pair<iterator, bool> _insert(Value&&\
+    \ value) {\r\n    static_assert(std::is_convertible<Value, value_type>::value,\
+    \ \"\");\r\n    key_type x = types::key_of(value);\r\n    auto reached = _traverse(x);\r\
+    \n    int i = reached.first;\r\n    node_ptr u = reached.second;\r\n    if (i\
+    \ == W)\r\n      return std::make_pair(iterator(std::static_pointer_cast<Leaf>(u)),\
     \ false);\r\n    return std::make_pair(_emplace_impl(x, i, u, std::forward<Value>(value)),\
     \ true);\r\n  }\r\n  virtual std::pair<int, node_ptr> climb_to_lca(leaf_ptr l,\
-    \ key_type x) {\r\n    key_type m = x ^ types::key_of(l->v);\r\n    if (m == 0)\r\
-    \n      return std::make_pair(W, std::static_pointer_cast<Node>(l));\r\n    int\
-    \ h = bm::clz(m) - (64 - W);\r\n    node_ptr f = std::static_pointer_cast<Node>(l);\r\
+    \ key_type x) {\r\n    key_type m = x ^ types::key_of(l->v);\r\n    if (m == 0)\
+    \ [[unlikely]]\r\n      return std::make_pair(W, std::static_pointer_cast<Node>(l));\r\
+    \n    int h = bm::clz(m) - (64 - W);\r\n    node_ptr f = std::static_pointer_cast<Node>(l);\r\
     \n    for (int i = W; i > h; i--)\r\n      f = f->parent.lock();\r\n    return\
     \ std::make_pair(h, f);\r\n  }\r\n  template<class Value>\r\n  iterator _emplace_hint(const_iterator\
-    \ hint, Value&& value) {\r\n    key_type x = types::key_of(value);\r\n    if (empty())\r\
-    \n      return _emplace_impl(x, 0, root_, std::forward<Value>(value));\r\n   \
-    \ if (hint == end())\r\n      --hint;\r\n    int h;\r\n    node_ptr f;\r\n   \
-    \ std::tie(h, f) = climb_to_lca(hint.ptr_, x);\r\n    std::tie(h, f) = _traverse(x,\
-    \ h, f);\r\n    if (h == W)\r\n      return iterator(std::static_pointer_cast<Leaf>(f));\r\
-    \n    return _emplace_impl(x, h, f, std::forward<Value>(value));\r\n  }\r\n\r\n\
-    \  virtual void erase_node_at(const key_type&, int, node_ptr) {}\r\n  virtual\
-    \ bool _erase(const key_type& key) {\r\n    auto it = _find(key);\r\n    if (it\
-    \ != end()) {\r\n      _erase_from_leaf(types::key_of(*it), it.ptr_);\r\n    \
-    \  return true;\r\n    } else {\r\n      return false;\r\n    }\r\n  }\r\n  template<typename\
+    \ hint, Value&& value) {\r\n    key_type x = types::key_of(value);\r\n    if (empty())\
+    \ [[unlikely]]\r\n      return _emplace_impl(x, 0, root_, std::forward<Value>(value));\r\
+    \n    if (hint.ptr_ == dummy_)\r\n      --hint;\r\n    auto lca = climb_to_lca(hint.ptr_,\
+    \ x);\r\n    int h = std::move(lca.first);\r\n    node_ptr f = std::move(lca.second);\r\
+    \n    for (; h < W; ++h) {\r\n      int c = (x >> (W-h-1)) & 1;\r\n      if (!f->c[c])\
+    \ [[likely]] break;\r\n      f = f->c[c];\r\n    }\r\n    if (h == W) [[unlikely]]\r\
+    \n      return iterator(std::static_pointer_cast<Leaf>(f));\r\n    return _emplace_impl(x,\
+    \ h, f, std::forward<Value>(value));\r\n  }\r\n\r\n  virtual void erase_node_at(const\
+    \ key_type&, int, node_ptr) {}\r\n  bool _erase(const key_type& key) {\r\n   \
+    \ auto it = _find(key);\r\n    if (it != end()) {\r\n      _erase(it);\r\n   \
+    \   return true;\r\n    } else {\r\n      return false;\r\n    }\r\n  }\r\n  template<typename\
     \ Key>\r\n  iterator _erase_from_leaf(Key&& key, leaf_ptr l) {\r\n    static_assert(std::is_convertible<Key,\
     \ key_type>::value, \"\");\r\n    key_type x = std::forward<Key>(key);\r\n   \
     \ assert(x == l->key());\r\n    l->prev()->set_next(l->next());\r\n    l->next()->set_prev(l->prev());\r\
@@ -547,59 +545,65 @@ data:
     \n  using typename Base::Node;\r\n  using typename Base::Leaf;\r\n  using typename\
     \ Base::node_ptr;\r\n  using typename Base::leaf_ptr;\r\n  using typename Base::key_type;\r\
     \n protected:\r\n  using Base::root_;\r\n  using Base::dummy_;\r\n  using Base::size_;\r\
-    \n  std::array<hash_table_type, W+1> tb_;\r\n  void _store_node(const int i, const\
-    \ key_type& x, node_ptr u) {\r\n    tb_[i].emplace(W-i < (int)sizeof(key_type)*8\
-    \ ? (x >> (W-i)) : 0, u);\r\n  }\r\n  void _init() override {\r\n    for (auto&\
-    \ t:tb_) t.clear();\r\n    Base::_init();\r\n  }\r\n public:\r\n  XFastTrieBase()\
+    \n  std::array<hash_table_type, W+1> tb_;\r\n  void _init() override {\r\n   \
+    \ for (auto& t:tb_) t.clear();\r\n    Base::_init();\r\n  }\r\n public:\r\n  XFastTrieBase()\
     \ : Base() {}\r\n  XFastTrieBase(const XFastTrieBase& rhs) {\r\n    Base::operator=(rhs);\r\
     \n  }\r\n  XFastTrieBase& operator=(const XFastTrieBase& rhs) {\r\n    Base::operator=(rhs);\r\
     \n  }\r\n  XFastTrieBase(XFastTrieBase&& rhs) noexcept {\r\n    Base::operator=(std::move(rhs));\r\
     \n  }\r\n  XFastTrieBase& operator=(XFastTrieBase&& rhs) noexcept {\r\n    Base::operator=(std::move(rhs));\r\
     \n  }\r\n  template<typename InputIt>\r\n  explicit XFastTrieBase(InputIt begin,\
     \ InputIt end) {\r\n    Base::_insert_init(begin, end);\r\n  }\r\n  using iterator\
-    \ = typename Base::iterator;\r\n  using Base::end;\r\n protected:\r\n  node_ptr\
-    \ create_node_at(const key_type& x, int i) override {\r\n    auto u = Base::create_node_at(x,\
-    \ i);\r\n    _store_node(i, x, u);\r\n    return u;\r\n  }\r\n  leaf_ptr create_leaf_at(const\
-    \ key_type& x, const init_type& value) override {\r\n    auto l = Base::create_leaf_at(x,\
-    \ value);\r\n    _store_node(W, x, std::static_pointer_cast<Node>(l));\r\n   \
-    \ return l;\r\n  }\r\n  leaf_ptr create_leaf_at(const key_type& x, init_type&&\
-    \ value) override {\r\n    auto l = Base::create_leaf_at(x, std::move(value));\r\
-    \n    _store_node(W, x, std::static_pointer_cast<Node>(l));\r\n    return l;\r\
-    \n  }\r\n  void erase_node_at(const key_type& x, int i, node_ptr u) override {\r\
-    \n    Base::erase_node_at(x, i, u);\r\n    auto it = tb_[i].find(W-i < (int)sizeof(key_type)*8\
-    \ ? (x >> (W-i)) : 0);\r\n    assert(it != tb_[i].end());\r\n    assert(it->second\
-    \ == u);\r\n    tb_[i].erase(it);\r\n  }\r\n  std::pair<int, node_ptr> _traverse(const\
-    \ key_type& key, \r\n                                     int depth = 0, \r\n\
-    \                                     node_ptr root = nullptr) const override\
-    \ {\r\n    key_type x = key;\r\n    int l = depth, h = W+1;\r\n    node_ptr u\
-    \ = !root ? root_ : root;\r\n    while (l+1 < h) {\r\n      int i = l+(h-l)/2;\r\
-    \n      auto p = W-i < (int)sizeof(key_type)*8 ? (x >> (W-i)) : 0;\r\n      auto\
+    \ = typename Base::iterator;\r\n  using Base::end;\r\n protected:\r\n  std::pair<int,\
+    \ node_ptr> _traverse(const key_type& key) const override {\r\n    key_type x\
+    \ = key;\r\n    int l = 0, h = W+1;\r\n    node_ptr u = root_;\r\n    while (l+1\
+    \ < h) {\r\n      int i = l+(h-l)/2;\r\n      auto p = x >> (W-i);\r\n      auto\
     \ it = tb_[i].find(p);\r\n      if (it != tb_[i].end()) {\r\n        l = i;\r\n\
     \        u = it->second;\r\n      } else {\r\n        h = i;\r\n      }\r\n  \
-    \  }\r\n    return std::make_pair(l, u);\r\n  }\r\n  iterator _find(const key_type&\
-    \ x) const override {\r\n    auto it = tb_[W].find(x);\r\n    if (it != tb_[W].end())\r\
-    \n      return iterator(std::static_pointer_cast<Leaf>(it->second));\r\n    else\r\
-    \n      return end();\r\n  }\r\n  using Base::_insert;\r\n  std::pair<int, node_ptr>\
+    \  }\r\n    return std::make_pair(l, u);\r\n  }\r\n  template<class Key>\r\n \
+    \ iterator _lower_bound(const Key& key) const {\r\n    auto reached = _traverse(key);\r\
+    \n    int& l = reached.first;\r\n    node_ptr& u = reached.second;\r\n    if (l\
+    \ == W) return iterator(std::static_pointer_cast<Leaf>(u));\r\n    key_type x\
+    \ = key;\r\n    auto lb = ((x >> (W-l-1)) & 1) == 0 ? u->jump : u->jump->next();\r\
+    \n    return lb == dummy_ ? end() : iterator(lb);\r\n  }\r\n  template<class Key>\r\
+    \n  iterator _upper_bound(const Key& key) const {\r\n    auto reached = _traverse(key);\r\
+    \n    int& l = reached.first;\r\n    node_ptr& u = reached.second;\r\n    if (l\
+    \ == W) return iterator(std::static_pointer_cast<Leaf>(u)->next());\r\n    key_type\
+    \ x = key;\r\n    auto lb = ((x >> (W-l-1)) & 1) == 0 ? u->jump : u->jump->next();\r\
+    \n    return lb == dummy_ ? end() : iterator(lb);\r\n  }\r\n  template<class Key>\r\
+    \n  iterator _find(const Key& key) const {\r\n    key_type x = key;\r\n    auto\
+    \ it = tb_[W].find(x);\r\n    if (it != tb_[W].end())\r\n      return iterator(std::static_pointer_cast<Leaf>(it->second));\r\
+    \n    else\r\n      return end();\r\n  }\r\n  void _store_node(const int i, const\
+    \ key_type& x, node_ptr u) {\r\n    tb_[i].emplace(x >> (W-i), u);\r\n  }\r\n\
+    \  node_ptr create_node_at(const key_type& x, int i) override {\r\n    auto u\
+    \ = Base::create_node_at(x, i);\r\n    _store_node(i, x, u);\r\n    return u;\r\
+    \n  }\r\n  leaf_ptr create_leaf_at(const key_type& x, const init_type& value)\
+    \ override {\r\n    auto l = Base::create_leaf_at(x, value);\r\n    _store_node(W,\
+    \ x, std::static_pointer_cast<Node>(l));\r\n    return l;\r\n  }\r\n  leaf_ptr\
+    \ create_leaf_at(const key_type& x, init_type&& value) override {\r\n    auto\
+    \ l = Base::create_leaf_at(x, std::move(value));\r\n    _store_node(W, x, std::static_pointer_cast<Node>(l));\r\
+    \n    return l;\r\n  }\r\n  using Base::_insert;\r\n  std::pair<int, node_ptr>\
     \ climb_to_lca(leaf_ptr l, key_type x) override {\r\n    key_type m = x ^ types::key_of(l->v);\r\
     \n    if (m == 0)\r\n      return std::make_pair(W, std::static_pointer_cast<Node>(l));\r\
-    \n    int h = bm::clz(m) - (64 - W);\r\n    key_type y = W-h < (int)sizeof(key_type)*8\
-    \ ? (x >> (W-h)) : 0;\r\n    assert(tb_[h].count(y));\r\n    node_ptr f = tb_[h][y];\r\
-    \n    return std::make_pair(h, f);\r\n  }\r\n  using Base::_emplace_hint;\r\n\
-    \  using Base::_erase;\r\n  bool _erase(const key_type& key) override {\r\n  \
-    \  auto it = tb_[W].find(key);\r\n    if (it != tb_[W].end()) {\r\n      Base::_erase_from_leaf(key,\
-    \ std::static_pointer_cast<Leaf>(it->second));\r\n      return true;\r\n    }\
-    \ else {\r\n      return false;\r\n    }\r\n  }\r\n};\r\n\r\n#line 137 \"include/mtl/xft.hpp\"\
-    \n\r\ntemplate<typename T, typename V, uint8_t W = sizeof(T)*8,\r\n    class HashTable\
-    \ = XFT_HASH_TABLE_TYPE(XFT_DEFAULT_HASH_TABLE, T, V, W)>\r\nusing XFastTrie =\
-    \ traits::MapTraits<XFastTrieBase<T, V, W, HashTable>>;\r\ntemplate<typename T,\
-    \ uint8_t W = sizeof(T)*8,\r\n    class HashTable = XFT_HASH_TABLE_TYPE(XFT_DEFAULT_HASH_TABLE,\
+    \n    int h = bm::clz(m) - (64 - W);\r\n    key_type y = x >> (W-h);\r\n    assert(tb_[h].count(y));\r\
+    \n    node_ptr f = tb_[h][y];\r\n    return std::make_pair(h, f);\r\n  }\r\n \
+    \ using Base::_emplace_hint;\r\n  void erase_node_at(const key_type& x, int i,\
+    \ node_ptr u) override {\r\n    Base::erase_node_at(x, i, u);\r\n    auto it =\
+    \ tb_[i].find(x >> (W-i));\r\n    assert(it != tb_[i].end());\r\n    assert(it->second\
+    \ == u);\r\n    tb_[i].erase(it);\r\n  }\r\n  using Base::_erase;\r\n  bool _erase(const\
+    \ key_type& key) {\r\n    auto it = tb_[W].find(key);\r\n    if (it != tb_[W].end())\
+    \ {\r\n      Base::_erase_from_leaf(key, std::static_pointer_cast<Leaf>(it->second));\r\
+    \n      return true;\r\n    } else {\r\n      return false;\r\n    }\r\n  }\r\n\
+    };\r\n\r\n#line 157 \"include/mtl/xft.hpp\"\n\r\ntemplate<typename T, typename\
+    \ V, uint8_t W = sizeof(T)*8,\r\n    class HashTable = XFT_HASH_TABLE_TYPE(XFT_DEFAULT_HASH_TABLE,\
+    \ T, V, W)>\r\nusing XFastTrie = traits::MapTraits<XFastTrieBase<T, V, W, HashTable>>;\r\
+    \ntemplate<typename T, uint8_t W = sizeof(T)*8,\r\n    class HashTable = XFT_HASH_TABLE_TYPE(XFT_DEFAULT_HASH_TABLE,\
     \ T, void, W)>\r\nusing XFastTrieSet = traits::SetTraits<XFastTrieBase<T, void,\
     \ W, HashTable>>;\r\ntemplate<typename T, typename V, uint8_t W = sizeof(T)*8,\r\
     \n    class HashTable = XFT_HASH_TABLE_TYPE(XFT_DEFAULT_HASH_TABLE, T, V, W)>\r\
     \nusing XFastTrieMap = XFastTrie<T, V, W, HashTable>;\r\n#line 12 \"include/mtl/yft.hpp\"\
-    \n#include <vector>\r\n#include <bitset>\r\n#line 15 \"include/mtl/yft.hpp\"\n\
-    \r\ntemplate<class T, class M,\r\n    int8_t W = sizeof(T) * 8,\r\n    class TREAP\
-    \ = Treap<T, M>,\r\n    class HashTable = XFT_HASH_TABLE_TYPE(XFT_DEFAULT_HASH_TABLE,T,TREAP,W),\r\
+    \n#include <vector>\r\n#line 15 \"include/mtl/yft.hpp\"\n\r\ntemplate<class T,\
+    \ class M,\r\n    int8_t W = sizeof(T) * 8,\r\n    class TREAP = Treap<T, M>,\r\
+    \n    class HashTable = XFT_HASH_TABLE_TYPE(XFT_DEFAULT_HASH_TABLE,T,TREAP,W),\r\
     \n    class XFT = XFastTrieMap<T, TREAP, W, HashTable>>\r\nclass YFastTrieBase\
     \ : public traits::AssociativeArrayDefinition<T, M> {\r\n  static_assert(std::is_unsigned<T>::value,\
     \ \"\");\r\n  using Def = traits::AssociativeArrayDefinition<T, M>;\r\n public:\r\
@@ -652,11 +656,11 @@ data:
     \n    assert(tit != xft_.end());\r\n    auto tres = tit->second.find(x);\r\n \
     \   if (tres != tit->second.end())\r\n      return make_raw_iterator(&xft_, tit,\
     \ tres);\r\n    else\r\n      return end();\r\n  }\r\n  bool _pivot_selected()\
-    \ {\r\n    return dist_(eng_) == 0;\r\n  }\r\n  iterator activate_new_treap_node(const\
-    \ key_type& x,\r\n                                   typename xft_type::iterator\
-    \ xlb,\r\n                                   typename treap_type::iterator new_tit)\
-    \ {\r\n    size_++;\r\n    if (_pivot_selected()) [[unlikely]] {\r\n      auto\
-    \ lt = std::move(xlb->second.split(std::next(new_tit)));\r\n      xlb = xft_.emplace_hint(xlb,\
+    \ {\r\n    return dist_(eng_) == 0;\r\n  }\r\n  iterator activate_new_treap_node(key_type\
+    \ x,\r\n                                   typename xft_type::iterator xlb,\r\n\
+    \                                   typename treap_type::iterator new_tit) {\r\
+    \n    size_++;\r\n    if (_pivot_selected()) [[unlikely]] {\r\n      auto lt =\
+    \ std::move(xlb->second.split(std::next(new_tit)));\r\n      xlb = xft_.emplace_hint(xlb,\
     \ x, std::move(lt));\r\n    }\r\n    return iterator(&xft_, xlb, new_tit);\r\n\
     \  }\r\n  template<class Value>\r\n  std::pair<iterator, bool> _insert(Value&&\
     \ value) {\r\n    key_type x = Def::key_of(value);\r\n    auto xlb = xft_.lower_bound(x);\r\
@@ -664,20 +668,18 @@ data:
     \ = t.insert(std::forward<Value>(value));\r\n    if (tins.second) {\r\n      return\
     \ std::make_pair(activate_new_treap_node(x, xlb, tins.first), true);\r\n    }\r\
     \n    return std::make_pair(iterator(&xft_, xlb, tins.first), false);\r\n  }\r\
-    \n  template<class Value>\r\n  iterator _emplace_hint_unique(const_iterator hint,\
-    \ Value&& value) {\r\n    assert(hint == end() || Def::key_of(value) < hint->first);\r\
-    \n    auto xit = hint.xit_;\r\n    auto tins = xit->second.emplace_hint(hint.tit_,\
-    \ std::forward<Value>(value));\r\n    return activate_new_treap_node(tins->first,\
-    \ xit, tins);\r\n  }\r\n  template<class Value>\r\n  iterator _emplace_hint(const_iterator\
-    \ hint, Value&& value) {\r\n    key_type x = Def::key_of(value);\r\n    if (hint\
-    \ != end() and x == hint->first) {\r\n      return hint;\r\n    }\r\n    return\
-    \ _emplace_hint_unique(hint, std::forward<Value>(value));\r\n  }\r\n  bool _erase(const\
-    \ key_type& key) {\r\n    auto xlb = xft_.lower_bound(key);\r\n    assert(xlb\
-    \ != xft_.end());\r\n    auto& t = xlb->second;\r\n    if (t.erase(key)) {\r\n\
-    \      size_--;\r\n      auto nxlb = std::next(xlb);\r\n      assert(nxlb != xlb);\r\
-    \n      if (xlb->first == key and nxlb != xft_.end()) [[unlikely]] {\r\n     \
-    \   nxlb->second.absorb(&t);\r\n        xft_.erase(xlb);\r\n      }\r\n      return\
-    \ true;\r\n    }\r\n    return false;\r\n  }\r\n  iterator _erase(const_iterator\
+    \n  template<class Value>\r\n  iterator _emplace_hint(const_iterator hint, Value&&\
+    \ value) {\r\n    key_type x = Def::key_of(value);\r\n    if (hint != end() and\
+    \ x == Def::key_of(*hint)) [[unlikely]] {\r\n      return hint;\r\n    }\r\n \
+    \   auto tins = hint.xit_->second.emplace_hint(hint.tit_, std::forward<Value>(value));\r\
+    \n    if (!tins.second) [[unlikely]] {\r\n      return _insert(std::forward<Value>(value)).first;\r\
+    \n    }\r\n    return activate_new_treap_node(x, hint.xit_, tins.first);\r\n \
+    \ }\r\n  bool _erase(const key_type& key) {\r\n    auto xlb = xft_.lower_bound(key);\r\
+    \n    assert(xlb != xft_.end());\r\n    auto& t = xlb->second;\r\n    if (t.erase(key))\
+    \ {\r\n      size_--;\r\n      auto nxlb = std::next(xlb);\r\n      assert(nxlb\
+    \ != xlb);\r\n      if (xlb->first == key and nxlb != xft_.end()) [[unlikely]]\
+    \ {\r\n        nxlb->second.absorb(&t);\r\n        xft_.erase(xlb);\r\n      }\r\
+    \n      return true;\r\n    }\r\n    return false;\r\n  }\r\n  iterator _erase(const_iterator\
     \ it) {\r\n    if (it == end()) return it;\r\n    auto next = std::next(it);\r\
     \n    auto xlb = it.xit_;\r\n    auto x = Def::key_of(*it);\r\n    auto* t = &xlb->second;\r\
     \n    t->erase(it.tit_);\r\n    size_--;\r\n    if (xlb->first == x and xlb !=\
@@ -688,42 +690,44 @@ data:
     \n    using pointer = typename std::conditional<Const,\r\n        const value_type*,\r\
     \n        value_type*>::type;\r\n    using reference = typename std::conditional<Const,\r\
     \n        const value_type&,\r\n        value_type&>::type;\r\n    using iterator_category\
-    \ = std::bidirectional_iterator_tag;\r\n    using xft_pointer = xft_type*;\r\n\
-    \    using xiterator = typename xft_type::iterator;\r\n    using titerator = typename\
-    \ treap_type::iterator;\r\n    xft_pointer xft_;\r\n    xiterator xit_;\r\n  \
-    \  titerator tit_;\r\n    iterator_base(xft_pointer xft, xiterator xit, titerator\
-    \ tit) : \r\n        xft_(xft), xit_(xit), tit_(tit) {}\r\n    template<bool C>\r\
-    \n    iterator_base(const iterator_base<C>& rhs) : \r\n        xft_(rhs.xft_),\
-    \ xit_(rhs.xit_), tit_(rhs.tit_) {}\r\n    template<bool C>\r\n    iterator_base&\
-    \ operator=(const iterator_base<C>& rhs) {\r\n      xft_ = rhs.xft_;\r\n     \
-    \ xit_ = rhs.xit_;\r\n      tit_ = rhs.tit_;\r\n      return *this;\r\n    }\r\
-    \n    template<bool C>\r\n    iterator_base(iterator_base<C>&& rhs) : \r\n   \
-    \     xft_(std::move(rhs.xft_)), \r\n        xit_(std::move(rhs.xit_)), \r\n \
-    \       tit_(std::move(rhs.tit_)) {}\r\n    template<bool C>\r\n    iterator_base&\
-    \ operator=(iterator_base<C>&& rhs) {\r\n      xft_ = std::move(rhs.xft_);\r\n\
-    \      xit_ = std::move(rhs.xit_);\r\n      tit_ = std::move(rhs.tit_);\r\n  \
-    \    return *this;\r\n    }\r\n    reference operator*() const {\r\n      return\
-    \ *tit_;\r\n    }\r\n    pointer operator->() const {\r\n      return tit_.operator->();\r\
-    \n    }\r\n    template<bool C>\r\n    bool operator==(const iterator_base<C>&\
-    \ rhs) const {\r\n      return xit_ == rhs.xit_ and tit_ == rhs.tit_;\r\n    }\r\
-    \n    template<bool C>\r\n    bool operator!=(const iterator_base<C>& rhs) const\
-    \ {\r\n      return !operator==(rhs);\r\n    }\r\n    iterator_base& operator++()\
-    \ {\r\n      ++tit_;\r\n      if (tit_ == xit_->second.end() and std::next(xit_)\
-    \ != xft_->end()) {\r\n        ++xit_;\r\n        tit_ = xit_->second.begin();\r\
-    \n      }\r\n      return *this;\r\n    }\r\n    iterator_base operator++(int)\
-    \ {\r\n      iterator_base ret = *this;\r\n      operator++();\r\n      return\
-    \ ret;\r\n    }\r\n    iterator_base& operator--() {\r\n      if (tit_ == xit_->second.begin())\
-    \ {\r\n        --xit_;\r\n        tit_ = std::prev(xit_->second.end());\r\n  \
-    \    } else {\r\n        --tit_;\r\n      }\r\n      return *this;\r\n    }\r\n\
-    \    iterator_base operator--(int) {\r\n      iterator_base ret = *this;\r\n \
-    \     operator--();\r\n      return ret;\r\n    }\r\n  };\r\n protected:\r\n \
-    \ using xft_pointer = xft_type*;\r\n  using xft_iterator = typename xft_type::iterator;\r\
-    \n  using treap_iterator = typename treap_type::iterator;\r\n  using const_xft_pointer\
-    \ = const xft_type*;\r\n  using const_xft_iterator = typename xft_type::const_iterator;\r\
-    \n  using const_treap_iterator = typename treap_type::const_iterator;\r\n  static\
-    \ iterator make_raw_iterator(const_xft_pointer xft,\r\n                      \
-    \              const_xft_iterator xit,\r\n                                   \
-    \ const_treap_iterator tit) {\r\n    return iterator(const_cast<xft_pointer>(xft),\
+    \ = std::bidirectional_iterator_tag;\r\n    using xft_pointer = typename std::conditional<\r\
+    \n        Const,\r\n        const xft_type*,\r\n        xft_type*>::type;\r\n\
+    \    using xiterator = typename std::conditional<\r\n        Const,\r\n      \
+    \  typename xft_type::const_iterator,\r\n        typename xft_type::iterator>::type;\r\
+    \n    using titerator = typename std::conditional<\r\n        Const,\r\n     \
+    \   typename treap_type::const_iterator,\r\n        typename treap_type::iterator>::type;\r\
+    \n    xft_pointer xft_;\r\n    xiterator xit_;\r\n    titerator tit_;\r\n    iterator_base(xft_pointer\
+    \ xft, xiterator xit, titerator tit)\r\n        : xft_(xft), xit_(xit), tit_(tit)\
+    \ {}\r\n    template<bool C>\r\n    iterator_base(const iterator_base<C>& rhs)\r\
+    \n        : xft_(rhs.xft_), xit_(rhs.xit_), tit_(rhs.tit_) {}\r\n    template<bool\
+    \ C>\r\n    iterator_base& operator=(const iterator_base<C>& rhs) {\r\n      xft_\
+    \ = rhs.xft_;\r\n      xit_ = rhs.xit_;\r\n      tit_ = rhs.tit_;\r\n      return\
+    \ *this;\r\n    }\r\n    template<bool C>\r\n    iterator_base(iterator_base<C>&&\
+    \ rhs)\r\n        : xft_(std::move(rhs.xft_)), xit_(std::move(rhs.xit_)), tit_(std::move(rhs.tit_))\
+    \ {}\r\n    template<bool C>\r\n    iterator_base& operator=(iterator_base<C>&&\
+    \ rhs) {\r\n      xft_ = std::move(rhs.xft_);\r\n      xit_ = std::move(rhs.xit_);\r\
+    \n      tit_ = std::move(rhs.tit_);\r\n      return *this;\r\n    }\r\n    reference\
+    \ operator*() const {\r\n      return *tit_;\r\n    }\r\n    pointer operator->()\
+    \ const {\r\n      return tit_.operator->();\r\n    }\r\n    template<bool C>\r\
+    \n    bool operator==(const iterator_base<C>& rhs) const {\r\n      return xit_\
+    \ == rhs.xit_ and tit_ == rhs.tit_;\r\n    }\r\n    template<bool C>\r\n    bool\
+    \ operator!=(const iterator_base<C>& rhs) const {\r\n      return !operator==(rhs);\r\
+    \n    }\r\n    iterator_base& operator++() {\r\n      ++tit_;\r\n      if (tit_\
+    \ == xit_->second.end() and std::next(xit_) != xft_->end()) {\r\n        ++xit_;\r\
+    \n        tit_ = xit_->second.begin();\r\n      }\r\n      return *this;\r\n \
+    \   }\r\n    iterator_base operator++(int) {\r\n      iterator_base ret = *this;\r\
+    \n      operator++();\r\n      return ret;\r\n    }\r\n    iterator_base& operator--()\
+    \ {\r\n      if (tit_ == xit_->second.begin()) {\r\n        --xit_;\r\n      \
+    \  tit_ = std::prev(xit_->second.end());\r\n      } else {\r\n        --tit_;\r\
+    \n      }\r\n      return *this;\r\n    }\r\n    iterator_base operator--(int)\
+    \ {\r\n      iterator_base ret = *this;\r\n      operator--();\r\n      return\
+    \ ret;\r\n    }\r\n  };\r\n protected:\r\n  using xft_pointer = xft_type*;\r\n\
+    \  using xft_iterator = typename xft_type::iterator;\r\n  using treap_iterator\
+    \ = typename treap_type::iterator;\r\n  using const_xft_pointer = const xft_type*;\r\
+    \n  using const_xft_iterator = typename xft_type::const_iterator;\r\n  using const_treap_iterator\
+    \ = typename treap_type::const_iterator;\r\n  static iterator make_raw_iterator(const_xft_pointer\
+    \ xft,\r\n                                    const_xft_iterator xit,\r\n    \
+    \                                const_treap_iterator tit) {\r\n    return iterator(const_cast<xft_pointer>(xft),\
     \ xit, tit);\r\n  }\r\n};\r\n\r\ntemplate<typename Key, typename T, uint8_t W\
     \ = sizeof(Key)*8>\r\nusing YFastTrie = traits::MapTraits<YFastTrieBase<Key, T,\
     \ W>>;\r\ntemplate<typename T, uint8_t W = sizeof(T)*8>\r\nusing YFastTrieSet\
@@ -788,11 +792,11 @@ data:
     \n    assert(tit != xft_.end());\r\n    auto tres = tit->second.find(x);\r\n \
     \   if (tres != tit->second.end())\r\n      return make_raw_iterator(&xft_, tit,\
     \ tres);\r\n    else\r\n      return end();\r\n  }\r\n  bool _pivot_selected()\
-    \ {\r\n    return dist_(eng_) == 0;\r\n  }\r\n  iterator activate_new_treap_node(const\
-    \ key_type& x,\r\n                                   typename xft_type::iterator\
-    \ xlb,\r\n                                   typename treap_type::iterator new_tit)\
-    \ {\r\n    size_++;\r\n    if (_pivot_selected()) [[unlikely]] {\r\n      auto\
-    \ lt = std::move(xlb->second.split(std::next(new_tit)));\r\n      xlb = xft_.emplace_hint(xlb,\
+    \ {\r\n    return dist_(eng_) == 0;\r\n  }\r\n  iterator activate_new_treap_node(key_type\
+    \ x,\r\n                                   typename xft_type::iterator xlb,\r\n\
+    \                                   typename treap_type::iterator new_tit) {\r\
+    \n    size_++;\r\n    if (_pivot_selected()) [[unlikely]] {\r\n      auto lt =\
+    \ std::move(xlb->second.split(std::next(new_tit)));\r\n      xlb = xft_.emplace_hint(xlb,\
     \ x, std::move(lt));\r\n    }\r\n    return iterator(&xft_, xlb, new_tit);\r\n\
     \  }\r\n  template<class Value>\r\n  std::pair<iterator, bool> _insert(Value&&\
     \ value) {\r\n    key_type x = Def::key_of(value);\r\n    auto xlb = xft_.lower_bound(x);\r\
@@ -800,20 +804,18 @@ data:
     \ = t.insert(std::forward<Value>(value));\r\n    if (tins.second) {\r\n      return\
     \ std::make_pair(activate_new_treap_node(x, xlb, tins.first), true);\r\n    }\r\
     \n    return std::make_pair(iterator(&xft_, xlb, tins.first), false);\r\n  }\r\
-    \n  template<class Value>\r\n  iterator _emplace_hint_unique(const_iterator hint,\
-    \ Value&& value) {\r\n    assert(hint == end() || Def::key_of(value) < hint->first);\r\
-    \n    auto xit = hint.xit_;\r\n    auto tins = xit->second.emplace_hint(hint.tit_,\
-    \ std::forward<Value>(value));\r\n    return activate_new_treap_node(tins->first,\
-    \ xit, tins);\r\n  }\r\n  template<class Value>\r\n  iterator _emplace_hint(const_iterator\
-    \ hint, Value&& value) {\r\n    key_type x = Def::key_of(value);\r\n    if (hint\
-    \ != end() and x == hint->first) {\r\n      return hint;\r\n    }\r\n    return\
-    \ _emplace_hint_unique(hint, std::forward<Value>(value));\r\n  }\r\n  bool _erase(const\
-    \ key_type& key) {\r\n    auto xlb = xft_.lower_bound(key);\r\n    assert(xlb\
-    \ != xft_.end());\r\n    auto& t = xlb->second;\r\n    if (t.erase(key)) {\r\n\
-    \      size_--;\r\n      auto nxlb = std::next(xlb);\r\n      assert(nxlb != xlb);\r\
-    \n      if (xlb->first == key and nxlb != xft_.end()) [[unlikely]] {\r\n     \
-    \   nxlb->second.absorb(&t);\r\n        xft_.erase(xlb);\r\n      }\r\n      return\
-    \ true;\r\n    }\r\n    return false;\r\n  }\r\n  iterator _erase(const_iterator\
+    \n  template<class Value>\r\n  iterator _emplace_hint(const_iterator hint, Value&&\
+    \ value) {\r\n    key_type x = Def::key_of(value);\r\n    if (hint != end() and\
+    \ x == Def::key_of(*hint)) [[unlikely]] {\r\n      return hint;\r\n    }\r\n \
+    \   auto tins = hint.xit_->second.emplace_hint(hint.tit_, std::forward<Value>(value));\r\
+    \n    if (!tins.second) [[unlikely]] {\r\n      return _insert(std::forward<Value>(value)).first;\r\
+    \n    }\r\n    return activate_new_treap_node(x, hint.xit_, tins.first);\r\n \
+    \ }\r\n  bool _erase(const key_type& key) {\r\n    auto xlb = xft_.lower_bound(key);\r\
+    \n    assert(xlb != xft_.end());\r\n    auto& t = xlb->second;\r\n    if (t.erase(key))\
+    \ {\r\n      size_--;\r\n      auto nxlb = std::next(xlb);\r\n      assert(nxlb\
+    \ != xlb);\r\n      if (xlb->first == key and nxlb != xft_.end()) [[unlikely]]\
+    \ {\r\n        nxlb->second.absorb(&t);\r\n        xft_.erase(xlb);\r\n      }\r\
+    \n      return true;\r\n    }\r\n    return false;\r\n  }\r\n  iterator _erase(const_iterator\
     \ it) {\r\n    if (it == end()) return it;\r\n    auto next = std::next(it);\r\
     \n    auto xlb = it.xit_;\r\n    auto x = Def::key_of(*it);\r\n    auto* t = &xlb->second;\r\
     \n    t->erase(it.tit_);\r\n    size_--;\r\n    if (xlb->first == x and xlb !=\
@@ -824,42 +826,44 @@ data:
     \n    using pointer = typename std::conditional<Const,\r\n        const value_type*,\r\
     \n        value_type*>::type;\r\n    using reference = typename std::conditional<Const,\r\
     \n        const value_type&,\r\n        value_type&>::type;\r\n    using iterator_category\
-    \ = std::bidirectional_iterator_tag;\r\n    using xft_pointer = xft_type*;\r\n\
-    \    using xiterator = typename xft_type::iterator;\r\n    using titerator = typename\
-    \ treap_type::iterator;\r\n    xft_pointer xft_;\r\n    xiterator xit_;\r\n  \
-    \  titerator tit_;\r\n    iterator_base(xft_pointer xft, xiterator xit, titerator\
-    \ tit) : \r\n        xft_(xft), xit_(xit), tit_(tit) {}\r\n    template<bool C>\r\
-    \n    iterator_base(const iterator_base<C>& rhs) : \r\n        xft_(rhs.xft_),\
-    \ xit_(rhs.xit_), tit_(rhs.tit_) {}\r\n    template<bool C>\r\n    iterator_base&\
-    \ operator=(const iterator_base<C>& rhs) {\r\n      xft_ = rhs.xft_;\r\n     \
-    \ xit_ = rhs.xit_;\r\n      tit_ = rhs.tit_;\r\n      return *this;\r\n    }\r\
-    \n    template<bool C>\r\n    iterator_base(iterator_base<C>&& rhs) : \r\n   \
-    \     xft_(std::move(rhs.xft_)), \r\n        xit_(std::move(rhs.xit_)), \r\n \
-    \       tit_(std::move(rhs.tit_)) {}\r\n    template<bool C>\r\n    iterator_base&\
-    \ operator=(iterator_base<C>&& rhs) {\r\n      xft_ = std::move(rhs.xft_);\r\n\
-    \      xit_ = std::move(rhs.xit_);\r\n      tit_ = std::move(rhs.tit_);\r\n  \
-    \    return *this;\r\n    }\r\n    reference operator*() const {\r\n      return\
-    \ *tit_;\r\n    }\r\n    pointer operator->() const {\r\n      return tit_.operator->();\r\
-    \n    }\r\n    template<bool C>\r\n    bool operator==(const iterator_base<C>&\
-    \ rhs) const {\r\n      return xit_ == rhs.xit_ and tit_ == rhs.tit_;\r\n    }\r\
-    \n    template<bool C>\r\n    bool operator!=(const iterator_base<C>& rhs) const\
-    \ {\r\n      return !operator==(rhs);\r\n    }\r\n    iterator_base& operator++()\
-    \ {\r\n      ++tit_;\r\n      if (tit_ == xit_->second.end() and std::next(xit_)\
-    \ != xft_->end()) {\r\n        ++xit_;\r\n        tit_ = xit_->second.begin();\r\
-    \n      }\r\n      return *this;\r\n    }\r\n    iterator_base operator++(int)\
-    \ {\r\n      iterator_base ret = *this;\r\n      operator++();\r\n      return\
-    \ ret;\r\n    }\r\n    iterator_base& operator--() {\r\n      if (tit_ == xit_->second.begin())\
-    \ {\r\n        --xit_;\r\n        tit_ = std::prev(xit_->second.end());\r\n  \
-    \    } else {\r\n        --tit_;\r\n      }\r\n      return *this;\r\n    }\r\n\
-    \    iterator_base operator--(int) {\r\n      iterator_base ret = *this;\r\n \
-    \     operator--();\r\n      return ret;\r\n    }\r\n  };\r\n protected:\r\n \
-    \ using xft_pointer = xft_type*;\r\n  using xft_iterator = typename xft_type::iterator;\r\
-    \n  using treap_iterator = typename treap_type::iterator;\r\n  using const_xft_pointer\
-    \ = const xft_type*;\r\n  using const_xft_iterator = typename xft_type::const_iterator;\r\
-    \n  using const_treap_iterator = typename treap_type::const_iterator;\r\n  static\
-    \ iterator make_raw_iterator(const_xft_pointer xft,\r\n                      \
-    \              const_xft_iterator xit,\r\n                                   \
-    \ const_treap_iterator tit) {\r\n    return iterator(const_cast<xft_pointer>(xft),\
+    \ = std::bidirectional_iterator_tag;\r\n    using xft_pointer = typename std::conditional<\r\
+    \n        Const,\r\n        const xft_type*,\r\n        xft_type*>::type;\r\n\
+    \    using xiterator = typename std::conditional<\r\n        Const,\r\n      \
+    \  typename xft_type::const_iterator,\r\n        typename xft_type::iterator>::type;\r\
+    \n    using titerator = typename std::conditional<\r\n        Const,\r\n     \
+    \   typename treap_type::const_iterator,\r\n        typename treap_type::iterator>::type;\r\
+    \n    xft_pointer xft_;\r\n    xiterator xit_;\r\n    titerator tit_;\r\n    iterator_base(xft_pointer\
+    \ xft, xiterator xit, titerator tit)\r\n        : xft_(xft), xit_(xit), tit_(tit)\
+    \ {}\r\n    template<bool C>\r\n    iterator_base(const iterator_base<C>& rhs)\r\
+    \n        : xft_(rhs.xft_), xit_(rhs.xit_), tit_(rhs.tit_) {}\r\n    template<bool\
+    \ C>\r\n    iterator_base& operator=(const iterator_base<C>& rhs) {\r\n      xft_\
+    \ = rhs.xft_;\r\n      xit_ = rhs.xit_;\r\n      tit_ = rhs.tit_;\r\n      return\
+    \ *this;\r\n    }\r\n    template<bool C>\r\n    iterator_base(iterator_base<C>&&\
+    \ rhs)\r\n        : xft_(std::move(rhs.xft_)), xit_(std::move(rhs.xit_)), tit_(std::move(rhs.tit_))\
+    \ {}\r\n    template<bool C>\r\n    iterator_base& operator=(iterator_base<C>&&\
+    \ rhs) {\r\n      xft_ = std::move(rhs.xft_);\r\n      xit_ = std::move(rhs.xit_);\r\
+    \n      tit_ = std::move(rhs.tit_);\r\n      return *this;\r\n    }\r\n    reference\
+    \ operator*() const {\r\n      return *tit_;\r\n    }\r\n    pointer operator->()\
+    \ const {\r\n      return tit_.operator->();\r\n    }\r\n    template<bool C>\r\
+    \n    bool operator==(const iterator_base<C>& rhs) const {\r\n      return xit_\
+    \ == rhs.xit_ and tit_ == rhs.tit_;\r\n    }\r\n    template<bool C>\r\n    bool\
+    \ operator!=(const iterator_base<C>& rhs) const {\r\n      return !operator==(rhs);\r\
+    \n    }\r\n    iterator_base& operator++() {\r\n      ++tit_;\r\n      if (tit_\
+    \ == xit_->second.end() and std::next(xit_) != xft_->end()) {\r\n        ++xit_;\r\
+    \n        tit_ = xit_->second.begin();\r\n      }\r\n      return *this;\r\n \
+    \   }\r\n    iterator_base operator++(int) {\r\n      iterator_base ret = *this;\r\
+    \n      operator++();\r\n      return ret;\r\n    }\r\n    iterator_base& operator--()\
+    \ {\r\n      if (tit_ == xit_->second.begin()) {\r\n        --xit_;\r\n      \
+    \  tit_ = std::prev(xit_->second.end());\r\n      } else {\r\n        --tit_;\r\
+    \n      }\r\n      return *this;\r\n    }\r\n    iterator_base operator--(int)\
+    \ {\r\n      iterator_base ret = *this;\r\n      operator--();\r\n      return\
+    \ ret;\r\n    }\r\n  };\r\n protected:\r\n  using xft_pointer = xft_type*;\r\n\
+    \  using xft_iterator = typename xft_type::iterator;\r\n  using treap_iterator\
+    \ = typename treap_type::iterator;\r\n  using const_xft_pointer = const xft_type*;\r\
+    \n  using const_xft_iterator = typename xft_type::const_iterator;\r\n  using const_treap_iterator\
+    \ = typename treap_type::const_iterator;\r\n  static iterator make_raw_iterator(const_xft_pointer\
+    \ xft,\r\n                                    const_xft_iterator xit,\r\n    \
+    \                                const_treap_iterator tit) {\r\n    return iterator(const_cast<xft_pointer>(xft),\
     \ xit, tit);\r\n  }\r\n};\r\n\r\ntemplate<typename Key, typename T, uint8_t W\
     \ = sizeof(Key)*8>\r\nusing YFastTrie = traits::MapTraits<YFastTrieBase<Key, T,\
     \ W>>;\r\ntemplate<typename T, uint8_t W = sizeof(T)*8>\r\nusing YFastTrieSet\
@@ -875,10 +879,9 @@ data:
   isVerificationFile: false
   path: include/mtl/yft.hpp
   requiredBy: []
-  timestamp: '2023-04-06 14:40:12+09:00'
-  verificationStatus: LIBRARY_ALL_AC
-  verifiedWith:
-  - test/yosupo/associative_array-yft.test.cpp
+  timestamp: '2023-04-04 01:01:39+09:00'
+  verificationStatus: LIBRARY_NO_TESTS
+  verifiedWith: []
 documentation_of: include/mtl/yft.hpp
 layout: document
 redirect_from:

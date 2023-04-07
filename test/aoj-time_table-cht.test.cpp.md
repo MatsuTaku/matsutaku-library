@@ -17,32 +17,32 @@ data:
     PROBLEM: https://onlinejudge.u-aizu.ac.jp/problems/2603
     links:
     - https://onlinejudge.u-aizu.ac.jp/problems/2603
-  bundledCode: "#line 1 \"test/aoj/aoj-time_table-cht.test.cpp\"\n#define PROBLEM\
-    \ \"https://onlinejudge.u-aizu.ac.jp/problems/2603\"\r\n#line 2 \"include/mtl/convex_hull_trick.hpp\"\
-    \n#include <utility>\r\n#include <cassert>\r\n#include <tuple>\r\n#include <vector>\r\
-    \n#include <deque>\r\n#include <set>\r\n#include <map>\r\n#include <algorithm>\r\
-    \n#include <cstddef>\r\n#include <iostream>\r\n#include <limits>\r\n#line 3 \"\
-    include/mtl/search.hpp\"\n#include <type_traits>\r\n#include <functional>\r\n\
-    #include <cmath>\r\n#line 8 \"include/mtl/search.hpp\"\n\r\nconstexpr double EPS_DEFAULT\
-    \ = 1e-9;\r\n\r\ntemplate<typename I, typename F>\r\ntypename std::remove_reference<I>::type\r\
-    \nbisect_int(I ok, I ng, F f) {\r\n  while (std::abs(ng - ok) > 1) {\r\n    auto\
-    \ c = ok + (ng - ok) / 2;\r\n    if (f(c))\r\n      ok = c;\r\n    else\r\n  \
-    \    ng = c;\r\n  }\r\n  return ok;\r\n}\r\n\r\ntemplate<typename F>\r\ndouble\r\
-    \nbisect_float(double ok, double ng, F fn, double eps = EPS_DEFAULT) {\r\n  while\
-    \ (std::abs(ok - ng) > eps) {\r\n    double c = ok + (ng - ok) / 2;\r\n    if\
-    \ (fn(c))\r\n      ok = c;\r\n    else\r\n      ng = c;\r\n  }\r\n  return ok;\r\
-    \n}\r\n\r\ntemplate<typename T, typename I, typename F, typename C>\r\nstd::pair<typename\
-    \ std::remove_reference<I>::type, T>\r\nfibonacci_search(I l, I r, F fn, C cmp\
-    \ = std::less<T>()) {\r\n  using idx_type = typename std::remove_reference<I>::type;\r\
-    \n  assert(r - l >= 2);\r\n  idx_type d = r-l;\r\n  std::vector<idx_type> fib{1,1};\r\
-    \n  while (fib.back() < d) fib.push_back(fib[fib.size()-2] + fib[fib.size()-1]);\r\
-    \n  auto k = --fib.cend();\r\n  idx_type il = l + *(k-2);\r\n  idx_type ir = l\
-    \ + *(k-1);\r\n  T lv = fn(il);\r\n  T rv = fn(ir);\r\n  std::pair<idx_type, T>\
-    \ ret = cmp(lv, rv) ? std::make_pair(ir, rv) : std::make_pair(il, lv);\r\n  while\
-    \ (*k > 3) {\r\n    if (cmp(lv, rv)) {\r\n      l += *(k-2);\r\n      lv = rv;\r\
-    \n      auto i = std::min(r-1, l + *(k-2));\r\n      rv = fn(i);\r\n      if (cmp(ret.second,\
-    \ rv))\r\n        ret = std::make_pair(i, rv);\r\n    } else {\r\n      rv = lv;\r\
-    \n      auto i = std::min(r-1, l + *(k-3));\r\n      lv = fn(i);\r\n      if (cmp(ret.second,\
+  bundledCode: "#line 1 \"test/aoj-time_table-cht.test.cpp\"\n#define PROBLEM \"https://onlinejudge.u-aizu.ac.jp/problems/2603\"\
+    \r\n#line 2 \"include/mtl/convex_hull_trick.hpp\"\n#include <utility>\r\n#include\
+    \ <cassert>\r\n#include <tuple>\r\n#include <vector>\r\n#include <deque>\r\n#include\
+    \ <set>\r\n#include <map>\r\n#include <algorithm>\r\n#include <cstddef>\r\n#include\
+    \ <iostream>\r\n#include <limits>\r\n#line 3 \"include/mtl/search.hpp\"\n#include\
+    \ <type_traits>\r\n#include <functional>\r\n#include <cmath>\r\n#line 8 \"include/mtl/search.hpp\"\
+    \n\r\nconstexpr double EPS_DEFAULT = 1e-9;\r\n\r\ntemplate<typename I, typename\
+    \ F>\r\ntypename std::remove_reference<I>::type\r\nbisect_int(I ok, I ng, F f)\
+    \ {\r\n  while (std::abs(ng - ok) > 1) {\r\n    auto c = ok + (ng - ok) / 2;\r\
+    \n    if (f(c))\r\n      ok = c;\r\n    else\r\n      ng = c;\r\n  }\r\n  return\
+    \ ok;\r\n}\r\n\r\ntemplate<typename F>\r\ndouble\r\nbisect_float(double ok, double\
+    \ ng, F fn, double eps = EPS_DEFAULT) {\r\n  while (std::abs(ok - ng) > eps) {\r\
+    \n    double c = ok + (ng - ok) / 2;\r\n    if (fn(c))\r\n      ok = c;\r\n  \
+    \  else\r\n      ng = c;\r\n  }\r\n  return ok;\r\n}\r\n\r\ntemplate<typename\
+    \ T, typename I, typename F, typename C>\r\nstd::pair<typename std::remove_reference<I>::type,\
+    \ T>\r\nfibonacci_search(I l, I r, F fn, C cmp = std::less<T>()) {\r\n  using\
+    \ idx_type = typename std::remove_reference<I>::type;\r\n  assert(r - l >= 2);\r\
+    \n  idx_type d = r-l;\r\n  std::vector<idx_type> fib{1,1};\r\n  while (fib.back()\
+    \ < d) fib.push_back(fib[fib.size()-2] + fib[fib.size()-1]);\r\n  auto k = --fib.cend();\r\
+    \n  idx_type il = l + *(k-2);\r\n  idx_type ir = l + *(k-1);\r\n  T lv = fn(il);\r\
+    \n  T rv = fn(ir);\r\n  std::pair<idx_type, T> ret = cmp(lv, rv) ? std::make_pair(ir,\
+    \ rv) : std::make_pair(il, lv);\r\n  while (*k > 3) {\r\n    if (cmp(lv, rv))\
+    \ {\r\n      l += *(k-2);\r\n      lv = rv;\r\n      auto i = std::min(r-1, l\
+    \ + *(k-2));\r\n      rv = fn(i);\r\n      if (cmp(ret.second, rv))\r\n      \
+    \  ret = std::make_pair(i, rv);\r\n    } else {\r\n      rv = lv;\r\n      auto\
+    \ i = std::min(r-1, l + *(k-3));\r\n      lv = fn(i);\r\n      if (cmp(ret.second,\
     \ lv))\r\n        ret = std::make_pair(i, lv);\r\n    }\r\n    --k;\r\n  }\r\n\
     \  return ret;\r\n}\r\ntemplate<typename T, typename I, typename F, typename C\
     \ = std::less<T>>\r\nstd::pair<typename std::remove_reference<I>::type, T>\r\n\
@@ -147,24 +147,23 @@ data:
     \ {\r\n      --ts;\r\n      s = ps--;\r\n    }\r\n    if (ts != te) {\r\n    \
     \  --ts;\r\n      ts = tr.erase(ts, te);\r\n      L.erase(next(s), next(e));\r\
     \n      tr.emplace_hint(ts, Node(*s, *next(s)), *s);\r\n    }\r\n    return f(*s,\
-    \ x);\r\n  }\r\n};\r\n#line 3 \"test/aoj/aoj-time_table-cht.test.cpp\"\n#include\
-    \ <bits/stdc++.h>\r\nusing namespace std;\r\n\r\nint main() {\r\n  int s,n,m;\
-    \ cin>>s>>n>>m;\r\n  vector<int> X(s);\r\n  for (int i = 0; i < s; i++) cin>>X[i];\r\
-    \n  vector<pair<int,int>> B(n);\r\n  vector<int> T(n);\r\n  for (int i = 0; i\
-    \ < n; i++) {\r\n    int t,p; cin>>t>>p; p--;\r\n    B[i] = {t, X[p]};\r\n   \
-    \ T[i] = t-X[p];\r\n  }\r\n  sort(T.begin(), T.end());\r\n  vector<int> TS(n+1);\r\
-    \n  for (int i = 1; i <= n; i++)\r\n    TS[i] = TS[i-1] + T[i-1];\r\n  // dp[r]\
-    \ = min_{0<=l<=r} dp[l] + (r-l)*T[r-1] - (TS[r]-TS[l])\r\n  //       = min   \
-    \        dp[l] - (l*T[r-1] - TS[l]) + r*T[r-1] - TS[r]\r\n  constexpr int INF\
-    \ = 1e9;\r\n  vector<int> dp(n+1, INF);\r\n  dp[0] = 0;\r\n  ConvexHullTrickDeque<int,\
-    \ greater<>> cht;\r\n  for (int i = 0; i < m; i++) {\r\n    cht.clear();\r\n \
-    \   cht.push_back(-0, dp[0] + TS[0]);\r\n    for (int j = 1; j <= n; j++) {\r\n\
-    \      auto x = T[j-1];\r\n      cht.push_back(-j, dp[j] + TS[j]);\r\n      dp[j]\
-    \ = cht.get(x) + j * x - TS[j];\r\n    }\r\n  }\r\n  cout << dp[n] << endl;\r\n\
-    }\n"
+    \ x);\r\n  }\r\n};\r\n#line 3 \"test/aoj-time_table-cht.test.cpp\"\n#include <bits/stdc++.h>\r\
+    \nusing namespace std;\r\n\r\nint main() {\r\n  int s,n,m; cin>>s>>n>>m;\r\n \
+    \ vector<int> X(s);\r\n  for (int i = 0; i < s; i++) cin>>X[i];\r\n  vector<pair<int,int>>\
+    \ B(n);\r\n  vector<int> T(n);\r\n  for (int i = 0; i < n; i++) {\r\n    int t,p;\
+    \ cin>>t>>p; p--;\r\n    B[i] = {t, X[p]};\r\n    T[i] = t-X[p];\r\n  }\r\n  sort(T.begin(),\
+    \ T.end());\r\n  vector<int> TS(n+1);\r\n  for (int i = 1; i <= n; i++)\r\n  \
+    \  TS[i] = TS[i-1] + T[i-1];\r\n  // dp[r] = min_{0<=l<=r} dp[l] + (r-l)*T[r-1]\
+    \ - (TS[r]-TS[l])\r\n  //       = min           dp[l] - (l*T[r-1] - TS[l]) + r*T[r-1]\
+    \ - TS[r]\r\n  constexpr int INF = 1e9;\r\n  vector<int> dp(n+1, INF);\r\n  dp[0]\
+    \ = 0;\r\n  ConvexHullTrickDeque<int, greater<>> cht;\r\n  for (int i = 0; i <\
+    \ m; i++) {\r\n    cht.clear();\r\n    cht.push_back(-0, dp[0] + TS[0]);\r\n \
+    \   for (int j = 1; j <= n; j++) {\r\n      auto x = T[j-1];\r\n      cht.push_back(-j,\
+    \ dp[j] + TS[j]);\r\n      dp[j] = cht.get(x) + j * x - TS[j];\r\n    }\r\n  }\r\
+    \n  cout << dp[n] << endl;\r\n}\n"
   code: "#define PROBLEM \"https://onlinejudge.u-aizu.ac.jp/problems/2603\"\r\n#include\
-    \ \"../../include/mtl/convex_hull_trick.hpp\"\r\n#include <bits/stdc++.h>\r\n\
-    using namespace std;\r\n\r\nint main() {\r\n  int s,n,m; cin>>s>>n>>m;\r\n  vector<int>\
+    \ \"../include/mtl/convex_hull_trick.hpp\"\r\n#include <bits/stdc++.h>\r\nusing\
+    \ namespace std;\r\n\r\nint main() {\r\n  int s,n,m; cin>>s>>n>>m;\r\n  vector<int>\
     \ X(s);\r\n  for (int i = 0; i < s; i++) cin>>X[i];\r\n  vector<pair<int,int>>\
     \ B(n);\r\n  vector<int> T(n);\r\n  for (int i = 0; i < n; i++) {\r\n    int t,p;\
     \ cin>>t>>p; p--;\r\n    B[i] = {t, X[p]};\r\n    T[i] = t-X[p];\r\n  }\r\n  sort(T.begin(),\
@@ -181,15 +180,15 @@ data:
   - include/mtl/convex_hull_trick.hpp
   - include/mtl/search.hpp
   isVerificationFile: true
-  path: test/aoj/aoj-time_table-cht.test.cpp
+  path: test/aoj-time_table-cht.test.cpp
   requiredBy: []
-  timestamp: '2023-04-08 02:15:04+09:00'
+  timestamp: '2022-11-27 16:09:45+09:00'
   verificationStatus: TEST_ACCEPTED
   verifiedWith: []
-documentation_of: test/aoj/aoj-time_table-cht.test.cpp
+documentation_of: test/aoj-time_table-cht.test.cpp
 layout: document
 redirect_from:
-- /verify/test/aoj/aoj-time_table-cht.test.cpp
-- /verify/test/aoj/aoj-time_table-cht.test.cpp.html
-title: test/aoj/aoj-time_table-cht.test.cpp
+- /verify/test/aoj-time_table-cht.test.cpp
+- /verify/test/aoj-time_table-cht.test.cpp.html
+title: test/aoj-time_table-cht.test.cpp
 ---

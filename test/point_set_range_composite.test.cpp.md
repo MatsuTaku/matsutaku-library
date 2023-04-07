@@ -5,11 +5,11 @@ data:
     path: include/mtl/bit_manip.hpp
     title: include/mtl/bit_manip.hpp
   - icon: ':heavy_check_mark:'
-    path: include/mtl/dual_segment_tree.hpp
-    title: include/mtl/dual_segment_tree.hpp
-  - icon: ':heavy_check_mark:'
     path: include/mtl/modular.hpp
     title: include/mtl/modular.hpp
+  - icon: ':heavy_check_mark:'
+    path: include/mtl/segment_tree.hpp
+    title: include/mtl/segment_tree.hpp
   _extendedRequiredBy: []
   _extendedVerifiedWith: []
   _isVerificationFailed: false
@@ -17,11 +17,11 @@ data:
   _verificationStatusIcon: ':heavy_check_mark:'
   attributes:
     '*NOT_SPECIAL_COMMENTS*': ''
-    PROBLEM: https://judge.yosupo.jp/problem/range_affine_point_get
+    PROBLEM: https://judge.yosupo.jp/problem/point_set_range_composite
     links:
-    - https://judge.yosupo.jp/problem/range_affine_point_get
-  bundledCode: "#line 1 \"test/yosupo/yosupo-range_affine_point_get.test.cpp\"\n#define\
-    \ PROBLEM \"https://judge.yosupo.jp/problem/range_affine_point_get\"\n#line 2\
+    - https://judge.yosupo.jp/problem/point_set_range_composite
+  bundledCode: "#line 1 \"test/point_set_range_composite.test.cpp\"\n#define PROBLEM\
+    \ \"https://judge.yosupo.jp/problem/point_set_range_composite\"\r\n\r\n#line 2\
     \ \"include/mtl/bit_manip.hpp\"\n#include <cstdint>\n#include <cassert>\n\nnamespace\
     \ bm {\n\ninline constexpr uint64_t popcnt_e8(uint64_t x) {\n  x = (x & 0x5555555555555555)\
     \ + ((x>>1) & 0x5555555555555555);\n  x = (x & 0x3333333333333333) + ((x>>2) &\
@@ -55,36 +55,43 @@ data:
     \ & 0xFF00FF00FF00FF00) >> 8);\n  x = ((x & 0x0F0F0F0F0F0F0F0F) << 4) | ((x &\
     \ 0xF0F0F0F0F0F0F0F0) >> 4);\n  x = ((x & 0x3333333333333333) << 2) | ((x & 0xCCCCCCCCCCCCCCCC)\
     \ >> 2);\n  x = ((x & 0x5555555555555555) << 1) | ((x & 0xAAAAAAAAAAAAAAAA) >>\
-    \ 1);\n  return x;\n}\n\n} // namespace bm\n#line 3 \"include/mtl/dual_segment_tree.hpp\"\
-    \n#include <cstddef>\n#include <vector>\n#include <algorithm>\n#line 7 \"include/mtl/dual_segment_tree.hpp\"\
-    \n#if _cplusplus >= 202002L\n#include <concept>\n\ntemplate<typename M>\nconcept\
-    \ DualSegmentTreeMonoid = requires (M m) {\n  {m *= m} -> std::same_as<M>;\n};\n\
-    #endif\n\ntemplate <typename M>\nclass DualSegmentTree {\n#if _cplusplus >= 202002L\n\
-    \  static_assert(DualSegmentTreeMonoid<M>);\n#endif\n private:\n  size_t size_;\n\
-    \  std::vector<M> tree_;\n  std::vector<std::pair<size_t, size_t>> ids_;\n\n \
-    \ int log(size_t x) const {\n    return 64 - bm::clz(x-1);\n  }\n\n public:\n\
-    \  explicit DualSegmentTree(size_t size) :\n      size_(1ull<<log(size)),\n  \
-    \    tree_(size_*2) {\n    ids_.reserve(log(size)*2);\n  }\n\n  template <typename\
-    \ Iter>\n  explicit DualSegmentTree(Iter begin, Iter end)\n    : DualSegmentTree(std::distance(begin,\
-    \ end)) {\n    static_assert(std::is_convertible<typename std::iterator_traits<Iter>::value_type,\
-    \ M>::value, \"\");\n    std::copy(begin, end, tree_.begin()+size_);\n  }\n\n\
-    \  void update(size_t l, size_t r, const M& e) {\n    assert(l <= r and r <= size_);\n\
-    \    if (l == r) return;\n    _set_ids(l, r);\n    for (int i = ids_.size()-1;\
-    \ i >= 0; --i) \n      _propagate(ids_[i].first, ids_[i].second);\n\n    for (size_t\
-    \ _l=l+size_, _r=r+size_, s=1; _l<_r; _l>>=1, _r>>=1, s*=2) {\n      if (_l&1)\
-    \ {\n        tree_[_l] *= e;\n        ++_l;\n      }\n      if (_r&1) {\n    \
-    \    --_r;\n        tree_[_r] *= e;\n      }\n    }\n  }\n  void update(size_t\
-    \ i, const M& e) {\n    update(i, i+1, e);\n  }\n\n  M get(size_t index) {\n \
-    \   assert(index < size_);\n    _set_ids(index, index+1);\n    for (int i = ids_.size()-1;\
-    \ i >= 0; --i) \n      _propagate(ids_[i].first, ids_[i].second);\n    return\
-    \ tree_[size_ + index];\n  }\n\n private:\n  void _set_ids(size_t l, size_t r)\
-    \ {\n    ids_.clear();\n    auto _l=l+size_, _r=r+size_;\n    auto lth = _l/(_l&(-_l))/2;\n\
-    \    auto rth = _r/(_r&(-_r))/2;\n    size_t s = 1;\n    for (; _l<_r; _l>>=1,\
-    \ _r>>=1, s*=2) {\n      if (_r <= rth) ids_.emplace_back(_r, s);\n      if (_l\
-    \ <= lth) ids_.emplace_back(_l, s);\n    }\n    for (; _l>0; _l>>=1, s*=2) {\n\
-    \      ids_.emplace_back(_l, s);\n    }\n  }\n\n  void _propagate(size_t id, size_t\
-    \ sz) {\n    if (id >= size_) return;\n    M e = tree_[id];\n    tree_[id] = M();\n\
-    \    tree_[id*2] *= e;\n    tree_[id*2+1] *= e;\n  }\n\n};\n\n#line 2 \"include/mtl/modular.hpp\"\
+    \ 1);\n  return x;\n}\n\n} // namespace bm\n#line 3 \"include/mtl/segment_tree.hpp\"\
+    \n#include <cstddef>\n#include <vector>\n#if __cplusplus >= 202002L\n#include\
+    \ <concepts>\n\ntemplate<typename M>\nconcept SegmentTreeMonoid = requires (M\
+    \ m) {\n  {m * m} -> std::same_as<M>;\n};\n#endif\n\ntemplate <typename M>\nclass\
+    \ SegmentTree {\n#if __cplusplus >= 202002L\n  static_assert(SegmentTreeMonoid<M>);\n\
+    #endif\n private:\n  size_t size_;\n  std::vector<M> tree_;\n\n public:\n  explicit\
+    \ SegmentTree(size_t size) : size_(size), tree_(size*2) {}\n\n  template <typename\
+    \ Iter>\n  explicit SegmentTree(Iter begin, Iter end) : SegmentTree(end-begin)\
+    \ {\n    for (auto it = begin; it != end; ++it)\n      tree_[size_ + it - begin]\
+    \ = *it;\n    for (size_t i = size_-1; i > 0; i--)\n      tree_[i] = tree_[i *\
+    \ 2] * tree_[i * 2 + 1];\n  }\n\n  M get(size_t index) const {\n    return tree_[size_\
+    \ + index];\n  }\n  M operator[](size_t index) const {\n    return get(index);\n\
+    \  }\n\n  void set(size_t index, M val) {\n    auto i = size_ + index;\n    tree_[i]\
+    \ = val;\n    i >>= 1;\n    while (i > 0) {\n      tree_[i] = tree_[i*2] * tree_[i*2+1];\n\
+    \      i >>= 1;\n    }\n  }\n\n  M query(size_t l, size_t r) const {\n    M lhs,rhs;\n\
+    \    for (auto _l = l+size_, _r = r+size_; _l < _r; _l>>=1, _r>>=1) {\n      if\
+    \ (_l&1) lhs = lhs * tree_[_l++];\n      if (_r&1) rhs = tree_[--_r] * rhs;\n\
+    \    }\n    return lhs * rhs;\n  }\n\n  template<typename F>\n  size_t max_right(size_t\
+    \ begin, F f) const {\n    if (begin == size_) return size_;\n    M p;\n    auto\
+    \ l = begin + size_;\n    do {\n      while (l % 2 == 0) l >>= 1;\n      if (!f(p\
+    \ * tree_[l])) {\n        while (l < size_) {\n          l = l*2;\n          if\
+    \ (f(p * tree_[l])) {\n            p = p * tree_[l];\n            l++;\n     \
+    \     }\n        }\n        return l - size_;\n      }\n      p = p * tree_[l];\n\
+    \      l++;\n    } while ((l & -l) != l);\n    return size_;\n  }\n  template<bool\
+    \ (*F)(M)>\n  size_t max_right(size_t begin) const {\n    return find_last(begin,\
+    \ [](M x) { return F(x); });\n  }\n\n  template<typename F>\n  size_t min_left(size_t\
+    \ end, F f) const {\n    if (end == 0) return 0;\n    M p;\n    auto r = end +\
+    \ size_;\n    do {\n      r--;\n      while (r > 1 and r % 2 == 1) r >>= 1;\n\
+    \      if (!f(tree_[r] * p)) {\n        while (r < size_) {\n          r = r*2+1;\n\
+    \          if (f(tree_[r] * p)) {\n            p = tree_[r] * p;\n           \
+    \ r--;\n          }\n        }\n        return r + 1 - size_;\n      }\n     \
+    \ p = tree_[r] * p;\n    } while ((r & -r) != r);\n    return 0;\n  }\n  template<bool\
+    \ (*F)(M)>\n  size_t min_left(size_t begin) const {\n    return min_left(begin,\
+    \ [](M x) { return F(x); });\n  }\n\n};\n\ntemplate<typename T, T (*op)(T, T),\
+    \ T E>\nstruct Monoid {\n  T x;\n  Monoid(T x=E) : x(x) {}\n  Monoid operator*(const\
+    \ Monoid& rhs) const {\n    return Monoid(op(x, rhs.x));\n  }\n  Monoid& operator*=(const\
+    \ Monoid& rhs) {\n    return *this = *this * rhs;\n  }\n};\n#line 2 \"include/mtl/modular.hpp\"\
     \n#include <iostream>\n#line 4 \"include/mtl/modular.hpp\"\n\ntemplate <int MOD>\n\
     class Modular {\n private:\n  unsigned int val_;\n\n public:\n  static constexpr\
     \ unsigned int mod() { return MOD; }\n  template<class T>\n  static constexpr\
@@ -132,45 +139,45 @@ data:
     \ < cnt; i++) {\n      if (mod_pow_constexpr(g, (m-1) / divs[cnt], m) == 1) {\n\
     \        ok = false;\n        break;\n      }\n    }\n    if (ok) return g;\n\
     \  }\n}\n\ntemplate<int m>\nconstexpr int primitive_root = primitive_root_constexpr(m);\n\
-    \n}\n#line 4 \"test/yosupo/yosupo-range_affine_point_get.test.cpp\"\n#include\
-    \ <bits/stdc++.h>\nusing namespace std;\n\nusing mint = Modular998244353;\nstruct\
-    \ Poly {\n    mint a,b;\n    Poly() : a(1), b(0) {}\n    Poly(int x) : a(0), b(x)\
-    \ {}\n    Poly(int a, int b) : a(a), b(b) {}\n    Poly& operator*=(const Poly&\
-    \ r) {\n        a *= r.a;\n        b = b * r.a + r.b;\n        return *this;\n\
-    \    }\n    auto val() const {return b;}\n};\nusing RA = DualSegmentTree<Poly>;\n\
-    \nint main() {\n    int n,q; cin>>n>>q;\n    vector<int> A(n);\n    for (int i\
-    \ = 0; i < n; i++) cin>>A[i];\n    RA ra(A.begin(), A.end());\n    for (int i\
-    \ = 0; i < q; i++) {\n        int t; cin>>t;\n        if (t == 0) {\n        \
-    \    int l,r,b,c; cin>>l>>r>>b>>c;\n            ra.update(l,r,Poly{b,c});\n  \
-    \      } else {\n            int i; cin>>i;\n            cout << ra.get(i).val()\
-    \ << endl;\n        }\n    }\n}\n"
-  code: "#define PROBLEM \"https://judge.yosupo.jp/problem/range_affine_point_get\"\
-    \n#include \"../../include/mtl/dual_segment_tree.hpp\"\n#include \"../../include/mtl/modular.hpp\"\
-    \n#include <bits/stdc++.h>\nusing namespace std;\n\nusing mint = Modular998244353;\n\
-    struct Poly {\n    mint a,b;\n    Poly() : a(1), b(0) {}\n    Poly(int x) : a(0),\
-    \ b(x) {}\n    Poly(int a, int b) : a(a), b(b) {}\n    Poly& operator*=(const\
-    \ Poly& r) {\n        a *= r.a;\n        b = b * r.a + r.b;\n        return *this;\n\
-    \    }\n    auto val() const {return b;}\n};\nusing RA = DualSegmentTree<Poly>;\n\
-    \nint main() {\n    int n,q; cin>>n>>q;\n    vector<int> A(n);\n    for (int i\
-    \ = 0; i < n; i++) cin>>A[i];\n    RA ra(A.begin(), A.end());\n    for (int i\
-    \ = 0; i < q; i++) {\n        int t; cin>>t;\n        if (t == 0) {\n        \
-    \    int l,r,b,c; cin>>l>>r>>b>>c;\n            ra.update(l,r,Poly{b,c});\n  \
-    \      } else {\n            int i; cin>>i;\n            cout << ra.get(i).val()\
-    \ << endl;\n        }\n    }\n}"
+    \n}\n#line 5 \"test/point_set_range_composite.test.cpp\"\n#include <bits/stdc++.h>\r\
+    \nusing namespace std;\r\nusing ll = long long;\r\n\r\nconstexpr ll MOD = 998244353;\r\
+    \nusing mint = Modular<MOD>;\r\n\r\nstruct M {\r\n  mint a=1, b=0;\r\n  M operator*(M\
+    \ r) const {\r\n    return {a*r.a, b*r.a+r.b};\r\n  }\r\n  M& operator*=(M r)\
+    \ {return *this = *this * r;}\r\n};\r\n\r\nint main() {\r\n  cin.tie(nullptr);\
+    \ ios::sync_with_stdio(false);\r\n\r\n  int N,Q; cin>>N>>Q;\r\n  vector<M> F(N);\
+    \ for (auto& f : F) cin>>f.a>>f.b;\r\n  SegmentTree<M> st(F.begin(), F.end());\r\
+    \n\r\n  for (int q = 0; q < Q; q++) {\r\n    int t; cin>>t;\r\n    if (t == 0)\
+    \ {\r\n      int p,c,d; cin>>p>>c>>d;\r\n      st.set(p, {c,d});\r\n    } else\
+    \ if (t == 1) {\r\n      int l,r,x; cin>>l>>r>>x;\r\n      auto comp = st.query(l,r);\r\
+    \n      auto ans = comp.a*x + comp.b;\r\n      cout << ans << endl;\r\n    }\r\
+    \n  }\r\n\r\n  return 0;\r\n}\r\n"
+  code: "#define PROBLEM \"https://judge.yosupo.jp/problem/point_set_range_composite\"\
+    \r\n\r\n#include \"../include/mtl/segment_tree.hpp\"\r\n#include \"../include/mtl/modular.hpp\"\
+    \r\n#include <bits/stdc++.h>\r\nusing namespace std;\r\nusing ll = long long;\r\
+    \n\r\nconstexpr ll MOD = 998244353;\r\nusing mint = Modular<MOD>;\r\n\r\nstruct\
+    \ M {\r\n  mint a=1, b=0;\r\n  M operator*(M r) const {\r\n    return {a*r.a,\
+    \ b*r.a+r.b};\r\n  }\r\n  M& operator*=(M r) {return *this = *this * r;}\r\n};\r\
+    \n\r\nint main() {\r\n  cin.tie(nullptr); ios::sync_with_stdio(false);\r\n\r\n\
+    \  int N,Q; cin>>N>>Q;\r\n  vector<M> F(N); for (auto& f : F) cin>>f.a>>f.b;\r\
+    \n  SegmentTree<M> st(F.begin(), F.end());\r\n\r\n  for (int q = 0; q < Q; q++)\
+    \ {\r\n    int t; cin>>t;\r\n    if (t == 0) {\r\n      int p,c,d; cin>>p>>c>>d;\r\
+    \n      st.set(p, {c,d});\r\n    } else if (t == 1) {\r\n      int l,r,x; cin>>l>>r>>x;\r\
+    \n      auto comp = st.query(l,r);\r\n      auto ans = comp.a*x + comp.b;\r\n\
+    \      cout << ans << endl;\r\n    }\r\n  }\r\n\r\n  return 0;\r\n}\r\n"
   dependsOn:
-  - include/mtl/dual_segment_tree.hpp
+  - include/mtl/segment_tree.hpp
   - include/mtl/bit_manip.hpp
   - include/mtl/modular.hpp
   isVerificationFile: true
-  path: test/yosupo/yosupo-range_affine_point_get.test.cpp
+  path: test/point_set_range_composite.test.cpp
   requiredBy: []
-  timestamp: '2023-04-08 02:15:04+09:00'
+  timestamp: '2023-04-04 01:01:39+09:00'
   verificationStatus: TEST_ACCEPTED
   verifiedWith: []
-documentation_of: test/yosupo/yosupo-range_affine_point_get.test.cpp
+documentation_of: test/point_set_range_composite.test.cpp
 layout: document
 redirect_from:
-- /verify/test/yosupo/yosupo-range_affine_point_get.test.cpp
-- /verify/test/yosupo/yosupo-range_affine_point_get.test.cpp.html
-title: test/yosupo/yosupo-range_affine_point_get.test.cpp
+- /verify/test/point_set_range_composite.test.cpp
+- /verify/test/point_set_range_composite.test.cpp.html
+title: test/point_set_range_composite.test.cpp
 ---

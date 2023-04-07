@@ -14,21 +14,21 @@ data:
     PROBLEM: https://onlinejudge.u-aizu.ac.jp/problems/GRL_1_A
     links:
     - https://onlinejudge.u-aizu.ac.jp/problems/GRL_1_A
-  bundledCode: "#line 1 \"test/aoj/dijkstra_fibonacci.test.cpp\"\n#define PROBLEM\
-    \ \"https://onlinejudge.u-aizu.ac.jp/problems/GRL_1_A\"\r\n#line 2 \"include/mtl/fibonacci_heap.hpp\"\
-    \n#include <memory>\n#include <cassert>\n#include <vector>\n#include <array>\n\
-    #include <list>\n#include <iostream>\n\ntemplate<typename T, typename Cond = std::less<>>\n\
-    class FibonacciHeap {\n  Cond cond_;\n\n public:\n  struct Node;\n  using node_ptr\
-    \ = Node*;\n  using const_node_ptr = const Node*;\n  struct Node {\n    node_ptr\
-    \ next = nullptr;\n    node_ptr prev = nullptr;\n    node_ptr child = nullptr;\n\
-    \    node_ptr parent = nullptr;\n    int deg = 0;\n    bool marked = false;\n\
-    \    bool enabled = false;\n    std::pair<int, T> value;\n\n    Node() = default;\n\
-    \    void init(int k, T v) {\n      next = prev = this;\n      child = parent\
-    \ = nullptr;\n      deg = 0;\n      marked = false;\n      enabled = true;\n \
-    \     value = {k, v};\n    }\n    T priority() const { return value.second; }\n\
-    \    void free() {\n      enabled = false;\n    }\n  };\n\n private:\n  node_ptr\
-    \ root_ = nullptr;\n  size_t sz_ = 0;\n  std::vector<node_ptr> map_;\n  std::vector<Node>\
-    \ container_;\n  std::vector<node_ptr> deg_table_;\n\n public:\n  explicit FibonacciHeap(size_t\
+  bundledCode: "#line 1 \"test/dijkstra_fibonacci.test.cpp\"\n#define PROBLEM \"https://onlinejudge.u-aizu.ac.jp/problems/GRL_1_A\"\
+    \r\n\r\n#line 2 \"include/mtl/fibonacci_heap.hpp\"\n#include <memory>\n#include\
+    \ <cassert>\n#include <vector>\n#include <array>\n#include <list>\n#include <iostream>\n\
+    \ntemplate<typename T, typename Cond = std::less<>>\nclass FibonacciHeap {\n \
+    \ Cond cond_;\n\n public:\n  struct Node;\n  using node_ptr = Node*;\n  using\
+    \ const_node_ptr = const Node*;\n  struct Node {\n    node_ptr next = nullptr;\n\
+    \    node_ptr prev = nullptr;\n    node_ptr child = nullptr;\n    node_ptr parent\
+    \ = nullptr;\n    int deg = 0;\n    bool marked = false;\n    bool enabled = false;\n\
+    \    std::pair<int, T> value;\n\n    Node() = default;\n    void init(int k, T\
+    \ v) {\n      next = prev = this;\n      child = parent = nullptr;\n      deg\
+    \ = 0;\n      marked = false;\n      enabled = true;\n      value = {k, v};\n\
+    \    }\n    T priority() const { return value.second; }\n    void free() {\n \
+    \     enabled = false;\n    }\n  };\n\n private:\n  node_ptr root_ = nullptr;\n\
+    \  size_t sz_ = 0;\n  std::vector<node_ptr> map_;\n  std::vector<Node> container_;\n\
+    \  std::vector<node_ptr> deg_table_;\n\n public:\n  explicit FibonacciHeap(size_t\
     \ size) : map_(size) {\n    container_.reserve(size);\n    std::array<size_t,2>\
     \ tb{1,1};\n    int k = 2;\n    while (tb[1] < size) {\n      auto x = tb[0]+tb[1];\n\
     \      tb[0] = tb[1];\n      tb[1] = x;\n      ++k;\n    }\n    deg_table_.resize(k);\n\
@@ -101,7 +101,7 @@ data:
     \      p->marked = true;\n    } else {\n      _PopLink(p, &deg_table_[p->deg]);\n\
     \      _PushLink(p, &deg_table_[p->deg-1]);\n    }\n    _PopLink(node, &p->child);\n\
     \    p->deg--;\n    node->parent = nullptr;\n    node->marked = false;\n    _PushLink(node,\
-    \ &deg_table_[node->deg]);\n  }\n\n};\n#line 3 \"test/aoj/dijkstra_fibonacci.test.cpp\"\
+    \ &deg_table_[node->deg]);\n  }\n\n};\n#line 4 \"test/dijkstra_fibonacci.test.cpp\"\
     \n#include <bits/stdc++.h>\r\nusing namespace std;\r\n\r\nconstexpr int INF =\
     \ 11e8;\r\n\r\nint main() {\r\n  int v,e,r; cin>>v>>e>>r;\r\n  vector<pair<int,int>>\
     \ G[v];\r\n  for (int i = 0; i < e; i++) {\r\n    int s,t,d; cin>>s>>t>>d;\r\n\
@@ -114,7 +114,7 @@ data:
     \ endl;\r\n    } else {\r\n      cout << \"INF\" << endl;\r\n    }\r\n  }\r\n\r\
     \n}\r\n"
   code: "#define PROBLEM \"https://onlinejudge.u-aizu.ac.jp/problems/GRL_1_A\"\r\n\
-    #include \"../../include/mtl/fibonacci_heap.hpp\"\r\n#include <bits/stdc++.h>\r\
+    \r\n#include \"../include/mtl/fibonacci_heap.hpp\"\r\n#include <bits/stdc++.h>\r\
     \nusing namespace std;\r\n\r\nconstexpr int INF = 11e8;\r\n\r\nint main() {\r\n\
     \  int v,e,r; cin>>v>>e>>r;\r\n  vector<pair<int,int>> G[v];\r\n  for (int i =\
     \ 0; i < e; i++) {\r\n    int s,t,d; cin>>s>>t>>d;\r\n    G[s].emplace_back(t,\
@@ -128,15 +128,15 @@ data:
   dependsOn:
   - include/mtl/fibonacci_heap.hpp
   isVerificationFile: true
-  path: test/aoj/dijkstra_fibonacci.test.cpp
+  path: test/dijkstra_fibonacci.test.cpp
   requiredBy: []
-  timestamp: '2023-04-08 02:15:04+09:00'
+  timestamp: '2023-04-03 03:00:14+09:00'
   verificationStatus: TEST_ACCEPTED
   verifiedWith: []
-documentation_of: test/aoj/dijkstra_fibonacci.test.cpp
+documentation_of: test/dijkstra_fibonacci.test.cpp
 layout: document
 redirect_from:
-- /verify/test/aoj/dijkstra_fibonacci.test.cpp
-- /verify/test/aoj/dijkstra_fibonacci.test.cpp.html
-title: test/aoj/dijkstra_fibonacci.test.cpp
+- /verify/test/dijkstra_fibonacci.test.cpp
+- /verify/test/dijkstra_fibonacci.test.cpp.html
+title: test/dijkstra_fibonacci.test.cpp
 ---

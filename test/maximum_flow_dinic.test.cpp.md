@@ -14,15 +14,14 @@ data:
     PROBLEM: https://onlinejudge.u-aizu.ac.jp/problems/GRL_6_A
     links:
     - https://onlinejudge.u-aizu.ac.jp/problems/GRL_6_A
-  bundledCode: "#line 1 \"test/aoj/maximum_flow_ford_fulkerson.test.cpp\"\n#define\
-    \ PROBLEM \"https://onlinejudge.u-aizu.ac.jp/problems/GRL_6_A\"\r\n#line 2 \"\
-    include/mtl/max_flow.hpp\"\n#include <limits>\r\n#include <algorithm>\r\n#include\
-    \ <vector>\r\n#include <queue>\r\n#include <cassert>\r\n#include <iostream>\r\n\
-    \r\nstruct MaxFlowAlgorithm {\r\n  virtual void add_edge(int u, int v, long long\
-    \ c) = 0;\r\n  virtual long long flow(int s, int t, long long fup) = 0;\r\n};\r\
-    \n\r\nstruct FlowPath {\r\n  int t;\r\n  long long cap;\r\n  int rev;\r\n  FlowPath(int\
-    \ t, long long flow, int rev) :\r\n      t(t), cap(flow), rev(rev) {}\r\n};\r\n\
-    \r\nstruct FordFulkerson : MaxFlowAlgorithm {\r\n  std::vector<std::vector<FlowPath>>\
+  bundledCode: "#line 1 \"test/maximum_flow_dinic.test.cpp\"\n#define PROBLEM \"https://onlinejudge.u-aizu.ac.jp/problems/GRL_6_A\"\
+    \r\n#line 2 \"include/mtl/max_flow.hpp\"\n#include <limits>\r\n#include <algorithm>\r\
+    \n#include <vector>\r\n#include <queue>\r\n#include <cassert>\r\n#include <iostream>\r\
+    \n\r\nstruct MaxFlowAlgorithm {\r\n  virtual void add_edge(int u, int v, long\
+    \ long c) = 0;\r\n  virtual long long flow(int s, int t, long long fup) = 0;\r\
+    \n};\r\n\r\nstruct FlowPath {\r\n  int t;\r\n  long long cap;\r\n  int rev;\r\n\
+    \  FlowPath(int t, long long flow, int rev) :\r\n      t(t), cap(flow), rev(rev)\
+    \ {}\r\n};\r\n\r\nstruct FordFulkerson : MaxFlowAlgorithm {\r\n  std::vector<std::vector<FlowPath>>\
     \ g;\r\n  std::vector<bool> visited;\r\n  explicit FordFulkerson(int n) : g(n),\
     \ visited(n) {}\r\n\r\n  void add_edge(int a, int b, long long f) override {\r\
     \n    g[a].emplace_back(b, f, g[b].size());\r\n    g[b].emplace_back(a, 0, g[a].size()-1);\r\
@@ -80,29 +79,28 @@ data:
     \ psum - p;\r\n  }\r\n  std::vector<bool> selections() const {\r\n    std::vector<bool>\
     \ sel(n, 1);\r\n    for (auto& e : G.g[g]) {\r\n      if (G.g[e.t][e.rev].cap\
     \ > 0) {\r\n        sel[e.t] = 0;\r\n      }\r\n    }\r\n    return sel;\r\n \
-    \ }\r\n};\r\n#line 3 \"test/aoj/maximum_flow_ford_fulkerson.test.cpp\"\n#include\
-    \ <bits/stdc++.h>\r\nusing namespace std;\r\n\r\nint main() {\r\n  int V,E; cin>>V>>E;\r\
-    \n  FordFulkerson G(V);\r\n  for (int i = 0; i < E; i++) {\r\n    int u,v,c; cin>>u>>v>>c;\r\
-    \n    G.add_edge(u, v, c);\r\n  }\r\n  auto f = G.flow(0,V-1);\r\n  cout << f\
-    \ << endl;\r\n}\n"
-  code: "#define PROBLEM \"https://onlinejudge.u-aizu.ac.jp/problems/GRL_6_A\"\r\n\
-    #include \"../../include/mtl/max_flow.hpp\"\r\n#include <bits/stdc++.h>\r\nusing\
-    \ namespace std;\r\n\r\nint main() {\r\n  int V,E; cin>>V>>E;\r\n  FordFulkerson\
+    \ }\r\n};\r\n#line 3 \"test/maximum_flow_dinic.test.cpp\"\n#include <bits/stdc++.h>\r\
+    \nusing namespace std;\r\n\r\nint main() {\r\n  int V,E; cin>>V>>E;\r\n  Dinic\
     \ G(V);\r\n  for (int i = 0; i < E; i++) {\r\n    int u,v,c; cin>>u>>v>>c;\r\n\
     \    G.add_edge(u, v, c);\r\n  }\r\n  auto f = G.flow(0,V-1);\r\n  cout << f <<\
-    \ endl;\r\n}"
+    \ endl;\r\n}\n"
+  code: "#define PROBLEM \"https://onlinejudge.u-aizu.ac.jp/problems/GRL_6_A\"\r\n\
+    #include \"../include/mtl/max_flow.hpp\"\r\n#include <bits/stdc++.h>\r\nusing\
+    \ namespace std;\r\n\r\nint main() {\r\n  int V,E; cin>>V>>E;\r\n  Dinic G(V);\r\
+    \n  for (int i = 0; i < E; i++) {\r\n    int u,v,c; cin>>u>>v>>c;\r\n    G.add_edge(u,\
+    \ v, c);\r\n  }\r\n  auto f = G.flow(0,V-1);\r\n  cout << f << endl;\r\n}"
   dependsOn:
   - include/mtl/max_flow.hpp
   isVerificationFile: true
-  path: test/aoj/maximum_flow_ford_fulkerson.test.cpp
+  path: test/maximum_flow_dinic.test.cpp
   requiredBy: []
-  timestamp: '2023-04-08 02:15:04+09:00'
+  timestamp: '2022-11-27 16:09:45+09:00'
   verificationStatus: TEST_ACCEPTED
   verifiedWith: []
-documentation_of: test/aoj/maximum_flow_ford_fulkerson.test.cpp
+documentation_of: test/maximum_flow_dinic.test.cpp
 layout: document
 redirect_from:
-- /verify/test/aoj/maximum_flow_ford_fulkerson.test.cpp
-- /verify/test/aoj/maximum_flow_ford_fulkerson.test.cpp.html
-title: test/aoj/maximum_flow_ford_fulkerson.test.cpp
+- /verify/test/maximum_flow_dinic.test.cpp
+- /verify/test/maximum_flow_dinic.test.cpp.html
+title: test/maximum_flow_dinic.test.cpp
 ---

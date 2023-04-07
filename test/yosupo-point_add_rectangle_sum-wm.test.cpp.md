@@ -29,12 +29,11 @@ data:
     PROBLEM: https://judge.yosupo.jp/problem/point_add_rectangle_sum
     links:
     - https://judge.yosupo.jp/problem/point_add_rectangle_sum
-  bundledCode: "#line 1 \"test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp\"\
-    \n#define PROBLEM \"https://judge.yosupo.jp/problem/point_add_rectangle_sum\"\r\
-    \n#line 2 \"include/mtl/ordinal_range_search.hpp\"\n#include <cstddef>\r\n#include\
-    \ <vector>\r\n#include <algorithm>\r\n#include <tuple>\r\n#include <queue>\r\n\
-    #line 2 \"include/mtl/succinct/wavelet_matrix.hpp\"\n#include <limits>\n#include\
-    \ <array>\n#include <iterator>\n#line 3 \"include/mtl/succinct/bit_vector.hpp\"\
+  bundledCode: "#line 1 \"test/yosupo-point_add_rectangle_sum-wm.test.cpp\"\n#define\
+    \ PROBLEM \"https://judge.yosupo.jp/problem/point_add_rectangle_sum\"\r\n#line\
+    \ 2 \"include/mtl/ordinal_range_search.hpp\"\n#include <cstddef>\r\n#include <vector>\r\
+    \n#include <algorithm>\r\n#include <tuple>\r\n#include <queue>\r\n#line 2 \"include/mtl/succinct/wavelet_matrix.hpp\"\
+    \n#include <limits>\n#include <array>\n#include <iterator>\n#line 3 \"include/mtl/succinct/bit_vector.hpp\"\
     \n#include <cstdint>\r\n#line 5 \"include/mtl/succinct/bit_vector.hpp\"\n#include\
     \ <iostream>\r\n#line 7 \"include/mtl/succinct/bit_vector.hpp\"\n#include <bitset>\r\
     \n#line 3 \"include/mtl/bit_manip.hpp\"\n#include <cassert>\n\nnamespace bm {\n\
@@ -461,7 +460,7 @@ data:
     \ < r; idx++) {\r\n        auto jdx = idx;\r\n        for (size_t k = 0; k < wm.h;\
     \ k++)\r\n          jdx = wm.parent(wm.h-1-k, jdx, (c >> k) & 1u);\r\n       \
     \ auto lit = upper_bound(ls.begin(), ls.end(), jdx);\r\n        ret.emplace_back(xs[lit-1-ls.begin()],\
-    \ ys[c]);\r\n      }\r\n    });\r\n    return ret;\r\n  }\r\n};\n#line 3 \"test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp\"\
+    \ ys[c]);\r\n      }\r\n    });\r\n    return ret;\r\n  }\r\n};\n#line 3 \"test/yosupo-point_add_rectangle_sum-wm.test.cpp\"\
     \n#include <bits/stdc++.h>\r\nusing namespace std;\r\n\r\nint main() {\r\n  int\
     \ n,q; cin>>n>>q;\r\n  ORS<int, long long> ors;\r\n  for (int i = 0; i < n; i++)\
     \ {\r\n    int x,y,w; cin>>x>>y>>w;\r\n    ors.add(x,y,w);\r\n  }\r\n  vector<tuple<int,int,int,int,int>>\
@@ -474,7 +473,7 @@ data:
     \n    } else {\r\n      int l,d,r,u;\r\n      std::tie(t,l,d,r,u) = Q[i];\r\n\
     \      cout << ors.sum(l,r,d,u) << endl;\r\n    }\r\n  }\r\n}\n"
   code: "#define PROBLEM \"https://judge.yosupo.jp/problem/point_add_rectangle_sum\"\
-    \r\n#include \"../../include/mtl/ordinal_range_search.hpp\"\r\n#include <bits/stdc++.h>\r\
+    \r\n#include \"../include/mtl/ordinal_range_search.hpp\"\r\n#include <bits/stdc++.h>\r\
     \nusing namespace std;\r\n\r\nint main() {\r\n  int n,q; cin>>n>>q;\r\n  ORS<int,\
     \ long long> ors;\r\n  for (int i = 0; i < n; i++) {\r\n    int x,y,w; cin>>x>>y>>w;\r\
     \n    ors.add(x,y,w);\r\n  }\r\n  vector<tuple<int,int,int,int,int>> Q(q);\r\n\
@@ -494,15 +493,15 @@ data:
   - include/mtl/compress_int.hpp
   - include/mtl/fenwick_tree.hpp
   isVerificationFile: true
-  path: test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
+  path: test/yosupo-point_add_rectangle_sum-wm.test.cpp
   requiredBy: []
-  timestamp: '2023-04-08 02:15:04+09:00'
+  timestamp: '2023-04-04 01:01:39+09:00'
   verificationStatus: TEST_ACCEPTED
   verifiedWith: []
-documentation_of: test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
+documentation_of: test/yosupo-point_add_rectangle_sum-wm.test.cpp
 layout: document
 redirect_from:
-- /verify/test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
-- /verify/test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp.html
-title: test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
+- /verify/test/yosupo-point_add_rectangle_sum-wm.test.cpp
+- /verify/test/yosupo-point_add_rectangle_sum-wm.test.cpp.html
+title: test/yosupo-point_add_rectangle_sum-wm.test.cpp
 ---

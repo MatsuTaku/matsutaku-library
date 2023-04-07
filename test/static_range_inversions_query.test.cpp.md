@@ -20,9 +20,9 @@ data:
     PROBLEM: https://judge.yosupo.jp/problem/static_range_inversions_query
     links:
     - https://judge.yosupo.jp/problem/static_range_inversions_query
-  bundledCode: "#line 1 \"test/yosupo/static_range_inversions_query.test.cpp\"\n#define\
-    \ PROBLEM \"https://judge.yosupo.jp/problem/static_range_inversions_query\"\r\n\
-    #line 2 \"include/mtl/mo.hpp\"\n#include <algorithm>\r\n#include <cmath>\r\n#include\
+  bundledCode: "#line 1 \"test/static_range_inversions_query.test.cpp\"\n#define PROBLEM\
+    \ \"https://judge.yosupo.jp/problem/static_range_inversions_query\"\r\n\r\n#line\
+    \ 2 \"include/mtl/mo.hpp\"\n#include <algorithm>\r\n#include <cmath>\r\n#include\
     \ <tuple>\r\n#include <vector>\r\n\r\ntemplate <typename T, T (*pushl)(T, int),\
     \ T (*pushr)(T, int), T (*popl)(T, int),\r\n          T (*popr)(T, int), T (*e)()>\r\
     \nclass MoSolver {\r\n private:\r\n  std::vector<std::tuple<int, int, int>> segs;\r\
@@ -86,9 +86,9 @@ data:
     \ = 0;\n    T s = 0;\n    for (int k = 63-bm::clz(size()); k >= 0; k--) {\n  \
     \    size_t j = ret | (1ull<<k);\n      if (j < tree_.size() and s + tree_[j]\
     \ < _sum) {\n        s += tree_[j];\n        ret = j;\n      }\n    }\n    return\
-    \ ret;\n  }\n\n};\n\n#line 4 \"test/yosupo/static_range_inversions_query.test.cpp\"\
-    \n#include <bits/stdc++.h>\r\nusing namespace std;\r\nusing lint = long long;\r\
-    \n\r\nconstexpr int N = 1e5;\r\nFenwickTree<lint> C(N);\r\nint A[N];\r\nmap<int,int>\
+    \ ret;\n  }\n\n};\n\n#line 5 \"test/static_range_inversions_query.test.cpp\"\n\
+    #include <bits/stdc++.h>\r\nusing namespace std;\r\nusing lint = long long;\r\n\
+    \r\nconstexpr int N = 1e5;\r\nFenwickTree<lint> C(N);\r\nint A[N];\r\nmap<int,int>\
     \ id;\r\nlint pushl(lint inv, int i) {\r\n  int vi = id[A[i]];\r\n  inv += C.range_sum(0,\
     \ vi);\r\n  C.add(vi, 1);\r\n  return inv;\r\n}\r\nlint pushr(lint inv, int i)\
     \ {\r\n  int vi = id[A[i]];\r\n  inv += C.range_sum(vi+1, N);\r\n  C.add(vi, 1);\r\
@@ -103,7 +103,7 @@ data:
     \ mo.add_segment(l, r);\r\n  }\r\n  vector<lint> ans;\r\n  mo.solve(ans);\r\n\
     \  for (lint v : ans) cout << v << endl;\r\n}\r\n"
   code: "#define PROBLEM \"https://judge.yosupo.jp/problem/static_range_inversions_query\"\
-    \r\n#include \"../../include/mtl/mo.hpp\"\r\n#include \"../../include/mtl/fenwick_tree.hpp\"\
+    \r\n\r\n#include \"../include/mtl/mo.hpp\"\r\n#include \"../include/mtl/fenwick_tree.hpp\"\
     \r\n#include <bits/stdc++.h>\r\nusing namespace std;\r\nusing lint = long long;\r\
     \n\r\nconstexpr int N = 1e5;\r\nFenwickTree<lint> C(N);\r\nint A[N];\r\nmap<int,int>\
     \ id;\r\nlint pushl(lint inv, int i) {\r\n  int vi = id[A[i]];\r\n  inv += C.range_sum(0,\
@@ -124,15 +124,15 @@ data:
   - include/mtl/fenwick_tree.hpp
   - include/mtl/bit_manip.hpp
   isVerificationFile: true
-  path: test/yosupo/static_range_inversions_query.test.cpp
+  path: test/static_range_inversions_query.test.cpp
   requiredBy: []
-  timestamp: '2023-04-08 02:15:04+09:00'
+  timestamp: '2023-04-04 01:01:39+09:00'
   verificationStatus: TEST_ACCEPTED
   verifiedWith: []
-documentation_of: test/yosupo/static_range_inversions_query.test.cpp
+documentation_of: test/static_range_inversions_query.test.cpp
 layout: document
 redirect_from:
-- /verify/test/yosupo/static_range_inversions_query.test.cpp
-- /verify/test/yosupo/static_range_inversions_query.test.cpp.html
-title: test/yosupo/static_range_inversions_query.test.cpp
+- /verify/test/static_range_inversions_query.test.cpp
+- /verify/test/static_range_inversions_query.test.cpp.html
+title: test/static_range_inversions_query.test.cpp
 ---

@@ -7,8 +7,8 @@ data:
   _extendedRequiredBy: []
   _extendedVerifiedWith:
   - icon: ':heavy_check_mark:'
-    path: test/aoj/min_cost_flow.test.cpp
-    title: test/aoj/min_cost_flow.test.cpp
+    path: test/min_cost_flow.test.cpp
+    title: test/min_cost_flow.test.cpp
   _isVerificationFailed: false
   _pathExtension: hpp
   _verificationStatusIcon: ':heavy_check_mark:'
@@ -165,7 +165,7 @@ data:
   timestamp: '2022-12-20 20:34:44+09:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
-  - test/aoj/min_cost_flow.test.cpp
+  - test/min_cost_flow.test.cpp
 documentation_of: include/mtl/min_cost_flow.hpp
 layout: document
 redirect_from:

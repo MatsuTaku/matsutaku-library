@@ -17,7 +17,7 @@ data:
     PROBLEM: https://onlinejudge.u-aizu.ac.jp/problems/GRL_3_C
     links:
     - https://onlinejudge.u-aizu.ac.jp/problems/GRL_3_C
-  bundledCode: "#line 1 \"test/aoj/scc.test.cpp\"\n#define PROBLEM \"https://onlinejudge.u-aizu.ac.jp/problems/GRL_3_C\"\
+  bundledCode: "#line 1 \"test/scc.test.cpp\"\n#define PROBLEM \"https://onlinejudge.u-aizu.ac.jp/problems/GRL_3_C\"\
     \r\n#line 2 \"include/mtl/graph.hpp\"\n#include <queue>\r\n#include <vector>\r\
     \n\r\nstruct Graph {\r\n  int n;\r\n  std::vector<std::vector<int>> g;\r\n  std::vector<int>\
     \ in;\r\n  std::vector<int> tour, L, R; // For Euler tour.\r\n\r\n  Graph(int\
@@ -63,7 +63,7 @@ data:
     \n        f(f, t, c);\r\n      c.push_back(s);\r\n    };\r\n    std::vector<std::vector<int>>\
     \ ret;\r\n    while (!st.empty()) {\r\n      int u = st.top(); st.pop();\r\n \
     \     if (vis[u]) continue;\r\n      ret.emplace_back();\r\n      rdfs(rdfs, u,\
-    \ ret.back());\r\n    }\r\n    return ret;\r\n  }\r\n};\n#line 3 \"test/aoj/scc.test.cpp\"\
+    \ ret.back());\r\n    }\r\n    return ret;\r\n  }\r\n};\n#line 3 \"test/scc.test.cpp\"\
     \n#include <bits/stdc++.h>\r\nusing namespace std;\r\n\r\nint main() {\r\n  int\
     \ V,E; cin>>V>>E;\r\n  SccGraph G(V);\r\n  for (int i = 0; i < E; i++) {\r\n \
     \   int s,t; cin>>s>>t;\r\n    G.add_edge(s, t);\r\n  }\r\n  vector<int> id(V);\r\
@@ -72,7 +72,7 @@ data:
     \ for (int i = 0; i < Q; i++) {\r\n    int u,v; cin>>u>>v;\r\n    cout << (id[u]\
     \ == id[v]) << endl;\r\n  }\r\n}\n"
   code: "#define PROBLEM \"https://onlinejudge.u-aizu.ac.jp/problems/GRL_3_C\"\r\n\
-    #include \"../../include/mtl/scc.hpp\"\r\n#include <bits/stdc++.h>\r\nusing namespace\
+    #include \"../include/mtl/scc.hpp\"\r\n#include <bits/stdc++.h>\r\nusing namespace\
     \ std;\r\n\r\nint main() {\r\n  int V,E; cin>>V>>E;\r\n  SccGraph G(V);\r\n  for\
     \ (int i = 0; i < E; i++) {\r\n    int s,t; cin>>s>>t;\r\n    G.add_edge(s, t);\r\
     \n  }\r\n  vector<int> id(V);\r\n  auto scc = G.scc();\r\n  for (int i = 0; i\
@@ -83,15 +83,15 @@ data:
   - include/mtl/scc.hpp
   - include/mtl/graph.hpp
   isVerificationFile: true
-  path: test/aoj/scc.test.cpp
+  path: test/scc.test.cpp
   requiredBy: []
-  timestamp: '2023-04-08 02:15:04+09:00'
+  timestamp: '2022-11-27 16:09:45+09:00'
   verificationStatus: TEST_ACCEPTED
   verifiedWith: []
-documentation_of: test/aoj/scc.test.cpp
+documentation_of: test/scc.test.cpp
 layout: document
 redirect_from:
-- /verify/test/aoj/scc.test.cpp
-- /verify/test/aoj/scc.test.cpp.html
-title: test/aoj/scc.test.cpp
+- /verify/test/scc.test.cpp
+- /verify/test/scc.test.cpp.html
+title: test/scc.test.cpp
 ---
