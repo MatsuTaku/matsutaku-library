@@ -1,6 +1,5 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/persistent_queue"
-#define IGNORE "mle"
-#include <iostream>
+#include <iostream> 
 #include "../../include/mtl/persistent_queue.hpp"
 #include <bits/stdc++.h>
 using namespace std;
