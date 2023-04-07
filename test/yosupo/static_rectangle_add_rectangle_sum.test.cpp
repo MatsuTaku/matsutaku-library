@@ -1,11 +1,12 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/static_rectangle_add_rectangle_sum"
-// #define IGNORE "TLE"
+// #define IGNORE "MLE"
 #include "../../include/mtl/ordinal_range_search.hpp"
 #include "../../include/mtl/modular.hpp"
 #include <bits/stdc++.h>
 using namespace std;
 
 using mint = Modular998244353;
+using ors_type = ORS<int, mint, (int)1e9>;
 
 int main() {
     cin.tie(0); ios::sync_with_stdio(0);
@@ -22,7 +23,7 @@ int main() {
     }
     // add [a, inf) times [b, inf) ->
     // for each xy, add (x-a)(y-b) = xy - ay - bx + ab
-    array<ORS<int, mint>, 4> ors{}; // XY, X, Y, const
+    array<ors_type, 4> ors{}; // XY, X, Y, const
     auto add_topleft = [&](int a, int b, int w) {
         ors[0].add(a, b, (mint)w);
         ors[1].add(a, b, (mint)w * -a);
