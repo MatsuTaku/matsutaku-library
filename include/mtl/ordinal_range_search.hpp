@@ -1,13 +1,17 @@
 #pragma once
+#include "succinct/wavelet_matrix.hpp"
+#include "compress_int.hpp"
+#include "fenwick_tree.hpp"
 #include <cstddef>
 #include <vector>
 #include <algorithm>
 #include <tuple>
 #include <queue>
-#include "succinct/wavelet_matrix.hpp"
-#include "compress_int.hpp"
-#include "fenwick_tree.hpp"
 
+/**
+ * @brief Ordinal Range Search
+ *   Maintain 2-dimential points (x,y) and their weights.
+*/
 template<typename T, typename W = long long>
 struct ORS {
   std::vector<std::tuple<T,T,W>> ps;
