@@ -20,7 +20,7 @@ data:
     PROBLEM: https://judge.yosupo.jp/problem/range_affine_range_sum
     links:
     - https://judge.yosupo.jp/problem/range_affine_range_sum
-  bundledCode: "#line 1 \"test/range_affine_range_sum.test.cpp\"\n#define PROBLEM\
+  bundledCode: "#line 1 \"test/yosupo/range_affine_range_sum.test.cpp\"\n#define PROBLEM\
     \ \"https://judge.yosupo.jp/problem/range_affine_range_sum\"\r\n#line 2 \"include/mtl/bit_manip.hpp\"\
     \n#include <cstdint>\n#include <cassert>\n\nnamespace bm {\n\ninline constexpr\
     \ uint64_t popcnt_e8(uint64_t x) {\n  x = (x & 0x5555555555555555) + ((x>>1) &\
@@ -151,7 +151,7 @@ data:
     \ < cnt; i++) {\n      if (mod_pow_constexpr(g, (m-1) / divs[cnt], m) == 1) {\n\
     \        ok = false;\n        break;\n      }\n    }\n    if (ok) return g;\n\
     \  }\n}\n\ntemplate<int m>\nconstexpr int primitive_root = primitive_root_constexpr(m);\n\
-    \n}\n#line 4 \"test/range_affine_range_sum.test.cpp\"\n#include <bits/stdc++.h>\r\
+    \n}\n#line 4 \"test/yosupo/range_affine_range_sum.test.cpp\"\n#include <bits/stdc++.h>\r\
     \n\r\nusing namespace std;\r\nusing ll = long long;\r\nconstexpr ll MOD = 998244353;\r\
     \nusing mint = Modular<MOD>;\r\n\r\nstruct SumMonoid {\r\n  mint a=0;\r\n  SumMonoid\
     \ operator*(SumMonoid r) const {\r\n    return {a+r.a};\r\n  }\r\n  SumMonoid&\
@@ -168,7 +168,7 @@ data:
     \   } else if (t == 1) {\r\n      int l,r; cin>>l>>r;\r\n      auto ans = rsq.query(l,r);\r\
     \n      cout << ans.a << endl;\r\n    }\r\n  }\r\n\r\n  return 0;\r\n}\r\n"
   code: "#define PROBLEM \"https://judge.yosupo.jp/problem/range_affine_range_sum\"\
-    \r\n#include \"../include/mtl/lazy_segment_tree.hpp\"\r\n#include \"../include/mtl/modular.hpp\"\
+    \r\n#include \"../../include/mtl/lazy_segment_tree.hpp\"\r\n#include \"../../include/mtl/modular.hpp\"\
     \r\n#include <bits/stdc++.h>\r\n\r\nusing namespace std;\r\nusing ll = long long;\r\
     \nconstexpr ll MOD = 998244353;\r\nusing mint = Modular<MOD>;\r\n\r\nstruct SumMonoid\
     \ {\r\n  mint a=0;\r\n  SumMonoid operator*(SumMonoid r) const {\r\n    return\
@@ -189,15 +189,15 @@ data:
   - include/mtl/bit_manip.hpp
   - include/mtl/modular.hpp
   isVerificationFile: true
-  path: test/range_affine_range_sum.test.cpp
+  path: test/yosupo/range_affine_range_sum.test.cpp
   requiredBy: []
-  timestamp: '2023-04-03 11:10:35+09:00'
+  timestamp: '2023-04-08 02:15:04+09:00'
   verificationStatus: TEST_ACCEPTED
   verifiedWith: []
-documentation_of: test/range_affine_range_sum.test.cpp
+documentation_of: test/yosupo/range_affine_range_sum.test.cpp
 layout: document
 redirect_from:
-- /verify/test/range_affine_range_sum.test.cpp
-- /verify/test/range_affine_range_sum.test.cpp.html
-title: test/range_affine_range_sum.test.cpp
+- /verify/test/yosupo/range_affine_range_sum.test.cpp
+- /verify/test/yosupo/range_affine_range_sum.test.cpp.html
+title: test/yosupo/range_affine_range_sum.test.cpp
 ---

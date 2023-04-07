@@ -4,8 +4,8 @@ data:
   _extendedRequiredBy: []
   _extendedVerifiedWith:
   - icon: ':heavy_check_mark:'
-    path: test/unionfind.test.cpp
-    title: test/unionfind.test.cpp
+    path: test/yosupo/unionfind.test.cpp
+    title: test/yosupo/unionfind.test.cpp
   _isVerificationFailed: false
   _pathExtension: hpp
   _verificationStatusIcon: ':heavy_check_mark:'
@@ -38,7 +38,7 @@ data:
   timestamp: '2022-11-27 16:09:45+09:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
-  - test/unionfind.test.cpp
+  - test/yosupo/unionfind.test.cpp
 documentation_of: include/mtl/unionfind.hpp
 layout: document
 redirect_from:

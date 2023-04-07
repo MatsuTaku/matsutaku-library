@@ -7,8 +7,8 @@ data:
   _extendedRequiredBy: []
   _extendedVerifiedWith:
   - icon: ':heavy_check_mark:'
-    path: test/aoj-the_maximum_number_of_customers.test.cpp
-    title: test/aoj-the_maximum_number_of_customers.test.cpp
+    path: test/aoj/aoj-the_maximum_number_of_customers.test.cpp
+    title: test/aoj/aoj-the_maximum_number_of_customers.test.cpp
   _isVerificationFailed: false
   _pathExtension: hpp
   _verificationStatusIcon: ':heavy_check_mark:'
@@ -55,20 +55,20 @@ data:
     \            n_(1ull<<log_n_), \n            tb_(std::max(log_n_, 1), std::vector<T>(n_,\
     \ e())) {}\n    template<typename It>\n    DualDisjointSparseTable(It begin, It\
     \ end) : \n            DualDisjointSparseTable(std::distance(begin, end)) {\n\
-    \        std::transform(begin, end, tb_[0].begin(), [](const auto& v) {return\
-    \ v;});\n    }\n\n    void apply(size_t l, size_t r, T a) {\n        if (l >=\
-    \ r) return;\n        if (r-l==1) {\n            tb_[0][l] = op(tb_[0][l], a);\n\
-    \            return;\n        }\n        auto d = 63-bm::clz((r-1)^l);\n     \
-    \   tb_[d][l] = op(tb_[d][l], a);\n        tb_[d][r-1] = op(tb_[d][r-1], a);\n\
-    \    }\n\n    void build() {\n        for (int i = 1; i < log_n_; i++) {\n   \
-    \         auto d = 1<<i;\n            for (size_t j = 0; j < n_; j += d*2) {\n\
-    \                T ml = e();\n                for (size_t k = j; k < j+d; k++)\
-    \ {\n                    ml = op(ml, tb_[i][k]);\n                    tb_[0][k]\
-    \ = op(tb_[0][k], ml);\n                }\n                T mr = e();\n     \
-    \           for (size_t k = j+d*2-1; k >= j+d; k--) {\n                    mr\
-    \ = op(mr, tb_[i][k]);\n                    tb_[0][k] = op(tb_[0][k], mr);\n \
-    \               }\n            }\n        }\n    }\n\n    T get(size_t i) const\
-    \ {\n        return tb_[0][i];\n    }\n};\n"
+    \        std::copy(begin, end, tb_[0].begin());\n    }\n\n    void apply(size_t\
+    \ l, size_t r, T a) {\n        if (l >= r) return;\n        if (r-l==1) {\n  \
+    \          tb_[0][l] = op(tb_[0][l], a);\n            return;\n        }\n   \
+    \     auto d = 63-bm::clz((r-1)^l);\n        tb_[d][l] = op(tb_[d][l], a);\n \
+    \       tb_[d][r-1] = op(tb_[d][r-1], a);\n    }\n\n    void build() {\n     \
+    \   for (int i = 1; i < log_n_; i++) {\n            auto d = 1<<i;\n         \
+    \   for (size_t j = 0; j < n_; j += d*2) {\n                T ml = e();\n    \
+    \            for (size_t k = j; k < j+d; k++) {\n                    ml = op(ml,\
+    \ tb_[i][k]);\n                    tb_[0][k] = op(tb_[0][k], ml);\n          \
+    \      }\n                T mr = e();\n                for (size_t k = j+d*2-1;\
+    \ k >= j+d; k--) {\n                    mr = op(mr, tb_[i][k]);\n            \
+    \        tb_[0][k] = op(tb_[0][k], mr);\n                }\n            }\n  \
+    \      }\n    }\n\n    T get(size_t i) const {\n        return tb_[0][i];\n  \
+    \  }\n};\n"
   code: "#pragma once\n#include \"bit_manip.hpp\"\n#include <vector>\n#include <algorithm>\n\
     \ntemplate<typename T, T (*op)(T, T), T (*e)()>\nclass DualDisjointSparseTable\
     \ {\nprivate:\n    int log_n_;\n    size_t n_;\n    std::vector<std::vector<T>>\
@@ -76,29 +76,29 @@ data:
     \            n_(1ull<<log_n_), \n            tb_(std::max(log_n_, 1), std::vector<T>(n_,\
     \ e())) {}\n    template<typename It>\n    DualDisjointSparseTable(It begin, It\
     \ end) : \n            DualDisjointSparseTable(std::distance(begin, end)) {\n\
-    \        std::transform(begin, end, tb_[0].begin(), [](const auto& v) {return\
-    \ v;});\n    }\n\n    void apply(size_t l, size_t r, T a) {\n        if (l >=\
-    \ r) return;\n        if (r-l==1) {\n            tb_[0][l] = op(tb_[0][l], a);\n\
-    \            return;\n        }\n        auto d = 63-bm::clz((r-1)^l);\n     \
-    \   tb_[d][l] = op(tb_[d][l], a);\n        tb_[d][r-1] = op(tb_[d][r-1], a);\n\
-    \    }\n\n    void build() {\n        for (int i = 1; i < log_n_; i++) {\n   \
-    \         auto d = 1<<i;\n            for (size_t j = 0; j < n_; j += d*2) {\n\
-    \                T ml = e();\n                for (size_t k = j; k < j+d; k++)\
-    \ {\n                    ml = op(ml, tb_[i][k]);\n                    tb_[0][k]\
-    \ = op(tb_[0][k], ml);\n                }\n                T mr = e();\n     \
-    \           for (size_t k = j+d*2-1; k >= j+d; k--) {\n                    mr\
-    \ = op(mr, tb_[i][k]);\n                    tb_[0][k] = op(tb_[0][k], mr);\n \
-    \               }\n            }\n        }\n    }\n\n    T get(size_t i) const\
-    \ {\n        return tb_[0][i];\n    }\n};"
+    \        std::copy(begin, end, tb_[0].begin());\n    }\n\n    void apply(size_t\
+    \ l, size_t r, T a) {\n        if (l >= r) return;\n        if (r-l==1) {\n  \
+    \          tb_[0][l] = op(tb_[0][l], a);\n            return;\n        }\n   \
+    \     auto d = 63-bm::clz((r-1)^l);\n        tb_[d][l] = op(tb_[d][l], a);\n \
+    \       tb_[d][r-1] = op(tb_[d][r-1], a);\n    }\n\n    void build() {\n     \
+    \   for (int i = 1; i < log_n_; i++) {\n            auto d = 1<<i;\n         \
+    \   for (size_t j = 0; j < n_; j += d*2) {\n                T ml = e();\n    \
+    \            for (size_t k = j; k < j+d; k++) {\n                    ml = op(ml,\
+    \ tb_[i][k]);\n                    tb_[0][k] = op(tb_[0][k], ml);\n          \
+    \      }\n                T mr = e();\n                for (size_t k = j+d*2-1;\
+    \ k >= j+d; k--) {\n                    mr = op(mr, tb_[i][k]);\n            \
+    \        tb_[0][k] = op(tb_[0][k], mr);\n                }\n            }\n  \
+    \      }\n    }\n\n    T get(size_t i) const {\n        return tb_[0][i];\n  \
+    \  }\n};"
   dependsOn:
   - include/mtl/bit_manip.hpp
   isVerificationFile: false
   path: include/mtl/dual_disjoint_sparse_table.hpp
   requiredBy: []
-  timestamp: '2023-04-04 01:36:55+09:00'
+  timestamp: '2023-04-06 14:40:12+09:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
-  - test/aoj-the_maximum_number_of_customers.test.cpp
+  - test/aoj/aoj-the_maximum_number_of_customers.test.cpp
 documentation_of: include/mtl/dual_disjoint_sparse_table.hpp
 layout: document
 redirect_from:

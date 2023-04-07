@@ -19,8 +19,8 @@ data:
     path: test/succinct/range_kth_smallest.test.cpp
     title: test/succinct/range_kth_smallest.test.cpp
   - icon: ':heavy_check_mark:'
-    path: test/yosupo-point_add_rectangle_sum-wm.test.cpp
-    title: test/yosupo-point_add_rectangle_sum-wm.test.cpp
+    path: test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
+    title: test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
   _isVerificationFailed: false
   _pathExtension: hpp
   _verificationStatusIcon: ':heavy_check_mark:'
@@ -406,7 +406,7 @@ data:
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
   - test/succinct/range_kth_smallest.test.cpp
-  - test/yosupo-point_add_rectangle_sum-wm.test.cpp
+  - test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
 documentation_of: include/mtl/succinct/bit_vector.hpp
 layout: document
 redirect_from:

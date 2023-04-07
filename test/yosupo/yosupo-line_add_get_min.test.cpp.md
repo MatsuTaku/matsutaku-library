@@ -17,11 +17,11 @@ data:
   _verificationStatusIcon: ':heavy_check_mark:'
   attributes:
     '*NOT_SPECIAL_COMMENTS*': ''
-    PROBLEM: https://judge.yosupo.jp/problem/segment_add_get_min
+    PROBLEM: https://judge.yosupo.jp/problem/line_add_get_min
     links:
-    - https://judge.yosupo.jp/problem/segment_add_get_min
-  bundledCode: "#line 1 \"test/yosupo-segment_add_get_min.test.cpp\"\n#define PROBLEM\
-    \ \"https://judge.yosupo.jp/problem/segment_add_get_min\"\r\n#line 2 \"include/mtl/bit_manip.hpp\"\
+    - https://judge.yosupo.jp/problem/line_add_get_min
+  bundledCode: "#line 1 \"test/yosupo/yosupo-line_add_get_min.test.cpp\"\n#define\
+    \ PROBLEM \"https://judge.yosupo.jp/problem/line_add_get_min\"\r\n#line 2 \"include/mtl/bit_manip.hpp\"\
     \n#include <cstdint>\n#include <cassert>\n\nnamespace bm {\n\ninline constexpr\
     \ uint64_t popcnt_e8(uint64_t x) {\n  x = (x & 0x5555555555555555) + ((x>>1) &\
     \ 0x5555555555555555);\n  x = (x & 0x3333333333333333) + ((x>>2) & 0x3333333333333333);\n\
@@ -108,51 +108,48 @@ data:
     \ }\r\n  std::pair<map_type, std::vector<T>> release_tie() {\r\n    return std::make_pair(release(),\
     \ vs);\r\n  }\r\n  template<typename It>\r\n  static std::unordered_map<T,int>\
     \ compress(It begin, It end) {\r\n    return Compressor(begin, end).release();\r\
-    \n  }\r\n};\r\n#line 4 \"test/yosupo-segment_add_get_min.test.cpp\"\n#include\
+    \n  }\r\n};\r\n#line 4 \"test/yosupo/yosupo-line_add_get_min.test.cpp\"\n#include\
     \ <bits/stdc++.h>\r\nusing namespace std;\r\n\r\nint main() {\r\n  int n,q; cin>>n>>q;\r\
-    \n  vector<array<long long, 5>> Q(n+q);\r\n  for (int i = 0; i < n; i++) {\r\n\
-    \    long long l,r,a,b; cin>>l>>r>>a>>b;\r\n    Q[i] = {0,l,r,a,b};\r\n  }\r\n\
-    \  Compressor<int> xcmp;\r\n  for (int i = 0; i < q; i++) {\r\n    int t; cin>>t;\r\
-    \n    if (t == 0) {\r\n      long long l,r,a,b; cin>>l>>r>>a>>b;\r\n      Q[n+i]\
-    \ = {0, l, r, a, b};\r\n    } else {\r\n      int p; cin>>p;\r\n      Q[n+i] =\
-    \ {1, p};\r\n      xcmp.add(p);\r\n    }\r\n  }\r\n  auto [xc,cx] = xcmp.release_tie();\r\
-    \n  LiChaoTree<long long, greater<>> lct(cx.begin(), cx.end());\r\n  for (int\
-    \ i = 0; i < n+q; i++) {\r\n    if (Q[i][0] == 0) {\r\n      long long l = Q[i][1],\
-    \ r = Q[i][2], a = Q[i][3], b = Q[i][4];\r\n      lct.add_segment(a, b, l, r);\r\
-    \n    } else {\r\n      int p = Q[i][1];\r\n      auto ans = lct.get(p);\r\n \
-    \     if (ans != LiChaoTree<long long, greater<>>::INF)\r\n        cout << ans\
-    \ << endl;\r\n      else\r\n        cout << \"INFINITY\" << endl;\r\n    }\r\n\
-    \  }\r\n}\n"
-  code: "#define PROBLEM \"https://judge.yosupo.jp/problem/segment_add_get_min\"\r\
-    \n#include \"../include/mtl/li_chao_tree.hpp\"\r\n#include \"../include/mtl/compress_int.hpp\"\
+    \n  vector<pair<long long, long long>> L(n);\r\n  for (int i = 0; i < n; i++)\
+    \ {\r\n    long long a,b; cin>>a>>b;\r\n    L[i] = {a,b};\r\n  }\r\n  vector<array<long\
+    \ long,3>> Q(q);\r\n  Compressor<int> xcmp;\r\n  for (int i = 0; i < q; i++) {\r\
+    \n    int t; cin>>t;\r\n    if (t == 0) {\r\n      long long a,b; cin>>a>>b;\r\
+    \n      Q[i] = {0, a, b};\r\n    } else {\r\n      int p; cin>>p;\r\n      Q[i]\
+    \ = {1, p, 0};\r\n      xcmp.add(p);\r\n    }\r\n  }\r\n  auto [xc,cx] = xcmp.release_tie();\r\
+    \n  LiChaoTree<long long, greater<>> lct(cx.begin(), cx.end());\r\n  for (auto\
+    \ [a,b] : L)\r\n    lct.add_line(a, b);\r\n  for (int i = 0; i < q; i++) {\r\n\
+    \    if (Q[i][0] == 0) {\r\n      long long a = Q[i][1], b = Q[i][2];\r\n    \
+    \  lct.add_line(a, b);\r\n    } else {\r\n      int p = Q[i][1];\r\n      cout\
+    \ << lct.get(p) << endl;\r\n    }\r\n  }\r\n}\n"
+  code: "#define PROBLEM \"https://judge.yosupo.jp/problem/line_add_get_min\"\r\n\
+    #include \"../../include/mtl/li_chao_tree.hpp\"\r\n#include \"../../include/mtl/compress_int.hpp\"\
     \r\n#include <bits/stdc++.h>\r\nusing namespace std;\r\n\r\nint main() {\r\n \
-    \ int n,q; cin>>n>>q;\r\n  vector<array<long long, 5>> Q(n+q);\r\n  for (int i\
-    \ = 0; i < n; i++) {\r\n    long long l,r,a,b; cin>>l>>r>>a>>b;\r\n    Q[i] =\
-    \ {0,l,r,a,b};\r\n  }\r\n  Compressor<int> xcmp;\r\n  for (int i = 0; i < q; i++)\
-    \ {\r\n    int t; cin>>t;\r\n    if (t == 0) {\r\n      long long l,r,a,b; cin>>l>>r>>a>>b;\r\
-    \n      Q[n+i] = {0, l, r, a, b};\r\n    } else {\r\n      int p; cin>>p;\r\n\
-    \      Q[n+i] = {1, p};\r\n      xcmp.add(p);\r\n    }\r\n  }\r\n  auto [xc,cx]\
-    \ = xcmp.release_tie();\r\n  LiChaoTree<long long, greater<>> lct(cx.begin(),\
-    \ cx.end());\r\n  for (int i = 0; i < n+q; i++) {\r\n    if (Q[i][0] == 0) {\r\
-    \n      long long l = Q[i][1], r = Q[i][2], a = Q[i][3], b = Q[i][4];\r\n    \
-    \  lct.add_segment(a, b, l, r);\r\n    } else {\r\n      int p = Q[i][1];\r\n\
-    \      auto ans = lct.get(p);\r\n      if (ans != LiChaoTree<long long, greater<>>::INF)\r\
-    \n        cout << ans << endl;\r\n      else\r\n        cout << \"INFINITY\" <<\
-    \ endl;\r\n    }\r\n  }\r\n}"
+    \ int n,q; cin>>n>>q;\r\n  vector<pair<long long, long long>> L(n);\r\n  for (int\
+    \ i = 0; i < n; i++) {\r\n    long long a,b; cin>>a>>b;\r\n    L[i] = {a,b};\r\
+    \n  }\r\n  vector<array<long long,3>> Q(q);\r\n  Compressor<int> xcmp;\r\n  for\
+    \ (int i = 0; i < q; i++) {\r\n    int t; cin>>t;\r\n    if (t == 0) {\r\n   \
+    \   long long a,b; cin>>a>>b;\r\n      Q[i] = {0, a, b};\r\n    } else {\r\n \
+    \     int p; cin>>p;\r\n      Q[i] = {1, p, 0};\r\n      xcmp.add(p);\r\n    }\r\
+    \n  }\r\n  auto [xc,cx] = xcmp.release_tie();\r\n  LiChaoTree<long long, greater<>>\
+    \ lct(cx.begin(), cx.end());\r\n  for (auto [a,b] : L)\r\n    lct.add_line(a,\
+    \ b);\r\n  for (int i = 0; i < q; i++) {\r\n    if (Q[i][0] == 0) {\r\n      long\
+    \ long a = Q[i][1], b = Q[i][2];\r\n      lct.add_line(a, b);\r\n    } else {\r\
+    \n      int p = Q[i][1];\r\n      cout << lct.get(p) << endl;\r\n    }\r\n  }\r\
+    \n}"
   dependsOn:
   - include/mtl/li_chao_tree.hpp
   - include/mtl/bit_manip.hpp
   - include/mtl/compress_int.hpp
   isVerificationFile: true
-  path: test/yosupo-segment_add_get_min.test.cpp
+  path: test/yosupo/yosupo-line_add_get_min.test.cpp
   requiredBy: []
-  timestamp: '2022-12-20 20:34:44+09:00'
+  timestamp: '2023-04-08 02:15:04+09:00'
   verificationStatus: TEST_ACCEPTED
   verifiedWith: []
-documentation_of: test/yosupo-segment_add_get_min.test.cpp
+documentation_of: test/yosupo/yosupo-line_add_get_min.test.cpp
 layout: document
 redirect_from:
-- /verify/test/yosupo-segment_add_get_min.test.cpp
-- /verify/test/yosupo-segment_add_get_min.test.cpp.html
-title: test/yosupo-segment_add_get_min.test.cpp
+- /verify/test/yosupo/yosupo-line_add_get_min.test.cpp
+- /verify/test/yosupo/yosupo-line_add_get_min.test.cpp.html
+title: test/yosupo/yosupo-line_add_get_min.test.cpp
 ---

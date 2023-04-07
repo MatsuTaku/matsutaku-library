@@ -62,8 +62,8 @@ data:
   isVerificationFile: false
   path: include/mtl/string/trie.hpp
   requiredBy:
-  - include/mtl/string/dynamic_ac_machine.hpp
   - include/mtl/string/ac_machine.hpp
+  - include/mtl/string/dynamic_ac_machine.hpp
   timestamp: '2022-11-27 16:09:45+09:00'
   verificationStatus: LIBRARY_NO_TESTS
   verifiedWith: []

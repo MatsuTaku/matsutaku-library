@@ -5,13 +5,10 @@ data:
     path: include/mtl/bit_manip.hpp
     title: include/mtl/bit_manip.hpp
   _extendedRequiredBy: []
-  _extendedVerifiedWith:
-  - icon: ':heavy_check_mark:'
-    path: test/yuki-no945_ykc_manju.test.cpp
-    title: test/yuki-no945_ykc_manju.test.cpp
+  _extendedVerifiedWith: []
   _isVerificationFailed: false
   _pathExtension: hpp
-  _verificationStatusIcon: ':heavy_check_mark:'
+  _verificationStatusIcon: ':warning:'
   attributes:
     document_title: Apply to [l, r)
     links: []
@@ -55,43 +52,42 @@ data:
     \n public:\n  DualSparseTable(size_t size) :\n      size_(size),\n      log_n_(63-bm::clz(size)),\n\
     \      table_(log_n_+1, std::vector<T>(size, e())) {}\n  template <typename Iter>\n\
     \  DualSparseTable(Iter begin, Iter end) :\n      DualSparseTable(std::distance(begin,\
-    \ end)) {\n    std::transform(begin, end, table_[0].begin(), [](const auto& v)\
-    \ {return v;});\n  }\n\n/***\n * @brief Apply to [l, r)\n * @note Complexity:\
-    \ O(1)\n */\n  void apply(size_t l, size_t r, const T& a) {\n    if (l>=r) return;\n\
-    \    auto d = 63-bm::clz(r-l);\n    table_[d][l] = op(table_[d][l], a);\n    table_[d][r-(1ull<<d)]\
-    \ = op(table_[d][r-(1ull<<d)], a);\n  }\n\n/***\n * @brief Build the table\n *\
-    \ @note Complexity: O(n log n)\n */\n  void build() {\n    for (int log_n = (int)log_n_-1;\
-    \ log_n >= 0; log_n--) {\n      size_t width = 1ull<<log_n;\n      for (size_t\
-    \ i = 0; i < size_-width; i++) {\n        table_[log_n][i] = op(table_[log_n][i],\
-    \ table_[log_n+1][i]);\n        table_[log_n][i+width] = op(table_[log_n][i+width],\
-    \ table_[log_n+1][i]);\n      }\n    }\n  }\n\n  T get(size_t i) const {\n   \
-    \ return table_[0][i];\n  }\n\n};\n"
+    \ end)) {\n    std::copy(begin, end, table_[0].begin());\n  }\n\n/***\n * @brief\
+    \ Apply to [l, r)\n * @note Complexity: O(1)\n */\n  void apply(size_t l, size_t\
+    \ r, const T& a) {\n    if (l>=r) return;\n    auto d = 63-bm::clz(r-l);\n   \
+    \ table_[d][l] = op(table_[d][l], a);\n    table_[d][r-(1ull<<d)] = op(table_[d][r-(1ull<<d)],\
+    \ a);\n  }\n\n/***\n * @brief Build the table\n * @note Complexity: O(n log n)\n\
+    \ */\n  void build() {\n    for (int log_n = (int)log_n_-1; log_n >= 0; log_n--)\
+    \ {\n      size_t width = 1ull<<log_n;\n      for (size_t i = 0; i < size_-width;\
+    \ i++) {\n        table_[log_n][i] = op(table_[log_n][i], table_[log_n+1][i]);\n\
+    \        table_[log_n][i+width] = op(table_[log_n][i+width], table_[log_n+1][i]);\n\
+    \      }\n    }\n  }\n\n  T get(size_t i) const {\n    return table_[0][i];\n\
+    \  }\n\n};\n"
   code: "#pragma once\n#include \"bit_manip.hpp\"\n#include <vector>\n#include <algorithm>\n\
     #include <iostream>\ntemplate <typename T, T (*op)(T, T), T (*e)()>\nclass DualSparseTable\
     \ {\n private:\n  size_t size_, log_n_;\n  std::vector<std::vector<T>> table_;\n\
     \n public:\n  DualSparseTable(size_t size) :\n      size_(size),\n      log_n_(63-bm::clz(size)),\n\
     \      table_(log_n_+1, std::vector<T>(size, e())) {}\n  template <typename Iter>\n\
     \  DualSparseTable(Iter begin, Iter end) :\n      DualSparseTable(std::distance(begin,\
-    \ end)) {\n    std::transform(begin, end, table_[0].begin(), [](const auto& v)\
-    \ {return v;});\n  }\n\n/***\n * @brief Apply to [l, r)\n * @note Complexity:\
-    \ O(1)\n */\n  void apply(size_t l, size_t r, const T& a) {\n    if (l>=r) return;\n\
-    \    auto d = 63-bm::clz(r-l);\n    table_[d][l] = op(table_[d][l], a);\n    table_[d][r-(1ull<<d)]\
-    \ = op(table_[d][r-(1ull<<d)], a);\n  }\n\n/***\n * @brief Build the table\n *\
-    \ @note Complexity: O(n log n)\n */\n  void build() {\n    for (int log_n = (int)log_n_-1;\
-    \ log_n >= 0; log_n--) {\n      size_t width = 1ull<<log_n;\n      for (size_t\
-    \ i = 0; i < size_-width; i++) {\n        table_[log_n][i] = op(table_[log_n][i],\
-    \ table_[log_n+1][i]);\n        table_[log_n][i+width] = op(table_[log_n][i+width],\
-    \ table_[log_n+1][i]);\n      }\n    }\n  }\n\n  T get(size_t i) const {\n   \
-    \ return table_[0][i];\n  }\n\n};\n"
+    \ end)) {\n    std::copy(begin, end, table_[0].begin());\n  }\n\n/***\n * @brief\
+    \ Apply to [l, r)\n * @note Complexity: O(1)\n */\n  void apply(size_t l, size_t\
+    \ r, const T& a) {\n    if (l>=r) return;\n    auto d = 63-bm::clz(r-l);\n   \
+    \ table_[d][l] = op(table_[d][l], a);\n    table_[d][r-(1ull<<d)] = op(table_[d][r-(1ull<<d)],\
+    \ a);\n  }\n\n/***\n * @brief Build the table\n * @note Complexity: O(n log n)\n\
+    \ */\n  void build() {\n    for (int log_n = (int)log_n_-1; log_n >= 0; log_n--)\
+    \ {\n      size_t width = 1ull<<log_n;\n      for (size_t i = 0; i < size_-width;\
+    \ i++) {\n        table_[log_n][i] = op(table_[log_n][i], table_[log_n+1][i]);\n\
+    \        table_[log_n][i+width] = op(table_[log_n][i+width], table_[log_n+1][i]);\n\
+    \      }\n    }\n  }\n\n  T get(size_t i) const {\n    return table_[0][i];\n\
+    \  }\n\n};\n"
   dependsOn:
   - include/mtl/bit_manip.hpp
   isVerificationFile: false
   path: include/mtl/dual_sparse_table.hpp
   requiredBy: []
-  timestamp: '2023-04-04 01:36:55+09:00'
-  verificationStatus: LIBRARY_ALL_AC
-  verifiedWith:
-  - test/yuki-no945_ykc_manju.test.cpp
+  timestamp: '2023-04-06 14:40:12+09:00'
+  verificationStatus: LIBRARY_NO_TESTS
+  verifiedWith: []
 documentation_of: include/mtl/dual_sparse_table.hpp
 layout: document
 redirect_from:

@@ -16,14 +16,17 @@ data:
     title: test/abc116-c-multiple_sequences-dirichlet.cpp
   _extendedVerifiedWith:
   - icon: ':heavy_check_mark:'
-    path: test/convolution.test.cpp
-    title: test/convolution.test.cpp
+    path: test/yosupo/convolution.test.cpp
+    title: test/yosupo/convolution.test.cpp
   - icon: ':heavy_check_mark:'
-    path: test/point_set_range_composite.test.cpp
-    title: test/point_set_range_composite.test.cpp
+    path: test/yosupo/point_set_range_composite.test.cpp
+    title: test/yosupo/point_set_range_composite.test.cpp
   - icon: ':heavy_check_mark:'
-    path: test/range_affine_range_sum.test.cpp
-    title: test/range_affine_range_sum.test.cpp
+    path: test/yosupo/range_affine_range_sum.test.cpp
+    title: test/yosupo/range_affine_range_sum.test.cpp
+  - icon: ':heavy_check_mark:'
+    path: test/yosupo/yosupo-range_affine_point_get.test.cpp
+    title: test/yosupo/yosupo-range_affine_point_get.test.cpp
   _isVerificationFailed: false
   _pathExtension: hpp
   _verificationStatusIcon: ':heavy_check_mark:'
@@ -131,14 +134,15 @@ data:
   requiredBy:
   - include/mtl/ntt.hpp
   - include/mtl/fps.hpp
-  - test/abc116-c-multiple_sequences-dirichlet-optimized.cpp
   - test/abc116-c-multiple_sequences-dirichlet.cpp
+  - test/abc116-c-multiple_sequences-dirichlet-optimized.cpp
   timestamp: '2023-01-28 19:00:09+00:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
-  - test/convolution.test.cpp
-  - test/range_affine_range_sum.test.cpp
-  - test/point_set_range_composite.test.cpp
+  - test/yosupo/convolution.test.cpp
+  - test/yosupo/range_affine_range_sum.test.cpp
+  - test/yosupo/point_set_range_composite.test.cpp
+  - test/yosupo/yosupo-range_affine_point_get.test.cpp
 documentation_of: include/mtl/modular.hpp
 layout: document
 redirect_from:

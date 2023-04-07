@@ -13,17 +13,17 @@ data:
     title: include/mtl/ordinal_range_search.hpp
   _extendedVerifiedWith:
   - icon: ':heavy_check_mark:'
-    path: test/point_add_range_sum.test.cpp
-    title: test/point_add_range_sum.test.cpp
+    path: test/yosupo/point_add_range_sum.test.cpp
+    title: test/yosupo/point_add_range_sum.test.cpp
   - icon: ':heavy_check_mark:'
-    path: test/static_range_inversions_query.test.cpp
-    title: test/static_range_inversions_query.test.cpp
+    path: test/yosupo/static_range_inversions_query.test.cpp
+    title: test/yosupo/static_range_inversions_query.test.cpp
   - icon: ':heavy_check_mark:'
-    path: test/static_range_sum.test.cpp
-    title: test/static_range_sum.test.cpp
+    path: test/yosupo/static_range_sum.test.cpp
+    title: test/yosupo/static_range_sum.test.cpp
   - icon: ':heavy_check_mark:'
-    path: test/yosupo-point_add_rectangle_sum-wm.test.cpp
-    title: test/yosupo-point_add_rectangle_sum-wm.test.cpp
+    path: test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
+    title: test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
   _isVerificationFailed: false
   _pathExtension: hpp
   _verificationStatusIcon: ':heavy_check_mark:'
@@ -100,15 +100,15 @@ data:
   isVerificationFile: false
   path: include/mtl/fenwick_tree.hpp
   requiredBy:
-  - include/mtl/ordinal_range_search.hpp
   - include/mtl/bitmap.hpp
+  - include/mtl/ordinal_range_search.hpp
   timestamp: '2023-04-04 01:01:39+09:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
-  - test/point_add_range_sum.test.cpp
-  - test/yosupo-point_add_rectangle_sum-wm.test.cpp
-  - test/static_range_inversions_query.test.cpp
-  - test/static_range_sum.test.cpp
+  - test/yosupo/static_range_inversions_query.test.cpp
+  - test/yosupo/point_add_range_sum.test.cpp
+  - test/yosupo/static_range_sum.test.cpp
+  - test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
 documentation_of: include/mtl/fenwick_tree.hpp
 layout: document
 redirect_from:

@@ -7,14 +7,14 @@ data:
     title: include/mtl/ordinal_range_search.hpp
   _extendedVerifiedWith:
   - icon: ':heavy_check_mark:'
-    path: test/yosupo-line_add_get_min.test.cpp
-    title: test/yosupo-line_add_get_min.test.cpp
+    path: test/yosupo/yosupo-line_add_get_min.test.cpp
+    title: test/yosupo/yosupo-line_add_get_min.test.cpp
   - icon: ':heavy_check_mark:'
-    path: test/yosupo-point_add_rectangle_sum-wm.test.cpp
-    title: test/yosupo-point_add_rectangle_sum-wm.test.cpp
+    path: test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
+    title: test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
   - icon: ':heavy_check_mark:'
-    path: test/yosupo-segment_add_get_min.test.cpp
-    title: test/yosupo-segment_add_get_min.test.cpp
+    path: test/yosupo/yosupo-segment_add_get_min.test.cpp
+    title: test/yosupo/yosupo-segment_add_get_min.test.cpp
   _isVerificationFailed: false
   _pathExtension: hpp
   _verificationStatusIcon: ':heavy_check_mark:'
@@ -56,9 +56,9 @@ data:
   timestamp: '2022-11-27 16:09:45+09:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
-  - test/yosupo-point_add_rectangle_sum-wm.test.cpp
-  - test/yosupo-segment_add_get_min.test.cpp
-  - test/yosupo-line_add_get_min.test.cpp
+  - test/yosupo/yosupo-segment_add_get_min.test.cpp
+  - test/yosupo/yosupo-line_add_get_min.test.cpp
+  - test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
 documentation_of: include/mtl/compress_int.hpp
 layout: document
 redirect_from:

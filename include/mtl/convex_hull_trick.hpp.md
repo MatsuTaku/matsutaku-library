@@ -10,8 +10,8 @@ data:
     title: test/tenka1-2016-final-open-e.cpp
   _extendedVerifiedWith:
   - icon: ':heavy_check_mark:'
-    path: test/aoj-time_table-cht.test.cpp
-    title: test/aoj-time_table-cht.test.cpp
+    path: test/aoj/aoj-time_table-cht.test.cpp
+    title: test/aoj/aoj-time_table-cht.test.cpp
   _isVerificationFailed: false
   _pathExtension: hpp
   _verificationStatusIcon: ':heavy_check_mark:'
@@ -248,7 +248,7 @@ data:
   timestamp: '2022-11-27 16:09:45+09:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
-  - test/aoj-time_table-cht.test.cpp
+  - test/aoj/aoj-time_table-cht.test.cpp
 documentation_of: include/mtl/convex_hull_trick.hpp
 layout: document
 redirect_from:

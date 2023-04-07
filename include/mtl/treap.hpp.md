@@ -5,13 +5,19 @@ data:
   - icon: ':warning:'
     path: include/mtl/integer_set.hpp
     title: include/mtl/integer_set.hpp
-  - icon: ':warning:'
+  - icon: ':heavy_check_mark:'
     path: include/mtl/yft.hpp
     title: include/mtl/yft.hpp
-  _extendedVerifiedWith: []
+  _extendedVerifiedWith:
+  - icon: ':heavy_check_mark:'
+    path: test/yosupo/associative_array-treap.test.cpp
+    title: test/yosupo/associative_array-treap.test.cpp
+  - icon: ':heavy_check_mark:'
+    path: test/yosupo/associative_array-yft.test.cpp
+    title: test/yosupo/associative_array-yft.test.cpp
   _isVerificationFailed: false
   _pathExtension: hpp
-  _verificationStatusIcon: ':warning:'
+  _verificationStatusIcon: ':heavy_check_mark:'
   attributes:
     links: []
   bundledCode: "#line 2 \"include/mtl/treap.hpp\"\n#include <memory>\r\n#include <iterator>\r\
@@ -103,19 +109,19 @@ data:
     \n      }\r\n    }\r\n    _bubble_up(u);\r\n    ++size_;\r\n    return std::make_pair(iterator(u),\
     \ true);\r\n  }\r\n  std::pair<iterator, bool> _insert_node(node_ptr new_node)\
     \ {\r\n    return _insert_node_subtree(sentinel_, new_node);\r\n  }\r\n  iterator\
-    \ _insert_node_hint(iterator hint, node_ptr new_node) {\r\n    auto x = new_node->key();\r\
-    \n    auto u = hint.ptr_;\r\n    if (!u->parent.expired()) {\r\n      auto p =\
-    \ u->parent.lock();\r\n      if (p != sentinel_) {\r\n        T xp = p->key();\r\
-    \n        if (xp == x) [[unlikely]]\r\n          return iterator(p);\r\n     \
-    \   // Check hint is malicious\r\n        if (   (p->left == u and comp_(xp, x))\r\
-    \n            or (p->right == u and comp_(x, xp))) [[unlikely]]\r\n          return\
-    \ _insert_node(new_node).first;\r\n        //\r\n      }\r\n    }\r\n    return\
-    \ _insert_node_subtree(u, new_node).first;\r\n  }\r\n\r\n public:\r\n  size_t\
-    \ size() const { return size_; } // TODO: split break size\r\n  bool empty() const\
-    \ { return _root() == nullptr; }\r\n  void clear() {\r\n    sentinel_->left =\
-    \ nullptr;\r\n    size_ = 0;\r\n  }\r\n\r\n  iterator find(T x) const {\r\n  \
-    \  node_ptr u = _root();\r\n    while (u) {\r\n      if (u->key() == x)\r\n  \
-    \      return iterator(u);\r\n      if (comp_(x, u->key()))\r\n        u = u->left;\r\
+    \ _insert_node_hint(const_iterator hint, node_ptr new_node) {\r\n    auto x =\
+    \ new_node->key();\r\n    auto u = hint.ptr_;\r\n    if (!u->parent.expired())\
+    \ {\r\n      auto p = u->parent.lock();\r\n      if (p != sentinel_) {\r\n   \
+    \     T xp = p->key();\r\n        if (xp == x) [[unlikely]]\r\n          return\
+    \ iterator(p);\r\n        // Check hint is malicious\r\n        if (   (p->left\
+    \ == u and comp_(xp, x))\r\n            or (p->right == u and comp_(x, xp))) [[unlikely]]\r\
+    \n          return _insert_node(new_node).first;\r\n        //\r\n      }\r\n\
+    \    }\r\n    return _insert_node_subtree(u, new_node).first;\r\n  }\r\n\r\n public:\r\
+    \n  size_t size() const { return size_; } // TODO: split break size\r\n  bool\
+    \ empty() const { return _root() == nullptr; }\r\n  void clear() {\r\n    sentinel_->left\
+    \ = nullptr;\r\n    size_ = 0;\r\n  }\r\n\r\n  iterator find(T x) const {\r\n\
+    \    node_ptr u = _root();\r\n    while (u) {\r\n      if (u->key() == x)\r\n\
+    \        return iterator(u);\r\n      if (comp_(x, u->key()))\r\n        u = u->left;\r\
     \n      else\r\n        u = u->right;\r\n    }\r\n    return end();\r\n  }\r\n\
     \  size_t count(T x) const { return (size_t) (find(x) != end()); }\r\n  iterator\
     \ lower_bound(T x) const {\r\n    node_ptr u = _root();\r\n    node_ptr lb = sentinel_;\r\
@@ -135,8 +141,8 @@ data:
     \n    return std::make_shared<Node>(p, std::forward<Args>(args)...);\r\n  }\r\n\
     \ public:\r\n  template<typename ...Args>\r\n  std::pair<iterator, bool> emplace(Args&&...\
     \ args) {\r\n    return _insert_node(_create_node(std::forward<Args>(args)...));\r\
-    \n  }\r\n  template<typename ...Args>\r\n  iterator emplace_hint(iterator hint,\
-    \ Args&&... args) {\r\n    return _insert_node_hint(hint, _create_node(std::forward<Args>(args)...));\r\
+    \n  }\r\n  template<typename ...Args>\r\n  iterator emplace_hint(const_iterator\
+    \ hint, Args&&... args) {\r\n    return _insert_node_hint(hint, _create_node(std::forward<Args>(args)...));\r\
     \n  }\r\n  std::pair<iterator, bool> insert(const init_type& e) {\r\n    return\
     \ emplace(e);\r\n  }\r\n  std::pair<iterator, bool> insert(init_type&& e) {\r\n\
     \    return emplace(std::move(e));\r\n  }\r\n  template<typename=void>\r\n  std::pair<iterator,\
@@ -224,12 +230,10 @@ data:
     \n\r\ntemplate<typename T, typename V>\r\nclass TreapMap : public Treap<T, V>\
     \ {\r\n  static_assert(!std::is_same<V, void>::value, \"\");\r\n  using _base\
     \ = Treap<T, V>;\r\n public:\r\n  using typename _base::mapped_type;\r\n  using\
-    \ reference = mapped_type&;\r\n  reference operator[](const T& x) {\r\n    //\
-    \ TODO\r\n//    return _base::try_emplace(std::move(x)).first->second;\r\n   \
-    \ return _base::insert({x, mapped_type()}).first->second;\r\n  }\r\n  reference\
-    \ operator[](T&& x) {\r\n    // TODO\r\n//    return _base::try_emplace(std::move(x)).first->second;\r\
-    \n    return _base::insert({std::move(x), mapped_type()}).first->second;\r\n \
-    \ }\r\n};\n"
+    \ reference = mapped_type&;\r\n  reference operator[](const T& x) {\r\n    return\
+    \ _base::insert({x, mapped_type()}).first->second;\r\n  }\r\n  reference operator[](T&&\
+    \ x) {\r\n    return _base::insert({std::move(x), mapped_type()}).first->second;\r\
+    \n  }\r\n};\n"
   code: "#pragma once\r\n#include <memory>\r\n#include <iterator>\r\n#include <cassert>\r\
     \n#include <exception>\r\n#include <random>\r\n#include <iostream>\r\n\r\ntemplate<class\
     \ T, class V=void,\r\n    class Compare = std::less<>>\r\nclass Treap {\r\n public:\r\
@@ -319,19 +323,19 @@ data:
     \n      }\r\n    }\r\n    _bubble_up(u);\r\n    ++size_;\r\n    return std::make_pair(iterator(u),\
     \ true);\r\n  }\r\n  std::pair<iterator, bool> _insert_node(node_ptr new_node)\
     \ {\r\n    return _insert_node_subtree(sentinel_, new_node);\r\n  }\r\n  iterator\
-    \ _insert_node_hint(iterator hint, node_ptr new_node) {\r\n    auto x = new_node->key();\r\
-    \n    auto u = hint.ptr_;\r\n    if (!u->parent.expired()) {\r\n      auto p =\
-    \ u->parent.lock();\r\n      if (p != sentinel_) {\r\n        T xp = p->key();\r\
-    \n        if (xp == x) [[unlikely]]\r\n          return iterator(p);\r\n     \
-    \   // Check hint is malicious\r\n        if (   (p->left == u and comp_(xp, x))\r\
-    \n            or (p->right == u and comp_(x, xp))) [[unlikely]]\r\n          return\
-    \ _insert_node(new_node).first;\r\n        //\r\n      }\r\n    }\r\n    return\
-    \ _insert_node_subtree(u, new_node).first;\r\n  }\r\n\r\n public:\r\n  size_t\
-    \ size() const { return size_; } // TODO: split break size\r\n  bool empty() const\
-    \ { return _root() == nullptr; }\r\n  void clear() {\r\n    sentinel_->left =\
-    \ nullptr;\r\n    size_ = 0;\r\n  }\r\n\r\n  iterator find(T x) const {\r\n  \
-    \  node_ptr u = _root();\r\n    while (u) {\r\n      if (u->key() == x)\r\n  \
-    \      return iterator(u);\r\n      if (comp_(x, u->key()))\r\n        u = u->left;\r\
+    \ _insert_node_hint(const_iterator hint, node_ptr new_node) {\r\n    auto x =\
+    \ new_node->key();\r\n    auto u = hint.ptr_;\r\n    if (!u->parent.expired())\
+    \ {\r\n      auto p = u->parent.lock();\r\n      if (p != sentinel_) {\r\n   \
+    \     T xp = p->key();\r\n        if (xp == x) [[unlikely]]\r\n          return\
+    \ iterator(p);\r\n        // Check hint is malicious\r\n        if (   (p->left\
+    \ == u and comp_(xp, x))\r\n            or (p->right == u and comp_(x, xp))) [[unlikely]]\r\
+    \n          return _insert_node(new_node).first;\r\n        //\r\n      }\r\n\
+    \    }\r\n    return _insert_node_subtree(u, new_node).first;\r\n  }\r\n\r\n public:\r\
+    \n  size_t size() const { return size_; } // TODO: split break size\r\n  bool\
+    \ empty() const { return _root() == nullptr; }\r\n  void clear() {\r\n    sentinel_->left\
+    \ = nullptr;\r\n    size_ = 0;\r\n  }\r\n\r\n  iterator find(T x) const {\r\n\
+    \    node_ptr u = _root();\r\n    while (u) {\r\n      if (u->key() == x)\r\n\
+    \        return iterator(u);\r\n      if (comp_(x, u->key()))\r\n        u = u->left;\r\
     \n      else\r\n        u = u->right;\r\n    }\r\n    return end();\r\n  }\r\n\
     \  size_t count(T x) const { return (size_t) (find(x) != end()); }\r\n  iterator\
     \ lower_bound(T x) const {\r\n    node_ptr u = _root();\r\n    node_ptr lb = sentinel_;\r\
@@ -351,8 +355,8 @@ data:
     \n    return std::make_shared<Node>(p, std::forward<Args>(args)...);\r\n  }\r\n\
     \ public:\r\n  template<typename ...Args>\r\n  std::pair<iterator, bool> emplace(Args&&...\
     \ args) {\r\n    return _insert_node(_create_node(std::forward<Args>(args)...));\r\
-    \n  }\r\n  template<typename ...Args>\r\n  iterator emplace_hint(iterator hint,\
-    \ Args&&... args) {\r\n    return _insert_node_hint(hint, _create_node(std::forward<Args>(args)...));\r\
+    \n  }\r\n  template<typename ...Args>\r\n  iterator emplace_hint(const_iterator\
+    \ hint, Args&&... args) {\r\n    return _insert_node_hint(hint, _create_node(std::forward<Args>(args)...));\r\
     \n  }\r\n  std::pair<iterator, bool> insert(const init_type& e) {\r\n    return\
     \ emplace(e);\r\n  }\r\n  std::pair<iterator, bool> insert(init_type&& e) {\r\n\
     \    return emplace(std::move(e));\r\n  }\r\n  template<typename=void>\r\n  std::pair<iterator,\
@@ -440,21 +444,21 @@ data:
     \n\r\ntemplate<typename T, typename V>\r\nclass TreapMap : public Treap<T, V>\
     \ {\r\n  static_assert(!std::is_same<V, void>::value, \"\");\r\n  using _base\
     \ = Treap<T, V>;\r\n public:\r\n  using typename _base::mapped_type;\r\n  using\
-    \ reference = mapped_type&;\r\n  reference operator[](const T& x) {\r\n    //\
-    \ TODO\r\n//    return _base::try_emplace(std::move(x)).first->second;\r\n   \
-    \ return _base::insert({x, mapped_type()}).first->second;\r\n  }\r\n  reference\
-    \ operator[](T&& x) {\r\n    // TODO\r\n//    return _base::try_emplace(std::move(x)).first->second;\r\
-    \n    return _base::insert({std::move(x), mapped_type()}).first->second;\r\n \
-    \ }\r\n};"
+    \ reference = mapped_type&;\r\n  reference operator[](const T& x) {\r\n    return\
+    \ _base::insert({x, mapped_type()}).first->second;\r\n  }\r\n  reference operator[](T&&\
+    \ x) {\r\n    return _base::insert({std::move(x), mapped_type()}).first->second;\r\
+    \n  }\r\n};"
   dependsOn: []
   isVerificationFile: false
   path: include/mtl/treap.hpp
   requiredBy:
-  - include/mtl/integer_set.hpp
   - include/mtl/yft.hpp
-  timestamp: '2023-04-04 01:01:39+09:00'
-  verificationStatus: LIBRARY_NO_TESTS
-  verifiedWith: []
+  - include/mtl/integer_set.hpp
+  timestamp: '2023-04-06 14:40:12+09:00'
+  verificationStatus: LIBRARY_ALL_AC
+  verifiedWith:
+  - test/yosupo/associative_array-treap.test.cpp
+  - test/yosupo/associative_array-yft.test.cpp
 documentation_of: include/mtl/treap.hpp
 layout: document
 redirect_from:

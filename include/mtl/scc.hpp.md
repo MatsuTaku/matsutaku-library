@@ -7,8 +7,8 @@ data:
   _extendedRequiredBy: []
   _extendedVerifiedWith:
   - icon: ':heavy_check_mark:'
-    path: test/scc.test.cpp
-    title: test/scc.test.cpp
+    path: test/aoj/scc.test.cpp
+    title: test/aoj/scc.test.cpp
   _isVerificationFailed: false
   _pathExtension: hpp
   _verificationStatusIcon: ':heavy_check_mark:'
@@ -82,7 +82,7 @@ data:
   timestamp: '2022-11-27 16:09:45+09:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
-  - test/scc.test.cpp
+  - test/aoj/scc.test.cpp
 documentation_of: include/mtl/scc.hpp
 layout: document
 redirect_from:

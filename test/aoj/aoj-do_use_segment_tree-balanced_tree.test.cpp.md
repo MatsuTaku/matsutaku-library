@@ -17,9 +17,9 @@ data:
     PROBLEM: https://onlinejudge.u-aizu.ac.jp/problems/2450
     links:
     - https://onlinejudge.u-aizu.ac.jp/problems/2450
-  bundledCode: "#line 1 \"test/aoj-do_use_segment_tree-balanced_tree.test.cpp\"\n\
-    #define PROBLEM \"https://onlinejudge.u-aizu.ac.jp/problems/2450\"\r\n#line 2\
-    \ \"include/mtl/hld.hpp\"\n#include <cstddef>\n#include <vector>\n\nstruct Hld\
+  bundledCode: "#line 1 \"test/aoj/aoj-do_use_segment_tree-balanced_tree.test.cpp\"\
+    \n#define PROBLEM \"https://onlinejudge.u-aizu.ac.jp/problems/2450\"\r\n#line\
+    \ 2 \"include/mtl/hld.hpp\"\n#include <cstddef>\n#include <vector>\n\nstruct Hld\
     \ {\n  int n;\n  std::vector<std::vector<int>> edge;\n  std::vector<int> size,\
     \ in, out, head, rev, par, depth;\n private:\n  void dfs_sz(int v, int p, int\
     \ d) {\n    par[v] = p;\n    size[v] = 1;\n    if (!edge[v].empty() and edge[v][0]\
@@ -136,7 +136,7 @@ data:
     \ *= v;\r\n      _propagate(u);\r\n    } else {\r\n      _propagate(u);\r\n  \
     \    if (tree_[u].size() > 1) {\r\n        auto lc = tree_[u].lc, rc = tree_[u].rc;\r\
     \n        _update(l, r, v, lc);\r\n        _update(l, r, v, rc);\r\n        tree_[u].m\
-    \ = tree_[lc].m * tree_[rc].m;\r\n      }\r\n    }\r\n  }\r\n};\n#line 4 \"test/aoj-do_use_segment_tree-balanced_tree.test.cpp\"\
+    \ = tree_[lc].m * tree_[rc].m;\r\n      }\r\n    }\r\n  }\r\n};\n#line 4 \"test/aoj/aoj-do_use_segment_tree-balanced_tree.test.cpp\"\
     \n#include <bits/stdc++.h>\r\n\r\nusing namespace std;\r\n\r\nconstexpr int MINF\
     \ = -1e9;\r\nstruct M {\r\n  int l,r,sum,v;\r\n  M() : v(MINF) {}\r\n  M(int w)\
     \ : l(w),r(w),sum(w),v(w) {}\r\n  friend M operator*(const M& lhs, const M& rhs)\
@@ -164,16 +164,16 @@ data:
     \n      int a,b,c; cin>>a>>b>>c; a--; b--;\r\n      cout << T.query<M>(a,b,query).v\
     \ << endl;\r\n    }\r\n  }\r\n}\n"
   code: "#define PROBLEM \"https://onlinejudge.u-aizu.ac.jp/problems/2450\"\r\n#include\
-    \ \"../include/mtl/hld.hpp\"\r\n#include \"../include/mtl/segment_hld.hpp\"\r\n\
-    #include <bits/stdc++.h>\r\n\r\nusing namespace std;\r\n\r\nconstexpr int MINF\
-    \ = -1e9;\r\nstruct M {\r\n  int l,r,sum,v;\r\n  M() : v(MINF) {}\r\n  M(int w)\
-    \ : l(w),r(w),sum(w),v(w) {}\r\n  friend M operator*(const M& lhs, const M& rhs)\
-    \ {\r\n    if (lhs.v == MINF) return rhs;\r\n    if (rhs.v == MINF) return lhs;\r\
-    \n    M ret;\r\n    ret.l = max(lhs.l, lhs.sum + rhs.l);\r\n    ret.r = max(rhs.r,\
-    \ lhs.r + rhs.sum);\r\n    ret.v = max({lhs.v, rhs.v, lhs.r + rhs.l});\r\n   \
-    \ ret.sum = lhs.sum + rhs.sum;\r\n    return ret;\r\n  }\r\n  M operator~() {\r\
-    \n    M ret = *this;\r\n    swap(ret.l, ret.r);\r\n    return ret;\r\n  }\r\n\
-    };\r\nM rev(M m) {\r\n  M ret = m;\r\n  swap(ret.l, ret.r);\r\n  return ret;\r\
+    \ \"../../include/mtl/hld.hpp\"\r\n#include \"../../include/mtl/segment_hld.hpp\"\
+    \r\n#include <bits/stdc++.h>\r\n\r\nusing namespace std;\r\n\r\nconstexpr int\
+    \ MINF = -1e9;\r\nstruct M {\r\n  int l,r,sum,v;\r\n  M() : v(MINF) {}\r\n  M(int\
+    \ w) : l(w),r(w),sum(w),v(w) {}\r\n  friend M operator*(const M& lhs, const M&\
+    \ rhs) {\r\n    if (lhs.v == MINF) return rhs;\r\n    if (rhs.v == MINF) return\
+    \ lhs;\r\n    M ret;\r\n    ret.l = max(lhs.l, lhs.sum + rhs.l);\r\n    ret.r\
+    \ = max(rhs.r, lhs.r + rhs.sum);\r\n    ret.v = max({lhs.v, rhs.v, lhs.r + rhs.l});\r\
+    \n    ret.sum = lhs.sum + rhs.sum;\r\n    return ret;\r\n  }\r\n  M operator~()\
+    \ {\r\n    M ret = *this;\r\n    swap(ret.l, ret.r);\r\n    return ret;\r\n  }\r\
+    \n};\r\nM rev(M m) {\r\n  M ret = m;\r\n  swap(ret.l, ret.r);\r\n  return ret;\r\
     \n}\r\nstruct A {\r\n  int v;\r\n  bool f;\r\n  A() : f(false) {}\r\n  A(int v)\
     \ : v(v), f(true) {}\r\n  bool operator()() const { return f; }\r\n  A& operator*=(const\
     \ A& r) {\r\n    if (r.f) *this = r;\r\n    return *this;\r\n  }\r\n  M act(const\
@@ -195,15 +195,15 @@ data:
   - include/mtl/hld.hpp
   - include/mtl/segment_hld.hpp
   isVerificationFile: true
-  path: test/aoj-do_use_segment_tree-balanced_tree.test.cpp
+  path: test/aoj/aoj-do_use_segment_tree-balanced_tree.test.cpp
   requiredBy: []
-  timestamp: '2023-04-03 03:43:28+09:00'
+  timestamp: '2023-04-08 02:15:04+09:00'
   verificationStatus: TEST_ACCEPTED
   verifiedWith: []
-documentation_of: test/aoj-do_use_segment_tree-balanced_tree.test.cpp
+documentation_of: test/aoj/aoj-do_use_segment_tree-balanced_tree.test.cpp
 layout: document
 redirect_from:
-- /verify/test/aoj-do_use_segment_tree-balanced_tree.test.cpp
-- /verify/test/aoj-do_use_segment_tree-balanced_tree.test.cpp.html
-title: test/aoj-do_use_segment_tree-balanced_tree.test.cpp
+- /verify/test/aoj/aoj-do_use_segment_tree-balanced_tree.test.cpp
+- /verify/test/aoj/aoj-do_use_segment_tree-balanced_tree.test.cpp.html
+title: test/aoj/aoj-do_use_segment_tree-balanced_tree.test.cpp
 ---
