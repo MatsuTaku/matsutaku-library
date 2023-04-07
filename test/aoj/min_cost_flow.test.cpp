@@ -1,5 +1,5 @@
 #define PROBLEM "https://onlinejudge.u-aizu.ac.jp/problems/GRL_6_B"
-#include "../include/mtl/min_cost_flow.hpp"
+#include "../../include/mtl/min_cost_flow.hpp"
 #include <bits/stdc++.h>
 using namespace std;
 

@@ -1,6 +1,6 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/range_affine_point_get"
-#include "../include/mtl/dual_segment_tree.hpp"
-#include "../include/mtl/modular.hpp"
+#include "../../include/mtl/dual_segment_tree.hpp"
+#include "../../include/mtl/modular.hpp"
 #include <bits/stdc++.h>
 using namespace std;
 

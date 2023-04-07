@@ -1,5 +1,5 @@
 #define PROBLEM "https://onlinejudge.u-aizu.ac.jp/problems/DSL_2_D"
-#include "../include/mtl/dual_segment_tree.hpp"
+#include "../../include/mtl/dual_segment_tree.hpp"
 #include <bits/stdc++.h>
 using namespace std;
 

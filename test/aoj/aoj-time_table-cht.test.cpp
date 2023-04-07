@@ -1,5 +1,5 @@
 #define PROBLEM "https://onlinejudge.u-aizu.ac.jp/problems/2603"
-#include "../include/mtl/convex_hull_trick.hpp"
+#include "../../include/mtl/convex_hull_trick.hpp"
 #include <bits/stdc++.h>
 using namespace std;
 
