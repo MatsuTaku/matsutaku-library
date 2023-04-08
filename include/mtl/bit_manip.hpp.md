@@ -40,7 +40,7 @@ data:
     title: include/mtl/ntt.hpp
   - icon: ':heavy_check_mark:'
     path: include/mtl/ordinal_range_search.hpp
-    title: include/mtl/ordinal_range_search.hpp
+    title: Ordinal Range Search
   - icon: ':heavy_check_mark:'
     path: include/mtl/segment_tree.hpp
     title: include/mtl/segment_tree.hpp
@@ -106,11 +106,17 @@ data:
     path: test/yosupo/range_affine_range_sum.test.cpp
     title: test/yosupo/range_affine_range_sum.test.cpp
   - icon: ':heavy_check_mark:'
+    path: test/yosupo/rectangle_sum.test.cpp
+    title: test/yosupo/rectangle_sum.test.cpp
+  - icon: ':heavy_check_mark:'
     path: test/yosupo/static_range_inversions_query.test.cpp
     title: test/yosupo/static_range_inversions_query.test.cpp
   - icon: ':heavy_check_mark:'
     path: test/yosupo/static_range_sum.test.cpp
     title: test/yosupo/static_range_sum.test.cpp
+  - icon: ':heavy_check_mark:'
+    path: test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
+    title: test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
   - icon: ':heavy_check_mark:'
     path: test/yosupo/static_rmq.test.cpp
     title: test/yosupo/static_rmq.test.cpp
@@ -237,10 +243,12 @@ data:
   - test/yuki/yuki-no945_ykc_manju.test.cpp
   - test/yosupo/static_range_inversions_query.test.cpp
   - test/yosupo/yosupo-segment_add_get_min.test.cpp
+  - test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
   - test/yosupo/point_add_range_sum.test.cpp
   - test/yosupo/yosupo-line_add_get_min.test.cpp
   - test/yosupo/predecessor_problem-yft.test.cpp
   - test/yosupo/convolution.test.cpp
+  - test/yosupo/rectangle_sum.test.cpp
   - test/yosupo/static_range_sum.test.cpp
   - test/yosupo/static_rmq.test.cpp
   - test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp

@@ -1,17 +1,11 @@
 ---
 data:
   _extendedDependsOn: []
-  _extendedRequiredBy:
-  - icon: ':heavy_check_mark:'
-    path: include/mtl/ordinal_range_search.hpp
-    title: include/mtl/ordinal_range_search.hpp
+  _extendedRequiredBy: []
   _extendedVerifiedWith:
   - icon: ':heavy_check_mark:'
     path: test/yosupo/yosupo-line_add_get_min.test.cpp
     title: test/yosupo/yosupo-line_add_get_min.test.cpp
-  - icon: ':heavy_check_mark:'
-    path: test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
-    title: test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
   - icon: ':heavy_check_mark:'
     path: test/yosupo/yosupo-segment_add_get_min.test.cpp
     title: test/yosupo/yosupo-segment_add_get_min.test.cpp
@@ -31,9 +25,9 @@ data:
     \ vs.end()), vs.end());\r\n    std::unordered_map<T,int> mp;\r\n    mp.reserve(vs.size());\r\
     \n    int k = 0;\r\n    for (auto v : vs) mp[v] = k++;\r\n    return mp;\r\n \
     \ }\r\n  std::pair<map_type, std::vector<T>> release_tie() {\r\n    return std::make_pair(release(),\
-    \ vs);\r\n  }\r\n  template<typename It>\r\n  static std::unordered_map<T,int>\
-    \ compress(It begin, It end) {\r\n    return Compressor(begin, end).release();\r\
-    \n  }\r\n};\r\n"
+    \ std::move(vs));\r\n  }\r\n  template<typename It>\r\n  static map_type compress(It\
+    \ begin, It end) {\r\n    return Compressor(begin, end).release();\r\n  }\r\n\
+    };\r\n"
   code: "#pragma once\r\n#include <set>\r\n#include <unordered_map>\r\n#include <vector>\r\
     \n#include <algorithm>\r\n\r\ntemplate<typename T>\r\nstruct Compressor {\r\n\
     \  std::vector<T> vs;\r\n  Compressor() = default;\r\n  template<typename It>\r\
@@ -45,20 +39,18 @@ data:
     \ vs.end()), vs.end());\r\n    std::unordered_map<T,int> mp;\r\n    mp.reserve(vs.size());\r\
     \n    int k = 0;\r\n    for (auto v : vs) mp[v] = k++;\r\n    return mp;\r\n \
     \ }\r\n  std::pair<map_type, std::vector<T>> release_tie() {\r\n    return std::make_pair(release(),\
-    \ vs);\r\n  }\r\n  template<typename It>\r\n  static std::unordered_map<T,int>\
-    \ compress(It begin, It end) {\r\n    return Compressor(begin, end).release();\r\
-    \n  }\r\n};\r\n"
+    \ std::move(vs));\r\n  }\r\n  template<typename It>\r\n  static map_type compress(It\
+    \ begin, It end) {\r\n    return Compressor(begin, end).release();\r\n  }\r\n\
+    };\r\n"
   dependsOn: []
   isVerificationFile: false
   path: include/mtl/compress_int.hpp
-  requiredBy:
-  - include/mtl/ordinal_range_search.hpp
-  timestamp: '2022-11-27 16:09:45+09:00'
+  requiredBy: []
+  timestamp: '2023-04-07 23:14:59+09:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
   - test/yosupo/yosupo-segment_add_get_min.test.cpp
   - test/yosupo/yosupo-line_add_get_min.test.cpp
-  - test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
 documentation_of: include/mtl/compress_int.hpp
 layout: document
 redirect_from:

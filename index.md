@@ -104,7 +104,7 @@ data:
       title: include/mtl/ntt.hpp
     - icon: ':heavy_check_mark:'
       path: include/mtl/ordinal_range_search.hpp
-      title: include/mtl/ordinal_range_search.hpp
+      title: Ordinal Range Search
     - icon: ':heavy_check_mark:'
       path: include/mtl/persistent_array.hpp
       title: include/mtl/persistent_array.hpp
@@ -372,11 +372,17 @@ data:
       path: test/yosupo/range_affine_range_sum.test.cpp
       title: test/yosupo/range_affine_range_sum.test.cpp
     - icon: ':heavy_check_mark:'
+      path: test/yosupo/rectangle_sum.test.cpp
+      title: test/yosupo/rectangle_sum.test.cpp
+    - icon: ':heavy_check_mark:'
       path: test/yosupo/static_range_inversions_query.test.cpp
       title: test/yosupo/static_range_inversions_query.test.cpp
     - icon: ':heavy_check_mark:'
       path: test/yosupo/static_range_sum.test.cpp
       title: test/yosupo/static_range_sum.test.cpp
+    - icon: ':heavy_check_mark:'
+      path: test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
+      title: test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
     - icon: ':heavy_check_mark:'
       path: test/yosupo/static_rmq.test.cpp
       title: test/yosupo/static_rmq.test.cpp

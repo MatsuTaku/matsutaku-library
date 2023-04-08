@@ -157,7 +157,7 @@ data:
     \ 9>, 1<<8> sel_tb;\r\n  constexpr void init_sel_tb() {\r\n    for (int i = 0;\
     \ i < 1<<8; i++) {\r\n      int c = 0;\r\n      int x = i;\r\n      sel_tb[i].fill(8);\r\
     \n      for (int j = 0; j < 8; j++) {\r\n        if (x & 1)\r\n          sel_tb[i][++c]\
-    \ = j;\r\n        x >>= 1;\r\n      }\r\n    }\r\n  }\r\n\r\n  explicit BitVector(size_t\
+    \ = j;\r\n        x >>= 1;\r\n      }\r\n    }\r\n  }\r\n\r\n  BitVector(size_t\
     \ size = 0, bool bit = false) : bm(size, bit) {\r\n    init_sel_tb();\r\n  }\r\
     \n  template<typename It>\r\n  BitVector(It begin, It end) : bm(begin, end) {\r\
     \n    init_sel_tb();\r\n  }\r\n  size_t size() const { return bm.size(); }\r\n\
@@ -410,7 +410,7 @@ data:
   isVerificationFile: false
   path: include/mtl/succinct/wavelet_tree.hpp
   requiredBy: []
-  timestamp: '2022-12-18 04:26:00+09:00'
+  timestamp: '2023-04-08 00:54:38+09:00'
   verificationStatus: LIBRARY_NO_TESTS
   verifiedWith: []
 documentation_of: include/mtl/succinct/wavelet_tree.hpp

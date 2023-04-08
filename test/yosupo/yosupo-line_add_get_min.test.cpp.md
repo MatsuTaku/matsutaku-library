@@ -106,16 +106,16 @@ data:
     \ vs.end()), vs.end());\r\n    std::unordered_map<T,int> mp;\r\n    mp.reserve(vs.size());\r\
     \n    int k = 0;\r\n    for (auto v : vs) mp[v] = k++;\r\n    return mp;\r\n \
     \ }\r\n  std::pair<map_type, std::vector<T>> release_tie() {\r\n    return std::make_pair(release(),\
-    \ vs);\r\n  }\r\n  template<typename It>\r\n  static std::unordered_map<T,int>\
-    \ compress(It begin, It end) {\r\n    return Compressor(begin, end).release();\r\
-    \n  }\r\n};\r\n#line 4 \"test/yosupo/yosupo-line_add_get_min.test.cpp\"\n#include\
-    \ <bits/stdc++.h>\r\nusing namespace std;\r\n\r\nint main() {\r\n  int n,q; cin>>n>>q;\r\
-    \n  vector<pair<long long, long long>> L(n);\r\n  for (int i = 0; i < n; i++)\
-    \ {\r\n    long long a,b; cin>>a>>b;\r\n    L[i] = {a,b};\r\n  }\r\n  vector<array<long\
-    \ long,3>> Q(q);\r\n  Compressor<int> xcmp;\r\n  for (int i = 0; i < q; i++) {\r\
-    \n    int t; cin>>t;\r\n    if (t == 0) {\r\n      long long a,b; cin>>a>>b;\r\
-    \n      Q[i] = {0, a, b};\r\n    } else {\r\n      int p; cin>>p;\r\n      Q[i]\
-    \ = {1, p, 0};\r\n      xcmp.add(p);\r\n    }\r\n  }\r\n  auto [xc,cx] = xcmp.release_tie();\r\
+    \ std::move(vs));\r\n  }\r\n  template<typename It>\r\n  static map_type compress(It\
+    \ begin, It end) {\r\n    return Compressor(begin, end).release();\r\n  }\r\n\
+    };\r\n#line 4 \"test/yosupo/yosupo-line_add_get_min.test.cpp\"\n#include <bits/stdc++.h>\r\
+    \nusing namespace std;\r\n\r\nint main() {\r\n  int n,q; cin>>n>>q;\r\n  vector<pair<long\
+    \ long, long long>> L(n);\r\n  for (int i = 0; i < n; i++) {\r\n    long long\
+    \ a,b; cin>>a>>b;\r\n    L[i] = {a,b};\r\n  }\r\n  vector<array<long long,3>>\
+    \ Q(q);\r\n  Compressor<int> xcmp;\r\n  for (int i = 0; i < q; i++) {\r\n    int\
+    \ t; cin>>t;\r\n    if (t == 0) {\r\n      long long a,b; cin>>a>>b;\r\n     \
+    \ Q[i] = {0, a, b};\r\n    } else {\r\n      int p; cin>>p;\r\n      Q[i] = {1,\
+    \ p, 0};\r\n      xcmp.add(p);\r\n    }\r\n  }\r\n  auto [xc,cx] = xcmp.release_tie();\r\
     \n  LiChaoTree<long long, greater<>> lct(cx.begin(), cx.end());\r\n  for (auto\
     \ [a,b] : L)\r\n    lct.add_line(a, b);\r\n  for (int i = 0; i < q; i++) {\r\n\
     \    if (Q[i][0] == 0) {\r\n      long long a = Q[i][1], b = Q[i][2];\r\n    \
@@ -143,7 +143,7 @@ data:
   isVerificationFile: true
   path: test/yosupo/yosupo-line_add_get_min.test.cpp
   requiredBy: []
-  timestamp: '2023-04-08 02:15:04+09:00'
+  timestamp: '2023-04-07 23:14:59+09:00'
   verificationStatus: TEST_ACCEPTED
   verifiedWith: []
 documentation_of: test/yosupo/yosupo-line_add_get_min.test.cpp

@@ -8,6 +8,9 @@ data:
     path: include/mtl/fenwick_tree.hpp
     title: include/mtl/fenwick_tree.hpp
   - icon: ':heavy_check_mark:'
+    path: include/mtl/modular.hpp
+    title: include/mtl/modular.hpp
+  - icon: ':heavy_check_mark:'
     path: include/mtl/ordinal_range_search.hpp
     title: Ordinal Range Search
   - icon: ':heavy_check_mark:'
@@ -23,20 +26,20 @@ data:
   _verificationStatusIcon: ':heavy_check_mark:'
   attributes:
     '*NOT_SPECIAL_COMMENTS*': ''
-    PROBLEM: https://judge.yosupo.jp/problem/point_add_rectangle_sum
+    PROBLEM: https://judge.yosupo.jp/problem/static_rectangle_add_rectangle_sum
     links:
-    - https://judge.yosupo.jp/problem/point_add_rectangle_sum
-  bundledCode: "#line 1 \"test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp\"\
-    \n#define PROBLEM \"https://judge.yosupo.jp/problem/point_add_rectangle_sum\"\r\
-    \n#line 2 \"include/mtl/bit_manip.hpp\"\n#include <cstdint>\n#include <cassert>\n\
-    \nnamespace bm {\n\ninline constexpr uint64_t popcnt_e8(uint64_t x) {\n  x = (x\
-    \ & 0x5555555555555555) + ((x>>1) & 0x5555555555555555);\n  x = (x & 0x3333333333333333)\
-    \ + ((x>>2) & 0x3333333333333333);\n  x = (x & 0x0F0F0F0F0F0F0F0F) + ((x>>4) &\
-    \ 0x0F0F0F0F0F0F0F0F);\n  return x;\n}\n// Count 1s\ninline constexpr unsigned\
-    \ popcnt(uint64_t x) {\n  return (popcnt_e8(x) * 0x0101010101010101) >> 56;\n\
-    }\n// Count trailing 0s. ...01101000 -> 3\ninline constexpr unsigned ctz(uint64_t\
-    \ x) {\n  return popcnt((x & (-x)) - 1);\n}\ninline constexpr unsigned ctz8(uint8_t\
-    \ x) {\n  return x == 0 ? 8 : popcnt_e8((x & (-x)) - 1);\n}\n// [00..0](8bit)\
+    - https://judge.yosupo.jp/problem/static_rectangle_add_rectangle_sum
+  bundledCode: "#line 1 \"test/yosupo/static_rectangle_add_rectangle_sum.test.cpp\"\
+    \n#define PROBLEM \"https://judge.yosupo.jp/problem/static_rectangle_add_rectangle_sum\"\
+    \n// #define IGNORE \"MLE\"\n#line 2 \"include/mtl/bit_manip.hpp\"\n#include <cstdint>\n\
+    #include <cassert>\n\nnamespace bm {\n\ninline constexpr uint64_t popcnt_e8(uint64_t\
+    \ x) {\n  x = (x & 0x5555555555555555) + ((x>>1) & 0x5555555555555555);\n  x =\
+    \ (x & 0x3333333333333333) + ((x>>2) & 0x3333333333333333);\n  x = (x & 0x0F0F0F0F0F0F0F0F)\
+    \ + ((x>>4) & 0x0F0F0F0F0F0F0F0F);\n  return x;\n}\n// Count 1s\ninline constexpr\
+    \ unsigned popcnt(uint64_t x) {\n  return (popcnt_e8(x) * 0x0101010101010101)\
+    \ >> 56;\n}\n// Count trailing 0s. ...01101000 -> 3\ninline constexpr unsigned\
+    \ ctz(uint64_t x) {\n  return popcnt((x & (-x)) - 1);\n}\ninline constexpr unsigned\
+    \ ctz8(uint8_t x) {\n  return x == 0 ? 8 : popcnt_e8((x & (-x)) - 1);\n}\n// [00..0](8bit)\
     \ -> 0, [**..*](not only 0) -> 1\ninline constexpr uint8_t summary(uint64_t x)\
     \ {\n  constexpr uint64_t hmask = 0x8080808080808080ull;\n  constexpr uint64_t\
     \ lmask = 0x7F7F7F7F7F7F7F7Full;\n  auto a = x & hmask;\n  auto b = x & lmask;\n\
@@ -445,47 +448,113 @@ data:
     \    auto jdx = idx;\r\n        for (size_t k = 0; k < wm.h; k++)\r\n        \
     \  jdx = wm.parent(wm.h-1-k, jdx, (c >> k) & 1u);\r\n        ret.emplace_back(value_of_ith_x(jdx),\
     \ value_of_ith_y(c));\r\n      }\r\n    });\r\n    return ret;\r\n  }\r\n};\n\
-    #line 3 \"test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp\"\n#include <bits/stdc++.h>\r\
-    \nusing namespace std;\r\n\r\nint main() {\r\n  int n,q; cin>>n>>q;\r\n  ORS<int,\
-    \ long long> ors;\r\n  for (int i = 0; i < n; i++) {\r\n    int x,y,w; cin>>x>>y>>w;\r\
-    \n    ors.add(x,y,w);\r\n  }\r\n  vector<tuple<int,int,int,int,int>> Q(q);\r\n\
-    \  for (int i = 0; i < q; i++) {\r\n    int t; cin>>t;\r\n    if (t == 0) {\r\n\
-    \      int x,y,w; cin>>x>>y>>w;\r\n      Q[i] = {0,x,y,w,0};\r\n      ors.add(x,y,0);\r\
-    \n    } else {\r\n      int l,d,r,u; cin>>l>>d>>r>>u;\r\n      Q[i] = {1,l,d,r,u};\r\
-    \n    }\r\n  }\r\n  ors.build();\r\n  for (int i = 0; i < q; i++) {\r\n    int\
-    \ t = get<0>(Q[i]);\r\n    if (t == 0) {\r\n      int x,y,w,_;\r\n      std::tie(t,x,y,w,_)\
-    \ = Q[i];\r\n      ors.weight_add(x,y,w);\r\n    } else {\r\n      int l,d,r,u;\r\
-    \n      std::tie(t,l,d,r,u) = Q[i];\r\n      cout << ors.sum(l,r,d,u) << endl;\r\
-    \n    }\r\n  }\r\n}\n"
-  code: "#define PROBLEM \"https://judge.yosupo.jp/problem/point_add_rectangle_sum\"\
-    \r\n#include \"../../include/mtl/ordinal_range_search.hpp\"\r\n#include <bits/stdc++.h>\r\
-    \nusing namespace std;\r\n\r\nint main() {\r\n  int n,q; cin>>n>>q;\r\n  ORS<int,\
-    \ long long> ors;\r\n  for (int i = 0; i < n; i++) {\r\n    int x,y,w; cin>>x>>y>>w;\r\
-    \n    ors.add(x,y,w);\r\n  }\r\n  vector<tuple<int,int,int,int,int>> Q(q);\r\n\
-    \  for (int i = 0; i < q; i++) {\r\n    int t; cin>>t;\r\n    if (t == 0) {\r\n\
-    \      int x,y,w; cin>>x>>y>>w;\r\n      Q[i] = {0,x,y,w,0};\r\n      ors.add(x,y,0);\r\
-    \n    } else {\r\n      int l,d,r,u; cin>>l>>d>>r>>u;\r\n      Q[i] = {1,l,d,r,u};\r\
-    \n    }\r\n  }\r\n  ors.build();\r\n  for (int i = 0; i < q; i++) {\r\n    int\
-    \ t = get<0>(Q[i]);\r\n    if (t == 0) {\r\n      int x,y,w,_;\r\n      std::tie(t,x,y,w,_)\
-    \ = Q[i];\r\n      ors.weight_add(x,y,w);\r\n    } else {\r\n      int l,d,r,u;\r\
-    \n      std::tie(t,l,d,r,u) = Q[i];\r\n      cout << ors.sum(l,r,d,u) << endl;\r\
-    \n    }\r\n  }\r\n}"
+    #line 4 \"include/mtl/modular.hpp\"\n\ntemplate <int MOD>\nclass Modular {\n private:\n\
+    \  unsigned int val_;\n\n public:\n  static constexpr unsigned int mod() { return\
+    \ MOD; }\n  template<class T>\n  static constexpr unsigned int safe_mod(T v) {\n\
+    \    auto x = (long long)(v%(long long)mod());\n    if (x < 0) x += mod();\n \
+    \   return (unsigned int) x;\n  }\n\n  constexpr Modular() : val_(0) {}\n  template<class\
+    \ T,\n      std::enable_if_t<\n          std::is_integral<T>::value && std::is_unsigned<T>::value\n\
+    \      > * = nullptr>\n  constexpr Modular(T v) : val_(v%mod()) {}\n  template<class\
+    \ T,\n      std::enable_if_t<\n          std::is_integral<T>::value && !std::is_unsigned<T>::value\n\
+    \      > * = nullptr>\n  constexpr Modular(T v) : val_(safe_mod(v)) {}\n\n  constexpr\
+    \ unsigned int val() const { return val_; }\n  constexpr Modular& operator+=(Modular\
+    \ x) {\n    val_ += x.val();\n    if (val_ >= mod()) val_ -= mod();\n    return\
+    \ *this;\n  }\n  constexpr Modular operator-() const { return {mod() - val_};\
+    \ }\n  constexpr Modular& operator-=(Modular x) {\n    val_ += mod() - x.val();\n\
+    \    if (val_ >= mod()) val_ -= mod();\n    return *this;\n  }\n  constexpr Modular&\
+    \ operator*=(Modular x) {\n    auto v = (long long) val_ * x.val();\n    if (v\
+    \ >= mod()) v %= mod();\n    val_ = v;\n    return *this;\n  }\n  constexpr Modular\
+    \ pow(long long p) const {\n    assert(p >= 0);\n    Modular t = 1;\n    Modular\
+    \ u = *this;\n    while (p) {\n      if (p & 1)\n        t *= u;\n      u *= u;\n\
+    \      p >>= 1;\n    }\n    return t;\n  }\n  friend constexpr Modular pow(Modular\
+    \ x, long long p) {\n    return x.pow(p);\n  }\n  constexpr Modular inv() const\
+    \ { return pow(mod()-2); }\n  constexpr Modular& operator/=(Modular x) { return\
+    \ *this *= x.inv(); }\n  constexpr Modular operator+(Modular x) const { return\
+    \ Modular(*this) += x; }\n  constexpr Modular operator-(Modular x) const { return\
+    \ Modular(*this) -= x; }\n  constexpr Modular operator*(Modular x) const { return\
+    \ Modular(*this) *= x; }\n  constexpr Modular operator/(Modular x) const { return\
+    \ Modular(*this) /= x; }\n  constexpr Modular& operator++() { return *this +=\
+    \ 1; }\n  constexpr Modular operator++(int) { Modular c = *this; ++(*this); return\
+    \ c; }\n  constexpr Modular& operator--() { return *this -= 1; }\n  constexpr\
+    \ Modular operator--(int) { Modular c = *this; --(*this); return c; }\n\n  constexpr\
+    \ bool operator==(Modular x) const { return val() == x.val(); }\n  constexpr bool\
+    \ operator!=(Modular x) const { return val() != x.val(); }\n\n  friend std::ostream&\
+    \ operator<<(std::ostream& os, const Modular& x) {\n    return os << x.val();\n\
+    \  }\n  friend std::istream& operator>>(std::istream& is, Modular& x) {\n    return\
+    \ is >> x.val_;\n  }\n\n};\n\nusing Modular998244353 = Modular<998244353>;\nusing\
+    \ Modular1000000007 = Modular<(int)1e9+7>;\n\n#line 91 \"include/mtl/modular.hpp\"\
+    \n\nnamespace math {\n\nconstexpr int mod_pow_constexpr(int x, int p, int m) {\n\
+    \  int t = 1;\n  int u = x;\n  while (p) {\n    if (p & 1) {\n      t *= u;\n\
+    \      t %= m;\n    }\n    u *= u;\n    u %= m;\n    p >>= 1;\n  }\n  return t;\n\
+    }\n\nconstexpr int primitive_root_constexpr(int m) {\n  if (m == 2) return 1;\n\
+    \  if (m == 998244353) return 3;\n\n  std::array<int, 20> divs{2};\n  int cnt\
+    \ = 1;\n  int x = (m-1) / 2;\n  for (int d = 3; d*d <= x; d += 2) {\n    if (x\
+    \ % d == 0) {\n      divs[cnt++] = d;\n      while (x % d == 0)\n        x /=\
+    \ d;\n    }\n  }\n  if (x > 1) divs[cnt++] = x;\n  for (int g = 2; ; g++) {\n\
+    \    bool ok = true;\n    for (int i = 0; i < cnt; i++) {\n      if (mod_pow_constexpr(g,\
+    \ (m-1) / divs[cnt], m) == 1) {\n        ok = false;\n        break;\n      }\n\
+    \    }\n    if (ok) return g;\n  }\n}\n\ntemplate<int m>\nconstexpr int primitive_root\
+    \ = primitive_root_constexpr(m);\n\n}\n#line 5 \"test/yosupo/static_rectangle_add_rectangle_sum.test.cpp\"\
+    \n#include <bits/stdc++.h>\nusing namespace std;\n\nusing mint = Modular998244353;\n\
+    using ors_type = ORS<int, mint, (int)1e9>;\n\nint main() {\n    cin.tie(0); ios::sync_with_stdio(0);\n\
+    \    int n,q; cin>>n>>q;\n    vector<array<int, 5>> N(n);\n    vector<array<int,\
+    \ 4>> Q(q);\n    for (int i = 0; i < n; i++) {\n        int l,d,r,u,w; cin>>l>>d>>r>>u>>w;\n\
+    \        N[i] = {l,d,r,u,w};\n    }\n    for (int i = 0; i < q; i++) {\n     \
+    \   int l,d,r,u; cin>>l>>d>>r>>u;\n        Q[i] = {l,d,r,u};\n    }\n    // add\
+    \ [a, inf) times [b, inf) ->\n    // for each xy, add (x-a)(y-b) = xy - ay - bx\
+    \ + ab\n    array<ors_type, 4> ors{}; // XY, X, Y, const\n    auto add_topleft\
+    \ = [&](int a, int b, int w) {\n        ors[0].add(a, b, (mint)w);\n        ors[1].add(a,\
+    \ b, (mint)w * -a);\n        ors[2].add(a, b, (mint)w * -b);\n        ors[3].add(a,\
+    \ b, (mint)w * a * b);\n    };\n    for (auto [l,d,r,u,w]:N) {\n        add_topleft(l,\
+    \ d, w);\n        add_topleft(l, u, -w);\n        add_topleft(r, d, -w);\n   \
+    \     add_topleft(r, u, w);\n    }\n    for (auto& o:ors) o.build();\n    auto\
+    \ prefix_sum = [&](int x, int y) {\n        return ors[0].sum(0, x, 0, y) * x\
+    \ * y +\n               ors[1].sum(0, x, 0, y) * y +\n               ors[2].sum(0,\
+    \ x, 0, y) * x +\n               ors[3].sum(0, x, 0, y);\n    };\n    auto sum\
+    \ = [&](int l, int d, int r, int u) {\n        return  prefix_sum(l, d) +\n  \
+    \             -prefix_sum(l, u) +\n               -prefix_sum(r, d) +\n      \
+    \          prefix_sum(r, u);\n    };\n    for (auto [l,d,r,u]:Q) {\n        cout\
+    \ << sum(l, d, r, u) << endl;\n    }\n}\n"
+  code: "#define PROBLEM \"https://judge.yosupo.jp/problem/static_rectangle_add_rectangle_sum\"\
+    \n// #define IGNORE \"MLE\"\n#include \"../../include/mtl/ordinal_range_search.hpp\"\
+    \n#include \"../../include/mtl/modular.hpp\"\n#include <bits/stdc++.h>\nusing\
+    \ namespace std;\n\nusing mint = Modular998244353;\nusing ors_type = ORS<int,\
+    \ mint, (int)1e9>;\n\nint main() {\n    cin.tie(0); ios::sync_with_stdio(0);\n\
+    \    int n,q; cin>>n>>q;\n    vector<array<int, 5>> N(n);\n    vector<array<int,\
+    \ 4>> Q(q);\n    for (int i = 0; i < n; i++) {\n        int l,d,r,u,w; cin>>l>>d>>r>>u>>w;\n\
+    \        N[i] = {l,d,r,u,w};\n    }\n    for (int i = 0; i < q; i++) {\n     \
+    \   int l,d,r,u; cin>>l>>d>>r>>u;\n        Q[i] = {l,d,r,u};\n    }\n    // add\
+    \ [a, inf) times [b, inf) ->\n    // for each xy, add (x-a)(y-b) = xy - ay - bx\
+    \ + ab\n    array<ors_type, 4> ors{}; // XY, X, Y, const\n    auto add_topleft\
+    \ = [&](int a, int b, int w) {\n        ors[0].add(a, b, (mint)w);\n        ors[1].add(a,\
+    \ b, (mint)w * -a);\n        ors[2].add(a, b, (mint)w * -b);\n        ors[3].add(a,\
+    \ b, (mint)w * a * b);\n    };\n    for (auto [l,d,r,u,w]:N) {\n        add_topleft(l,\
+    \ d, w);\n        add_topleft(l, u, -w);\n        add_topleft(r, d, -w);\n   \
+    \     add_topleft(r, u, w);\n    }\n    for (auto& o:ors) o.build();\n    auto\
+    \ prefix_sum = [&](int x, int y) {\n        return ors[0].sum(0, x, 0, y) * x\
+    \ * y +\n               ors[1].sum(0, x, 0, y) * y +\n               ors[2].sum(0,\
+    \ x, 0, y) * x +\n               ors[3].sum(0, x, 0, y);\n    };\n    auto sum\
+    \ = [&](int l, int d, int r, int u) {\n        return  prefix_sum(l, d) +\n  \
+    \             -prefix_sum(l, u) +\n               -prefix_sum(r, d) +\n      \
+    \          prefix_sum(r, u);\n    };\n    for (auto [l,d,r,u]:Q) {\n        cout\
+    \ << sum(l, d, r, u) << endl;\n    }\n}"
   dependsOn:
   - include/mtl/ordinal_range_search.hpp
   - include/mtl/fenwick_tree.hpp
   - include/mtl/bit_manip.hpp
   - include/mtl/succinct/wavelet_matrix.hpp
   - include/mtl/succinct/bit_vector.hpp
+  - include/mtl/modular.hpp
   isVerificationFile: true
-  path: test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
+  path: test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
   requiredBy: []
   timestamp: '2023-04-08 15:04:50+09:00'
   verificationStatus: TEST_ACCEPTED
   verifiedWith: []
-documentation_of: test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
+documentation_of: test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
 layout: document
 redirect_from:
-- /verify/test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
-- /verify/test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp.html
-title: test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
+- /verify/test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
+- /verify/test/yosupo/static_rectangle_add_rectangle_sum.test.cpp.html
+title: test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
 ---

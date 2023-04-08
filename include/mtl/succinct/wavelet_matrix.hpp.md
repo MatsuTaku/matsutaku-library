@@ -10,11 +10,17 @@ data:
   _extendedRequiredBy:
   - icon: ':heavy_check_mark:'
     path: include/mtl/ordinal_range_search.hpp
-    title: include/mtl/ordinal_range_search.hpp
+    title: Ordinal Range Search
   _extendedVerifiedWith:
   - icon: ':heavy_check_mark:'
     path: test/succinct/range_kth_smallest.test.cpp
     title: test/succinct/range_kth_smallest.test.cpp
+  - icon: ':heavy_check_mark:'
+    path: test/yosupo/rectangle_sum.test.cpp
+    title: test/yosupo/rectangle_sum.test.cpp
+  - icon: ':heavy_check_mark:'
+    path: test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
+    title: test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
   - icon: ':heavy_check_mark:'
     path: test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
     title: test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
@@ -165,7 +171,7 @@ data:
     \ 9>, 1<<8> sel_tb;\r\n  constexpr void init_sel_tb() {\r\n    for (int i = 0;\
     \ i < 1<<8; i++) {\r\n      int c = 0;\r\n      int x = i;\r\n      sel_tb[i].fill(8);\r\
     \n      for (int j = 0; j < 8; j++) {\r\n        if (x & 1)\r\n          sel_tb[i][++c]\
-    \ = j;\r\n        x >>= 1;\r\n      }\r\n    }\r\n  }\r\n\r\n  explicit BitVector(size_t\
+    \ = j;\r\n        x >>= 1;\r\n      }\r\n    }\r\n  }\r\n\r\n  BitVector(size_t\
     \ size = 0, bool bit = false) : bm(size, bit) {\r\n    init_sel_tb();\r\n  }\r\
     \n  template<typename It>\r\n  BitVector(It begin, It end) : bm(begin, end) {\r\
     \n    init_sel_tb();\r\n  }\r\n  size_t size() const { return bm.size(); }\r\n\
@@ -271,9 +277,9 @@ data:
     \ (pr == 0)\n        break;\n      if (((c >> k) & 1u) == 0) {\n        std::tie(l,r)\
     \ = _child_tie0(h-1-k, l, r);\n        gt += pr - (r - l);\n      } else {\n \
     \       std::tie(l,r) = _child_tie1(h-1-k, l, r);\n        lt += pr - (r - l);\n\
-    \      }\n    }\n    return std::make_tuple(lt, r - l, gt);\n  }\n\n  // Get frequency\
-    \ of values which (x <= value < y) in S[l,r).\n  size_t range_freq(size_t l, size_t\
-    \ r, T x, T y) const {\n    size_t freq = 0;\n    std::queue<std::tuple<size_t,size_t,\
+    \      }\n    }\n    return std::make_tuple(lt, r - l, gt);\n  }\n\n  /// Get\
+    \ frequency of values which (x <= value < y) in S[l,r).\n  size_t range_freq(size_t\
+    \ l, size_t r, T x, T y) const {\n    size_t freq = 0;\n    std::queue<std::tuple<size_t,size_t,\
     \ T>> qs;\n    qs.emplace(l, r, T(0));\n    while (!qs.empty()) {\n      size_t\
     \ _l,_r;\n      T c;\n      std::tie(_l,_r,c) = qs.front();\n      qs.pop();\n\
     \      size_t level = _l/n;\n      if (_l == _r)\n        continue;\n      int\
@@ -289,7 +295,7 @@ data:
     \ - l <= i)\n        return n;\n    }\n    size_t j = l+i;\n    for (size_t k\
     \ = 0; k < h; k++) {\n      j = parent(h-1-k, j, (c >> k) & 1u);\n      assert((bool)((c>>k)&1u)\
     \ == B[j]);\n    }\n    return j;\n  }\n  size_t select(T c, size_t i) const {\n\
-    \    return range_select(c, 0, n, i);\n  }\n\n  // Get kth (0-indexed) smallest\
+    \    return range_select(c, 0, n, i);\n  }\n\n  /// Get kth (0-indexed) smallest\
     \ value in S[l,r).\n  T quantile(size_t l, size_t r, size_t k) const {\n    assert(r\
     \ - l > k);\n    T c = 0;\n    for (int d = h-1; d > 0; d--) {\n      auto os\
     \ = B.rank(r) - B.rank(l);\n      auto zs = r - l - os;\n      if (k < zs) {\n\
@@ -297,7 +303,7 @@ data:
     \ |= 1ull << d;\n        k -= zs;\n        std::tie(l,r) = _child_tie1(h-1-d,\
     \ l, r);\n      }\n      assert(l < r);\n    }\n    auto os = B.rank(r) - B.rank(l);\n\
     \    auto zs = r - l - os;\n    if (k >= zs) {\n      c |= 1ull;\n    }\n    return\
-    \ c;\n  }\n\n  // Get tuples (value, frequency) of the most k frequently occurring\
+    \ c;\n  }\n\n  /// Get tuples (value, frequency) of the most k frequently occurring\
     \ values in S[l,r).\n  std::vector<std::pair<T, size_t>> top_k(size_t l, size_t\
     \ r, size_t k) const {\n    std::vector<std::pair<T, size_t>> ret;\n    std::priority_queue<std::tuple<size_t,\
     \ size_t, T>> qs;\n    qs.emplace(r-l, l, 0);\n    while (!qs.empty()) {\n   \
@@ -307,12 +313,12 @@ data:
     \      size_t _l, _r;\n        for (int b = 0; b < 2; b++) {\n          std::tie(_l,_r)\
     \ = child_tie(level, s, s+range, b);\n          if (_l != _r)\n            qs.emplace(_r-_l,\
     \ _l, c | (uint64_t(b) << (h-1-level)));\n        }\n      }\n    }\n    return\
-    \ ret;\n  }\n  // Get sum of S[l,r) in O(min(r-l, \\sigma) log \\sigma) times.\n\
+    \ ret;\n  }\n  /// Get sum of S[l,r) in O(min(r-l, \\sigma) log \\sigma) times.\n\
     \  template<typename U=T>\n  U sum(size_t l, size_t r) const {\n    U ret = 0;\n\
     \    for (auto p : top_k(l, r, r-l))\n      ret += (U) p.first * p.second;\n \
-    \   return ret;\n  }\n\n  // Get k tuples of (value, frequency) that value satisfies\
-    \ condition (x <= value < y) in S[l,r) from the smallest (or largest).\n  // The\
-    \ complexity is O(k log \\sigma).\n  template<bool ASCENDING, bool VALUE_RANGE\
+    \   return ret;\n  }\n\n  /// Get k tuples of (value, frequency) that value satisfies\
+    \ condition (x <= value < y) in S[l,r) from the smallest (or largest).\n  ///\
+    \ The complexity is O(k log \\sigma).\n  template<bool ASCENDING, bool VALUE_RANGE\
     \ = true>\n  std::vector<std::pair<T, size_t>>\n  range_list_k(size_t l, size_t\
     \ r, size_t k, T x, T y) const {\n    std::vector<std::pair<T, size_t>> ret;\n\
     \    std::queue<std::tuple<size_t, size_t, T>> qs;\n    qs.emplace(r-l, l, T(0));\n\
@@ -326,19 +332,19 @@ data:
     \ or ((y-1) >> shift) < nc))\n            continue;\n          size_t nl,nr;\n\
     \          std::tie(nl,nr) = child_tie(level, s, s+range, b);\n          if (nl\
     \ != nr)\n            qs.emplace(nr-nl, nl, nc);\n        }\n      }\n    }\n\
-    \    return ret;\n  }\n\n  // Get tuples of (value, frequency) that value satisfies\
-    \ condition (x <= value < y) in S[l,r).\n  // The complexity is O(k log \\sigma).\n\
+    \    return ret;\n  }\n\n  /// Get tuples of (value, frequency) that value satisfies\
+    \ condition (x <= value < y) in S[l,r).\n  /// The complexity is O(k log \\sigma).\n\
     \  std::vector<std::pair<T, size_t>> range_list(size_t l, size_t r, T x, T y)\
-    \ const {\n    return range_list_k<true>(l, r, r - l, x, y);\n  }\n\n  // Get\
+    \ const {\n    return range_list_k<true>(l, r, r - l, x, y);\n  }\n\n  /// Get\
     \ k tuples of (value, frequency) that value satisfies condition (x <= value <\
-    \ y) in S[l,r) from the largest.\n  // The complexity is O(k log \\sigma).\n \
-    \ std::vector<std::pair<T, size_t>> range_max_k(size_t l, size_t r, size_t k)\
-    \ const {\n    return range_list_k<false, false>(l, r, k, 0, 0);\n  }\n  // Get\
+    \ y) in S[l,r) from the largest.\n  /// The complexity is O(k log \\sigma).\n\
+    \  std::vector<std::pair<T, size_t>> range_max_k(size_t l, size_t r, size_t k)\
+    \ const {\n    return range_list_k<false, false>(l, r, k, 0, 0);\n  }\n  /// Get\
     \ k tuples of (value, frequency) that value satisfies condition (x <= value <\
     \ y) in S[l,r) from the smallest.\n  // The complexity is O(k log \\sigma).\n\
     \  std::vector<std::pair<T, size_t>> range_min_k(size_t l, size_t r, size_t k)\
-    \ const {\n    return range_list_k<true, false>(l, r, k, 0, 0);\n  }\n\n  // Get\
-    \ tuples (value, frequency of T1, frequency of T2) that commonly occur between\
+    \ const {\n    return range_list_k<true, false>(l, r, k, 0, 0);\n  }\n\n  ///\
+    \ Get tuples (value, frequency of T1, frequency of T2) that commonly occur between\
     \ T1=S[l1,r1) and T2=S[l2,r2).\n  std::vector<std::tuple<T, size_t, size_t>> intersect(size_t\
     \ l1, size_t r1, size_t l2, size_t r2) const {\n    std::vector<std::tuple<T,\
     \ size_t, size_t>> ret;\n    std::queue<std::pair<std::array<size_t,4>, T>> qs;\n\
@@ -397,9 +403,9 @@ data:
     \ (pr == 0)\n        break;\n      if (((c >> k) & 1u) == 0) {\n        std::tie(l,r)\
     \ = _child_tie0(h-1-k, l, r);\n        gt += pr - (r - l);\n      } else {\n \
     \       std::tie(l,r) = _child_tie1(h-1-k, l, r);\n        lt += pr - (r - l);\n\
-    \      }\n    }\n    return std::make_tuple(lt, r - l, gt);\n  }\n\n  // Get frequency\
-    \ of values which (x <= value < y) in S[l,r).\n  size_t range_freq(size_t l, size_t\
-    \ r, T x, T y) const {\n    size_t freq = 0;\n    std::queue<std::tuple<size_t,size_t,\
+    \      }\n    }\n    return std::make_tuple(lt, r - l, gt);\n  }\n\n  /// Get\
+    \ frequency of values which (x <= value < y) in S[l,r).\n  size_t range_freq(size_t\
+    \ l, size_t r, T x, T y) const {\n    size_t freq = 0;\n    std::queue<std::tuple<size_t,size_t,\
     \ T>> qs;\n    qs.emplace(l, r, T(0));\n    while (!qs.empty()) {\n      size_t\
     \ _l,_r;\n      T c;\n      std::tie(_l,_r,c) = qs.front();\n      qs.pop();\n\
     \      size_t level = _l/n;\n      if (_l == _r)\n        continue;\n      int\
@@ -415,7 +421,7 @@ data:
     \ - l <= i)\n        return n;\n    }\n    size_t j = l+i;\n    for (size_t k\
     \ = 0; k < h; k++) {\n      j = parent(h-1-k, j, (c >> k) & 1u);\n      assert((bool)((c>>k)&1u)\
     \ == B[j]);\n    }\n    return j;\n  }\n  size_t select(T c, size_t i) const {\n\
-    \    return range_select(c, 0, n, i);\n  }\n\n  // Get kth (0-indexed) smallest\
+    \    return range_select(c, 0, n, i);\n  }\n\n  /// Get kth (0-indexed) smallest\
     \ value in S[l,r).\n  T quantile(size_t l, size_t r, size_t k) const {\n    assert(r\
     \ - l > k);\n    T c = 0;\n    for (int d = h-1; d > 0; d--) {\n      auto os\
     \ = B.rank(r) - B.rank(l);\n      auto zs = r - l - os;\n      if (k < zs) {\n\
@@ -423,7 +429,7 @@ data:
     \ |= 1ull << d;\n        k -= zs;\n        std::tie(l,r) = _child_tie1(h-1-d,\
     \ l, r);\n      }\n      assert(l < r);\n    }\n    auto os = B.rank(r) - B.rank(l);\n\
     \    auto zs = r - l - os;\n    if (k >= zs) {\n      c |= 1ull;\n    }\n    return\
-    \ c;\n  }\n\n  // Get tuples (value, frequency) of the most k frequently occurring\
+    \ c;\n  }\n\n  /// Get tuples (value, frequency) of the most k frequently occurring\
     \ values in S[l,r).\n  std::vector<std::pair<T, size_t>> top_k(size_t l, size_t\
     \ r, size_t k) const {\n    std::vector<std::pair<T, size_t>> ret;\n    std::priority_queue<std::tuple<size_t,\
     \ size_t, T>> qs;\n    qs.emplace(r-l, l, 0);\n    while (!qs.empty()) {\n   \
@@ -433,12 +439,12 @@ data:
     \      size_t _l, _r;\n        for (int b = 0; b < 2; b++) {\n          std::tie(_l,_r)\
     \ = child_tie(level, s, s+range, b);\n          if (_l != _r)\n            qs.emplace(_r-_l,\
     \ _l, c | (uint64_t(b) << (h-1-level)));\n        }\n      }\n    }\n    return\
-    \ ret;\n  }\n  // Get sum of S[l,r) in O(min(r-l, \\sigma) log \\sigma) times.\n\
+    \ ret;\n  }\n  /// Get sum of S[l,r) in O(min(r-l, \\sigma) log \\sigma) times.\n\
     \  template<typename U=T>\n  U sum(size_t l, size_t r) const {\n    U ret = 0;\n\
     \    for (auto p : top_k(l, r, r-l))\n      ret += (U) p.first * p.second;\n \
-    \   return ret;\n  }\n\n  // Get k tuples of (value, frequency) that value satisfies\
-    \ condition (x <= value < y) in S[l,r) from the smallest (or largest).\n  // The\
-    \ complexity is O(k log \\sigma).\n  template<bool ASCENDING, bool VALUE_RANGE\
+    \   return ret;\n  }\n\n  /// Get k tuples of (value, frequency) that value satisfies\
+    \ condition (x <= value < y) in S[l,r) from the smallest (or largest).\n  ///\
+    \ The complexity is O(k log \\sigma).\n  template<bool ASCENDING, bool VALUE_RANGE\
     \ = true>\n  std::vector<std::pair<T, size_t>>\n  range_list_k(size_t l, size_t\
     \ r, size_t k, T x, T y) const {\n    std::vector<std::pair<T, size_t>> ret;\n\
     \    std::queue<std::tuple<size_t, size_t, T>> qs;\n    qs.emplace(r-l, l, T(0));\n\
@@ -452,19 +458,19 @@ data:
     \ or ((y-1) >> shift) < nc))\n            continue;\n          size_t nl,nr;\n\
     \          std::tie(nl,nr) = child_tie(level, s, s+range, b);\n          if (nl\
     \ != nr)\n            qs.emplace(nr-nl, nl, nc);\n        }\n      }\n    }\n\
-    \    return ret;\n  }\n\n  // Get tuples of (value, frequency) that value satisfies\
-    \ condition (x <= value < y) in S[l,r).\n  // The complexity is O(k log \\sigma).\n\
+    \    return ret;\n  }\n\n  /// Get tuples of (value, frequency) that value satisfies\
+    \ condition (x <= value < y) in S[l,r).\n  /// The complexity is O(k log \\sigma).\n\
     \  std::vector<std::pair<T, size_t>> range_list(size_t l, size_t r, T x, T y)\
-    \ const {\n    return range_list_k<true>(l, r, r - l, x, y);\n  }\n\n  // Get\
+    \ const {\n    return range_list_k<true>(l, r, r - l, x, y);\n  }\n\n  /// Get\
     \ k tuples of (value, frequency) that value satisfies condition (x <= value <\
-    \ y) in S[l,r) from the largest.\n  // The complexity is O(k log \\sigma).\n \
-    \ std::vector<std::pair<T, size_t>> range_max_k(size_t l, size_t r, size_t k)\
-    \ const {\n    return range_list_k<false, false>(l, r, k, 0, 0);\n  }\n  // Get\
+    \ y) in S[l,r) from the largest.\n  /// The complexity is O(k log \\sigma).\n\
+    \  std::vector<std::pair<T, size_t>> range_max_k(size_t l, size_t r, size_t k)\
+    \ const {\n    return range_list_k<false, false>(l, r, k, 0, 0);\n  }\n  /// Get\
     \ k tuples of (value, frequency) that value satisfies condition (x <= value <\
     \ y) in S[l,r) from the smallest.\n  // The complexity is O(k log \\sigma).\n\
     \  std::vector<std::pair<T, size_t>> range_min_k(size_t l, size_t r, size_t k)\
-    \ const {\n    return range_list_k<true, false>(l, r, k, 0, 0);\n  }\n\n  // Get\
-    \ tuples (value, frequency of T1, frequency of T2) that commonly occur between\
+    \ const {\n    return range_list_k<true, false>(l, r, k, 0, 0);\n  }\n\n  ///\
+    \ Get tuples (value, frequency of T1, frequency of T2) that commonly occur between\
     \ T1=S[l1,r1) and T2=S[l2,r2).\n  std::vector<std::tuple<T, size_t, size_t>> intersect(size_t\
     \ l1, size_t r1, size_t l2, size_t r2) const {\n    std::vector<std::tuple<T,\
     \ size_t, size_t>> ret;\n    std::queue<std::pair<std::array<size_t,4>, T>> qs;\n\
@@ -483,10 +489,12 @@ data:
   path: include/mtl/succinct/wavelet_matrix.hpp
   requiredBy:
   - include/mtl/ordinal_range_search.hpp
-  timestamp: '2022-12-18 04:26:00+09:00'
+  timestamp: '2023-04-08 00:54:38+09:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
   - test/succinct/range_kth_smallest.test.cpp
+  - test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
+  - test/yosupo/rectangle_sum.test.cpp
   - test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
 documentation_of: include/mtl/succinct/wavelet_matrix.hpp
 layout: document

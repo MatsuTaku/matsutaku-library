@@ -25,6 +25,9 @@ data:
     path: test/yosupo/range_affine_range_sum.test.cpp
     title: test/yosupo/range_affine_range_sum.test.cpp
   - icon: ':heavy_check_mark:'
+    path: test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
+    title: test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
+  - icon: ':heavy_check_mark:'
     path: test/yosupo/yosupo-range_affine_point_get.test.cpp
     title: test/yosupo/yosupo-range_affine_point_get.test.cpp
   _isVerificationFailed: false
@@ -139,6 +142,7 @@ data:
   timestamp: '2023-01-28 19:00:09+00:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
+  - test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
   - test/yosupo/convolution.test.cpp
   - test/yosupo/range_affine_range_sum.test.cpp
   - test/yosupo/point_set_range_composite.test.cpp

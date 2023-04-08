@@ -7,7 +7,7 @@ data:
   _extendedRequiredBy:
   - icon: ':heavy_check_mark:'
     path: include/mtl/ordinal_range_search.hpp
-    title: include/mtl/ordinal_range_search.hpp
+    title: Ordinal Range Search
   - icon: ':heavy_check_mark:'
     path: include/mtl/succinct/wavelet_matrix.hpp
     title: include/mtl/succinct/wavelet_matrix.hpp
@@ -18,6 +18,12 @@ data:
   - icon: ':heavy_check_mark:'
     path: test/succinct/range_kth_smallest.test.cpp
     title: test/succinct/range_kth_smallest.test.cpp
+  - icon: ':heavy_check_mark:'
+    path: test/yosupo/rectangle_sum.test.cpp
+    title: test/yosupo/rectangle_sum.test.cpp
+  - icon: ':heavy_check_mark:'
+    path: test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
+    title: test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
   - icon: ':heavy_check_mark:'
     path: test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
     title: test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
@@ -166,7 +172,7 @@ data:
     \ 9>, 1<<8> sel_tb;\r\n  constexpr void init_sel_tb() {\r\n    for (int i = 0;\
     \ i < 1<<8; i++) {\r\n      int c = 0;\r\n      int x = i;\r\n      sel_tb[i].fill(8);\r\
     \n      for (int j = 0; j < 8; j++) {\r\n        if (x & 1)\r\n          sel_tb[i][++c]\
-    \ = j;\r\n        x >>= 1;\r\n      }\r\n    }\r\n  }\r\n\r\n  explicit BitVector(size_t\
+    \ = j;\r\n        x >>= 1;\r\n      }\r\n    }\r\n  }\r\n\r\n  BitVector(size_t\
     \ size = 0, bool bit = false) : bm(size, bit) {\r\n    init_sel_tb();\r\n  }\r\
     \n  template<typename It>\r\n  BitVector(It begin, It end) : bm(begin, end) {\r\
     \n    init_sel_tb();\r\n  }\r\n  size_t size() const { return bm.size(); }\r\n\
@@ -333,7 +339,7 @@ data:
     \ 9>, 1<<8> sel_tb;\r\n  constexpr void init_sel_tb() {\r\n    for (int i = 0;\
     \ i < 1<<8; i++) {\r\n      int c = 0;\r\n      int x = i;\r\n      sel_tb[i].fill(8);\r\
     \n      for (int j = 0; j < 8; j++) {\r\n        if (x & 1)\r\n          sel_tb[i][++c]\
-    \ = j;\r\n        x >>= 1;\r\n      }\r\n    }\r\n  }\r\n\r\n  explicit BitVector(size_t\
+    \ = j;\r\n        x >>= 1;\r\n      }\r\n    }\r\n  }\r\n\r\n  BitVector(size_t\
     \ size = 0, bool bit = false) : bm(size, bit) {\r\n    init_sel_tb();\r\n  }\r\
     \n  template<typename It>\r\n  BitVector(It begin, It end) : bm(begin, end) {\r\
     \n    init_sel_tb();\r\n  }\r\n  size_t size() const { return bm.size(); }\r\n\
@@ -402,10 +408,12 @@ data:
   - include/mtl/succinct/wavelet_matrix.hpp
   - include/mtl/succinct/wavelet_tree.hpp
   - include/mtl/ordinal_range_search.hpp
-  timestamp: '2022-12-18 04:26:00+09:00'
+  timestamp: '2023-04-08 00:54:38+09:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
   - test/succinct/range_kth_smallest.test.cpp
+  - test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
+  - test/yosupo/rectangle_sum.test.cpp
   - test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
 documentation_of: include/mtl/succinct/bit_vector.hpp
 layout: document
