@@ -1,4 +1,4 @@
-name: verify
+name: verify-test
 
 on: pull_request
 
