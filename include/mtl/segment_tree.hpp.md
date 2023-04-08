@@ -1,7 +1,7 @@
 ---
 data:
   _extendedDependsOn:
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/bit_manip.hpp
     title: include/mtl/bit_manip.hpp
   _extendedRequiredBy:
@@ -10,11 +10,11 @@ data:
     title: include/mtl/segment_tree_2d.hpp
   _extendedVerifiedWith:
   - icon: ':heavy_check_mark:'
-    path: test/point_set_range_composite.test.cpp
-    title: test/point_set_range_composite.test.cpp
+    path: test/yosupo/point_set_range_composite.test.cpp
+    title: test/yosupo/point_set_range_composite.test.cpp
   - icon: ':heavy_check_mark:'
-    path: test/static_rmq.test.cpp
-    title: test/static_rmq.test.cpp
+    path: test/yosupo/static_rmq.test.cpp
+    title: test/yosupo/static_rmq.test.cpp
   _isVerificationFailed: false
   _pathExtension: hpp
   _verificationStatusIcon: ':heavy_check_mark:'
@@ -135,8 +135,8 @@ data:
   timestamp: '2023-04-03 11:10:35+09:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
-  - test/static_rmq.test.cpp
-  - test/point_set_range_composite.test.cpp
+  - test/yosupo/static_rmq.test.cpp
+  - test/yosupo/point_set_range_composite.test.cpp
 documentation_of: include/mtl/segment_tree.hpp
 layout: document
 redirect_from:

@@ -1,17 +1,17 @@
 ---
 data:
   _extendedDependsOn:
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/bit_manip.hpp
     title: include/mtl/bit_manip.hpp
   _extendedRequiredBy: []
   _extendedVerifiedWith:
   - icon: ':heavy_check_mark:'
-    path: test/yosupo-line_add_get_min.test.cpp
-    title: test/yosupo-line_add_get_min.test.cpp
+    path: test/yosupo/yosupo-line_add_get_min.test.cpp
+    title: test/yosupo/yosupo-line_add_get_min.test.cpp
   - icon: ':heavy_check_mark:'
-    path: test/yosupo-segment_add_get_min.test.cpp
-    title: test/yosupo-segment_add_get_min.test.cpp
+    path: test/yosupo/yosupo-segment_add_get_min.test.cpp
+    title: test/yosupo/yosupo-segment_add_get_min.test.cpp
   _isVerificationFailed: false
   _pathExtension: hpp
   _verificationStatusIcon: ':heavy_check_mark:'
@@ -139,8 +139,8 @@ data:
   timestamp: '2022-12-20 20:34:44+09:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
-  - test/yosupo-segment_add_get_min.test.cpp
-  - test/yosupo-line_add_get_min.test.cpp
+  - test/yosupo/yosupo-segment_add_get_min.test.cpp
+  - test/yosupo/yosupo-line_add_get_min.test.cpp
 documentation_of: include/mtl/li_chao_tree.hpp
 layout: document
 redirect_from:

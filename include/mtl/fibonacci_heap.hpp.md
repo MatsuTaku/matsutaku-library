@@ -10,11 +10,11 @@ data:
     title: include/mtl/min_cost_flow.hpp
   _extendedVerifiedWith:
   - icon: ':heavy_check_mark:'
-    path: test/dijkstra_fibonacci.test.cpp
-    title: test/dijkstra_fibonacci.test.cpp
+    path: test/aoj/dijkstra_fibonacci.test.cpp
+    title: test/aoj/dijkstra_fibonacci.test.cpp
   - icon: ':heavy_check_mark:'
-    path: test/min_cost_flow.test.cpp
-    title: test/min_cost_flow.test.cpp
+    path: test/aoj/min_cost_flow.test.cpp
+    title: test/aoj/min_cost_flow.test.cpp
   _isVerificationFailed: false
   _pathExtension: hpp
   _verificationStatusIcon: ':heavy_check_mark:'
@@ -203,8 +203,8 @@ data:
   timestamp: '2022-12-20 20:34:44+09:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
-  - test/dijkstra_fibonacci.test.cpp
-  - test/min_cost_flow.test.cpp
+  - test/aoj/dijkstra_fibonacci.test.cpp
+  - test/aoj/min_cost_flow.test.cpp
 documentation_of: include/mtl/fibonacci_heap.hpp
 layout: document
 redirect_from:

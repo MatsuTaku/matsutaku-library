@@ -7,11 +7,11 @@ data:
     title: include/mtl/segment_hld.hpp
   _extendedVerifiedWith:
   - icon: ':heavy_check_mark:'
-    path: test/aoj-do_use_segment_tree-balanced_tree.test.cpp
-    title: test/aoj-do_use_segment_tree-balanced_tree.test.cpp
+    path: test/aoj/aoj-do_use_segment_tree-balanced_tree.test.cpp
+    title: test/aoj/aoj-do_use_segment_tree-balanced_tree.test.cpp
   - icon: ':heavy_check_mark:'
-    path: test/aoj-do_use_segment_tree-binary_tree.test.cpp
-    title: test/aoj-do_use_segment_tree-binary_tree.test.cpp
+    path: test/aoj/aoj-do_use_segment_tree-binary_tree.test.cpp
+    title: test/aoj/aoj-do_use_segment_tree-binary_tree.test.cpp
   _isVerificationFailed: false
   _pathExtension: hpp
   _verificationStatusIcon: ':heavy_check_mark:'
@@ -97,8 +97,8 @@ data:
   timestamp: '2022-12-20 20:34:44+09:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
-  - test/aoj-do_use_segment_tree-binary_tree.test.cpp
-  - test/aoj-do_use_segment_tree-balanced_tree.test.cpp
+  - test/aoj/aoj-do_use_segment_tree-binary_tree.test.cpp
+  - test/aoj/aoj-do_use_segment_tree-balanced_tree.test.cpp
 documentation_of: include/mtl/hld.hpp
 layout: document
 redirect_from:

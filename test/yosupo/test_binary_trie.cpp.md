@@ -10,20 +10,11 @@ data:
   - icon: ':question:'
     path: include/mtl/traits/set_traits.hpp
     title: include/mtl/traits/set_traits.hpp
-  _extendedRequiredBy:
-  - icon: ':question:'
-    path: include/mtl/yft.hpp
-    title: include/mtl/yft.hpp
-  _extendedVerifiedWith:
-  - icon: ':heavy_check_mark:'
-    path: test/yosupo/associative_array-yft.test.cpp
-    title: test/yosupo/associative_array-yft.test.cpp
-  - icon: ':x:'
-    path: test/yosupo/predecessor_problem-yft.test.cpp
-    title: test/yosupo/predecessor_problem-yft.test.cpp
-  _isVerificationFailed: true
-  _pathExtension: hpp
-  _verificationStatusIcon: ':question:'
+  _extendedRequiredBy: []
+  _extendedVerifiedWith: []
+  _isVerificationFailed: false
+  _pathExtension: cpp
+  _verificationStatusIcon: ':warning:'
   attributes:
     links: []
   bundledCode: "#line 2 \"include/mtl/traits/set_traits.hpp\"\n#include <cstddef>\r\
@@ -320,151 +311,68 @@ data:
     \nusing BinaryTrie = traits::MapTraits<BinaryTrieBase<T, V, W>>;\r\ntemplate<typename\
     \ T, uint8_t W = sizeof(T)*8>\r\nusing BinaryTrieSet = traits::SetTraits<BinaryTrieBase<T,\
     \ void, W>>;\r\ntemplate<typename T, typename V, uint8_t W = sizeof(T)*8>\r\n\
-    using BinaryTrieMap = BinaryTrie<T, V, W>;\r\n#line 7 \"include/mtl/xft.hpp\"\n\
-    #include <unordered_map>\r\n#line 9 \"include/mtl/xft.hpp\"\n\r\ntemplate<class\
-    \ T, class M, int8_t W>\r\nusing XFastTrieHashTableMappedType = typename BinaryTrieBase<T,\
-    \ M, W>::node_ptr;\r\n#define XFT_DEFAULT_HASH_TABLE        std::unordered_map\r\
-    \n#define XFT_HASH_TABLE_TYPE(HT,T,M,W) HT<T, XFastTrieHashTableMappedType<T,\
-    \ M, W>>\r\n\r\ntemplate<typename T, typename M,\r\n    int8_t W = sizeof(T) *\
-    \ 8,\r\n    class HashTable = XFT_HASH_TABLE_TYPE(XFT_DEFAULT_HASH_TABLE, T, M,\
-    \ W)>\r\nclass XFastTrieBase : public BinaryTrieBase<T, M, W> {\r\n  static_assert(std::is_unsigned<T>::value,\
-    \ \"\");\r\n  using Base = BinaryTrieBase<T, M, W>;\r\n public:\r\n  using hash_table_type\
-    \ = HashTable;\r\n  using types = typename Base::types;\r\n  using value_type\
-    \ = typename types::value_type;\r\n  using init_type = typename types::init_type;\r\
-    \n  using typename Base::Node;\r\n  using typename Base::Leaf;\r\n  using typename\
-    \ Base::node_ptr;\r\n  using typename Base::leaf_ptr;\r\n  using typename Base::key_type;\r\
-    \n protected:\r\n  using Base::root_;\r\n  using Base::dummy_;\r\n  using Base::size_;\r\
-    \n  std::array<hash_table_type, W+1> tb_;\r\n  void _store_node(const int i, const\
-    \ key_type& x, node_ptr u) {\r\n    tb_[i].emplace(W-i < (int)sizeof(key_type)*8\
-    \ ? (x >> (W-i)) : 0, u);\r\n  }\r\n  void _init() override {\r\n    for (auto&\
-    \ t:tb_) t.clear();\r\n    Base::_init();\r\n  }\r\n public:\r\n  XFastTrieBase()\
-    \ : Base() {}\r\n  XFastTrieBase(const XFastTrieBase& rhs) {\r\n    Base::operator=(rhs);\r\
-    \n  }\r\n  XFastTrieBase& operator=(const XFastTrieBase& rhs) {\r\n    Base::operator=(rhs);\r\
-    \n  }\r\n  XFastTrieBase(XFastTrieBase&& rhs) noexcept {\r\n    Base::operator=(std::move(rhs));\r\
-    \n  }\r\n  XFastTrieBase& operator=(XFastTrieBase&& rhs) noexcept {\r\n    Base::operator=(std::move(rhs));\r\
-    \n  }\r\n  template<typename InputIt>\r\n  explicit XFastTrieBase(InputIt begin,\
-    \ InputIt end) {\r\n    Base::_insert_init(begin, end);\r\n  }\r\n  using iterator\
-    \ = typename Base::iterator;\r\n  using Base::end;\r\n protected:\r\n  node_ptr\
-    \ create_node_at(const key_type& x, int i) override {\r\n    auto u = Base::create_node_at(x,\
-    \ i);\r\n    _store_node(i, x, u);\r\n    return u;\r\n  }\r\n  leaf_ptr create_leaf_at(const\
-    \ key_type& x, const init_type& value) override {\r\n    auto l = Base::create_leaf_at(x,\
-    \ value);\r\n    _store_node(W, x, std::static_pointer_cast<Node>(l));\r\n   \
-    \ return l;\r\n  }\r\n  leaf_ptr create_leaf_at(const key_type& x, init_type&&\
-    \ value) override {\r\n    auto l = Base::create_leaf_at(x, std::move(value));\r\
-    \n    _store_node(W, x, std::static_pointer_cast<Node>(l));\r\n    return l;\r\
-    \n  }\r\n  void erase_node_at(const key_type& x, int i, node_ptr u) override {\r\
-    \n    Base::erase_node_at(x, i, u);\r\n    auto it = tb_[i].find(W-i < (int)sizeof(key_type)*8\
-    \ ? (x >> (W-i)) : 0);\r\n    assert(it != tb_[i].end());\r\n    assert(it->second\
-    \ == u);\r\n    tb_[i].erase(it);\r\n  }\r\n  std::pair<int, node_ptr> _traverse(const\
-    \ key_type& key, \r\n                                     int depth = 0, \r\n\
-    \                                     node_ptr root = nullptr) const override\
-    \ {\r\n    key_type x = key;\r\n    int l = depth, h = W+1;\r\n    node_ptr u\
-    \ = !root ? root_ : root;\r\n    while (l+1 < h) {\r\n      int i = l+(h-l)/2;\r\
-    \n      auto p = W-i < (int)sizeof(key_type)*8 ? (x >> (W-i)) : 0;\r\n      auto\
-    \ it = tb_[i].find(p);\r\n      if (it != tb_[i].end()) {\r\n        l = i;\r\n\
-    \        u = it->second;\r\n      } else {\r\n        h = i;\r\n      }\r\n  \
-    \  }\r\n    return std::make_pair(l, u);\r\n  }\r\n  iterator _find(const key_type&\
-    \ x) const override {\r\n    auto it = tb_[W].find(x);\r\n    if (it != tb_[W].end())\r\
-    \n      return iterator(std::static_pointer_cast<Leaf>(it->second));\r\n    else\r\
-    \n      return end();\r\n  }\r\n  using Base::_insert;\r\n  std::pair<int, node_ptr>\
-    \ climb_to_lca(leaf_ptr l, key_type x) override {\r\n    key_type m = x ^ types::key_of(l->v);\r\
-    \n    if (m == 0)\r\n      return std::make_pair(W, std::static_pointer_cast<Node>(l));\r\
-    \n    int h = bm::clz(m) - (64 - W);\r\n    key_type y = W-h < (int)sizeof(key_type)*8\
-    \ ? (x >> (W-h)) : 0;\r\n    assert(tb_[h].count(y));\r\n    node_ptr f = tb_[h][y];\r\
-    \n    return std::make_pair(h, f);\r\n  }\r\n  using Base::_emplace_hint;\r\n\
-    \  using Base::_erase;\r\n  bool _erase(const key_type& key) override {\r\n  \
-    \  auto it = tb_[W].find(key);\r\n    if (it != tb_[W].end()) {\r\n      Base::_erase_from_leaf(key,\
-    \ std::static_pointer_cast<Leaf>(it->second));\r\n      return true;\r\n    }\
-    \ else {\r\n      return false;\r\n    }\r\n  }\r\n};\r\n\r\n#line 137 \"include/mtl/xft.hpp\"\
-    \n\r\ntemplate<typename T, typename V, uint8_t W = sizeof(T)*8,\r\n    class HashTable\
-    \ = XFT_HASH_TABLE_TYPE(XFT_DEFAULT_HASH_TABLE, T, V, W)>\r\nusing XFastTrie =\
-    \ traits::MapTraits<XFastTrieBase<T, V, W, HashTable>>;\r\ntemplate<typename T,\
-    \ uint8_t W = sizeof(T)*8,\r\n    class HashTable = XFT_HASH_TABLE_TYPE(XFT_DEFAULT_HASH_TABLE,\
-    \ T, void, W)>\r\nusing XFastTrieSet = traits::SetTraits<XFastTrieBase<T, void,\
-    \ W, HashTable>>;\r\ntemplate<typename T, typename V, uint8_t W = sizeof(T)*8,\r\
-    \n    class HashTable = XFT_HASH_TABLE_TYPE(XFT_DEFAULT_HASH_TABLE, T, V, W)>\r\
-    \nusing XFastTrieMap = XFastTrie<T, V, W, HashTable>;\r\n"
-  code: "#pragma once\r\n#include \"binary_trie.hpp\"\r\n#include <array>\r\n#include\
-    \ <memory>\r\n#include <type_traits>\r\n#include <cstdint>\r\n#include <unordered_map>\r\
-    \n#include <cassert>\r\n\r\ntemplate<class T, class M, int8_t W>\r\nusing XFastTrieHashTableMappedType\
-    \ = typename BinaryTrieBase<T, M, W>::node_ptr;\r\n#define XFT_DEFAULT_HASH_TABLE\
-    \        std::unordered_map\r\n#define XFT_HASH_TABLE_TYPE(HT,T,M,W) HT<T, XFastTrieHashTableMappedType<T,\
-    \ M, W>>\r\n\r\ntemplate<typename T, typename M,\r\n    int8_t W = sizeof(T) *\
-    \ 8,\r\n    class HashTable = XFT_HASH_TABLE_TYPE(XFT_DEFAULT_HASH_TABLE, T, M,\
-    \ W)>\r\nclass XFastTrieBase : public BinaryTrieBase<T, M, W> {\r\n  static_assert(std::is_unsigned<T>::value,\
-    \ \"\");\r\n  using Base = BinaryTrieBase<T, M, W>;\r\n public:\r\n  using hash_table_type\
-    \ = HashTable;\r\n  using types = typename Base::types;\r\n  using value_type\
-    \ = typename types::value_type;\r\n  using init_type = typename types::init_type;\r\
-    \n  using typename Base::Node;\r\n  using typename Base::Leaf;\r\n  using typename\
-    \ Base::node_ptr;\r\n  using typename Base::leaf_ptr;\r\n  using typename Base::key_type;\r\
-    \n protected:\r\n  using Base::root_;\r\n  using Base::dummy_;\r\n  using Base::size_;\r\
-    \n  std::array<hash_table_type, W+1> tb_;\r\n  void _store_node(const int i, const\
-    \ key_type& x, node_ptr u) {\r\n    tb_[i].emplace(W-i < (int)sizeof(key_type)*8\
-    \ ? (x >> (W-i)) : 0, u);\r\n  }\r\n  void _init() override {\r\n    for (auto&\
-    \ t:tb_) t.clear();\r\n    Base::_init();\r\n  }\r\n public:\r\n  XFastTrieBase()\
-    \ : Base() {}\r\n  XFastTrieBase(const XFastTrieBase& rhs) {\r\n    Base::operator=(rhs);\r\
-    \n  }\r\n  XFastTrieBase& operator=(const XFastTrieBase& rhs) {\r\n    Base::operator=(rhs);\r\
-    \n  }\r\n  XFastTrieBase(XFastTrieBase&& rhs) noexcept {\r\n    Base::operator=(std::move(rhs));\r\
-    \n  }\r\n  XFastTrieBase& operator=(XFastTrieBase&& rhs) noexcept {\r\n    Base::operator=(std::move(rhs));\r\
-    \n  }\r\n  template<typename InputIt>\r\n  explicit XFastTrieBase(InputIt begin,\
-    \ InputIt end) {\r\n    Base::_insert_init(begin, end);\r\n  }\r\n  using iterator\
-    \ = typename Base::iterator;\r\n  using Base::end;\r\n protected:\r\n  node_ptr\
-    \ create_node_at(const key_type& x, int i) override {\r\n    auto u = Base::create_node_at(x,\
-    \ i);\r\n    _store_node(i, x, u);\r\n    return u;\r\n  }\r\n  leaf_ptr create_leaf_at(const\
-    \ key_type& x, const init_type& value) override {\r\n    auto l = Base::create_leaf_at(x,\
-    \ value);\r\n    _store_node(W, x, std::static_pointer_cast<Node>(l));\r\n   \
-    \ return l;\r\n  }\r\n  leaf_ptr create_leaf_at(const key_type& x, init_type&&\
-    \ value) override {\r\n    auto l = Base::create_leaf_at(x, std::move(value));\r\
-    \n    _store_node(W, x, std::static_pointer_cast<Node>(l));\r\n    return l;\r\
-    \n  }\r\n  void erase_node_at(const key_type& x, int i, node_ptr u) override {\r\
-    \n    Base::erase_node_at(x, i, u);\r\n    auto it = tb_[i].find(W-i < (int)sizeof(key_type)*8\
-    \ ? (x >> (W-i)) : 0);\r\n    assert(it != tb_[i].end());\r\n    assert(it->second\
-    \ == u);\r\n    tb_[i].erase(it);\r\n  }\r\n  std::pair<int, node_ptr> _traverse(const\
-    \ key_type& key, \r\n                                     int depth = 0, \r\n\
-    \                                     node_ptr root = nullptr) const override\
-    \ {\r\n    key_type x = key;\r\n    int l = depth, h = W+1;\r\n    node_ptr u\
-    \ = !root ? root_ : root;\r\n    while (l+1 < h) {\r\n      int i = l+(h-l)/2;\r\
-    \n      auto p = W-i < (int)sizeof(key_type)*8 ? (x >> (W-i)) : 0;\r\n      auto\
-    \ it = tb_[i].find(p);\r\n      if (it != tb_[i].end()) {\r\n        l = i;\r\n\
-    \        u = it->second;\r\n      } else {\r\n        h = i;\r\n      }\r\n  \
-    \  }\r\n    return std::make_pair(l, u);\r\n  }\r\n  iterator _find(const key_type&\
-    \ x) const override {\r\n    auto it = tb_[W].find(x);\r\n    if (it != tb_[W].end())\r\
-    \n      return iterator(std::static_pointer_cast<Leaf>(it->second));\r\n    else\r\
-    \n      return end();\r\n  }\r\n  using Base::_insert;\r\n  std::pair<int, node_ptr>\
-    \ climb_to_lca(leaf_ptr l, key_type x) override {\r\n    key_type m = x ^ types::key_of(l->v);\r\
-    \n    if (m == 0)\r\n      return std::make_pair(W, std::static_pointer_cast<Node>(l));\r\
-    \n    int h = bm::clz(m) - (64 - W);\r\n    key_type y = W-h < (int)sizeof(key_type)*8\
-    \ ? (x >> (W-h)) : 0;\r\n    assert(tb_[h].count(y));\r\n    node_ptr f = tb_[h][y];\r\
-    \n    return std::make_pair(h, f);\r\n  }\r\n  using Base::_emplace_hint;\r\n\
-    \  using Base::_erase;\r\n  bool _erase(const key_type& key) override {\r\n  \
-    \  auto it = tb_[W].find(key);\r\n    if (it != tb_[W].end()) {\r\n      Base::_erase_from_leaf(key,\
-    \ std::static_pointer_cast<Leaf>(it->second));\r\n      return true;\r\n    }\
-    \ else {\r\n      return false;\r\n    }\r\n  }\r\n};\r\n\r\n#include \"traits/set_traits.hpp\"\
-    \r\n\r\ntemplate<typename T, typename V, uint8_t W = sizeof(T)*8,\r\n    class\
-    \ HashTable = XFT_HASH_TABLE_TYPE(XFT_DEFAULT_HASH_TABLE, T, V, W)>\r\nusing XFastTrie\
-    \ = traits::MapTraits<XFastTrieBase<T, V, W, HashTable>>;\r\ntemplate<typename\
-    \ T, uint8_t W = sizeof(T)*8,\r\n    class HashTable = XFT_HASH_TABLE_TYPE(XFT_DEFAULT_HASH_TABLE,\
-    \ T, void, W)>\r\nusing XFastTrieSet = traits::SetTraits<XFastTrieBase<T, void,\
-    \ W, HashTable>>;\r\ntemplate<typename T, typename V, uint8_t W = sizeof(T)*8,\r\
-    \n    class HashTable = XFT_HASH_TABLE_TYPE(XFT_DEFAULT_HASH_TABLE, T, V, W)>\r\
-    \nusing XFastTrieMap = XFastTrie<T, V, W, HashTable>;\r\n"
+    using BinaryTrieMap = BinaryTrie<T, V, W>;\r\n#line 2 \"test/yosupo/test_binary_trie.cpp\"\
+    \n#include <iostream>\n#include <vector>\n\nvoid test_constructor() {\n    BinaryTrie<uint32_t,\
+    \ uint32_t> trie;\n    assert(trie.empty());\n    assert(trie.size() == 0);\n\
+    }\n\nvoid test_insert() {\n    BinaryTrie<uint32_t, uint32_t> trie;\n    auto\
+    \ result1 = trie.insert(std::make_pair(5, 10));\n    auto result2 = trie.insert(std::make_pair(5,\
+    \ 20));\n    assert(trie.size() == 1);\n    assert(result1.second);\n    assert(!result2.second);\n\
+    \    assert(result1.first->second == 10);\n}\n\nvoid test_find() {\n    BinaryTrie<uint32_t,\
+    \ uint32_t> trie;\n    trie.insert(std::make_pair(5, 10));\n    trie.insert(std::make_pair(3,\
+    \ 20));\n\n    auto result1 = trie.find(5);\n    auto result2 = trie.find(3);\n\
+    \    auto result3 = trie.find(7);\n\n    assert(result1 != trie.end());\n    assert(result1->second\
+    \ == 10);\n    assert(result2 != trie.end());\n    assert(result2->second == 20);\n\
+    \    assert(result3 == trie.end());\n}\n\nvoid test_erase() {\n    BinaryTrie<uint32_t,\
+    \ uint32_t> trie;\n    trie.insert(std::make_pair(5, 10));\n    trie.insert(std::make_pair(3,\
+    \ 20));\n\n    bool result1 = trie.erase(5);\n    bool result2 = trie.erase(7);\n\
+    \n    assert(result1);\n    assert(!result2);\n    assert(trie.size() == 1);\n\
+    \    assert(trie.find(5) == trie.end());\n    assert(trie.find(3) != trie.end());\n\
+    }\n\nvoid test_range_constructor() {\n    std::vector<std::pair<uint32_t, uint32_t>>\
+    \ values = {\n        {1, 10},\n        {3, 30},\n        {5, 50},\n    };\n\n\
+    \    BinaryTrie<uint32_t, uint32_t> trie(values.begin(), values.end());\n    assert(trie.size()\
+    \ == 3);\n    assert(trie.find(1) != trie.end());\n    assert(trie.find(3) !=\
+    \ trie.end());\n    assert(trie.find(5) != trie.end());\n}\n\nint main() {\n \
+    \   test_constructor();\n    test_insert();\n    test_find();\n    test_erase();\n\
+    \    test_range_constructor();\n\n    std::cout << \"All tests passed!\" << std::endl;\n\
+    \    return 0;\n}\n"
+  code: "#include \"../../include/mtl/binary_trie.hpp\"\n#include <iostream>\n#include\
+    \ <vector>\n\nvoid test_constructor() {\n    BinaryTrie<uint32_t, uint32_t> trie;\n\
+    \    assert(trie.empty());\n    assert(trie.size() == 0);\n}\n\nvoid test_insert()\
+    \ {\n    BinaryTrie<uint32_t, uint32_t> trie;\n    auto result1 = trie.insert(std::make_pair(5,\
+    \ 10));\n    auto result2 = trie.insert(std::make_pair(5, 20));\n    assert(trie.size()\
+    \ == 1);\n    assert(result1.second);\n    assert(!result2.second);\n    assert(result1.first->second\
+    \ == 10);\n}\n\nvoid test_find() {\n    BinaryTrie<uint32_t, uint32_t> trie;\n\
+    \    trie.insert(std::make_pair(5, 10));\n    trie.insert(std::make_pair(3, 20));\n\
+    \n    auto result1 = trie.find(5);\n    auto result2 = trie.find(3);\n    auto\
+    \ result3 = trie.find(7);\n\n    assert(result1 != trie.end());\n    assert(result1->second\
+    \ == 10);\n    assert(result2 != trie.end());\n    assert(result2->second == 20);\n\
+    \    assert(result3 == trie.end());\n}\n\nvoid test_erase() {\n    BinaryTrie<uint32_t,\
+    \ uint32_t> trie;\n    trie.insert(std::make_pair(5, 10));\n    trie.insert(std::make_pair(3,\
+    \ 20));\n\n    bool result1 = trie.erase(5);\n    bool result2 = trie.erase(7);\n\
+    \n    assert(result1);\n    assert(!result2);\n    assert(trie.size() == 1);\n\
+    \    assert(trie.find(5) == trie.end());\n    assert(trie.find(3) != trie.end());\n\
+    }\n\nvoid test_range_constructor() {\n    std::vector<std::pair<uint32_t, uint32_t>>\
+    \ values = {\n        {1, 10},\n        {3, 30},\n        {5, 50},\n    };\n\n\
+    \    BinaryTrie<uint32_t, uint32_t> trie(values.begin(), values.end());\n    assert(trie.size()\
+    \ == 3);\n    assert(trie.find(1) != trie.end());\n    assert(trie.find(3) !=\
+    \ trie.end());\n    assert(trie.find(5) != trie.end());\n}\n\nint main() {\n \
+    \   test_constructor();\n    test_insert();\n    test_find();\n    test_erase();\n\
+    \    test_range_constructor();\n\n    std::cout << \"All tests passed!\" << std::endl;\n\
+    \    return 0;\n}\n"
   dependsOn:
   - include/mtl/binary_trie.hpp
   - include/mtl/traits/set_traits.hpp
   - include/mtl/bit_manip.hpp
   isVerificationFile: false
-  path: include/mtl/xft.hpp
-  requiredBy:
-  - include/mtl/yft.hpp
+  path: test/yosupo/test_binary_trie.cpp
+  requiredBy: []
   timestamp: '2023-04-06 14:40:12+09:00'
-  verificationStatus: LIBRARY_SOME_WA
-  verifiedWith:
-  - test/yosupo/predecessor_problem-yft.test.cpp
-  - test/yosupo/associative_array-yft.test.cpp
-documentation_of: include/mtl/xft.hpp
+  verificationStatus: LIBRARY_NO_TESTS
+  verifiedWith: []
+documentation_of: test/yosupo/test_binary_trie.cpp
 layout: document
 redirect_from:
-- /library/include/mtl/xft.hpp
-- /library/include/mtl/xft.hpp.html
-title: include/mtl/xft.hpp
+- /library/test/yosupo/test_binary_trie.cpp
+- /library/test/yosupo/test_binary_trie.cpp.html
+title: test/yosupo/test_binary_trie.cpp
 ---

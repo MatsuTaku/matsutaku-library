@@ -1,17 +1,17 @@
 ---
 data:
   _extendedDependsOn:
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/bit_manip.hpp
     title: include/mtl/bit_manip.hpp
   _extendedRequiredBy: []
   _extendedVerifiedWith:
   - icon: ':heavy_check_mark:'
-    path: test/aoj-do_use_segment_tree-binary_tree.test.cpp
-    title: test/aoj-do_use_segment_tree-binary_tree.test.cpp
+    path: test/aoj/aoj-do_use_segment_tree-binary_tree.test.cpp
+    title: test/aoj/aoj-do_use_segment_tree-binary_tree.test.cpp
   - icon: ':heavy_check_mark:'
-    path: test/range_affine_range_sum.test.cpp
-    title: test/range_affine_range_sum.test.cpp
+    path: test/yosupo/range_affine_range_sum.test.cpp
+    title: test/yosupo/range_affine_range_sum.test.cpp
   _isVerificationFailed: false
   _pathExtension: hpp
   _verificationStatusIcon: ':heavy_check_mark:'
@@ -157,8 +157,8 @@ data:
   timestamp: '2023-04-03 11:10:35+09:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
-  - test/aoj-do_use_segment_tree-binary_tree.test.cpp
-  - test/range_affine_range_sum.test.cpp
+  - test/yosupo/range_affine_range_sum.test.cpp
+  - test/aoj/aoj-do_use_segment_tree-binary_tree.test.cpp
 documentation_of: include/mtl/lazy_segment_tree.hpp
 layout: document
 redirect_from:

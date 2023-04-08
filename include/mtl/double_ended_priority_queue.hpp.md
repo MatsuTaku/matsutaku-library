@@ -2,112 +2,128 @@
 data:
   _extendedDependsOn: []
   _extendedRequiredBy: []
-  _extendedVerifiedWith: []
+  _extendedVerifiedWith:
+  - icon: ':heavy_check_mark:'
+    path: test/yosupo/double_ended_priority_queue.test.cpp
+    title: test/yosupo/double_ended_priority_queue.test.cpp
   _isVerificationFailed: false
   _pathExtension: hpp
-  _verificationStatusIcon: ':warning:'
+  _verificationStatusIcon: ':heavy_check_mark:'
   attributes:
+    document_title: Double Ended Priority Queue
     links: []
   bundledCode: "#line 2 \"include/mtl/double_ended_priority_queue.hpp\"\n#include\
-    \ <cassert>\r\n#include <vector>\r\n#include <iostream>\r\n\r\ntemplate<typename\
-    \ T>\r\nstruct DoubleEndedPriorityQueue {\r\n  // index = [id | (0 if forward,\
-    \ 1 backward)]\r\n  std::vector<T> arr;\r\n  DoubleEndedPriorityQueue() : arr(2)\
-    \ {}\r\n  template<typename It>\r\n  DoubleEndedPriorityQueue(It begin, It end)\
-    \ : arr(2) {\r\n    arr.insert(arr.end(), begin, end);\r\n    size_t n = end -\
-    \ begin;\r\n    if (n <= 1) return;\r\n    if (n == 2) {\r\n      if (arr[2|0]\
-    \ < arr[2|1])\r\n        std::swap(arr[2|0], arr[2|1]);\r\n      return;\r\n \
-    \   }\r\n    for (size_t i = n+2-1; i > 1; i--) {\r\n      if (i^1) {\r\n    \
-    \    auto l = (i^1) << 1 | 1;\r\n        if (l >= arr.size()) {\r\n          auto\
-    \ co = i-1;\r\n          if (arr[co] < arr[i])\r\n            std::swap(arr[co],\
-    \ arr[i]);\r\n        }\r\n        auto j = (i >> 1) | 1;\r\n        if (j > 1\
-    \ and arr[i] < arr[j])\r\n          std::swap(arr[i], arr[j]);\r\n      } else\
-    \ {\r\n        auto j = (i >> 1) & ~size_t(1);\r\n        if (j > 1 and arr[j]\
-    \ < arr[i])\r\n          std::swap(arr[j], arr[i]);\r\n      }\r\n    }\r\n  }\r\
-    \n\r\n  void push(T val) {\r\n    auto id = arr.size();\r\n    arr.push_back(val);\r\
-    \n    id = bubble_up(id);\r\n    tricle_down(id);\r\n  }\r\n  void pop_max() {\r\
-    \n    assert(!empty());\r\n    std::swap(arr[2|0], arr.back());\r\n    arr.pop_back();\r\
-    \n    tricle_down(2|0);\r\n  }\r\n  void pop_min() {\r\n    assert(!empty());\r\
-    \n    if (size() == 1) {\r\n      arr.pop_back();\r\n      return;\r\n    }\r\n\
-    \    std::swap(arr[2|1], arr.back());\r\n    arr.pop_back();\r\n    bubble_up(2|1);\r\
-    \n  }\r\n  T max() const {\r\n    assert(!empty());\r\n    return arr[2|0];\r\n\
-    \  }\r\n  T min() const {\r\n    assert(!empty());\r\n    return size() > 1 ?\
-    \ arr[2|1] : arr[2|0];\r\n  }\r\n  size_t size() const { return arr.size() - 2;\
-    \ }\r\n  bool empty() const { return size() == 0; }\r\n\r\n  size_t lower_priority_parent(size_t\
-    \ id) const {\r\n    if (id&1) {\r\n      auto l = (id^1) << 1 | 1;\r\n      auto\
-    \ r = (id^1) << 1 | 3;\r\n      if (r < arr.size()) {\r\n        auto s = arr[l]\
-    \ < arr[r] ? l : r;\r\n        return s;\r\n      } else if (l < arr.size()) {\r\
-    \n        return l;\r\n      } else {\r\n        auto prev = id ^ 1;\r\n     \
-    \   return prev;\r\n      }\r\n    } else {\r\n      return (id >> 1) & ~size_t(1);\r\
-    \n    }\r\n  }\r\n\r\n  size_t upper_priority_child(size_t id) const {\r\n   \
-    \ if (id&1) {\r\n      return (id >> 1) | 1;\r\n    } else {\r\n      auto l =\
-    \ id << 1;\r\n      auto r = id << 1 | 2;\r\n      if (r < arr.size()) {\r\n \
-    \       auto s = arr[l] < arr[r] ? r : l;\r\n        return s;\r\n      } else\
-    \ if (l < arr.size()) {\r\n        return l;\r\n      } else {\r\n        auto\
-    \ next = id ^ 1;\r\n        if (next < arr.size())\r\n          return next;\r\
-    \n        else {\r\n          return (id >> 1) | 1;\r\n        }\r\n      }\r\n\
-    \    }\r\n  }\r\n\r\n  size_t bubble_up(size_t id) {\r\n    if (id == (2|0)) return\
-    \ id;\r\n    auto p = lower_priority_parent(id);\r\n    if (arr[p] < arr[id])\
-    \ {\r\n      std::swap(arr[p], arr[id]);\r\n      return bubble_up(p);\r\n   \
-    \ } else {\r\n      return id;\r\n    }\r\n  }\r\n  size_t tricle_down(size_t\
-    \ id) {\r\n    if (id == (size() > 1 ? (2|1) : (2|0))) return id;\r\n    auto\
-    \ c = upper_priority_child(id);\r\n    if (arr[id] < arr[c]) {\r\n      std::swap(arr[id],\
-    \ arr[c]);\r\n      return tricle_down(c);\r\n    } else {\r\n      return id;\r\
-    \n    }\r\n  }\r\n};\n"
+    \ <cassert>\r\n#include <vector>\r\n#include <iostream>\r\n#include <algorithm>\r\
+    \n\r\n/** \r\n * @brief Double Ended Priority Queue\r\n * @query\r\n *   - initalize:\
+    \ $O(n)$\r\n *   - push: $O(\\log n)$\r\n *   - get_min: $O(1)$\r\n *   - get_max:\
+    \ $O(1)$\r\n *   - pop_min: $O(\\log n)$\r\n *   - pop_max: $O(\\log n)$\r\n*/\r\
+    \ntemplate<typename T>\r\nstruct DoubleEndedPriorityQueue {\r\n  // index = [id\
+    \ | (0 if forward, 1 backward)]\r\n  size_t index(size_t id, bool b) const { return\
+    \ (id<<1)|b; }\r\n  size_t parent(size_t i) const { return index(((i>>1)-1)/2,\
+    \ i&1); }\r\n  size_t left(size_t i) const { return index((i>>1)*2+1, i&1); }\r\
+    \n  size_t right(size_t i) const { return index((i>>1)*2+2, i&1); }\r\n  size_t\
+    \ sibling(size_t i) const { return i^1; }\r\n\r\n  std::vector<T> arr;\r\n\r\n\
+    \  DoubleEndedPriorityQueue() {}\r\n  template<typename It>\r\n  DoubleEndedPriorityQueue(It\
+    \ begin, It end) : arr(begin, end) {\r\n    size_t n = arr.size();\r\n    if (n\
+    \ <= 1) return;\r\n    if (n == 2) {\r\n      if (arr[index(0,0)] < arr[index(0,1)])\r\
+    \n        std::swap(arr[index(0,0)], arr[index(0,1)]);\r\n      return;\r\n  \
+    \  }\r\n    for (long long i = arr.size()-1; i >= 0; i--) {\r\n      if ((i &\
+    \ 1) and arr[i-1] < arr[i])\r\n        std::swap(arr[i-1], arr[i]);\r\n      heapify(i,\
+    \ true);\r\n    }\r\n  }\r\n\r\n  template<class Compare>\r\n  size_t heap_down(size_t\
+    \ i) {\r\n    Compare comp;\r\n    size_t k;\r\n    while ((k = left(i)) < arr.size())\
+    \ {\r\n      auto r = right(i);\r\n      if ((r&1) and r==size()) --r;\r\n   \
+    \   if (r < arr.size() and comp(arr[k], arr[r])) k = r;\r\n      if (comp(arr[i],\
+    \ arr[k])) {\r\n        std::swap(arr[i], arr[k]);\r\n        i = k;\r\n     \
+    \ } else break;\r\n    }\r\n    return i;\r\n  }\r\n  size_t min_heap_down(size_t\
+    \ i) {\r\n    assert(i&1);\r\n    return heap_down<std::greater<>>(i);\r\n  }\r\
+    \n  size_t max_heap_down(size_t i) {\r\n    assert((i&1)==0);\r\n    return heap_down<std::less<>>(i);\r\
+    \n  }\r\n\r\n  size_t heap_leaf(size_t i) {\r\n    if ((i|1) < arr.size() and\
+    \ arr[i&~1ull] < arr[i|1]) {\r\n      std::swap(arr[i], arr[i^1]);\r\n      i\
+    \ ^= 1;\r\n    }\r\n    return i;\r\n  }\r\n\r\n  size_t min_heap_up(size_t i,\
+    \ size_t root) {\r\n    size_t p;\r\n    while (i>>1 > root>>1 and (p = parent(i)|1)\
+    \ >= root and arr[i] < arr[p]) {\r\n      std::swap(arr[p], arr[i]);\r\n     \
+    \ i = p;\r\n    }\r\n    return i;\r\n  }\r\n  size_t max_heap_up(size_t i, size_t\
+    \ root) {\r\n    size_t p;\r\n    while (i>>1 > root>>1 and (p = parent(i)&~1ull)\
+    \ >= root and arr[p] < arr[i]) {\r\n      std::swap(arr[p], arr[i]);\r\n     \
+    \ i = p;\r\n    }\r\n    return i;\r\n  }\r\n\r\n  void heapify(size_t i, bool\
+    \ limited) {\r\n    auto j = (i&1) ? min_heap_down(i) : max_heap_down(i);\r\n\
+    \    auto k = heap_leaf(j);\r\n    auto root = limited ? i : 0;\r\n    max_heap_up(k,\
+    \ root);\r\n    min_heap_up(k, root);\r\n  }\r\n\r\n  template<class U>\r\n  void\
+    \ push(U&& val) {\r\n    static_assert(std::is_convertible<U,T>::value, \"\");\r\
+    \n    auto id = arr.size();\r\n    arr.push_back(std::forward<U>(val));\r\n  \
+    \  heapify(id, false);\r\n  }\r\n  void pop_max() {\r\n    assert(!empty());\r\
+    \n    std::swap(arr[index(0,0)], arr.back());\r\n    arr.pop_back();\r\n    if\
+    \ (index(0,0) < arr.size())\r\n      heapify(index(0,0), false);\r\n  }\r\n  void\
+    \ pop_min() {\r\n    assert(!empty());\r\n    if (size() == 1) {\r\n      arr.pop_back();\r\
+    \n      return;\r\n    }\r\n    std::swap(arr[index(0,1)], arr.back());\r\n  \
+    \  arr.pop_back();\r\n    if (index(0,1) < arr.size())\r\n      heapify(index(0,1),\
+    \ false);\r\n  }\r\n\r\n  const T& max() const {\r\n    assert(!empty());\r\n\
+    \    return arr[index(0,0)];\r\n  }\r\n  const T& min() const {\r\n    assert(!empty());\r\
+    \n    return arr[index(0, size() > 1 ? 1 : 0)];\r\n  }\r\n\r\n  size_t size()\
+    \ const { return arr.size(); }\r\n  bool empty() const { return size() == 0; }\r\
+    \n  void clear() { arr.clear(); }\r\n\r\n};\n"
   code: "#pragma once\r\n#include <cassert>\r\n#include <vector>\r\n#include <iostream>\r\
-    \n\r\ntemplate<typename T>\r\nstruct DoubleEndedPriorityQueue {\r\n  // index\
-    \ = [id | (0 if forward, 1 backward)]\r\n  std::vector<T> arr;\r\n  DoubleEndedPriorityQueue()\
-    \ : arr(2) {}\r\n  template<typename It>\r\n  DoubleEndedPriorityQueue(It begin,\
-    \ It end) : arr(2) {\r\n    arr.insert(arr.end(), begin, end);\r\n    size_t n\
-    \ = end - begin;\r\n    if (n <= 1) return;\r\n    if (n == 2) {\r\n      if (arr[2|0]\
-    \ < arr[2|1])\r\n        std::swap(arr[2|0], arr[2|1]);\r\n      return;\r\n \
-    \   }\r\n    for (size_t i = n+2-1; i > 1; i--) {\r\n      if (i^1) {\r\n    \
-    \    auto l = (i^1) << 1 | 1;\r\n        if (l >= arr.size()) {\r\n          auto\
-    \ co = i-1;\r\n          if (arr[co] < arr[i])\r\n            std::swap(arr[co],\
-    \ arr[i]);\r\n        }\r\n        auto j = (i >> 1) | 1;\r\n        if (j > 1\
-    \ and arr[i] < arr[j])\r\n          std::swap(arr[i], arr[j]);\r\n      } else\
-    \ {\r\n        auto j = (i >> 1) & ~size_t(1);\r\n        if (j > 1 and arr[j]\
-    \ < arr[i])\r\n          std::swap(arr[j], arr[i]);\r\n      }\r\n    }\r\n  }\r\
-    \n\r\n  void push(T val) {\r\n    auto id = arr.size();\r\n    arr.push_back(val);\r\
-    \n    id = bubble_up(id);\r\n    tricle_down(id);\r\n  }\r\n  void pop_max() {\r\
-    \n    assert(!empty());\r\n    std::swap(arr[2|0], arr.back());\r\n    arr.pop_back();\r\
-    \n    tricle_down(2|0);\r\n  }\r\n  void pop_min() {\r\n    assert(!empty());\r\
+    \n#include <algorithm>\r\n\r\n/** \r\n * @brief Double Ended Priority Queue\r\n\
+    \ * @query\r\n *   - initalize: $O(n)$\r\n *   - push: $O(\\log n)$\r\n *   -\
+    \ get_min: $O(1)$\r\n *   - get_max: $O(1)$\r\n *   - pop_min: $O(\\log n)$\r\n\
+    \ *   - pop_max: $O(\\log n)$\r\n*/\r\ntemplate<typename T>\r\nstruct DoubleEndedPriorityQueue\
+    \ {\r\n  // index = [id | (0 if forward, 1 backward)]\r\n  size_t index(size_t\
+    \ id, bool b) const { return (id<<1)|b; }\r\n  size_t parent(size_t i) const {\
+    \ return index(((i>>1)-1)/2, i&1); }\r\n  size_t left(size_t i) const { return\
+    \ index((i>>1)*2+1, i&1); }\r\n  size_t right(size_t i) const { return index((i>>1)*2+2,\
+    \ i&1); }\r\n  size_t sibling(size_t i) const { return i^1; }\r\n\r\n  std::vector<T>\
+    \ arr;\r\n\r\n  DoubleEndedPriorityQueue() {}\r\n  template<typename It>\r\n \
+    \ DoubleEndedPriorityQueue(It begin, It end) : arr(begin, end) {\r\n    size_t\
+    \ n = arr.size();\r\n    if (n <= 1) return;\r\n    if (n == 2) {\r\n      if\
+    \ (arr[index(0,0)] < arr[index(0,1)])\r\n        std::swap(arr[index(0,0)], arr[index(0,1)]);\r\
+    \n      return;\r\n    }\r\n    for (long long i = arr.size()-1; i >= 0; i--)\
+    \ {\r\n      if ((i & 1) and arr[i-1] < arr[i])\r\n        std::swap(arr[i-1],\
+    \ arr[i]);\r\n      heapify(i, true);\r\n    }\r\n  }\r\n\r\n  template<class\
+    \ Compare>\r\n  size_t heap_down(size_t i) {\r\n    Compare comp;\r\n    size_t\
+    \ k;\r\n    while ((k = left(i)) < arr.size()) {\r\n      auto r = right(i);\r\
+    \n      if ((r&1) and r==size()) --r;\r\n      if (r < arr.size() and comp(arr[k],\
+    \ arr[r])) k = r;\r\n      if (comp(arr[i], arr[k])) {\r\n        std::swap(arr[i],\
+    \ arr[k]);\r\n        i = k;\r\n      } else break;\r\n    }\r\n    return i;\r\
+    \n  }\r\n  size_t min_heap_down(size_t i) {\r\n    assert(i&1);\r\n    return\
+    \ heap_down<std::greater<>>(i);\r\n  }\r\n  size_t max_heap_down(size_t i) {\r\
+    \n    assert((i&1)==0);\r\n    return heap_down<std::less<>>(i);\r\n  }\r\n\r\n\
+    \  size_t heap_leaf(size_t i) {\r\n    if ((i|1) < arr.size() and arr[i&~1ull]\
+    \ < arr[i|1]) {\r\n      std::swap(arr[i], arr[i^1]);\r\n      i ^= 1;\r\n   \
+    \ }\r\n    return i;\r\n  }\r\n\r\n  size_t min_heap_up(size_t i, size_t root)\
+    \ {\r\n    size_t p;\r\n    while (i>>1 > root>>1 and (p = parent(i)|1) >= root\
+    \ and arr[i] < arr[p]) {\r\n      std::swap(arr[p], arr[i]);\r\n      i = p;\r\
+    \n    }\r\n    return i;\r\n  }\r\n  size_t max_heap_up(size_t i, size_t root)\
+    \ {\r\n    size_t p;\r\n    while (i>>1 > root>>1 and (p = parent(i)&~1ull) >=\
+    \ root and arr[p] < arr[i]) {\r\n      std::swap(arr[p], arr[i]);\r\n      i =\
+    \ p;\r\n    }\r\n    return i;\r\n  }\r\n\r\n  void heapify(size_t i, bool limited)\
+    \ {\r\n    auto j = (i&1) ? min_heap_down(i) : max_heap_down(i);\r\n    auto k\
+    \ = heap_leaf(j);\r\n    auto root = limited ? i : 0;\r\n    max_heap_up(k, root);\r\
+    \n    min_heap_up(k, root);\r\n  }\r\n\r\n  template<class U>\r\n  void push(U&&\
+    \ val) {\r\n    static_assert(std::is_convertible<U,T>::value, \"\");\r\n    auto\
+    \ id = arr.size();\r\n    arr.push_back(std::forward<U>(val));\r\n    heapify(id,\
+    \ false);\r\n  }\r\n  void pop_max() {\r\n    assert(!empty());\r\n    std::swap(arr[index(0,0)],\
+    \ arr.back());\r\n    arr.pop_back();\r\n    if (index(0,0) < arr.size())\r\n\
+    \      heapify(index(0,0), false);\r\n  }\r\n  void pop_min() {\r\n    assert(!empty());\r\
     \n    if (size() == 1) {\r\n      arr.pop_back();\r\n      return;\r\n    }\r\n\
-    \    std::swap(arr[2|1], arr.back());\r\n    arr.pop_back();\r\n    bubble_up(2|1);\r\
-    \n  }\r\n  T max() const {\r\n    assert(!empty());\r\n    return arr[2|0];\r\n\
-    \  }\r\n  T min() const {\r\n    assert(!empty());\r\n    return size() > 1 ?\
-    \ arr[2|1] : arr[2|0];\r\n  }\r\n  size_t size() const { return arr.size() - 2;\
-    \ }\r\n  bool empty() const { return size() == 0; }\r\n\r\n  size_t lower_priority_parent(size_t\
-    \ id) const {\r\n    if (id&1) {\r\n      auto l = (id^1) << 1 | 1;\r\n      auto\
-    \ r = (id^1) << 1 | 3;\r\n      if (r < arr.size()) {\r\n        auto s = arr[l]\
-    \ < arr[r] ? l : r;\r\n        return s;\r\n      } else if (l < arr.size()) {\r\
-    \n        return l;\r\n      } else {\r\n        auto prev = id ^ 1;\r\n     \
-    \   return prev;\r\n      }\r\n    } else {\r\n      return (id >> 1) & ~size_t(1);\r\
-    \n    }\r\n  }\r\n\r\n  size_t upper_priority_child(size_t id) const {\r\n   \
-    \ if (id&1) {\r\n      return (id >> 1) | 1;\r\n    } else {\r\n      auto l =\
-    \ id << 1;\r\n      auto r = id << 1 | 2;\r\n      if (r < arr.size()) {\r\n \
-    \       auto s = arr[l] < arr[r] ? r : l;\r\n        return s;\r\n      } else\
-    \ if (l < arr.size()) {\r\n        return l;\r\n      } else {\r\n        auto\
-    \ next = id ^ 1;\r\n        if (next < arr.size())\r\n          return next;\r\
-    \n        else {\r\n          return (id >> 1) | 1;\r\n        }\r\n      }\r\n\
-    \    }\r\n  }\r\n\r\n  size_t bubble_up(size_t id) {\r\n    if (id == (2|0)) return\
-    \ id;\r\n    auto p = lower_priority_parent(id);\r\n    if (arr[p] < arr[id])\
-    \ {\r\n      std::swap(arr[p], arr[id]);\r\n      return bubble_up(p);\r\n   \
-    \ } else {\r\n      return id;\r\n    }\r\n  }\r\n  size_t tricle_down(size_t\
-    \ id) {\r\n    if (id == (size() > 1 ? (2|1) : (2|0))) return id;\r\n    auto\
-    \ c = upper_priority_child(id);\r\n    if (arr[id] < arr[c]) {\r\n      std::swap(arr[id],\
-    \ arr[c]);\r\n      return tricle_down(c);\r\n    } else {\r\n      return id;\r\
-    \n    }\r\n  }\r\n};"
+    \    std::swap(arr[index(0,1)], arr.back());\r\n    arr.pop_back();\r\n    if\
+    \ (index(0,1) < arr.size())\r\n      heapify(index(0,1), false);\r\n  }\r\n\r\n\
+    \  const T& max() const {\r\n    assert(!empty());\r\n    return arr[index(0,0)];\r\
+    \n  }\r\n  const T& min() const {\r\n    assert(!empty());\r\n    return arr[index(0,\
+    \ size() > 1 ? 1 : 0)];\r\n  }\r\n\r\n  size_t size() const { return arr.size();\
+    \ }\r\n  bool empty() const { return size() == 0; }\r\n  void clear() { arr.clear();\
+    \ }\r\n\r\n};"
   dependsOn: []
   isVerificationFile: false
   path: include/mtl/double_ended_priority_queue.hpp
   requiredBy: []
-  timestamp: '2022-11-27 16:09:45+09:00'
-  verificationStatus: LIBRARY_NO_TESTS
-  verifiedWith: []
+  timestamp: '2023-04-06 14:40:12+09:00'
+  verificationStatus: LIBRARY_ALL_AC
+  verifiedWith:
+  - test/yosupo/double_ended_priority_queue.test.cpp
 documentation_of: include/mtl/double_ended_priority_queue.hpp
 layout: document
 redirect_from:
 - /library/include/mtl/double_ended_priority_queue.hpp
 - /library/include/mtl/double_ended_priority_queue.hpp.html
-title: include/mtl/double_ended_priority_queue.hpp
+title: Double Ended Priority Queue
 ---

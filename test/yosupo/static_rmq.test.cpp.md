@@ -1,7 +1,7 @@
 ---
 data:
   _extendedDependsOn:
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/bit_manip.hpp
     title: include/mtl/bit_manip.hpp
   - icon: ':heavy_check_mark:'
@@ -17,8 +17,8 @@ data:
     PROBLEM: https://judge.yosupo.jp/problem/staticrmq
     links:
     - https://judge.yosupo.jp/problem/staticrmq
-  bundledCode: "#line 1 \"test/static_rmq.test.cpp\"\n#define PROBLEM \"https://judge.yosupo.jp/problem/staticrmq\"\
-    \r\n\r\n#line 2 \"include/mtl/bit_manip.hpp\"\n#include <cstdint>\n#include <cassert>\n\
+  bundledCode: "#line 1 \"test/yosupo/static_rmq.test.cpp\"\n#define PROBLEM \"https://judge.yosupo.jp/problem/staticrmq\"\
+    \r\n#line 2 \"include/mtl/bit_manip.hpp\"\n#include <cstdint>\n#include <cassert>\n\
     \nnamespace bm {\n\ninline constexpr uint64_t popcnt_e8(uint64_t x) {\n  x = (x\
     \ & 0x5555555555555555) + ((x>>1) & 0x5555555555555555);\n  x = (x & 0x3333333333333333)\
     \ + ((x>>2) & 0x3333333333333333);\n  x = (x & 0x0F0F0F0F0F0F0F0F) + ((x>>4) &\
@@ -87,7 +87,7 @@ data:
     \ [](M x) { return F(x); });\n  }\n\n};\n\ntemplate<typename T, T (*op)(T, T),\
     \ T E>\nstruct Monoid {\n  T x;\n  Monoid(T x=E) : x(x) {}\n  Monoid operator*(const\
     \ Monoid& rhs) const {\n    return Monoid(op(x, rhs.x));\n  }\n  Monoid& operator*=(const\
-    \ Monoid& rhs) {\n    return *this = *this * rhs;\n  }\n};\n#line 4 \"test/static_rmq.test.cpp\"\
+    \ Monoid& rhs) {\n    return *this = *this * rhs;\n  }\n};\n#line 3 \"test/yosupo/static_rmq.test.cpp\"\
     \n#include <bits/stdc++.h>\r\nusing namespace std;\r\nusing ll = long long;\r\n\
     \r\nconstexpr int INF = 11e8;\r\nstruct Min {\r\n  int x = INF;\r\n  Min operator*(const\
     \ Min& r) const {\r\n    return {std::min(x, r.x)};\r\n  }\r\n};\r\n\r\nint main()\
@@ -96,28 +96,29 @@ data:
     \ rmq(A.begin(), A.end());\r\n\r\n  for (int q = 0; q < Q; q++) {\r\n    int l,r;\
     \ cin>>l>>r;\r\n    auto ans = rmq.query(l, r).x;\r\n    cout << ans << endl;\r\
     \n  }\r\n\r\n  return 0;\r\n}\r\n"
-  code: "#define PROBLEM \"https://judge.yosupo.jp/problem/staticrmq\"\r\n\r\n#include\
-    \ \"../include/mtl/segment_tree.hpp\"\r\n#include <bits/stdc++.h>\r\nusing namespace\
-    \ std;\r\nusing ll = long long;\r\n\r\nconstexpr int INF = 11e8;\r\nstruct Min\
-    \ {\r\n  int x = INF;\r\n  Min operator*(const Min& r) const {\r\n    return {std::min(x,\
-    \ r.x)};\r\n  }\r\n};\r\n\r\nint main() {\r\n  cin.tie(nullptr); ios::sync_with_stdio(false);\r\
-    \n\r\n  int N,Q; cin>>N>>Q;\r\n\r\n  std::vector<Min> A(N); for (auto& a : A)\
-    \ cin>>a.x;\r\n  SegmentTree<Min> rmq(A.begin(), A.end());\r\n\r\n  for (int q\
-    \ = 0; q < Q; q++) {\r\n    int l,r; cin>>l>>r;\r\n    auto ans = rmq.query(l,\
-    \ r).x;\r\n    cout << ans << endl;\r\n  }\r\n\r\n  return 0;\r\n}\r\n"
+  code: "#define PROBLEM \"https://judge.yosupo.jp/problem/staticrmq\"\r\n#include\
+    \ \"../../include/mtl/segment_tree.hpp\"\r\n#include <bits/stdc++.h>\r\nusing\
+    \ namespace std;\r\nusing ll = long long;\r\n\r\nconstexpr int INF = 11e8;\r\n\
+    struct Min {\r\n  int x = INF;\r\n  Min operator*(const Min& r) const {\r\n  \
+    \  return {std::min(x, r.x)};\r\n  }\r\n};\r\n\r\nint main() {\r\n  cin.tie(nullptr);\
+    \ ios::sync_with_stdio(false);\r\n\r\n  int N,Q; cin>>N>>Q;\r\n\r\n  std::vector<Min>\
+    \ A(N); for (auto& a : A) cin>>a.x;\r\n  SegmentTree<Min> rmq(A.begin(), A.end());\r\
+    \n\r\n  for (int q = 0; q < Q; q++) {\r\n    int l,r; cin>>l>>r;\r\n    auto ans\
+    \ = rmq.query(l, r).x;\r\n    cout << ans << endl;\r\n  }\r\n\r\n  return 0;\r\
+    \n}\r\n"
   dependsOn:
   - include/mtl/segment_tree.hpp
   - include/mtl/bit_manip.hpp
   isVerificationFile: true
-  path: test/static_rmq.test.cpp
+  path: test/yosupo/static_rmq.test.cpp
   requiredBy: []
-  timestamp: '2023-04-03 11:10:35+09:00'
+  timestamp: '2023-04-08 02:15:04+09:00'
   verificationStatus: TEST_ACCEPTED
   verifiedWith: []
-documentation_of: test/static_rmq.test.cpp
+documentation_of: test/yosupo/static_rmq.test.cpp
 layout: document
 redirect_from:
-- /verify/test/static_rmq.test.cpp
-- /verify/test/static_rmq.test.cpp.html
-title: test/static_rmq.test.cpp
+- /verify/test/yosupo/static_rmq.test.cpp
+- /verify/test/yosupo/static_rmq.test.cpp.html
+title: test/yosupo/static_rmq.test.cpp
 ---

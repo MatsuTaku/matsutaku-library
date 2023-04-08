@@ -14,7 +14,7 @@ data:
     PROBLEM: https://judge.yosupo.jp/problem/unionfind
     links:
     - https://judge.yosupo.jp/problem/unionfind
-  bundledCode: "#line 1 \"test/unionfind.test.cpp\"\n#define PROBLEM \"https://judge.yosupo.jp/problem/unionfind\"\
+  bundledCode: "#line 1 \"test/yosupo/unionfind.test.cpp\"\n#define PROBLEM \"https://judge.yosupo.jp/problem/unionfind\"\
     \r\n#line 2 \"include/mtl/unionfind.hpp\"\n#include <vector>\n#include <numeric>\n\
     #include <cstddef>\n\nclass UnionFind {\n private:\n  // par_[i] = { size if par_[i]\
     \ < 0, root otherwise }\n  std::vector<int> par_;\n\n public:\n  UnionFind() =\
@@ -24,7 +24,7 @@ data:
     \n  int size_of(int u) {\n    return -par_[root(u)];\n  }\n\n  bool unite(int\
     \ u, int v) {\n    if (are_union(u,v))\n      return false;\n    if (size_of(u)\
     \ < size_of(v))\n      std::swap(u,v);\n    par_[root(u)] -= size_of(v);\n   \
-    \ par_[root(v)] = root(u);\n    return true;\n  }\n};\n#line 3 \"test/unionfind.test.cpp\"\
+    \ par_[root(v)] = root(u);\n    return true;\n  }\n};\n#line 3 \"test/yosupo/unionfind.test.cpp\"\
     \n#include <iostream>\r\nusing namespace std;\r\nusing ll = long long;\r\n\r\n\
     int main() {\r\n  cin.tie(nullptr); ios::sync_with_stdio(false);\r\n\r\n  int\
     \ N,Q; cin>>N>>Q;\r\n  UnionFind uf(N);\r\n\r\n  for (int q = 0; q < Q; q++) {\r\
@@ -33,8 +33,8 @@ data:
     \ ? 1 : 0;\r\n      cout << ans << endl;\r\n    }\r\n  }\r\n\r\n  return 0;\r\n\
     }\r\n"
   code: "#define PROBLEM \"https://judge.yosupo.jp/problem/unionfind\"\r\n#include\
-    \ \"../include/mtl/unionfind.hpp\"\r\n#include <iostream>\r\nusing namespace std;\r\
-    \nusing ll = long long;\r\n\r\nint main() {\r\n  cin.tie(nullptr); ios::sync_with_stdio(false);\r\
+    \ \"../../include/mtl/unionfind.hpp\"\r\n#include <iostream>\r\nusing namespace\
+    \ std;\r\nusing ll = long long;\r\n\r\nint main() {\r\n  cin.tie(nullptr); ios::sync_with_stdio(false);\r\
     \n\r\n  int N,Q; cin>>N>>Q;\r\n  UnionFind uf(N);\r\n\r\n  for (int q = 0; q <\
     \ Q; q++) {\r\n    int t; cin>>t;\r\n    int u,v; cin>>u>>v;\r\n    if (t == 0)\
     \ {\r\n      uf.unite(u,v);\r\n    } else if (t == 1) {\r\n      int ans = uf.are_union(u,v)\
@@ -43,15 +43,15 @@ data:
   dependsOn:
   - include/mtl/unionfind.hpp
   isVerificationFile: true
-  path: test/unionfind.test.cpp
+  path: test/yosupo/unionfind.test.cpp
   requiredBy: []
-  timestamp: '2023-04-03 03:00:14+09:00'
+  timestamp: '2023-04-08 02:15:04+09:00'
   verificationStatus: TEST_ACCEPTED
   verifiedWith: []
-documentation_of: test/unionfind.test.cpp
+documentation_of: test/yosupo/unionfind.test.cpp
 layout: document
 redirect_from:
-- /verify/test/unionfind.test.cpp
-- /verify/test/unionfind.test.cpp.html
-title: test/unionfind.test.cpp
+- /verify/test/yosupo/unionfind.test.cpp
+- /verify/test/yosupo/unionfind.test.cpp.html
+title: test/yosupo/unionfind.test.cpp
 ---

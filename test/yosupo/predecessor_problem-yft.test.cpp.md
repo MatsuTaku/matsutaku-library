@@ -16,22 +16,26 @@ data:
   - icon: ':question:'
     path: include/mtl/xft.hpp
     title: include/mtl/xft.hpp
+  - icon: ':question:'
+    path: include/mtl/yft.hpp
+    title: include/mtl/yft.hpp
   _extendedRequiredBy: []
-  _extendedVerifiedWith:
-  - icon: ':heavy_check_mark:'
-    path: test/yosupo/associative_array-yft.test.cpp
-    title: test/yosupo/associative_array-yft.test.cpp
-  - icon: ':x:'
-    path: test/yosupo/predecessor_problem-yft.test.cpp
-    title: test/yosupo/predecessor_problem-yft.test.cpp
+  _extendedVerifiedWith: []
   _isVerificationFailed: true
-  _pathExtension: hpp
-  _verificationStatusIcon: ':question:'
+  _pathExtension: cpp
+  _verificationStatusIcon: ':x:'
   attributes:
-    links: []
-  bundledCode: "#line 2 \"include/mtl/traits/set_traits.hpp\"\n#include <cstddef>\r\
-    \n#include <initializer_list>\r\n#include <type_traits>\r\n#include <iterator>\r\
-    \n\r\nnamespace traits {\r\n\r\ntemplate<typename T, typename M>\r\nstruct AssociativeArrayDefinition\
+    '*NOT_SPECIAL_COMMENTS*': ''
+    IGNORE: ''
+    IGNORE_IF_CLANG: ''
+    IGNORE_IF_GCC: ''
+    links:
+    - https://judge.yosupo.jp/problem/predecessor_problem
+  bundledCode: "#line 1 \"test/yosupo/predecessor_problem-yft.test.cpp\"\n#define\
+    \ PROBLEM \"https://judge.yosupo.jp/problem/predecessor_problem\"\n#define IGNORE\n\
+    #line 2 \"include/mtl/traits/set_traits.hpp\"\n#include <cstddef>\r\n#include\
+    \ <initializer_list>\r\n#include <type_traits>\r\n#include <iterator>\r\n\r\n\
+    namespace traits {\r\n\r\ntemplate<typename T, typename M>\r\nstruct AssociativeArrayDefinition\
     \ {\r\n  using key_type = T;\r\n  using mapped_type = M;\r\n  using value_type\
     \ = std::pair<T const, M>;\r\n  using raw_key_type = typename std::remove_const<T>::type;\r\
     \n  using raw_mapped_type = typename std::remove_const<M>::type;\r\n  using init_type\
@@ -733,163 +737,54 @@ data:
     \ W>>;\r\ntemplate<typename T, uint8_t W = sizeof(T)*8>\r\nusing YFastTrieSet\
     \ = traits::SetTraits<YFastTrieBase<T, void, W>>;\r\ntemplate<typename Key, typename\
     \ T, uint8_t W = sizeof(Key)*8>\r\nusing YFastTrieMap = YFastTrie<Key, T, W>;\r\
-    \n"
-  code: "#pragma once\r\n#include \"traits/set_traits.hpp\"\r\n#include \"treap.hpp\"\
-    \r\n#include \"xft.hpp\"\r\n#include <array>\r\n#include <memory>\r\n#include\
-    \ <type_traits>\r\n#include <iterator>\r\n#include <cstdint>\r\n#include <random>\r\
-    \n#include <cassert>\r\n#include <vector>\r\n#include <bitset>\r\n#include <algorithm>\r\
-    \n\r\ntemplate<class T, class M,\r\n    int8_t W = sizeof(T) * 8,\r\n    class\
-    \ TREAP = Treap<T, M>,\r\n    class HashTable = XFT_HASH_TABLE_TYPE(XFT_DEFAULT_HASH_TABLE,T,TREAP,W),\r\
-    \n    class XFT = XFastTrieMap<T, TREAP, W, HashTable>>\r\nclass YFastTrieBase\
-    \ : public traits::AssociativeArrayDefinition<T, M> {\r\n  static_assert(std::is_unsigned<T>::value,\
-    \ \"\");\r\n  using Def = traits::AssociativeArrayDefinition<T, M>;\r\n public:\r\
-    \n  using typename Def::key_type;\r\n  using typename Def::value_type;\r\n  using\
-    \ treap_type = TREAP;\r\n  using xft_type = XFT;\r\n  static constexpr key_type\
-    \ const kKeyMax = std::numeric_limits<T>::max() >> (sizeof(T)*8-W);\r\n protected:\r\
-    \n  template<bool> struct iterator_base;\r\n public:\r\n  using iterator = iterator_base<false>;\r\
-    \n  using const_iterator = iterator_base<true>;\r\n protected:\r\n  xft_type xft_;\r\
-    \n  iterator end_;\r\n  size_t size_;\r\n  std::default_random_engine eng_;\r\n\
-    \  std::uniform_int_distribution<uint8_t> dist_;\r\n  void _init() {\r\n    xft_.clear();\r\
-    \n    auto xit = xft_.emplace(kKeyMax, treap_type()).first;\r\n    end_ = iterator(&xft_,\
-    \ xit, xit->second.end());\r\n    size_ = 0;\r\n  }\r\n public:\r\n  YFastTrieBase()\r\
-    \n    : xft_({{kKeyMax, treap_type()}}),\r\n      end_(&xft_, std::prev(xft_.end()),\
-    \ std::prev(xft_.end())->second.end()),\r\n      size_(0),\r\n      dist_(0, W-1)\
-    \ {}\r\n  YFastTrieBase(const YFastTrieBase& rhs)\r\n    : xft_(rhs.xft_),\r\n\
-    \      end_(&xft_, std::prev(xft_.end()), std::prev(xft_.end())->second.end()),\r\
-    \n      size_(rhs.size_),\r\n      dist_(0, W-1) {}\r\n  YFastTrieBase& operator=(const\
-    \ YFastTrieBase& rhs) {\r\n    xft_ = rhs.xft_;\r\n    end_ = iterator(&xft_,\
-    \ std::prev(xft_.end()), std::prev(xft_.end())->second.end());\r\n    size_ =\
-    \ rhs.size_;\r\n    eng_ = rhs.eng_;\r\n    dist_ = rhs.dist_;\r\n    return *this;\r\
-    \n  }\r\n  YFastTrieBase(YFastTrieBase&&) noexcept = default;\r\n  YFastTrieBase&\
-    \ operator=(YFastTrieBase&&) noexcept = default;\r\n  template<typename InputIt>\r\
-    \n  explicit YFastTrieBase(InputIt begin, InputIt end) : YFastTrieBase() {\r\n\
-    \    static_assert(std::is_convertible<typename std::iterator_traits<InputIt>::value_type,\
-    \ value_type>::value, \"\");\r\n    if (begin == end) return;\r\n    if (!std::is_sorted(begin,\
-    \ end, [](auto& l, auto& r) {\r\n      return Def::key_of(l) < Def::key_of(r);\r\
-    \n    })) {\r\n      for (auto it = begin; it != end; ++it)\r\n        _insert(*it);\r\
-    \n      return;\r\n    }\r\n    auto b = begin;\r\n    while (b != end) {\r\n\
-    \      auto px = Def::key_of(*b);\r\n      auto e = std::next(b);\r\n      while\
-    \ (e != end and !_pivot_selected()) {\r\n        px = Def::key_of(*(e++));\r\n\
-    \        while (e != end and Def::key_of(*e) == px)\r\n          px = Def::key_of(*(e++));\r\
-    \n      }\r\n      if (e != end) { // shift on pivot\r\n        px = Def::key_of(*(e++));\r\
-    \n        while (e != end and Def::key_of(*e) == px)\r\n          px = Def::key_of(*(e++));\r\
-    \n      }\r\n      if (e != end) {\r\n        assert(px < end_.xit_->first);\r\
-    \n        xft_.emplace_hint(end_.xit_, px, treap_type(b, e));\r\n        b = e;\r\
-    \n      } else {\r\n        end_.xit_->second.insert(b,e);\r\n        end_.tit_\
-    \ = end_.xit_->second.end();\r\n        break;\r\n      }\r\n    }\r\n    size_\
-    \ = std::distance(begin, end);\r\n  }\r\n  size_t size() const { return size_;\
-    \ }\r\n  bool empty() const { return size() == 0; }\r\n  void clear() {\r\n  \
-    \  _init();\r\n  }\r\n  iterator begin() const {\r\n    return make_raw_iterator(&xft_,\
-    \ xft_.begin(), xft_.begin()->second.begin());\r\n  }\r\n  iterator end() const\
-    \ {\r\n    return end_;\r\n  }\r\n protected:\r\n  template<class Key>\r\n  iterator\
-    \ _lower_bound(const Key& key) const {\r\n    key_type x = key;\r\n    auto tit\
-    \ = xft_.lower_bound(x);\r\n    assert(tit != xft_.end());\r\n    auto tres =\
-    \ tit->second.lower_bound(x);\r\n    return make_raw_iterator(&xft_, tit, tres);\r\
-    \n  }\r\n  template<class Key>\r\n  iterator _upper_bound(const Key& key) const\
-    \ {\r\n    key_type x = key;\r\n    auto tit = xft_.upper_bound(x);\r\n    if\
-    \ (tit == xft_.end()) [[unlikely]]\r\n      return end();\r\n    assert(tit !=\
-    \ xft_.end());\r\n    auto tres = tit->second.upper_bound(x);\r\n    return make_raw_iterator(&xft_,\
-    \ tit, tres);\r\n  }\r\n  template<class Key>\r\n  iterator _find(const Key& key)\
-    \ const {\r\n    key_type x = key;\r\n    auto tit = xft_.lower_bound(x);\r\n\
-    \    assert(tit != xft_.end());\r\n    auto tres = tit->second.find(x);\r\n  \
-    \  if (tres != tit->second.end())\r\n      return make_raw_iterator(&xft_, tit,\
-    \ tres);\r\n    else\r\n      return end();\r\n  }\r\n  bool _pivot_selected()\
-    \ {\r\n    return dist_(eng_) == 0;\r\n  }\r\n  iterator activate_new_treap_node(const\
-    \ key_type& x,\r\n                                   typename xft_type::iterator\
-    \ xlb,\r\n                                   typename treap_type::iterator new_tit)\
-    \ {\r\n    size_++;\r\n    if (_pivot_selected()) [[unlikely]] {\r\n      auto\
-    \ lt = std::move(xlb->second.split(std::next(new_tit)));\r\n      xlb = xft_.emplace_hint(xlb,\
-    \ x, std::move(lt));\r\n    }\r\n    return iterator(&xft_, xlb, new_tit);\r\n\
-    \  }\r\n  template<class Value>\r\n  std::pair<iterator, bool> _insert(Value&&\
-    \ value) {\r\n    key_type x = Def::key_of(value);\r\n    auto xlb = xft_.lower_bound(x);\r\
-    \n    assert(xlb != xft_.end());\r\n    auto& t = xlb->second;\r\n    auto tins\
-    \ = t.insert(std::forward<Value>(value));\r\n    if (tins.second) {\r\n      return\
-    \ std::make_pair(activate_new_treap_node(x, xlb, tins.first), true);\r\n    }\r\
-    \n    return std::make_pair(iterator(&xft_, xlb, tins.first), false);\r\n  }\r\
-    \n  template<class Value>\r\n  iterator _emplace_hint_unique(const_iterator hint,\
-    \ Value&& value) {\r\n    assert(hint == end() || Def::key_of(value) < hint->first);\r\
-    \n    auto xit = hint.xit_;\r\n    auto tins = xit->second.emplace_hint(hint.tit_,\
-    \ std::forward<Value>(value));\r\n    return activate_new_treap_node(tins->first,\
-    \ xit, tins);\r\n  }\r\n  template<class Value>\r\n  iterator _emplace_hint(const_iterator\
-    \ hint, Value&& value) {\r\n    key_type x = Def::key_of(value);\r\n    if (hint\
-    \ != end() and x == hint->first) {\r\n      return hint;\r\n    }\r\n    return\
-    \ _emplace_hint_unique(hint, std::forward<Value>(value));\r\n  }\r\n  bool _erase(const\
-    \ key_type& key) {\r\n    auto xlb = xft_.lower_bound(key);\r\n    assert(xlb\
-    \ != xft_.end());\r\n    auto& t = xlb->second;\r\n    if (t.erase(key)) {\r\n\
-    \      size_--;\r\n      auto nxlb = std::next(xlb);\r\n      assert(nxlb != xlb);\r\
-    \n      if (xlb->first == key and nxlb != xft_.end()) [[unlikely]] {\r\n     \
-    \   nxlb->second.absorb(&t);\r\n        xft_.erase(xlb);\r\n      }\r\n      return\
-    \ true;\r\n    }\r\n    return false;\r\n  }\r\n  iterator _erase(const_iterator\
-    \ it) {\r\n    if (it == end()) return it;\r\n    auto next = std::next(it);\r\
-    \n    auto xlb = it.xit_;\r\n    auto x = Def::key_of(*it);\r\n    auto* t = &xlb->second;\r\
-    \n    t->erase(it.tit_);\r\n    size_--;\r\n    if (xlb->first == x and xlb !=\
-    \ std::prev(xft_.end())) {\r\n      auto& rt = std::next(xlb)->second;\r\n   \
-    \   rt.absorb(t);\r\n      xft_.erase(xlb);\r\n    }\r\n    return next;\r\n \
-    \ }\r\n protected:\r\n  template<bool Const>\r\n  struct iterator_base {\r\n \
-    \   using difference_type = ptrdiff_t;\r\n    using value_type = typename YFastTrieBase::value_type;\r\
-    \n    using pointer = typename std::conditional<Const,\r\n        const value_type*,\r\
-    \n        value_type*>::type;\r\n    using reference = typename std::conditional<Const,\r\
-    \n        const value_type&,\r\n        value_type&>::type;\r\n    using iterator_category\
-    \ = std::bidirectional_iterator_tag;\r\n    using xft_pointer = xft_type*;\r\n\
-    \    using xiterator = typename xft_type::iterator;\r\n    using titerator = typename\
-    \ treap_type::iterator;\r\n    xft_pointer xft_;\r\n    xiterator xit_;\r\n  \
-    \  titerator tit_;\r\n    iterator_base(xft_pointer xft, xiterator xit, titerator\
-    \ tit) : \r\n        xft_(xft), xit_(xit), tit_(tit) {}\r\n    template<bool C>\r\
-    \n    iterator_base(const iterator_base<C>& rhs) : \r\n        xft_(rhs.xft_),\
-    \ xit_(rhs.xit_), tit_(rhs.tit_) {}\r\n    template<bool C>\r\n    iterator_base&\
-    \ operator=(const iterator_base<C>& rhs) {\r\n      xft_ = rhs.xft_;\r\n     \
-    \ xit_ = rhs.xit_;\r\n      tit_ = rhs.tit_;\r\n      return *this;\r\n    }\r\
-    \n    template<bool C>\r\n    iterator_base(iterator_base<C>&& rhs) : \r\n   \
-    \     xft_(std::move(rhs.xft_)), \r\n        xit_(std::move(rhs.xit_)), \r\n \
-    \       tit_(std::move(rhs.tit_)) {}\r\n    template<bool C>\r\n    iterator_base&\
-    \ operator=(iterator_base<C>&& rhs) {\r\n      xft_ = std::move(rhs.xft_);\r\n\
-    \      xit_ = std::move(rhs.xit_);\r\n      tit_ = std::move(rhs.tit_);\r\n  \
-    \    return *this;\r\n    }\r\n    reference operator*() const {\r\n      return\
-    \ *tit_;\r\n    }\r\n    pointer operator->() const {\r\n      return tit_.operator->();\r\
-    \n    }\r\n    template<bool C>\r\n    bool operator==(const iterator_base<C>&\
-    \ rhs) const {\r\n      return xit_ == rhs.xit_ and tit_ == rhs.tit_;\r\n    }\r\
-    \n    template<bool C>\r\n    bool operator!=(const iterator_base<C>& rhs) const\
-    \ {\r\n      return !operator==(rhs);\r\n    }\r\n    iterator_base& operator++()\
-    \ {\r\n      ++tit_;\r\n      if (tit_ == xit_->second.end() and std::next(xit_)\
-    \ != xft_->end()) {\r\n        ++xit_;\r\n        tit_ = xit_->second.begin();\r\
-    \n      }\r\n      return *this;\r\n    }\r\n    iterator_base operator++(int)\
-    \ {\r\n      iterator_base ret = *this;\r\n      operator++();\r\n      return\
-    \ ret;\r\n    }\r\n    iterator_base& operator--() {\r\n      if (tit_ == xit_->second.begin())\
-    \ {\r\n        --xit_;\r\n        assert(!xit_->second.empty());\r\n        tit_\
-    \ = std::prev(xit_->second.end());\r\n      } else {\r\n        --tit_;\r\n  \
-    \    }\r\n      return *this;\r\n    }\r\n    iterator_base operator--(int) {\r\
-    \n      iterator_base ret = *this;\r\n      operator--();\r\n      return ret;\r\
-    \n    }\r\n  };\r\n protected:\r\n  using xft_pointer = xft_type*;\r\n  using\
-    \ xft_iterator = typename xft_type::iterator;\r\n  using treap_iterator = typename\
-    \ treap_type::iterator;\r\n  using const_xft_pointer = const xft_type*;\r\n  using\
-    \ const_xft_iterator = typename xft_type::const_iterator;\r\n  using const_treap_iterator\
-    \ = typename treap_type::const_iterator;\r\n  static iterator make_raw_iterator(const_xft_pointer\
-    \ xft,\r\n                                    const_xft_iterator xit,\r\n    \
-    \                                const_treap_iterator tit) {\r\n    return iterator(const_cast<xft_pointer>(xft),\
-    \ xit, tit);\r\n  }\r\n};\r\n\r\ntemplate<typename Key, typename T, uint8_t W\
-    \ = sizeof(Key)*8>\r\nusing YFastTrie = traits::MapTraits<YFastTrieBase<Key, T,\
-    \ W>>;\r\ntemplate<typename T, uint8_t W = sizeof(T)*8>\r\nusing YFastTrieSet\
-    \ = traits::SetTraits<YFastTrieBase<T, void, W>>;\r\ntemplate<typename Key, typename\
-    \ T, uint8_t W = sizeof(Key)*8>\r\nusing YFastTrieMap = YFastTrie<Key, T, W>;\r\
-    \n"
+    \n#line 4 \"test/yosupo/predecessor_problem-yft.test.cpp\"\n#include <bits/stdc++.h>\n\
+    using namespace std; \n\nconstexpr int max_value = 1e7;\nconstexpr int bits =\
+    \ 64 - bm::clz(max_value);\n\nint main() {\n    int n,q; cin>>n>>q;\n    string\
+    \ t; cin>>t;\n    vector<int> V;\n    for (int i = 0; i < n; i++) if (t[i]=='1')\
+    \ V.push_back(i);\n    YFastTrieSet<unsigned int, bits> S(V.begin(), V.end());\n\
+    \    for (int i = 0; i < q; i++) {\n        int t; cin>>t;\n        int k; cin>>k;\n\
+    \        switch (t) {\n            case 0: {\n                S.insert(k);\n \
+    \           }; break;\n            case 1: {\n                S.erase(S.find(k));\n\
+    \            }; break;\n            case 2: {\n                cout << S.count(k)\
+    \ << endl;\n            }; break;\n            case 3: {\n                auto\
+    \ i = S.lower_bound(k);\n                cout << (i != S.end() ? (int)*i : -1)\
+    \ << endl;\n            }; break;\n            case 4: {\n                auto\
+    \ i = S.upper_bound(k);\n                cout << (i != S.begin() ? (int)*--i :\
+    \ -1) << endl;\n            }; break;\n            default: break;\n        }\n\
+    \    }\n}\n"
+  code: "#define PROBLEM \"https://judge.yosupo.jp/problem/predecessor_problem\"\n\
+    #define IGNORE\n#include \"../../include/mtl/yft.hpp\"\n#include <bits/stdc++.h>\n\
+    using namespace std; \n\nconstexpr int max_value = 1e7;\nconstexpr int bits =\
+    \ 64 - bm::clz(max_value);\n\nint main() {\n    int n,q; cin>>n>>q;\n    string\
+    \ t; cin>>t;\n    vector<int> V;\n    for (int i = 0; i < n; i++) if (t[i]=='1')\
+    \ V.push_back(i);\n    YFastTrieSet<unsigned int, bits> S(V.begin(), V.end());\n\
+    \    for (int i = 0; i < q; i++) {\n        int t; cin>>t;\n        int k; cin>>k;\n\
+    \        switch (t) {\n            case 0: {\n                S.insert(k);\n \
+    \           }; break;\n            case 1: {\n                S.erase(S.find(k));\n\
+    \            }; break;\n            case 2: {\n                cout << S.count(k)\
+    \ << endl;\n            }; break;\n            case 3: {\n                auto\
+    \ i = S.lower_bound(k);\n                cout << (i != S.end() ? (int)*i : -1)\
+    \ << endl;\n            }; break;\n            case 4: {\n                auto\
+    \ i = S.upper_bound(k);\n                cout << (i != S.begin() ? (int)*--i :\
+    \ -1) << endl;\n            }; break;\n            default: break;\n        }\n\
+    \    }\n}"
   dependsOn:
+  - include/mtl/yft.hpp
   - include/mtl/traits/set_traits.hpp
   - include/mtl/treap.hpp
   - include/mtl/xft.hpp
   - include/mtl/binary_trie.hpp
   - include/mtl/bit_manip.hpp
-  isVerificationFile: false
-  path: include/mtl/yft.hpp
+  isVerificationFile: true
+  path: test/yosupo/predecessor_problem-yft.test.cpp
   requiredBy: []
   timestamp: '2023-04-06 22:28:35+09:00'
-  verificationStatus: LIBRARY_SOME_WA
-  verifiedWith:
-  - test/yosupo/predecessor_problem-yft.test.cpp
-  - test/yosupo/associative_array-yft.test.cpp
-documentation_of: include/mtl/yft.hpp
+  verificationStatus: TEST_WRONG_ANSWER
+  verifiedWith: []
+documentation_of: test/yosupo/predecessor_problem-yft.test.cpp
 layout: document
 redirect_from:
-- /library/include/mtl/yft.hpp
-- /library/include/mtl/yft.hpp.html
-title: include/mtl/yft.hpp
+- /verify/test/yosupo/predecessor_problem-yft.test.cpp
+- /verify/test/yosupo/predecessor_problem-yft.test.cpp.html
+title: test/yosupo/predecessor_problem-yft.test.cpp
 ---

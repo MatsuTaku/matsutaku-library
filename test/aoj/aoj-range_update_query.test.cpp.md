@@ -1,7 +1,7 @@
 ---
 data:
   _extendedDependsOn:
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/bit_manip.hpp
     title: include/mtl/bit_manip.hpp
   - icon: ':heavy_check_mark:'
@@ -17,7 +17,7 @@ data:
     PROBLEM: https://onlinejudge.u-aizu.ac.jp/problems/DSL_2_D
     links:
     - https://onlinejudge.u-aizu.ac.jp/problems/DSL_2_D
-  bundledCode: "#line 1 \"test/aoj-range_update_query.test.cpp\"\n#define PROBLEM\
+  bundledCode: "#line 1 \"test/aoj/aoj-range_update_query.test.cpp\"\n#define PROBLEM\
     \ \"https://onlinejudge.u-aizu.ac.jp/problems/DSL_2_D\"\n#line 2 \"include/mtl/bit_manip.hpp\"\
     \n#include <cstdint>\n#include <cassert>\n\nnamespace bm {\n\ninline constexpr\
     \ uint64_t popcnt_e8(uint64_t x) {\n  x = (x & 0x5555555555555555) + ((x>>1) &\
@@ -64,42 +64,41 @@ data:
     \    tree_(size_*2) {\n    ids_.reserve(log(size)*2);\n  }\n\n  template <typename\
     \ Iter>\n  explicit DualSegmentTree(Iter begin, Iter end)\n    : DualSegmentTree(std::distance(begin,\
     \ end)) {\n    static_assert(std::is_convertible<typename std::iterator_traits<Iter>::value_type,\
-    \ M>::value, \"\");\n    std::transform(begin, end, tree_.begin()+size_, [](const\
-    \ auto& v) {return v;});\n  }\n\n  void update(size_t l, size_t r, const M& e)\
-    \ {\n    assert(l <= r and r <= size_);\n    if (l == r) return;\n    _set_ids(l,\
-    \ r);\n    for (int i = ids_.size()-1; i >= 0; --i) \n      _propagate(ids_[i].first,\
-    \ ids_[i].second);\n\n    for (size_t _l=l+size_, _r=r+size_, s=1; _l<_r; _l>>=1,\
-    \ _r>>=1, s*=2) {\n      if (_l&1) {\n        tree_[_l] *= e;\n        ++_l;\n\
-    \      }\n      if (_r&1) {\n        --_r;\n        tree_[_r] *= e;\n      }\n\
-    \    }\n  }\n  void update(size_t i, const M& e) {\n    update(i, i+1, e);\n \
-    \ }\n\n  M get(size_t index) {\n    assert(index < size_);\n    _set_ids(index,\
-    \ index+1);\n    for (int i = ids_.size()-1; i >= 0; --i) \n      _propagate(ids_[i].first,\
-    \ ids_[i].second);\n    return tree_[size_ + index];\n  }\n\n private:\n  void\
-    \ _set_ids(size_t l, size_t r) {\n    ids_.clear();\n    auto _l=l+size_, _r=r+size_;\n\
-    \    auto lth = _l/(_l&(-_l))/2;\n    auto rth = _r/(_r&(-_r))/2;\n    size_t\
-    \ s = 1;\n    for (; _l<_r; _l>>=1, _r>>=1, s*=2) {\n      if (_r <= rth) ids_.emplace_back(_r,\
-    \ s);\n      if (_l <= lth) ids_.emplace_back(_l, s);\n    }\n    for (; _l>0;\
-    \ _l>>=1, s*=2) {\n      ids_.emplace_back(_l, s);\n    }\n  }\n\n  void _propagate(size_t\
-    \ id, size_t sz) {\n    if (id >= size_) return;\n    M e = tree_[id];\n    tree_[id]\
-    \ = M();\n    tree_[id*2] *= e;\n    tree_[id*2+1] *= e;\n  }\n\n};\n\n#line 3\
-    \ \"test/aoj-range_update_query.test.cpp\"\n#include <bits/stdc++.h>\nusing namespace\
-    \ std;\n\nstruct OR {\n    int a,b;\n    OR() : a(1), b(0) {}\n    OR(int b) :\
-    \ a(0), b(b) {}\n    OR& operator=(int x) {\n        a = 0;\n        b = x;\n\
-    \        return *this;\n    }\n    OR& operator*=(const OR& r) {\n        a *=\
-    \ r.a;\n        b = b * r.a + r.b;\n        return *this;\n    }\n};\n\nint main()\
-    \ {\n    int n,q; cin>>n>>q;\n    vector init(n, (1u<<31)-1);\n    DualSegmentTree<OR>\
-    \ dst(init.begin(), init.end());\n    for (int i = 0; i < q; i++) {\n        int\
-    \ t; cin>>t;\n        if (t == 0) {\n            int s,t,x; cin>>s>>t>>x;\n  \
-    \          ++t;\n            dst.update(s, t, x);\n        } else {\n        \
-    \    int i; cin>>i;\n            cout << dst.get(i).b << endl;\n        }\n  \
-    \  }\n}\n"
+    \ M>::value, \"\");\n    std::copy(begin, end, tree_.begin()+size_);\n  }\n\n\
+    \  void update(size_t l, size_t r, const M& e) {\n    assert(l <= r and r <= size_);\n\
+    \    if (l == r) return;\n    _set_ids(l, r);\n    for (int i = ids_.size()-1;\
+    \ i >= 0; --i) \n      _propagate(ids_[i].first, ids_[i].second);\n\n    for (size_t\
+    \ _l=l+size_, _r=r+size_, s=1; _l<_r; _l>>=1, _r>>=1, s*=2) {\n      if (_l&1)\
+    \ {\n        tree_[_l] *= e;\n        ++_l;\n      }\n      if (_r&1) {\n    \
+    \    --_r;\n        tree_[_r] *= e;\n      }\n    }\n  }\n  void update(size_t\
+    \ i, const M& e) {\n    update(i, i+1, e);\n  }\n\n  M get(size_t index) {\n \
+    \   assert(index < size_);\n    _set_ids(index, index+1);\n    for (int i = ids_.size()-1;\
+    \ i >= 0; --i) \n      _propagate(ids_[i].first, ids_[i].second);\n    return\
+    \ tree_[size_ + index];\n  }\n\n private:\n  void _set_ids(size_t l, size_t r)\
+    \ {\n    ids_.clear();\n    auto _l=l+size_, _r=r+size_;\n    auto lth = _l/(_l&(-_l))/2;\n\
+    \    auto rth = _r/(_r&(-_r))/2;\n    size_t s = 1;\n    for (; _l<_r; _l>>=1,\
+    \ _r>>=1, s*=2) {\n      if (_r <= rth) ids_.emplace_back(_r, s);\n      if (_l\
+    \ <= lth) ids_.emplace_back(_l, s);\n    }\n    for (; _l>0; _l>>=1, s*=2) {\n\
+    \      ids_.emplace_back(_l, s);\n    }\n  }\n\n  void _propagate(size_t id, size_t\
+    \ sz) {\n    if (id >= size_) return;\n    M e = tree_[id];\n    tree_[id] = M();\n\
+    \    tree_[id*2] *= e;\n    tree_[id*2+1] *= e;\n  }\n\n};\n\n#line 3 \"test/aoj/aoj-range_update_query.test.cpp\"\
+    \n#include <bits/stdc++.h>\nusing namespace std;\n\nstruct OR {\n    int a,b;\n\
+    \    OR() : a(1), b(0) {}\n    OR(int b) : a(0), b(b) {}\n    OR& operator=(int\
+    \ x) {\n        a = 0;\n        b = x;\n        return *this;\n    }\n    OR&\
+    \ operator*=(const OR& r) {\n        a *= r.a;\n        b = b * r.a + r.b;\n \
+    \       return *this;\n    }\n};\n\nint main() {\n    int n,q; cin>>n>>q;\n  \
+    \  vector init(n, (1u<<31)-1);\n    DualSegmentTree<OR> dst(init.begin(), init.end());\n\
+    \    for (int i = 0; i < q; i++) {\n        int t; cin>>t;\n        if (t == 0)\
+    \ {\n            int s,t,x; cin>>s>>t>>x;\n            ++t;\n            dst.update(s,\
+    \ t, x);\n        } else {\n            int i; cin>>i;\n            cout << dst.get(i).b\
+    \ << endl;\n        }\n    }\n}\n"
   code: "#define PROBLEM \"https://onlinejudge.u-aizu.ac.jp/problems/DSL_2_D\"\n#include\
-    \ \"../include/mtl/dual_segment_tree.hpp\"\n#include <bits/stdc++.h>\nusing namespace\
-    \ std;\n\nstruct OR {\n    int a,b;\n    OR() : a(1), b(0) {}\n    OR(int b) :\
-    \ a(0), b(b) {}\n    OR& operator=(int x) {\n        a = 0;\n        b = x;\n\
-    \        return *this;\n    }\n    OR& operator*=(const OR& r) {\n        a *=\
-    \ r.a;\n        b = b * r.a + r.b;\n        return *this;\n    }\n};\n\nint main()\
-    \ {\n    int n,q; cin>>n>>q;\n    vector init(n, (1u<<31)-1);\n    DualSegmentTree<OR>\
+    \ \"../../include/mtl/dual_segment_tree.hpp\"\n#include <bits/stdc++.h>\nusing\
+    \ namespace std;\n\nstruct OR {\n    int a,b;\n    OR() : a(1), b(0) {}\n    OR(int\
+    \ b) : a(0), b(b) {}\n    OR& operator=(int x) {\n        a = 0;\n        b =\
+    \ x;\n        return *this;\n    }\n    OR& operator*=(const OR& r) {\n      \
+    \  a *= r.a;\n        b = b * r.a + r.b;\n        return *this;\n    }\n};\n\n\
+    int main() {\n    int n,q; cin>>n>>q;\n    vector init(n, (1u<<31)-1);\n    DualSegmentTree<OR>\
     \ dst(init.begin(), init.end());\n    for (int i = 0; i < q; i++) {\n        int\
     \ t; cin>>t;\n        if (t == 0) {\n            int s,t,x; cin>>s>>t>>x;\n  \
     \          ++t;\n            dst.update(s, t, x);\n        } else {\n        \
@@ -109,15 +108,15 @@ data:
   - include/mtl/dual_segment_tree.hpp
   - include/mtl/bit_manip.hpp
   isVerificationFile: true
-  path: test/aoj-range_update_query.test.cpp
+  path: test/aoj/aoj-range_update_query.test.cpp
   requiredBy: []
-  timestamp: '2023-04-04 01:36:55+09:00'
+  timestamp: '2023-04-08 02:15:04+09:00'
   verificationStatus: TEST_ACCEPTED
   verifiedWith: []
-documentation_of: test/aoj-range_update_query.test.cpp
+documentation_of: test/aoj/aoj-range_update_query.test.cpp
 layout: document
 redirect_from:
-- /verify/test/aoj-range_update_query.test.cpp
-- /verify/test/aoj-range_update_query.test.cpp.html
-title: test/aoj-range_update_query.test.cpp
+- /verify/test/aoj/aoj-range_update_query.test.cpp
+- /verify/test/aoj/aoj-range_update_query.test.cpp.html
+title: test/aoj/aoj-range_update_query.test.cpp
 ---

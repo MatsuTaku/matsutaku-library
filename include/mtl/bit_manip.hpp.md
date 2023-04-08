@@ -2,7 +2,7 @@
 data:
   _extendedDependsOn: []
   _extendedRequiredBy:
-  - icon: ':warning:'
+  - icon: ':question:'
     path: include/mtl/binary_trie.hpp
     title: include/mtl/binary_trie.hpp
   - icon: ':warning:'
@@ -65,61 +65,73 @@ data:
   - icon: ':warning:'
     path: include/mtl/succinct/wavelet_tree.hpp
     title: include/mtl/succinct/wavelet_tree.hpp
-  - icon: ':warning:'
+  - icon: ':question:'
     path: include/mtl/xft.hpp
     title: include/mtl/xft.hpp
-  - icon: ':warning:'
+  - icon: ':question:'
     path: include/mtl/yft.hpp
     title: include/mtl/yft.hpp
+  - icon: ':warning:'
+    path: test/yosupo/test_binary_trie.cpp
+    title: test/yosupo/test_binary_trie.cpp
   _extendedVerifiedWith:
   - icon: ':heavy_check_mark:'
-    path: test/aoj-do_use_segment_tree-binary_tree.test.cpp
-    title: test/aoj-do_use_segment_tree-binary_tree.test.cpp
+    path: test/aoj/aoj-do_use_segment_tree-binary_tree.test.cpp
+    title: test/aoj/aoj-do_use_segment_tree-binary_tree.test.cpp
   - icon: ':heavy_check_mark:'
-    path: test/aoj-range_update_query.test.cpp
-    title: test/aoj-range_update_query.test.cpp
+    path: test/aoj/aoj-range_update_query.test.cpp
+    title: test/aoj/aoj-range_update_query.test.cpp
   - icon: ':heavy_check_mark:'
-    path: test/aoj-the_maximum_number_of_customers.test.cpp
-    title: test/aoj-the_maximum_number_of_customers.test.cpp
-  - icon: ':heavy_check_mark:'
-    path: test/convolution.test.cpp
-    title: test/convolution.test.cpp
-  - icon: ':heavy_check_mark:'
-    path: test/point_add_range_sum.test.cpp
-    title: test/point_add_range_sum.test.cpp
-  - icon: ':heavy_check_mark:'
-    path: test/point_set_range_composite.test.cpp
-    title: test/point_set_range_composite.test.cpp
-  - icon: ':heavy_check_mark:'
-    path: test/range_affine_range_sum.test.cpp
-    title: test/range_affine_range_sum.test.cpp
-  - icon: ':heavy_check_mark:'
-    path: test/static_range_inversions_query.test.cpp
-    title: test/static_range_inversions_query.test.cpp
-  - icon: ':heavy_check_mark:'
-    path: test/static_range_sum.test.cpp
-    title: test/static_range_sum.test.cpp
-  - icon: ':heavy_check_mark:'
-    path: test/static_rmq.test.cpp
-    title: test/static_rmq.test.cpp
+    path: test/aoj/aoj-the_maximum_number_of_customers.test.cpp
+    title: test/aoj/aoj-the_maximum_number_of_customers.test.cpp
   - icon: ':heavy_check_mark:'
     path: test/succinct/range_kth_smallest.test.cpp
     title: test/succinct/range_kth_smallest.test.cpp
   - icon: ':heavy_check_mark:'
-    path: test/yosupo-line_add_get_min.test.cpp
-    title: test/yosupo-line_add_get_min.test.cpp
+    path: test/yosupo/associative_array-yft.test.cpp
+    title: test/yosupo/associative_array-yft.test.cpp
   - icon: ':heavy_check_mark:'
-    path: test/yosupo-point_add_rectangle_sum-wm.test.cpp
-    title: test/yosupo-point_add_rectangle_sum-wm.test.cpp
+    path: test/yosupo/convolution.test.cpp
+    title: test/yosupo/convolution.test.cpp
   - icon: ':heavy_check_mark:'
-    path: test/yosupo-segment_add_get_min.test.cpp
-    title: test/yosupo-segment_add_get_min.test.cpp
+    path: test/yosupo/point_add_range_sum.test.cpp
+    title: test/yosupo/point_add_range_sum.test.cpp
   - icon: ':heavy_check_mark:'
-    path: test/yuki-no945_ykc_manju.test.cpp
-    title: test/yuki-no945_ykc_manju.test.cpp
-  _isVerificationFailed: false
+    path: test/yosupo/point_set_range_composite.test.cpp
+    title: test/yosupo/point_set_range_composite.test.cpp
+  - icon: ':x:'
+    path: test/yosupo/predecessor_problem-yft.test.cpp
+    title: test/yosupo/predecessor_problem-yft.test.cpp
+  - icon: ':heavy_check_mark:'
+    path: test/yosupo/range_affine_range_sum.test.cpp
+    title: test/yosupo/range_affine_range_sum.test.cpp
+  - icon: ':heavy_check_mark:'
+    path: test/yosupo/static_range_inversions_query.test.cpp
+    title: test/yosupo/static_range_inversions_query.test.cpp
+  - icon: ':heavy_check_mark:'
+    path: test/yosupo/static_range_sum.test.cpp
+    title: test/yosupo/static_range_sum.test.cpp
+  - icon: ':heavy_check_mark:'
+    path: test/yosupo/static_rmq.test.cpp
+    title: test/yosupo/static_rmq.test.cpp
+  - icon: ':heavy_check_mark:'
+    path: test/yosupo/yosupo-line_add_get_min.test.cpp
+    title: test/yosupo/yosupo-line_add_get_min.test.cpp
+  - icon: ':heavy_check_mark:'
+    path: test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
+    title: test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
+  - icon: ':heavy_check_mark:'
+    path: test/yosupo/yosupo-range_affine_point_get.test.cpp
+    title: test/yosupo/yosupo-range_affine_point_get.test.cpp
+  - icon: ':heavy_check_mark:'
+    path: test/yosupo/yosupo-segment_add_get_min.test.cpp
+    title: test/yosupo/yosupo-segment_add_get_min.test.cpp
+  - icon: ':heavy_check_mark:'
+    path: test/yuki/yuki-no945_ykc_manju.test.cpp
+    title: test/yuki/yuki-no945_ykc_manju.test.cpp
+  _isVerificationFailed: true
   _pathExtension: hpp
-  _verificationStatusIcon: ':heavy_check_mark:'
+  _verificationStatusIcon: ':question:'
   attributes:
     links: []
   bundledCode: "#line 2 \"include/mtl/bit_manip.hpp\"\n#include <cstdint>\n#include\
@@ -217,24 +229,28 @@ data:
   - include/mtl/li_chao_tree.hpp
   - include/mtl/dual_segment_tree.hpp
   - include/mtl/integer_set.hpp
+  - test/yosupo/test_binary_trie.cpp
   timestamp: '2022-12-18 04:26:00+09:00'
-  verificationStatus: LIBRARY_ALL_AC
+  verificationStatus: LIBRARY_SOME_WA
   verifiedWith:
-  - test/static_range_inversions_query.test.cpp
   - test/succinct/range_kth_smallest.test.cpp
-  - test/aoj-the_maximum_number_of_customers.test.cpp
-  - test/yosupo-segment_add_get_min.test.cpp
-  - test/point_add_range_sum.test.cpp
-  - test/yosupo-line_add_get_min.test.cpp
-  - test/aoj-do_use_segment_tree-binary_tree.test.cpp
-  - test/yuki-no945_ykc_manju.test.cpp
-  - test/aoj-range_update_query.test.cpp
-  - test/convolution.test.cpp
-  - test/static_range_sum.test.cpp
-  - test/static_rmq.test.cpp
-  - test/yosupo-point_add_rectangle_sum-wm.test.cpp
-  - test/range_affine_range_sum.test.cpp
-  - test/point_set_range_composite.test.cpp
+  - test/yuki/yuki-no945_ykc_manju.test.cpp
+  - test/yosupo/static_range_inversions_query.test.cpp
+  - test/yosupo/yosupo-segment_add_get_min.test.cpp
+  - test/yosupo/point_add_range_sum.test.cpp
+  - test/yosupo/yosupo-line_add_get_min.test.cpp
+  - test/yosupo/predecessor_problem-yft.test.cpp
+  - test/yosupo/convolution.test.cpp
+  - test/yosupo/static_range_sum.test.cpp
+  - test/yosupo/static_rmq.test.cpp
+  - test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
+  - test/yosupo/range_affine_range_sum.test.cpp
+  - test/yosupo/point_set_range_composite.test.cpp
+  - test/yosupo/associative_array-yft.test.cpp
+  - test/yosupo/yosupo-range_affine_point_get.test.cpp
+  - test/aoj/aoj-the_maximum_number_of_customers.test.cpp
+  - test/aoj/aoj-do_use_segment_tree-binary_tree.test.cpp
+  - test/aoj/aoj-range_update_query.test.cpp
 documentation_of: include/mtl/bit_manip.hpp
 layout: document
 redirect_from:

@@ -1,7 +1,7 @@
 ---
 data:
   _extendedDependsOn:
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/bit_manip.hpp
     title: include/mtl/bit_manip.hpp
   - icon: ':heavy_check_mark:'
@@ -13,8 +13,8 @@ data:
   _extendedRequiredBy: []
   _extendedVerifiedWith:
   - icon: ':heavy_check_mark:'
-    path: test/convolution.test.cpp
-    title: test/convolution.test.cpp
+    path: test/yosupo/convolution.test.cpp
+    title: test/yosupo/convolution.test.cpp
   _isVerificationFailed: false
   _pathExtension: hpp
   _verificationStatusIcon: ':heavy_check_mark:'
@@ -256,7 +256,7 @@ data:
   timestamp: '2023-01-28 19:00:09+00:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
-  - test/convolution.test.cpp
+  - test/yosupo/convolution.test.cpp
 documentation_of: include/mtl/fps.hpp
 layout: document
 redirect_from:

@@ -6,10 +6,10 @@ data:
     - icon: ':warning:'
       path: include/mtl/arbitrary_mod_binomial.hpp
       title: include/mtl/arbitrary_mod_binomial.hpp
-    - icon: ':warning:'
+    - icon: ':question:'
       path: include/mtl/binary_trie.hpp
       title: include/mtl/binary_trie.hpp
-    - icon: ':heavy_check_mark:'
+    - icon: ':question:'
       path: include/mtl/bit_manip.hpp
       title: include/mtl/bit_manip.hpp
     - icon: ':warning:'
@@ -36,9 +36,9 @@ data:
     - icon: ':warning:'
       path: include/mtl/disjoint_sparse_table.hpp
       title: include/mtl/disjoint_sparse_table.hpp
-    - icon: ':warning:'
+    - icon: ':heavy_check_mark:'
       path: include/mtl/double_ended_priority_queue.hpp
-      title: include/mtl/double_ended_priority_queue.hpp
+      title: Double Ended Priority Queue
     - icon: ':heavy_check_mark:'
       path: include/mtl/dual_disjoint_sparse_table.hpp
       title: include/mtl/dual_disjoint_sparse_table.hpp
@@ -138,16 +138,16 @@ data:
     - icon: ':warning:'
       path: include/mtl/sparse_table.hpp
       title: include/mtl/sparse_table.hpp
-    - icon: ':warning:'
+    - icon: ':question:'
       path: include/mtl/treap.hpp
       title: include/mtl/treap.hpp
     - icon: ':heavy_check_mark:'
       path: include/mtl/unionfind.hpp
       title: include/mtl/unionfind.hpp
-    - icon: ':warning:'
+    - icon: ':question:'
       path: include/mtl/xft.hpp
       title: include/mtl/xft.hpp
-    - icon: ':warning:'
+    - icon: ':question:'
       path: include/mtl/yft.hpp
       title: include/mtl/yft.hpp
   - name: include/mtl/string
@@ -180,7 +180,7 @@ data:
       title: include/mtl/succinct/wavelet_tree.hpp
   - name: include/mtl/traits
     pages:
-    - icon: ':warning:'
+    - icon: ':question:'
       path: include/mtl/traits/set_traits.hpp
       title: include/mtl/traits/set_traits.hpp
   - name: test
@@ -276,78 +276,47 @@ data:
     - icon: ':warning:'
       path: test/succinct/wavelet_tree_test.cpp
       title: test/succinct/wavelet_tree_test.cpp
+  - name: test/yosupo
+    pages:
+    - icon: ':warning:'
+      path: test/yosupo/test_binary_trie.cpp
+      title: test/yosupo/test_binary_trie.cpp
   verificationCategories:
-  - name: test
+  - name: test/aoj
     pages:
     - icon: ':heavy_check_mark:'
-      path: test/aoj-do_use_segment_tree-balanced_tree.test.cpp
-      title: test/aoj-do_use_segment_tree-balanced_tree.test.cpp
+      path: test/aoj/aoj-do_use_segment_tree-balanced_tree.test.cpp
+      title: test/aoj/aoj-do_use_segment_tree-balanced_tree.test.cpp
     - icon: ':heavy_check_mark:'
-      path: test/aoj-do_use_segment_tree-binary_tree.test.cpp
-      title: test/aoj-do_use_segment_tree-binary_tree.test.cpp
+      path: test/aoj/aoj-do_use_segment_tree-binary_tree.test.cpp
+      title: test/aoj/aoj-do_use_segment_tree-binary_tree.test.cpp
     - icon: ':heavy_check_mark:'
-      path: test/aoj-range_update_query.test.cpp
-      title: test/aoj-range_update_query.test.cpp
+      path: test/aoj/aoj-range_update_query.test.cpp
+      title: test/aoj/aoj-range_update_query.test.cpp
     - icon: ':heavy_check_mark:'
-      path: test/aoj-the_maximum_number_of_customers.test.cpp
-      title: test/aoj-the_maximum_number_of_customers.test.cpp
+      path: test/aoj/aoj-the_maximum_number_of_customers.test.cpp
+      title: test/aoj/aoj-the_maximum_number_of_customers.test.cpp
     - icon: ':heavy_check_mark:'
-      path: test/aoj-time_table-cht.test.cpp
-      title: test/aoj-time_table-cht.test.cpp
+      path: test/aoj/aoj-time_table-cht.test.cpp
+      title: test/aoj/aoj-time_table-cht.test.cpp
     - icon: ':heavy_check_mark:'
-      path: test/convolution.test.cpp
-      title: test/convolution.test.cpp
+      path: test/aoj/dijkstra.test.cpp
+      title: test/aoj/dijkstra.test.cpp
     - icon: ':heavy_check_mark:'
-      path: test/dijkstra.test.cpp
-      title: test/dijkstra.test.cpp
+      path: test/aoj/dijkstra_fibonacci.test.cpp
+      title: test/aoj/dijkstra_fibonacci.test.cpp
     - icon: ':heavy_check_mark:'
-      path: test/dijkstra_fibonacci.test.cpp
-      title: test/dijkstra_fibonacci.test.cpp
+      path: test/aoj/maximum_flow_dinic.test.cpp
+      title: test/aoj/maximum_flow_dinic.test.cpp
     - icon: ':heavy_check_mark:'
-      path: test/maximum_flow_dinic.test.cpp
-      title: test/maximum_flow_dinic.test.cpp
+      path: test/aoj/maximum_flow_ford_fulkerson.test.cpp
+      title: test/aoj/maximum_flow_ford_fulkerson.test.cpp
     - icon: ':heavy_check_mark:'
-      path: test/maximum_flow_ford_fulkerson.test.cpp
-      title: test/maximum_flow_ford_fulkerson.test.cpp
+      path: test/aoj/min_cost_flow.test.cpp
+      title: test/aoj/min_cost_flow.test.cpp
     - icon: ':heavy_check_mark:'
-      path: test/min_cost_flow.test.cpp
-      title: test/min_cost_flow.test.cpp
-    - icon: ':heavy_check_mark:'
-      path: test/point_add_range_sum.test.cpp
-      title: test/point_add_range_sum.test.cpp
-    - icon: ':heavy_check_mark:'
-      path: test/point_set_range_composite.test.cpp
-      title: test/point_set_range_composite.test.cpp
-    - icon: ':heavy_check_mark:'
-      path: test/range_affine_range_sum.test.cpp
-      title: test/range_affine_range_sum.test.cpp
-    - icon: ':heavy_check_mark:'
-      path: test/scc.test.cpp
-      title: test/scc.test.cpp
-    - icon: ':heavy_check_mark:'
-      path: test/static_range_inversions_query.test.cpp
-      title: test/static_range_inversions_query.test.cpp
-    - icon: ':heavy_check_mark:'
-      path: test/static_range_sum.test.cpp
-      title: test/static_range_sum.test.cpp
-    - icon: ':heavy_check_mark:'
-      path: test/static_rmq.test.cpp
-      title: test/static_rmq.test.cpp
-    - icon: ':heavy_check_mark:'
-      path: test/unionfind.test.cpp
-      title: test/unionfind.test.cpp
-    - icon: ':heavy_check_mark:'
-      path: test/yosupo-line_add_get_min.test.cpp
-      title: test/yosupo-line_add_get_min.test.cpp
-    - icon: ':heavy_check_mark:'
-      path: test/yosupo-point_add_rectangle_sum-wm.test.cpp
-      title: test/yosupo-point_add_rectangle_sum-wm.test.cpp
-    - icon: ':heavy_check_mark:'
-      path: test/yosupo-segment_add_get_min.test.cpp
-      title: test/yosupo-segment_add_get_min.test.cpp
-    - icon: ':heavy_check_mark:'
-      path: test/yuki-no945_ykc_manju.test.cpp
-      title: test/yuki-no945_ykc_manju.test.cpp
+      path: test/aoj/scc.test.cpp
+      title: test/aoj/scc.test.cpp
   - name: test/string
     pages:
     - icon: ':heavy_check_mark:'
@@ -361,5 +330,63 @@ data:
     - icon: ':heavy_check_mark:'
       path: test/succinct/range_kth_smallest.test.cpp
       title: test/succinct/range_kth_smallest.test.cpp
+  - name: test/yosupo
+    pages:
+    - icon: ':heavy_check_mark:'
+      path: test/yosupo/associative_array-treap.test.cpp
+      title: test/yosupo/associative_array-treap.test.cpp
+    - icon: ':heavy_check_mark:'
+      path: test/yosupo/associative_array-yft.test.cpp
+      title: test/yosupo/associative_array-yft.test.cpp
+    - icon: ':heavy_check_mark:'
+      path: test/yosupo/convolution.test.cpp
+      title: test/yosupo/convolution.test.cpp
+    - icon: ':heavy_check_mark:'
+      path: test/yosupo/double_ended_priority_queue.test.cpp
+      title: test/yosupo/double_ended_priority_queue.test.cpp
+    - icon: ':heavy_check_mark:'
+      path: test/yosupo/point_add_range_sum.test.cpp
+      title: test/yosupo/point_add_range_sum.test.cpp
+    - icon: ':heavy_check_mark:'
+      path: test/yosupo/point_set_range_composite.test.cpp
+      title: test/yosupo/point_set_range_composite.test.cpp
+    - icon: ':heavy_check_mark:'
+      path: test/yosupo/predecessor_problem-treap.test.cpp
+      title: test/yosupo/predecessor_problem-treap.test.cpp
+    - icon: ':x:'
+      path: test/yosupo/predecessor_problem-yft.test.cpp
+      title: test/yosupo/predecessor_problem-yft.test.cpp
+    - icon: ':heavy_check_mark:'
+      path: test/yosupo/range_affine_range_sum.test.cpp
+      title: test/yosupo/range_affine_range_sum.test.cpp
+    - icon: ':heavy_check_mark:'
+      path: test/yosupo/static_range_inversions_query.test.cpp
+      title: test/yosupo/static_range_inversions_query.test.cpp
+    - icon: ':heavy_check_mark:'
+      path: test/yosupo/static_range_sum.test.cpp
+      title: test/yosupo/static_range_sum.test.cpp
+    - icon: ':heavy_check_mark:'
+      path: test/yosupo/static_rmq.test.cpp
+      title: test/yosupo/static_rmq.test.cpp
+    - icon: ':heavy_check_mark:'
+      path: test/yosupo/unionfind.test.cpp
+      title: test/yosupo/unionfind.test.cpp
+    - icon: ':heavy_check_mark:'
+      path: test/yosupo/yosupo-line_add_get_min.test.cpp
+      title: test/yosupo/yosupo-line_add_get_min.test.cpp
+    - icon: ':heavy_check_mark:'
+      path: test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
+      title: test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
+    - icon: ':heavy_check_mark:'
+      path: test/yosupo/yosupo-range_affine_point_get.test.cpp
+      title: test/yosupo/yosupo-range_affine_point_get.test.cpp
+    - icon: ':heavy_check_mark:'
+      path: test/yosupo/yosupo-segment_add_get_min.test.cpp
+      title: test/yosupo/yosupo-segment_add_get_min.test.cpp
+  - name: test/yuki
+    pages:
+    - icon: ':heavy_check_mark:'
+      path: test/yuki/yuki-no945_ykc_manju.test.cpp
+      title: test/yuki/yuki-no945_ykc_manju.test.cpp
 layout: toppage
 ---

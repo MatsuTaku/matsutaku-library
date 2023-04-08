@@ -1,7 +1,7 @@
 ---
 data:
   _extendedDependsOn:
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/bit_manip.hpp
     title: include/mtl/bit_manip.hpp
   - icon: ':heavy_check_mark:'
@@ -20,29 +20,29 @@ data:
     PROBLEM: https://onlinejudge.u-aizu.ac.jp/problems/2450
     links:
     - https://onlinejudge.u-aizu.ac.jp/problems/2450
-  bundledCode: "#line 1 \"test/aoj-do_use_segment_tree-binary_tree.test.cpp\"\n#define\
-    \ PROBLEM \"https://onlinejudge.u-aizu.ac.jp/problems/2450\"\r\n#line 2 \"include/mtl/bit_manip.hpp\"\
-    \n#include <cstdint>\n#include <cassert>\n\nnamespace bm {\n\ninline constexpr\
-    \ uint64_t popcnt_e8(uint64_t x) {\n  x = (x & 0x5555555555555555) + ((x>>1) &\
-    \ 0x5555555555555555);\n  x = (x & 0x3333333333333333) + ((x>>2) & 0x3333333333333333);\n\
-    \  x = (x & 0x0F0F0F0F0F0F0F0F) + ((x>>4) & 0x0F0F0F0F0F0F0F0F);\n  return x;\n\
-    }\n// Count 1s\ninline constexpr unsigned popcnt(uint64_t x) {\n  return (popcnt_e8(x)\
-    \ * 0x0101010101010101) >> 56;\n}\n// Count trailing 0s. ...01101000 -> 3\ninline\
-    \ constexpr unsigned ctz(uint64_t x) {\n  return popcnt((x & (-x)) - 1);\n}\n\
-    inline constexpr unsigned ctz8(uint8_t x) {\n  return x == 0 ? 8 : popcnt_e8((x\
-    \ & (-x)) - 1);\n}\n// [00..0](8bit) -> 0, [**..*](not only 0) -> 1\ninline constexpr\
-    \ uint8_t summary(uint64_t x) {\n  constexpr uint64_t hmask = 0x8080808080808080ull;\n\
-    \  constexpr uint64_t lmask = 0x7F7F7F7F7F7F7F7Full;\n  auto a = x & hmask;\n\
-    \  auto b = x & lmask;\n  b = hmask - b;\n  b = ~b;\n  auto c = (a | b) & hmask;\n\
-    \  c *= 0x0002040810204081ull;\n  return uint8_t(c >> 56);\n}\n// Extract target\
-    \ area of bits\ninline constexpr uint64_t bextr(uint64_t x, unsigned start, unsigned\
-    \ len) {\n  uint64_t mask = len < 64 ? (1ull<<len)-1 : 0xFFFFFFFFFFFFFFFFull;\n\
-    \  return (x >> start) & mask;\n}\n// 00101101 -> 00111111 -count_1s-> 6\ninline\
-    \ constexpr unsigned log2p1(uint8_t x) {\n  if (x & 0x80)\n    return 8;\n  uint64_t\
-    \ p = uint64_t(x) * 0x0101010101010101ull;\n  p -= 0x8040201008040201ull;\n  p\
-    \ = ~p & 0x8080808080808080ull;\n  p = (p >> 7) * 0x0101010101010101ull;\n  p\
-    \ >>= 56;\n  return p;\n}\n// 00101100 -mask_mssb-> 00100000 -to_index-> 5\ninline\
-    \ constexpr unsigned mssb8(uint8_t x) {\n  assert(x != 0);\n  return log2p1(x)\
+  bundledCode: "#line 1 \"test/aoj/aoj-do_use_segment_tree-binary_tree.test.cpp\"\n\
+    #define PROBLEM \"https://onlinejudge.u-aizu.ac.jp/problems/2450\"\r\n#line 2\
+    \ \"include/mtl/bit_manip.hpp\"\n#include <cstdint>\n#include <cassert>\n\nnamespace\
+    \ bm {\n\ninline constexpr uint64_t popcnt_e8(uint64_t x) {\n  x = (x & 0x5555555555555555)\
+    \ + ((x>>1) & 0x5555555555555555);\n  x = (x & 0x3333333333333333) + ((x>>2) &\
+    \ 0x3333333333333333);\n  x = (x & 0x0F0F0F0F0F0F0F0F) + ((x>>4) & 0x0F0F0F0F0F0F0F0F);\n\
+    \  return x;\n}\n// Count 1s\ninline constexpr unsigned popcnt(uint64_t x) {\n\
+    \  return (popcnt_e8(x) * 0x0101010101010101) >> 56;\n}\n// Count trailing 0s.\
+    \ ...01101000 -> 3\ninline constexpr unsigned ctz(uint64_t x) {\n  return popcnt((x\
+    \ & (-x)) - 1);\n}\ninline constexpr unsigned ctz8(uint8_t x) {\n  return x ==\
+    \ 0 ? 8 : popcnt_e8((x & (-x)) - 1);\n}\n// [00..0](8bit) -> 0, [**..*](not only\
+    \ 0) -> 1\ninline constexpr uint8_t summary(uint64_t x) {\n  constexpr uint64_t\
+    \ hmask = 0x8080808080808080ull;\n  constexpr uint64_t lmask = 0x7F7F7F7F7F7F7F7Full;\n\
+    \  auto a = x & hmask;\n  auto b = x & lmask;\n  b = hmask - b;\n  b = ~b;\n \
+    \ auto c = (a | b) & hmask;\n  c *= 0x0002040810204081ull;\n  return uint8_t(c\
+    \ >> 56);\n}\n// Extract target area of bits\ninline constexpr uint64_t bextr(uint64_t\
+    \ x, unsigned start, unsigned len) {\n  uint64_t mask = len < 64 ? (1ull<<len)-1\
+    \ : 0xFFFFFFFFFFFFFFFFull;\n  return (x >> start) & mask;\n}\n// 00101101 -> 00111111\
+    \ -count_1s-> 6\ninline constexpr unsigned log2p1(uint8_t x) {\n  if (x & 0x80)\n\
+    \    return 8;\n  uint64_t p = uint64_t(x) * 0x0101010101010101ull;\n  p -= 0x8040201008040201ull;\n\
+    \  p = ~p & 0x8080808080808080ull;\n  p = (p >> 7) * 0x0101010101010101ull;\n\
+    \  p >>= 56;\n  return p;\n}\n// 00101100 -mask_mssb-> 00100000 -to_index-> 5\n\
+    inline constexpr unsigned mssb8(uint8_t x) {\n  assert(x != 0);\n  return log2p1(x)\
     \ - 1;\n}\n// 00101100 -mask_lssb-> 00000100 -to_index-> 2\ninline constexpr unsigned\
     \ lssb8(uint8_t x) {\n  assert(x != 0);\n  return popcnt_e8((x & -x) - 1);\n}\n\
     // Count leading 0s. 00001011... -> 4\ninline constexpr unsigned clz(uint64_t\
@@ -140,7 +140,7 @@ data:
     \    };\n    while (depth[u] < depth[v]) {\n      up(v);\n    }\n    while (head[u]\
     \ != head[v]) {\n      up(u);\n      up(v);\n    }\n    if (in[u] > in[v]) std::swap(u,v);\n\
     \    int l = INCLUDE_LCA ? in[u] : in[u]+1;\n    U(l, in[v]+1, val);\n  }\n};\n\
-    #line 4 \"test/aoj-do_use_segment_tree-binary_tree.test.cpp\"\n#include <bits/stdc++.h>\r\
+    #line 4 \"test/aoj/aoj-do_use_segment_tree-binary_tree.test.cpp\"\n#include <bits/stdc++.h>\r\
     \n\r\nusing namespace std;\r\n\r\nconstexpr int MINF = -1e9;\r\nstruct M {\r\n\
     \  int l,r,sum,v;\r\n  M() : v(MINF) {}\r\n  M(int w) : l(w),r(w),sum(w),v(w)\
     \ {}\r\n  friend M operator*(const M& lhs, const M& rhs) {\r\n    if (lhs.v ==\
@@ -166,7 +166,7 @@ data:
     \n    } else if (t == 2) {\r\n      int a,b,c; cin>>a>>b>>c; a--; b--;\r\n   \
     \   cout << T.query<M>(a,b,query).v << endl;\r\n    }\r\n  }\r\n}\n"
   code: "#define PROBLEM \"https://onlinejudge.u-aizu.ac.jp/problems/2450\"\r\n#include\
-    \ \"../include/mtl/lazy_segment_tree.hpp\"\r\n#include \"../include/mtl/hld.hpp\"\
+    \ \"../../include/mtl/lazy_segment_tree.hpp\"\r\n#include \"../../include/mtl/hld.hpp\"\
     \r\n#include <bits/stdc++.h>\r\n\r\nusing namespace std;\r\n\r\nconstexpr int\
     \ MINF = -1e9;\r\nstruct M {\r\n  int l,r,sum,v;\r\n  M() : v(MINF) {}\r\n  M(int\
     \ w) : l(w),r(w),sum(w),v(w) {}\r\n  friend M operator*(const M& lhs, const M&\
@@ -197,15 +197,15 @@ data:
   - include/mtl/bit_manip.hpp
   - include/mtl/hld.hpp
   isVerificationFile: true
-  path: test/aoj-do_use_segment_tree-binary_tree.test.cpp
+  path: test/aoj/aoj-do_use_segment_tree-binary_tree.test.cpp
   requiredBy: []
-  timestamp: '2023-04-03 11:10:35+09:00'
+  timestamp: '2023-04-08 02:15:04+09:00'
   verificationStatus: TEST_ACCEPTED
   verifiedWith: []
-documentation_of: test/aoj-do_use_segment_tree-binary_tree.test.cpp
+documentation_of: test/aoj/aoj-do_use_segment_tree-binary_tree.test.cpp
 layout: document
 redirect_from:
-- /verify/test/aoj-do_use_segment_tree-binary_tree.test.cpp
-- /verify/test/aoj-do_use_segment_tree-binary_tree.test.cpp.html
-title: test/aoj-do_use_segment_tree-binary_tree.test.cpp
+- /verify/test/aoj/aoj-do_use_segment_tree-binary_tree.test.cpp
+- /verify/test/aoj/aoj-do_use_segment_tree-binary_tree.test.cpp.html
+title: test/aoj/aoj-do_use_segment_tree-binary_tree.test.cpp
 ---
