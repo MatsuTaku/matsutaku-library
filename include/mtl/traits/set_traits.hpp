@@ -207,15 +207,27 @@ class MapTraits : public SetTraitsBase<Base> {
   template<typename InputIt>
   explicit MapTraits(InputIt begin, InputIt end) : SBase(begin, end) {}
   MapTraits(std::initializer_list<value_type> init) : SBase(init) {}
+  template<typename Key>
+  reference operator[](Key&& x) {
+    auto i = SBase::lower_bound(x);
+    if (i == SBase::end() || x < i->first) {
+      i = SBase::emplace_hint(i, std::forward<Key>(x), mapped_type());
+    }
+    return i->second;
+  }
   reference operator[](const key_type& x) {
-    // TODO
-//    return SBase::try_emplace(x).first->second;
-    return SBase::emplace(x, mapped_type()).first->second;
+    auto i = SBase::lower_bound(x);
+    if (i == SBase::end() || x < i->first) {
+      i = SBase::emplace_hint(i, x, mapped_type());
+    }
+    return i->second;
   }
   reference operator[](key_type&& x) {
-    // TODO
-//    return SBase::try_emplace(std::move(x)).first->second;
-    return SBase::emplace(std::move(x), mapped_type()).first->second;
+    auto i = SBase::lower_bound(x);
+    if (i == SBase::end() || x < i->first) {
+      i = SBase::emplace_hint(i, std::move(x), mapped_type());
+    }
+    return i->second;
   }
 };
 

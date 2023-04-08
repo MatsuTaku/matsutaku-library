@@ -33,6 +33,9 @@ class XFastTrieBase : public BinaryTrieBase<T, M, W> {
   using Base::dummy_;
   using Base::size_;
   std::array<hash_table_type, W+1> tb_;
+  void _store_node(const int i, const key_type& x, node_ptr u) {
+    tb_[i].emplace(W-i < (int)sizeof(key_type)*8 ? (x >> (W-i)) : 0, u);
+  }
   void _init() override {
     for (auto& t:tb_) t.clear();
     Base::_init();
@@ -58,55 +61,6 @@ class XFastTrieBase : public BinaryTrieBase<T, M, W> {
   using iterator = typename Base::iterator;
   using Base::end;
  protected:
-  std::pair<int, node_ptr> _traverse(const key_type& key) const override {
-    key_type x = key;
-    int l = 0, h = W+1;
-    node_ptr u = root_;
-    while (l+1 < h) {
-      int i = l+(h-l)/2;
-      auto p = x >> (W-i);
-      auto it = tb_[i].find(p);
-      if (it != tb_[i].end()) {
-        l = i;
-        u = it->second;
-      } else {
-        h = i;
-      }
-    }
-    return std::make_pair(l, u);
-  }
-  template<class Key>
-  iterator _lower_bound(const Key& key) const {
-    auto reached = _traverse(key);
-    int& l = reached.first;
-    node_ptr& u = reached.second;
-    if (l == W) return iterator(std::static_pointer_cast<Leaf>(u));
-    key_type x = key;
-    auto lb = ((x >> (W-l-1)) & 1) == 0 ? u->jump : u->jump->next();
-    return lb == dummy_ ? end() : iterator(lb);
-  }
-  template<class Key>
-  iterator _upper_bound(const Key& key) const {
-    auto reached = _traverse(key);
-    int& l = reached.first;
-    node_ptr& u = reached.second;
-    if (l == W) return iterator(std::static_pointer_cast<Leaf>(u)->next());
-    key_type x = key;
-    auto lb = ((x >> (W-l-1)) & 1) == 0 ? u->jump : u->jump->next();
-    return lb == dummy_ ? end() : iterator(lb);
-  }
-  template<class Key>
-  iterator _find(const Key& key) const {
-    key_type x = key;
-    auto it = tb_[W].find(x);
-    if (it != tb_[W].end())
-      return iterator(std::static_pointer_cast<Leaf>(it->second));
-    else
-      return end();
-  }
-  void _store_node(const int i, const key_type& x, node_ptr u) {
-    tb_[i].emplace(x >> (W-i), u);
-  }
   node_ptr create_node_at(const key_type& x, int i) override {
     auto u = Base::create_node_at(x, i);
     _store_node(i, x, u);
@@ -122,27 +76,53 @@ class XFastTrieBase : public BinaryTrieBase<T, M, W> {
     _store_node(W, x, std::static_pointer_cast<Node>(l));
     return l;
   }
+  void erase_node_at(const key_type& x, int i, node_ptr u) override {
+    Base::erase_node_at(x, i, u);
+    auto it = tb_[i].find(W-i < (int)sizeof(key_type)*8 ? (x >> (W-i)) : 0);
+    assert(it != tb_[i].end());
+    assert(it->second == u);
+    tb_[i].erase(it);
+  }
+  std::pair<int, node_ptr> _traverse(const key_type& key, 
+                                     int depth = 0, 
+                                     node_ptr root = nullptr) const override {
+    key_type x = key;
+    int l = depth, h = W+1;
+    node_ptr u = !root ? root_ : root;
+    while (l+1 < h) {
+      int i = l+(h-l)/2;
+      auto p = W-i < (int)sizeof(key_type)*8 ? (x >> (W-i)) : 0;
+      auto it = tb_[i].find(p);
+      if (it != tb_[i].end()) {
+        l = i;
+        u = it->second;
+      } else {
+        h = i;
+      }
+    }
+    return std::make_pair(l, u);
+  }
+  iterator _find(const key_type& x) const override {
+    auto it = tb_[W].find(x);
+    if (it != tb_[W].end())
+      return iterator(std::static_pointer_cast<Leaf>(it->second));
+    else
+      return end();
+  }
   using Base::_insert;
   std::pair<int, node_ptr> climb_to_lca(leaf_ptr l, key_type x) override {
     key_type m = x ^ types::key_of(l->v);
     if (m == 0)
       return std::make_pair(W, std::static_pointer_cast<Node>(l));
     int h = bm::clz(m) - (64 - W);
-    key_type y = x >> (W-h);
+    key_type y = W-h < (int)sizeof(key_type)*8 ? (x >> (W-h)) : 0;
     assert(tb_[h].count(y));
     node_ptr f = tb_[h][y];
     return std::make_pair(h, f);
   }
   using Base::_emplace_hint;
-  void erase_node_at(const key_type& x, int i, node_ptr u) override {
-    Base::erase_node_at(x, i, u);
-    auto it = tb_[i].find(x >> (W-i));
-    assert(it != tb_[i].end());
-    assert(it->second == u);
-    tb_[i].erase(it);
-  }
   using Base::_erase;
-  bool _erase(const key_type& key) {
+  bool _erase(const key_type& key) override {
     auto it = tb_[W].find(key);
     if (it != tb_[W].end()) {
       Base::_erase_from_leaf(key, std::static_pointer_cast<Leaf>(it->second));

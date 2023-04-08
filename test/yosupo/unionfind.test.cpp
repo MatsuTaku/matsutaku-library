@@ -1,5 +1,5 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/unionfind"
-#include "../include/mtl/unionfind.hpp"
+#include "../../include/mtl/unionfind.hpp"
 #include <iostream>
 using namespace std;
 using ll = long long;

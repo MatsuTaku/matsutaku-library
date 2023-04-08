@@ -38,7 +38,7 @@ class DualSegmentTree {
   explicit DualSegmentTree(Iter begin, Iter end)
     : DualSegmentTree(std::distance(begin, end)) {
     static_assert(std::is_convertible<typename std::iterator_traits<Iter>::value_type, M>::value, "");
-    std::transform(begin, end, tree_.begin()+size_, [](const auto& v) {return v;});
+    std::copy(begin, end, tree_.begin()+size_);
   }
 
   void update(size_t l, size_t r, const M& e) {

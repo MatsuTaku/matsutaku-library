@@ -1,5 +1,5 @@
 #define PROBLEM "https://onlinejudge.u-aizu.ac.jp/problems/DSL_5_A"
-#include "../include/mtl/dual_disjoint_sparse_table.hpp"
+#include "../../include/mtl/dual_disjoint_sparse_table.hpp"
 #include <bits/stdc++.h>
 using namespace std;
 
