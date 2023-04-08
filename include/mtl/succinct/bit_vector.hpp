@@ -163,6 +163,29 @@ struct Bitmap {
       operator=(b);
       return is;
     }
+
+    void range_set(size_t b, size_t e, uint64_t x) {
+      if (b >= e) return;
+      auto r = b % 64;
+      auto w = e-b;
+      assert(x <= mask);
+      auto maks = w < 64 ? (1ull << w) - 1 : ~0ull;
+      arr[b/64] = arr[b/64] & ~(maks << r) | x << r;
+      if (mask + r > 64) {
+        arr[b/64+1] = arr[b/64+1] & ~(maks >> (64-r)) | x >> (64-r);
+      }
+    }
+    uint64_t range_get(size_t b, size_t e) const {
+      if (b >= e) return 0;
+      auto r = b % 64;
+      auto w = e-b;
+      auto maks = w < 64 ? (1ull << w) - 1 : ~0ull;
+      auto x = arr[b/64] >> r & maks;
+      if (mask + r > 64) {
+        x |= arr[b/64+1] << (64-r) & maks;
+      }
+      return x;
+    }
   };
 
   template<bool Const>
