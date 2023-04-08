@@ -272,7 +272,7 @@ struct BitVector {
     }
   }
 
-  explicit BitVector(size_t size = 0, bool bit = false) : bm(size, bit) {
+  BitVector(size_t size = 0, bool bit = false) : bm(size, bit) {
     init_sel_tb();
   }
   template<typename It>

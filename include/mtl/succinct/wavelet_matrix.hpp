@@ -131,7 +131,7 @@ struct WaveletMatrix {
     return std::make_tuple(lt, r - l, gt);
   }
 
-  // Get frequency of values which (x <= value < y) in S[l,r).
+  /// Get frequency of values which (x <= value < y) in S[l,r).
   size_t range_freq(size_t l, size_t r, T x, T y) const {
     size_t freq = 0;
     std::queue<std::tuple<size_t,size_t, T>> qs;
@@ -181,7 +181,7 @@ struct WaveletMatrix {
     return range_select(c, 0, n, i);
   }
 
-  // Get kth (0-indexed) smallest value in S[l,r).
+  /// Get kth (0-indexed) smallest value in S[l,r).
   T quantile(size_t l, size_t r, size_t k) const {
     assert(r - l > k);
     T c = 0;
@@ -205,7 +205,7 @@ struct WaveletMatrix {
     return c;
   }
 
-  // Get tuples (value, frequency) of the most k frequently occurring values in S[l,r).
+  /// Get tuples (value, frequency) of the most k frequently occurring values in S[l,r).
   std::vector<std::pair<T, size_t>> top_k(size_t l, size_t r, size_t k) const {
     std::vector<std::pair<T, size_t>> ret;
     std::priority_queue<std::tuple<size_t, size_t, T>> qs;
@@ -231,7 +231,7 @@ struct WaveletMatrix {
     }
     return ret;
   }
-  // Get sum of S[l,r) in O(min(r-l, \sigma) log \sigma) times.
+  /// Get sum of S[l,r) in O(min(r-l, \sigma) log \sigma) times.
   template<typename U=T>
   U sum(size_t l, size_t r) const {
     U ret = 0;
@@ -240,8 +240,8 @@ struct WaveletMatrix {
     return ret;
   }
 
-  // Get k tuples of (value, frequency) that value satisfies condition (x <= value < y) in S[l,r) from the smallest (or largest).
-  // The complexity is O(k log \sigma).
+  /// Get k tuples of (value, frequency) that value satisfies condition (x <= value < y) in S[l,r) from the smallest (or largest).
+  /// The complexity is O(k log \sigma).
   template<bool ASCENDING, bool VALUE_RANGE = true>
   std::vector<std::pair<T, size_t>>
   range_list_k(size_t l, size_t r, size_t k, T x, T y) const {
@@ -277,24 +277,24 @@ struct WaveletMatrix {
     return ret;
   }
 
-  // Get tuples of (value, frequency) that value satisfies condition (x <= value < y) in S[l,r).
-  // The complexity is O(k log \sigma).
+  /// Get tuples of (value, frequency) that value satisfies condition (x <= value < y) in S[l,r).
+  /// The complexity is O(k log \sigma).
   std::vector<std::pair<T, size_t>> range_list(size_t l, size_t r, T x, T y) const {
     return range_list_k<true>(l, r, r - l, x, y);
   }
 
-  // Get k tuples of (value, frequency) that value satisfies condition (x <= value < y) in S[l,r) from the largest.
-  // The complexity is O(k log \sigma).
+  /// Get k tuples of (value, frequency) that value satisfies condition (x <= value < y) in S[l,r) from the largest.
+  /// The complexity is O(k log \sigma).
   std::vector<std::pair<T, size_t>> range_max_k(size_t l, size_t r, size_t k) const {
     return range_list_k<false, false>(l, r, k, 0, 0);
   }
-  // Get k tuples of (value, frequency) that value satisfies condition (x <= value < y) in S[l,r) from the smallest.
+  /// Get k tuples of (value, frequency) that value satisfies condition (x <= value < y) in S[l,r) from the smallest.
   // The complexity is O(k log \sigma).
   std::vector<std::pair<T, size_t>> range_min_k(size_t l, size_t r, size_t k) const {
     return range_list_k<true, false>(l, r, k, 0, 0);
   }
 
-  // Get tuples (value, frequency of T1, frequency of T2) that commonly occur between T1=S[l1,r1) and T2=S[l2,r2).
+  /// Get tuples (value, frequency of T1, frequency of T2) that commonly occur between T1=S[l1,r1) and T2=S[l2,r2).
   std::vector<std::tuple<T, size_t, size_t>> intersect(size_t l1, size_t r1, size_t l2, size_t r2) const {
     std::vector<std::tuple<T, size_t, size_t>> ret;
     std::queue<std::pair<std::array<size_t,4>, T>> qs;

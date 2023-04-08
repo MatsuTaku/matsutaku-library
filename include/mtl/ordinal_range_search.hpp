@@ -1,23 +1,47 @@
 #pragma once
-#include <cstddef>
-#include <vector>
-#include <algorithm>
-#include <tuple>
-#include <queue>
-#include "succinct/wavelet_matrix.hpp"
-#include "compress_int.hpp"
 #include "fenwick_tree.hpp"
+#include "succinct/wavelet_matrix.hpp"
+#include "succinct/bit_vector.hpp"
+#include "fenwick_tree.hpp"
+#include <cstddef>
+#include <limits>
+#include <vector>
 
-template<typename T, typename W = long long>
+/**
+ * @brief Ordinal Range Search
+ *   Maintain 2-dimential points (x,y) and their weights.
+*/
+template<typename T, typename W = size_t, 
+  T IndexMax = std::numeric_limits<T>::max(), 
+  class BVec = BitVector // TODO: optimize size of succinct BV which size of B(n,u)+O(n) bit
+  >
 struct ORS {
   std::vector<std::tuple<T,T,W>> ps;
   WaveletMatrix<int> wm;
   FenwickTree<W> rsq;
-  std::vector<size_t> ls;
-  std::vector<T> xs, ys;
-  std::unordered_map<T, int> xc, yc;
+  using bit_vector_type = BVec;
+  bit_vector_type X, Y;
+  T value_of_ith_x(size_t i) const {
+    return X.template select<1>(i) - i;
+  }
+  size_t index_of_lower_bound_x(const T& x) const {
+    return x==0 ? 0 : (X.template select<0>(x-1) - (x - 1));
+  }
+  std::pair<size_t, size_t> range_on_wm_lower_bound_x(const T& x) const {
+    auto l = x==0 ? 0 : (X.template select<0>(x-1) - (x - 1));
+    auto lbx = value_of_ith_x(l);
+    auto r = X.template select<0>(lbx) - lbx;
+    return std::make_pair(l, r);
+  }
+  T value_of_ith_y(size_t i) const {
+    return Y.template select<1>(i);
+  }
+  size_t index_of_lower_bound_y(const T& y) const {
+    return Y.rank(y);
+  }
 
   ORS() = default;
+
   void add(T x, T y, W w = 1) {
     ps.emplace_back(x,y,w);
   }
@@ -28,45 +52,32 @@ struct ORS {
                                 : std::get<1>(l) < std::get<1>(r);
     });
 
-    xs.clear();
-    std::vector<std::tuple<T, size_t, W>> yi;
-    for (size_t i = 0; i < ps.size(); i++) {
-      T x,y;
-      W w;
-      std::tie(x,y,w) = ps[i];
-      if (xs.empty() or xs.back() != x)
-        xs.push_back(x);
-      yi.emplace_back(y, i, w);
+    {
+      std::vector<T> xs(ps.size()+1), ys(ps.size()+1);
+      for (size_t i = 0; i < ps.size(); i++) {
+        xs[i] = std::get<0>(ps[i]);
+        ys[i] = std::get<1>(ps[i]);
+      }
+      xs.back() = IndexMax;
+      X = bit_vector_type((size_t)IndexMax + xs.size());
+      for (size_t i = 0; i < xs.size(); i++)
+        X[xs[i] + i] = 1;
+      X.build();
+
+      ys.back() = IndexMax;
+      std::sort(ys.begin(), ys.end());
+      ys.erase(std::unique(ys.begin(), ys.end()), ys.end());
+      Y = bit_vector_type((size_t)IndexMax + 1);
+      for (auto y:ys) Y[y] = 1;
+      Y.build();
     }
-    if (xs.empty() or xs.back() != std::numeric_limits<T>::max())
-      xs.push_back(std::numeric_limits<T>::max());
-
-    xc.clear();
-    xc.reserve(xs.size());
-    for (size_t i = 0; i < xs.size(); i++)
-      xc[xs[i]] = i;
-
-    std::sort(yi.begin(), yi.end());
-    ys.resize(yi.size());
-    for (size_t i = 0; i < yi.size(); i++)
-      ys[i] = std::get<0>(yi[i]);
-    ys.push_back(std::numeric_limits<T>::max());
-    ys.erase(std::unique(ys.begin(), ys.end()), ys.end());
-
-    yc.clear();
-    yc.reserve(ys.size());
-    for (size_t i = 0; i < ys.size(); i++)
-      yc[ys[i]] = i;
 
     {
       std::vector<int> S(ps.size());
-      std::vector<std::pair<int,W>> SW(ps.size()),swz,swo;
+      std::vector<std::pair<int, W>> SW(ps.size()), swz, swo;
       for (size_t i = 0; i < ps.size(); i++) {
-        T x,y;
-        W w;
-        std::tie(x,y,w) = ps[i];
-        S[i] = yc[y];
-        SW[i] = {yc[y], w};
+        S[i] = index_of_lower_bound_y(std::get<1>(ps[i]));
+        SW[i] = {S[i], std::get<2>(ps[i])};
       }
       wm = WaveletMatrix<int>(S.begin(), S.end());
       rsq = FenwickTree<W>(wm.n * (wm.h+1));
@@ -92,25 +103,17 @@ struct ORS {
         rsq.add(wm.n * wm.h + i, SW[i].second);
       }
     }
-    ls.resize(xs.size());
-    int k = 0;
-    ls[k++] = 0;
-    for (size_t i = 1; i < ps.size(); i++) {
-      if (std::get<0>(ps[i-1]) != std::get<0>(ps[i]))
-        ls[k++] = i;
-    }
-    ls[k] = ps.size();
   }
 
  private:
   std::tuple<int, int, int, int>
   compress_idx(T xl, T xh, T yl, T yh) const {
-    auto _xl = std::lower_bound(xs.begin(), xs.end(), xl);
-    auto _xh = std::lower_bound(_xl, xs.end(), xh);
-    auto _yl = std::lower_bound(ys.begin(), ys.end(), yl);
-    auto _yh = std::lower_bound(_yl, ys.end(), yh);
-    return std::make_tuple(ls[_xl-xs.begin()], ls[_xh-xs.begin()],
-                           (int)(_yl-ys.begin()), (int)(_yh-ys.begin()));
+    return std::make_tuple(
+      index_of_lower_bound_x(xl),
+      index_of_lower_bound_x(xh),
+      index_of_lower_bound_y(yl),
+      index_of_lower_bound_y(yh)
+    );
   }
 
   template<typename F, typename G>
@@ -154,11 +157,9 @@ struct ORS {
   }
 
   void weight_add(T x, T y, W w) {
-    assert(xc.count(x));
-    assert(yc.count(y));
-    int cx = xc[x];
-    int l = ls[cx], r = ls[cx+1];
-    int c = yc[y];
+    size_t l, r;
+    std::tie(l, r) = range_on_wm_lower_bound_x(x);
+    auto c = index_of_lower_bound_y(y);
     for (int k = wm.h-1; k >= 0; k--)
       std::tie(l,r) = wm.child_tie(wm.h-1-k, l, r, (c >> k) & 1u);
     assert(l != r);
@@ -188,8 +189,7 @@ struct ORS {
         auto jdx = idx;
         for (size_t k = 0; k < wm.h; k++)
           jdx = wm.parent(wm.h-1-k, jdx, (c >> k) & 1u);
-        auto lit = upper_bound(ls.begin(), ls.end(), jdx);
-        ret.emplace_back(xs[lit-1-ls.begin()], ys[c]);
+        ret.emplace_back(value_of_ith_x(jdx), value_of_ith_y(c));
       }
     });
     return ret;

@@ -29,10 +29,10 @@ struct Compressor {
     return mp;
   }
   std::pair<map_type, std::vector<T>> release_tie() {
-    return std::make_pair(release(), vs);
+    return std::make_pair(release(), std::move(vs));
   }
   template<typename It>
-  static std::unordered_map<T,int> compress(It begin, It end) {
+  static map_type compress(It begin, It end) {
     return Compressor(begin, end).release();
   }
 };
