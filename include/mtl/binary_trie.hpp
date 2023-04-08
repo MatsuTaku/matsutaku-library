@@ -192,6 +192,17 @@ class BinaryTrieBase : public traits::AssociativeArrayDefinition<T, M> {
   const_iterator end() const {
     return const_iterator(dummy_);
   }
+  template<class Rule>
+  const_iterator traverse(Rule rule) const {
+    auto u = root_;
+    for (int i = 0; i < W; i++) {
+      auto l = (bool)u->c[0];
+      auto r = (bool)u->c[1];
+      auto c = rule(W-1-i, l, r);
+      u = u->c[c];
+    }
+    return const_iterator(std::static_pointer_cast<Leaf>(u));
+  }
  protected:
   virtual std::pair<int, node_ptr> _traverse(const key_type& key, 
                                              int depth = 0, 
