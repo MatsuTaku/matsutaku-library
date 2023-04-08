@@ -105,12 +105,18 @@ data:
     - icon: ':heavy_check_mark:'
       path: include/mtl/ordinal_range_search.hpp
       title: include/mtl/ordinal_range_search.hpp
-    - icon: ':warning:'
+    - icon: ':heavy_check_mark:'
       path: include/mtl/persistent_array.hpp
       title: include/mtl/persistent_array.hpp
+    - icon: ':heavy_check_mark:'
+      path: include/mtl/persistent_queue.hpp
+      title: Persistent Queue
     - icon: ':warning:'
       path: include/mtl/persistent_stack.hpp
       title: include/mtl/persistent_stack.hpp
+    - icon: ':heavy_check_mark:'
+      path: include/mtl/persistent_unionfind.hpp
+      title: include/mtl/persistent_unionfind.hpp
     - icon: ':warning:'
       path: include/mtl/rerooting.hpp
       title: include/mtl/rerooting.hpp
@@ -344,6 +350,12 @@ data:
     - icon: ':heavy_check_mark:'
       path: test/yosupo/double_ended_priority_queue.test.cpp
       title: test/yosupo/double_ended_priority_queue.test.cpp
+    - icon: ':heavy_check_mark:'
+      path: test/yosupo/persistent_queue.test.cpp
+      title: test/yosupo/persistent_queue.test.cpp
+    - icon: ':heavy_check_mark:'
+      path: test/yosupo/persistent_unionfind.test.cpp
+      title: test/yosupo/persistent_unionfind.test.cpp
     - icon: ':heavy_check_mark:'
       path: test/yosupo/point_add_range_sum.test.cpp
       title: test/yosupo/point_add_range_sum.test.cpp
