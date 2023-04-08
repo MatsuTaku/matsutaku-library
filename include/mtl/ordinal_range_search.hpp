@@ -4,8 +4,7 @@
 #include "succinct/bit_vector.hpp"
 #include "fenwick_tree.hpp"
 #include <cstddef>
-#include <vector>
-#include <cstddef>
+#include <limits>
 #include <vector>
 
 /**
@@ -23,13 +22,19 @@ struct ORS {
   using bit_vector_type = BVec;
   bit_vector_type X, Y;
   T value_of_ith_x(size_t i) const {
-    return X.select<1>(i) - i;
+    return X.template select<1>(i) - i;
   }
   size_t index_of_lower_bound_x(const T& x) const {
-    return x==0 ? 0 : X.select<0>(x-1) - (x - 1);
+    return x==0 ? 0 : (X.template select<0>(x-1) - (x - 1));
+  }
+  std::pair<size_t, size_t> range_on_wm_lower_bound_x(const T& x) const {
+    auto l = x==0 ? 0 : (X.template select<0>(x-1) - (x - 1));
+    auto lbx = value_of_ith_x(l);
+    auto r = X.template select<0>(lbx) - lbx;
+    return std::make_pair(l, r);
   }
   T value_of_ith_y(size_t i) const {
-    return Y.select<1>(i);
+    return Y.template select<1>(i);
   }
   size_t index_of_lower_bound_y(const T& y) const {
     return Y.rank(y);
@@ -152,9 +157,8 @@ struct ORS {
   }
 
   void weight_add(T x, T y, W w) {
-    auto cx = index_of_lower_bound_x(x);
-    auto l = value_of_ith_x(cx);
-    auto r = value_of_ith_x(cx+1);
+    size_t l, r;
+    std::tie(l, r) = range_on_wm_lower_bound_x(x);
     auto c = index_of_lower_bound_y(y);
     for (int k = wm.h-1; k >= 0; k--)
       std::tie(l,r) = wm.child_tie(wm.h-1-k, l, r, (c >> k) & 1u);
