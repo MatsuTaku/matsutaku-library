@@ -109,6 +109,9 @@ data:
     path: test/yosupo/rectangle_sum.test.cpp
     title: test/yosupo/rectangle_sum.test.cpp
   - icon: ':heavy_check_mark:'
+    path: test/yosupo/set_xor_min.test.cpp
+    title: test/yosupo/set_xor_min.test.cpp
+  - icon: ':heavy_check_mark:'
     path: test/yosupo/static_range_inversions_query.test.cpp
     title: test/yosupo/static_range_inversions_query.test.cpp
   - icon: ':heavy_check_mark:'
@@ -246,6 +249,7 @@ data:
   - test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
   - test/yosupo/point_add_range_sum.test.cpp
   - test/yosupo/yosupo-line_add_get_min.test.cpp
+  - test/yosupo/set_xor_min.test.cpp
   - test/yosupo/predecessor_problem-yft.test.cpp
   - test/yosupo/convolution.test.cpp
   - test/yosupo/rectangle_sum.test.cpp

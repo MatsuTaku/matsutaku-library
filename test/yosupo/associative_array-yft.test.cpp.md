@@ -435,15 +435,19 @@ data:
     \ = iterator_base<true>;\r\n  iterator begin() {\r\n    return iterator(dummy_->next());\r\
     \n  }\r\n  iterator end() {\r\n    return iterator(dummy_);\r\n  }\r\n  const_iterator\
     \ begin() const {\r\n    return const_iterator(dummy_->next());\r\n  }\r\n  const_iterator\
-    \ end() const {\r\n    return const_iterator(dummy_);\r\n  }\r\n protected:\r\n\
-    \  virtual std::pair<int, node_ptr> _traverse(const key_type& key, \r\n      \
-    \                                       int depth = 0, \r\n                  \
-    \                           node_ptr root = nullptr) const {\r\n    int i, c;\r\
-    \n    key_type x = key;\r\n    auto u = !root ? root_ : root;\r\n    for (i =\
-    \ depth; i < W; i++) {\r\n      c = (x >> (W-i-1)) & 1;\r\n      if (!u->c[c])\
-    \ break;\r\n      u = u->c[c];\r\n    }\r\n    return std::make_pair(i, u);\r\n\
-    \  }\r\n  iterator _lower_bound(const key_type& x) const {\r\n    auto reached\
-    \ = _traverse(x);\r\n    int i = reached.first;\r\n    node_ptr u = reached.second;\r\
+    \ end() const {\r\n    return const_iterator(dummy_);\r\n  }\r\n  template<class\
+    \ Rule>\r\n  const_iterator traverse(Rule rule) const {\r\n    auto u = root_;\r\
+    \n    for (int i = 0; i < W; i++) {\r\n      auto l = (bool)u->c[0];\r\n     \
+    \ auto r = (bool)u->c[1];\r\n      auto c = rule(W-1-i, l, r);\r\n      u = u->c[c];\r\
+    \n    }\r\n    return const_iterator(std::static_pointer_cast<Leaf>(u));\r\n \
+    \ }\r\n protected:\r\n  virtual std::pair<int, node_ptr> _traverse(const key_type&\
+    \ key, \r\n                                             int depth = 0, \r\n  \
+    \                                           node_ptr root = nullptr) const {\r\
+    \n    int i, c;\r\n    key_type x = key;\r\n    auto u = !root ? root_ : root;\r\
+    \n    for (i = depth; i < W; i++) {\r\n      c = (x >> (W-i-1)) & 1;\r\n     \
+    \ if (!u->c[c]) break;\r\n      u = u->c[c];\r\n    }\r\n    return std::make_pair(i,\
+    \ u);\r\n  }\r\n  iterator _lower_bound(const key_type& x) const {\r\n    auto\
+    \ reached = _traverse(x);\r\n    int i = reached.first;\r\n    node_ptr u = reached.second;\r\
     \n    if (i == W) return iterator(std::static_pointer_cast<Leaf>(u));\r\n    auto\
     \ l = (((x >> (W-i-1)) & 1) == 0) ? u->jump : u->jump->next();\r\n    return iterator(l);\r\
     \n  }\r\n  iterator _upper_bound(const key_type& x) const {\r\n    auto it = _lower_bound(x);\r\
@@ -763,7 +767,7 @@ data:
   isVerificationFile: true
   path: test/yosupo/associative_array-yft.test.cpp
   requiredBy: []
-  timestamp: '2023-04-06 22:28:35+09:00'
+  timestamp: '2023-04-08 02:02:19+09:00'
   verificationStatus: TEST_ACCEPTED
   verifiedWith: []
 documentation_of: test/yosupo/associative_array-yft.test.cpp

@@ -375,6 +375,9 @@ data:
       path: test/yosupo/rectangle_sum.test.cpp
       title: test/yosupo/rectangle_sum.test.cpp
     - icon: ':heavy_check_mark:'
+      path: test/yosupo/set_xor_min.test.cpp
+      title: test/yosupo/set_xor_min.test.cpp
+    - icon: ':heavy_check_mark:'
       path: test/yosupo/static_range_inversions_query.test.cpp
       title: test/yosupo/static_range_inversions_query.test.cpp
     - icon: ':heavy_check_mark:'

@@ -21,6 +21,9 @@ data:
   - icon: ':x:'
     path: test/yosupo/predecessor_problem-yft.test.cpp
     title: test/yosupo/predecessor_problem-yft.test.cpp
+  - icon: ':heavy_check_mark:'
+    path: test/yosupo/set_xor_min.test.cpp
+    title: test/yosupo/set_xor_min.test.cpp
   _isVerificationFailed: true
   _pathExtension: hpp
   _verificationStatusIcon: ':question:'
@@ -218,6 +221,7 @@ data:
   timestamp: '2023-04-06 14:40:12+09:00'
   verificationStatus: LIBRARY_SOME_WA
   verifiedWith:
+  - test/yosupo/set_xor_min.test.cpp
   - test/yosupo/predecessor_problem-yft.test.cpp
   - test/yosupo/associative_array-yft.test.cpp
 documentation_of: include/mtl/traits/set_traits.hpp
