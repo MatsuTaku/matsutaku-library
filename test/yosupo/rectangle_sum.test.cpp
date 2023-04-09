@@ -1,4 +1,5 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/rectangle_sum"
+#include <iostream>
 #include "../../include/mtl/ordinal_range_search.hpp"
 #include <bits/stdc++.h>
 using namespace std;

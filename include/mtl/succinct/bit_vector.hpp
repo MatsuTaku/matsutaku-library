@@ -1,11 +1,12 @@
 #pragma once
+#include "../bit_manip.hpp"
+#include "select.hpp"
 #include <cstddef>
 #include <cstdint>
 #include <vector>
 #include <iostream>
 #include <array>
 #include <bitset>
-#include "../bit_manip.hpp"
 
 // Bitmap is likes std::vector<bool>
 struct Bitmap {
@@ -163,29 +164,6 @@ struct Bitmap {
       operator=(b);
       return is;
     }
-
-    void range_set(size_t b, size_t e, uint64_t x) {
-      if (b >= e) return;
-      auto r = b % 64;
-      auto w = e-b;
-      assert(x <= mask);
-      auto maks = w < 64 ? (1ull << w) - 1 : ~0ull;
-      arr[b/64] = arr[b/64] & ~(maks << r) | x << r;
-      if (mask + r > 64) {
-        arr[b/64+1] = arr[b/64+1] & ~(maks >> (64-r)) | x >> (64-r);
-      }
-    }
-    uint64_t range_get(size_t b, size_t e) const {
-      if (b >= e) return 0;
-      auto r = b % 64;
-      auto w = e-b;
-      auto maks = w < 64 ? (1ull << w) - 1 : ~0ull;
-      auto x = arr[b/64] >> r & maks;
-      if (mask + r > 64) {
-        x |= arr[b/64+1] << (64-r) & maks;
-      }
-      return x;
-    }
   };
 
   template<bool Const>
@@ -272,6 +250,29 @@ struct Bitmap {
       return *(*this + i);
     }
   };
+
+  void range_set(size_t b, size_t e, uint64_t x) {
+    if (b >= e) return;
+    auto r = b % 64;
+    auto w = e-b;
+    auto mask = w < 64 ? (1ull << w) - 1 : ~0ull;
+    assert(x <= mask);
+    arr[b/64] = (arr[b/64] & ~(mask << r)) | x << r;
+    if (mask + r > 64) {
+      arr[b/64+1] = (arr[b/64+1] & ~(mask >> (64-r))) | x >> (64-r);
+    }
+  }
+  uint64_t range_get(size_t b, size_t e) const {
+    if (b >= e) return 0;
+    auto r = b % 64;
+    auto w = e-b;
+    auto mask = w < 64 ? (1ull << w) - 1 : ~0ull;
+    auto x = arr[b/64] >> r & mask;
+    if (mask + r > 64) {
+      x |= arr[b/64+1] << (64-r) & mask;
+    }
+    return x;
+  }
 };
 
 struct BitVector {
@@ -281,27 +282,9 @@ struct BitVector {
   Bitmap bm;
   std::vector<uint64_t> _r, _s, _zs;
 
-  std::array<std::array<uint8_t, 9>, 1<<8> sel_tb;
-  constexpr void init_sel_tb() {
-    for (int i = 0; i < 1<<8; i++) {
-      int c = 0;
-      int x = i;
-      sel_tb[i].fill(8);
-      for (int j = 0; j < 8; j++) {
-        if (x & 1)
-          sel_tb[i][++c] = j;
-        x >>= 1;
-      }
-    }
-  }
-
-  BitVector(size_t size = 0, bool bit = false) : bm(size, bit) {
-    init_sel_tb();
-  }
+  BitVector(size_t size = 0, bool bit = false) : bm(size, bit) {}
   template<typename It>
-  BitVector(It begin, It end) : bm(begin, end) {
-    init_sel_tb();
-  }
+  BitVector(It begin, It end) : bm(begin, end) {}
   size_t size() const { return bm.size(); }
   bool empty() const { return bm.empty(); }
   void push_back(bool bit) { bm.push_back(bit); }
@@ -411,35 +394,11 @@ struct BitVector {
       auto ns = id + (clo ? (clo - 1) / 9 : 0);
       s = ns;
     }
-    // Find byte
-    uint64_t w = bm.arr[l * S_PER_L + s];
-    if constexpr (!B) w = ~w;
-    auto _bs = (uint64_t) bm::popcnt_e8(w) * 0x0101010101010100ull;
-    auto bs = (const uint8_t*) &_bs;
-    size_t b = 0;
-    auto o = m - get_s<B>(l, s);
-    /* Following bit-manipulates code is same as ... */
-//    {
-//      auto d = 8;
-//      while (d > 1) {
-//        auto c = b + d/2;
-//        if (bs[c] < o)
-//          b = c;
-//        d /= 2;
-//      }
-//    }
-    {
-      uint64_t x = (uint64_t) o * 0x0101010101010101ull;
-      uint64_t bmx = (_bs | 0x8080808080808080ull) - x;
-      uint64_t y = ((bmx & 0x8080808080808080ull) * 0x02040810204081ull) >> (64-8);
-      size_t nb = bm::ctz8(y) - 1;
-//      assert(b == nb);
-      b = nb;
-    }
     // Calc select
-    auto r = o - bs[b];
-    uint8_t byte = ((const uint8_t*)(&w))[b];
-    assert(r and r <= bm::popcnt(byte));
-    return l * L + s * S + b * 8 + sel_tb[byte][r];
+    auto o = m - get_s<B>(l, s);
+    uint64_t w = bm.arr[l * S_PER_L + s];
+    return l * L + 
+           s * S + 
+           select64::select<B>(o-1, w);
   }
 };
