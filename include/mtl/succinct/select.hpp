@@ -1,5 +1,6 @@
 #pragma once
 #include "../bit_manip.hpp"
+#include <array>
 
 struct select64 {
     using size_type = uint8_t;
@@ -23,7 +24,7 @@ struct select64 {
         }
     } sel_tb;
     template<bool B>
-    static constexpr size_type select(size_t ith, uint64_t bitmap) { // 0-indexed
+    static constexpr size_type select(size_type ith, uint64_t bitmap) { // 0-indexed
         assert(ith < 64);
         ith++; // to 1-index
         // Find byte
@@ -31,7 +32,7 @@ struct select64 {
         if constexpr (!B) w = ~w;
         auto _bs = (uint64_t) bm::popcnt_e8(w) * 0x0101010101010100ull;
         auto bs = (const uint8_t*) &_bs;
-        size_t b = 0;
+        size_type b = 0;
         auto o = ith;
         /* Following bit-manipulates code is same as ... */
         // {
@@ -47,20 +48,20 @@ struct select64 {
             uint64_t x = (uint64_t) o * 0x0101010101010101ull;
             uint64_t bmx = (_bs | 0x8080808080808080ull) - x;
             uint64_t y = ((bmx & 0x8080808080808080ull) * 0x02040810204081ull) >> (64-8);
-            size_t nb = bm::ctz8(y) - 1;
+            size_type nb = bm::ctz8(y) - 1;
             // assert(b == nb);
             b = nb;
         }
         // Calc select
         auto r = o - bs[b];
         uint8_t byte = ((const uint8_t*)(&w))[b];
-        assert(r and r <= bm::popcnt(byte));
+        assert(r and r <= (size_type)bm::popcnt(byte));
         return b * 8 + sel_tb(byte, r);
     }
-    static constexpr size_type select1(size_t ith, uint64_t bitmap) {
+    static constexpr size_type select1(size_type ith, uint64_t bitmap) {
         return select<1>(ith, bitmap);
     }
-    static constexpr size_type select0(size_t ith, uint64_t bitmap) {
+    static constexpr size_type select0(size_type ith, uint64_t bitmap) {
         return select<0>(ith, bitmap);
     }
 };

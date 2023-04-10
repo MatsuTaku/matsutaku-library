@@ -17,11 +17,19 @@ int main() {
 
   BitVector bm(B.begin(), B.end());
   bm.build();
-  // get
-  for (int i = 0; i < n; i++) {
-    auto v = bm[i];
-    if (v != B[i]) {
-      std::cout << "Failed get: " << i << " bm.get " << v << " != B " << B[i] << std::endl;
+  // select
+  for (int i = 0; i < k; i++) {
+    int v = bm.select<1>(i);
+    if (v != select[i]) {
+      std::cout << "Failed select: " << i << " bm.select " << v << " != select " << select[i] << std::endl;
+      return 1;
+    }
+  }
+  // select0
+  for (int i = 0; i < n-k; i++) {
+    int v = bm.select<0>(i);
+    if (v != select0[i]) {
+      std::cout << "Failed select0: " << i << " bm.select0 " << v << " != select0 " << select0[i] << std::endl;
       return 1;
     }
   }

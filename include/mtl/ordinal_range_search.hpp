@@ -2,6 +2,7 @@
 #include "fenwick_tree.hpp"
 #include "succinct/wavelet_matrix.hpp"
 #include "succinct/bit_vector.hpp"
+#include "succinct/rrr.hpp"
 #include "fenwick_tree.hpp"
 #include <cstddef>
 #include <limits>

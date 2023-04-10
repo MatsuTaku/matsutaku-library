@@ -52,7 +52,7 @@ struct Bitmap {
   void pop_back() {
     --sz;
   }
-  void resize(size_t new_size, bool bit) {
+  void resize(size_t new_size, bool bit=false) { // TODO: fix when bit = true
     auto old_size = size();
     sz = new_size;
     if (new_size < old_size) {
@@ -264,14 +264,14 @@ struct Bitmap {
   }
   uint64_t range_get(size_t b, size_t e) const {
     if (b >= e) return 0;
+    assert(e-b <= 64);
     auto r = b % 64;
     auto w = e-b;
     auto mask = w < 64 ? (1ull << w) - 1 : ~0ull;
-    auto x = arr[b/64] >> r & mask;
-    if (mask + r > 64) {
-      x |= arr[b/64+1] << (64-r) & mask;
-    }
-    return x;
+    auto x = arr[b/64] >> r;
+    if (w + r > 64) 
+      x |= arr[b/64+1] << (64-r);
+    return x & mask;
   }
 };
 
