@@ -2,6 +2,7 @@
 #include "../bit_manip.hpp"
 #include "bit_vector.hpp"
 #include "ty.hpp"
+#include "bv.hpp"
 #include <map>
 #include <array>
 #include <cstdint>
@@ -205,6 +206,7 @@ struct RRR {
     using rrr_table_type = RRRTable<def>;
     using map_type = MapType;
     using ty_type = TY<size_t>;
+    using rs_type = BV<RRR, def::s_size>;
 
     map_type s_map;
     ty_type heads;
@@ -287,25 +289,23 @@ struct RRR {
         auto b = a+def::n_bits;
         auto n = bm.range_get(a, b);
         auto p = bm.range_get(b, b+rrr_table_type::number_bits(n));
-        return rrr_table_type::get_mask(n, p);
+        return rrr_table_type::get_int(n, p);
+    }
+    uint64_t get_word(size_t si) const {
+        return get_mask(si);
+    }
+    size_t word_size() const {
+        return heads.size();
+    }
+    size_t size() const {
+        return heads.size()*def::s_size;
+    }
+    bool empty() const {
+        return size() == 0;
     }
 
     bool get(size_t i) const {
         return get_bit(i/def::s_size, i%def::s_size);
     }
-
-    // size_t rank1(size_t) const {
-
-    // }
-    // size_t rank0(size_t) const {
-
-    // }
-
-    // size_t select1(size_t) const {
-
-    // }
-    // size_t select0(size_t) const {
-
-    // }
 
 };

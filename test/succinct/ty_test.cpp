@@ -6,7 +6,7 @@ constexpr int n = 1e7;
 
 int main() {
     vector<int> A(n);
-    constexpr int max_diff = 1<<10-1;
+    constexpr int max_diff = (1<<10)-1;
     A[0] = rand()%max_diff;
     for (int i = 1; i < n; i++) {
         A[i] = A[i-1] + rand()%max_diff;

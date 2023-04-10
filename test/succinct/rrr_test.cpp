@@ -9,7 +9,7 @@ int main() {
   int c = 0;
   std::vector<int> select(n);
   std::map<int,int> _rank;
-  auto rank = [&](int i) { return *_rank.lower_bound(i); };
+  auto rank = [&](int i) { return _rank.lower_bound(i)->second; };
   auto pop_rate = u/n;
   for (int i = 0; i < u; i++) {
     if (rand()%pop_rate == 0) {

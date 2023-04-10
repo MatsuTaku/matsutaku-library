@@ -5,17 +5,14 @@ static constexpr int u = 1e9;
 static constexpr int n = 1e6;
 
 int main() {
-  std::vector<bool> B(u);
-  int c = 0
-  int k = 0;
+  int c = 0;
   std::vector<int> select(n);
   std::map<int,int> _rank;
-  auto rank = [&](int i) { return *_rank.lower_bound(i); };
+  auto rank = [&](int i) { return _rank.lower_bound(i)->second; };
   auto pop_rate = u/n;
   for (int i = 0; i < u; i++) {
     if (rand()%pop_rate == 0) {
-      B[i] = 1;
-      _rank[i] = c;
+      _rank.emplace_hint(_rank.end(), i, c);
       select[c] = i;
       ++c;
     }
@@ -26,17 +23,18 @@ int main() {
   for (auto [i,_]:_rank)
     bm.set(i, 1);
   bm.build();
+  typename decltype(bm)::rs_type rs(bm);
   // select
-  for (int i = 0; i < k; i++) {
-    int v = bm.select<1>(i);
+  for (int i = 0; i < n; i++) {
+    int v = rs.select1(i);
     if (v != select[i]) {
-      std::cout << "Failed select: " << i << " bm.select " << v << " != select " << select[i] << std::endl;
+      std::cout << "Failed select1: " << i << " bm.select " << v << " != select1 " << select[i] << std::endl;
       return 1;
     }
   }
-  // // select0
-  // for (int i = 0; i < n-k; i++) {
-  //   int v = bm.select<0>(i);
+  // select0
+  // for (int i = 0; i < u-n; i++) {
+  //   int v = rs.select0(i);
   //   if (v != select0[i]) {
   //     std::cout << "Failed select0: " << i << " bm.select0 " << v << " != select0 " << select0[i] << std::endl;
   //     return 1;
