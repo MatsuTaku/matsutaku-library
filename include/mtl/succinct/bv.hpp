@@ -2,6 +2,8 @@
 #include <vector>
 #include <cstddef>
 #include <cstdint>
+#include <bitset>
+#include <iostream>
 
 #if __cplusplus >= 202002L
 #include <concepts>
@@ -13,7 +15,7 @@ concept bool isBitVec = requires(T t) {
 };
 #endif
 
-template<class BitVec, unsigned WordSize=64>
+template<class BitVec, unsigned WordSize>
 #if __cplusplus >= 202002L
 requires isBitVec<BitVec>
 #endif
@@ -27,17 +29,15 @@ struct BV {
   std::vector<uint64_t> _r, _s, _zs;
   
   BV() = default;
-  BV(const BV&) = delete;
-  BV& operator=(const BV&) = delete;
-  BV(BV&&) noexcept = default;
-  BV& operator=(BV&&) noexcept = default;
-  ~BV() = default;
-  BV(const bitvec_type& bm) {
+  BV(const bitvec_type* bm) {
     build(bm);
   }
-  void build(const bitvec_type& bm) {
-    bm_ = &bm;
-    const auto num_l = (bm.size() + L-1) / L;
+  void set_ptr(const bitvec_type* bm) {
+    bm_ = bm;
+  }
+  void build(const bitvec_type* bm) {
+    set_ptr(bm);
+    const auto num_l = (bm->size() + L-1) / L;
     _r.assign((num_l + 1) * 2, 0);
     _s.clear();
     _s.push_back(0);
@@ -48,8 +48,8 @@ struct BV {
       auto psum = sum;
       uint64_t sum_l = 0;
       for (size_t s = 0; s < S_PER_L; ++s) {
-        if (l * S_PER_L + s < bm.word_size())
-          sum_l += bm::popcnt(bm.get_word(l * S_PER_L + s));
+        if (l * S_PER_L + s < bm->word_size())
+          sum_l += bm::popcnt(bm->get_word(l * S_PER_L + s));
         if (s < S_PER_L-1)
           _r[l * 2 + 1] |= sum_l << ((7-(s+1)) * 9);
       }
@@ -67,20 +67,30 @@ struct BV {
   }
 
   template<bool B>
-  inline size_t get_l(size_t l) const {
-    return B ? _r[l * 2] : l * L - _r[l * 2];
+  size_t get_l(size_t l) const {
+    auto b = _r[l*2];
+    return B ? b : l * L - b;
+  }
+  static size_t s_off(size_t s) {
+    return (7-s) * 9;
   }
   template<bool B>
-  inline size_t get_s(size_t l, size_t s) const {
-    auto b = (_r[l*2+1] >> ((7-s)*9)) % (1ull<<9);
+  size_t get_s(size_t l, size_t s) const {
+    auto b = (_r[l*2+1] >> s_off(s)) % (1ull<<9);
     return B ? b : s * S - b;
   }
-  size_t rank1(size_t i) const { 
+  uint64_t mask(size_t width) const {
+    return width == 64 ? ~0ull : (1ull << width) - 1;
+  }
+  size_t rank1(size_t i) const {
     auto l = i / L;
     auto s = i % L / S;
     auto q = i / S;
     auto r = i % S;
-    return get_l<1>(l) + get_s<1>(l, s) + bm::popcnt(bm_->get_word(q) & ((1ull<<r)-1));
+    auto w = bm_->get_word(q) & mask(r);
+    return get_l<1>(l) + 
+           get_s<1>(l, s) + 
+           bm::popcnt(w);
   }
   size_t rank0(size_t i) const { 
     return i - rank1(i);
@@ -92,6 +102,18 @@ struct BV {
     else
       return rank0(i);
   }
+
+  static struct l_block_cap_mask {
+    uint64_t mask;
+    constexpr l_block_cap_mask() {
+      mask = 0;
+      for (unsigned i = 0; i < S_PER_L; i++) {
+        uint64_t cap = i * S;
+        mask |= cap << s_off(i);
+      }
+    }
+  } l_block_cap;
+
   template<bool B>
   size_t select(size_t ith) const {
     auto n = ith+1; // to 1-indexed
@@ -126,8 +148,8 @@ struct BV {
     {
       uint64_t x = (uint64_t) (m-1) * 0x0040201008040201ull;
       uint64_t a = _r[l*2+1];
-      if (!B)
-        a = 0x10100C08050301C0ull - a; // to 0s sum
+      if constexpr (!B)
+        a = l_block_cap.mask - a; // to 0s sum
       uint64_t xda = x - a;
       uint64_t sm = 0x4020100804020100ull;
       uint64_t ok = (~x | a) & sm;
@@ -153,3 +175,6 @@ struct BV {
     return select<0>(ith);
   }
 };
+
+template<class BitVec, unsigned WordSize>
+typename BV<BitVec, WordSize>::l_block_cap_mask BV<BitVec, WordSize>::l_block_cap;

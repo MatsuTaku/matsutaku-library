@@ -1,19 +1,21 @@
 #pragma once
+#include "bit_vector.hpp"
+#include "../bit_manip.hpp"
 #include <limits>
 #include <array>
+#include <vector>
 #include <iterator>
 #include <algorithm>
 #include <queue>
 #include <tuple>
-#include "bit_vector.hpp"
-#include "../bit_manip.hpp"
 
 template<typename T>
 struct WaveletMatrix {
   static constexpr unsigned H = 64 - bm::clz(std::numeric_limits<T>::max());
 
   size_t n,h;
-  BitVector B;
+  Bitmap B;
+  Bitmap::rs_type rs_b;
   std::vector<size_t> RO,Z;
 
   WaveletMatrix() = default;
@@ -22,6 +24,7 @@ struct WaveletMatrix {
       : n(std::distance(begin, end)),
       h(std::max(1u, 64 - bm::clz(*max_element(begin, end)))),
       B(n*h, false),
+      rs_b(),
       RO(h+1),
       Z(h)
   {
@@ -35,9 +38,8 @@ struct WaveletMatrix {
     o.reserve(n);
     auto bit = B.begin();
     for (int k = h-1; k >= 0; k--) {
-      T mask = 1ull<<k;
       for (size_t i = 0; i < n; i++) {
-        bool b = (S[i] & mask) != 0;
+        bool b = S[i] >> k & 1;
         *bit++ = b;
         if (!b)
           z.push_back(S[i]);
@@ -45,26 +47,67 @@ struct WaveletMatrix {
           o.push_back(S[i]);
       }
       Z[k] = n*(h-1-k+1) + z.size();
-      int j = n-1;
+      auto j = n;
       while (!o.empty()) {
-        S[j--] = o.back();
+        S[--j] = o.back();
         o.pop_back();
       }
       while (!z.empty()) {
-        S[j--] = z.back();
+        S[--j] = z.back();
         z.pop_back();
       }
+      assert(j == 0);
     }
-    B.build();
+    rs_b.build(&B);
     for (size_t i = 0; i <= h; i++)
-      RO[i] = B.rank(n * i);
+      RO[i] = rs_b.rank1(n * i);
+  }
+  WaveletMatrix(const WaveletMatrix& rhs) noexcept :
+    n(rhs.n),
+    h(rhs.h),
+    B(rhs.B),
+    rs_b(rhs.rs_b),
+    RO(rhs.RO),
+    Z(rhs.Z) 
+  {
+    rs_b.set_ptr(&B);
+  }
+  WaveletMatrix& operator=(const WaveletMatrix& rhs) noexcept {
+    n = rhs.n;
+    h = rhs.h;
+    B = rhs.B;
+    rs_b = rhs.rs_b;
+    rs_b.set_ptr(&B);
+    RO = rhs.RO;
+    Z = rhs.Z;
+    return *this;
+  }
+  WaveletMatrix(WaveletMatrix&& rhs) noexcept :
+    n(std::move(rhs.n)),
+    h(std::move(rhs.h)),
+    B(std::move(rhs.B)),
+    rs_b(std::move(rhs.rs_b)),
+    RO(std::move(rhs.RO)),
+    Z(std::move(rhs.Z)) 
+  {
+    rs_b.set_ptr(&B);
+  }
+  WaveletMatrix& operator=(WaveletMatrix&& rhs) noexcept {
+    n = std::move(rhs.n);
+    h = std::move(rhs.h);
+    B = std::move(rhs.B);
+    rs_b = std::move(rhs.rs_b);
+    rs_b.set_ptr(&B);
+    RO = std::move(rhs.RO);
+    Z = std::move(rhs.Z);
+    return *this;
   }
 
   inline size_t _child0(size_t level, size_t i) const {
-      return i + n + RO[level] - B.rank(i);
+      return i + n + RO[level] - rs_b.rank1(i);
   }
   inline size_t _child1(size_t level, size_t i) const {
-    return n*(level+2) + B.rank(i) - RO[level+1];
+    return n*(level+2) + rs_b.rank1(i) - RO[level+1];
   }
   inline size_t child(size_t level, size_t i, bool bit) const {
     return !bit ? _child0(level, i) : _child1(level, i);
@@ -80,10 +123,10 @@ struct WaveletMatrix {
   }
 
   inline size_t _parent0(size_t level, size_t i) const {
-    return B.select<0>(i - n - RO[level]);
+    return rs_b.select<0>(i - n - RO[level]);
   }
   inline size_t _parent1(size_t level, size_t i) const {
-    return B.select<1>(i - Z[h-1-level] + RO[level]);
+    return rs_b.select<1>(i - Z[h-1-level] + RO[level]);
   }
   inline size_t parent(size_t level, size_t i, bool bit) const {
     return !bit ? _parent0(level, i) : _parent1(level, i);
@@ -186,7 +229,7 @@ struct WaveletMatrix {
     assert(r - l > k);
     T c = 0;
     for (int d = h-1; d > 0; d--) {
-      auto os = B.rank(r) - B.rank(l);
+      auto os = rs_b.rank1(r) - rs_b.rank1(l);
       auto zs = r - l - os;
       if (k < zs) {
         std::tie(l,r) = _child_tie0(h-1-d, l, r);
@@ -197,7 +240,7 @@ struct WaveletMatrix {
       }
       assert(l < r);
     }
-    auto os = B.rank(r) - B.rank(l);
+    auto os = rs_b.rank1(r) - rs_b.rank1(l);
     auto zs = r - l - os;
     if (k >= zs) {
       c |= 1ull;

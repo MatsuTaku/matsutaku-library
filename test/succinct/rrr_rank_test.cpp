@@ -23,24 +23,35 @@ int main() {
   for (auto [i,_]:_rank)
     bm.set(i, 1);
   bm.build();
-  typename decltype(bm)::rs_type rs(bm);
-  // rank
-  for (auto it = _rank.begin(); it != _rank.end();) {
-    auto [i,r] = *it;
-    auto v = rs.rank1(i);
-    if (v != r) {
-      std::cout << "Failed rank1: " << i << " rs.rank1 " << v << " != rank1 " << r << std::endl;
-      return 1;
-    }
-    ++it;
-    if (it != _rank.end()) {
-      auto [_,r] = *it;
-      auto v = rs.rank1(i+1);
+  typename decltype(bm)::rs_type rs(&bm);
+  // rank1
+  size_t i = 0;
+  size_t r = 0;
+  _rank.emplace(u, c);
+  for (auto [j,_]:_rank) {
+    while (i <= j) {
+      auto v = rs.rank1(i);
       if (v != r) {
-        std::cout << "Failed rank1: " << i+1 << " rs.rank1 " << v << " != rank1 " << r << std::endl;
+        std::cout << "Failed rank1: " << i << " rs.rank1 " << v << " != rank1 " << r << std::endl;
         return 1;
       }
+      ++i;
     }
+    ++r;
+  }
+  // rank0;
+  i = 0;
+  r = 0;
+  for (auto [j,_]:_rank) {
+    while (i <= j) {
+      auto v = rs.rank0(i);
+      if (v != i-r) {
+        std::cout << "Failed rank0: " << i << " rs.rank0 " << v << " != rank0 " << i-r << std::endl;
+        return 1;
+      }
+      ++i;
+    }
+    ++r;
   }
   std::cout << "OK" << std::endl;
 

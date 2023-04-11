@@ -13,7 +13,7 @@
 struct Bitmap {
   using value_type = bool;
   using W = uint64_t;
-  using rs_type = BV<Bitmap>;
+  using rs_type = BV<Bitmap, 64>;
   std::vector<W> arr;
   size_t sz;
   static constexpr size_t required_word_size(size_t n) {
@@ -22,7 +22,8 @@ struct Bitmap {
   static constexpr W word_filled_by(bool bit) {
     return bit ? 0xFFFFFFFFFFFFFFFF : 0;
   }
-  explicit Bitmap(size_t n = 0, bool bit = false) : arr(required_word_size(n), word_filled_by(bit)), sz(n) {}
+  explicit Bitmap(size_t n = 0, bool bit = false) 
+    : arr(required_word_size(n), word_filled_by(bit)), sz(n) {}
   template<typename It>
   Bitmap(It begin, It end) : sz(0) {
     using trait = std::iterator_traits<It>;
@@ -74,6 +75,9 @@ struct Bitmap {
     sz = new_size;
     arr.assign(required_word_size(new_size), word_filled_by(bit));
   }
+  void reserve(size_t reserved_size) {
+    arr.reserve(required_word_size(reserved_size));
+  }
 
   struct const_reference;
   struct reference;
@@ -88,6 +92,21 @@ struct Bitmap {
   reference operator[](size_t i) {
     return {arr.data() + i / 64, 1ull << (i % 64)};
   }
+  const_reference get(size_t i) const {
+    return operator[](i);
+  }
+  /**
+   * Usable without pre-set required size
+  */
+  void set(size_t i, bool b) {
+    if (i >= size())
+      resize(i + 1);
+    operator[](i) = b;
+  }
+  /**
+   * No build process is needed
+  */
+  void build() const {}
   const_iterator begin() const { return const_iterator(arr.data(), 0); }
   iterator begin() { return iterator(arr.data(), 0); }
   const_iterator cbegin() const { return begin(); }
@@ -284,15 +303,32 @@ struct Bitmap {
 };
 
 struct BitVector {
-  static constexpr unsigned L = 512;
-  static constexpr unsigned S = 64;
-  static constexpr unsigned S_PER_L = L / S;
   Bitmap bm;
   using rs_type = typename Bitmap::rs_type;
   rs_type rs_support;
   // std::vector<uint64_t> _r, _s, _zs;
 
   BitVector(size_t size = 0, bool bit = false) : bm(size, bit) {}
+  BitVector(const BitVector& rhs) : bm(rhs.bm), rs_support(rhs.rs_support) {
+    rs_support.set_ptr(&bm);
+  }
+  BitVector& operator=(const BitVector& rhs) {
+    bm = rhs.bm;
+    rs_support = rhs.rs_support;
+    rs_support.set_ptr(&bm);
+    return *this;
+  }
+  BitVector(BitVector&& rhs) noexcept : 
+    bm(std::move(rhs.bm)), 
+    rs_support(std::move(rhs.rs_support)) {
+    rs_support.set_ptr(&bm);
+  }
+  BitVector& operator=(BitVector&& rhs) noexcept {
+    bm = std::move(rhs.bm);
+    rs_support = std::move(rhs.rs_support);
+    rs_support.set_ptr(&bm);
+    return *this;
+  }
   template<typename It>
   BitVector(It begin, It end) : bm(begin, end) {
     build();
@@ -302,6 +338,7 @@ struct BitVector {
   void push_back(bool bit) { bm.push_back(bit); }
   void resize(size_t new_size, bool bit) { bm.resize(new_size, bit); }
   void assign(size_t new_size, bool bit) { bm.assign(new_size, bit); }
+  void reserve(size_t reserved_size) { bm.reserve(reserved_size); }
   Bitmap::const_reference operator[](size_t i) const { return bm[i]; }
   Bitmap::reference operator[](size_t i) { return bm[i]; }
   Bitmap::const_iterator begin() const { return bm.begin(); }
@@ -312,7 +349,7 @@ struct BitVector {
   Bitmap::const_iterator cend() const { return bm.cend(); }
 
   void build() {
-    rs_support.build(bm);
+    rs_support.build(&bm);
   }
 
   inline size_t rank(size_t i) const {

@@ -54,13 +54,22 @@ struct RRRTable {
         s_type mask = ((s_type(1)<<bits)-1);
         auto nn = n;
         unsigned i = 0;
-        // Expected length of consecutive zeros E = \sum j binom(w-j, nn) / binom(w, nn), j=1..w-nn
-        // Binary search time B = \log_2 w
-        // Approximate simple function from E < B to be nn > min(20, w-1)
+        /*
+        Binary search time B = ceil(\log_2 w)
+        Expected length of consecutive zeros Ez = \sum j binom(w-j, nn) / binom(w, nn), j=1..w-nn
+        Expected length of consecutive ones  Eo = \sum j binom(w-j, nn-j) / binom(w, nn), j=1..nn
+        Approximate simple function from Ez > B to be nn <= min(20, w-1)
+        Approximate simple function from Eo > B to be nn > min(40, w)
+        */
+        // TODO: When nn > 40, use binary search to find length of consecutive ones
         for (; i < offset and nn > 20; i++) {
             auto w = s_size - i;
             if (nn == w) {
                 res |= ((s_type(1)<<nn)-1) << i;
+                return res & mask;
+            }
+            if (nn == w-1) {
+                res |= (((s_type(1)<<w)-1) ^ (s_type(1) << k)) << i;
                 return res & mask;
             }
             // Linear search
@@ -77,7 +86,11 @@ struct RRRTable {
                 res |= ((s_type(1)<<nn)-1) << i;
                 return res & mask;
             }
-            // Binary search
+            if (nn == w-1) {
+                res |= (((s_type(1)<<w)-1) ^ (s_type(1) << k)) << i;
+                return res & mask;
+            }
+            // Binary search to find length of consecutive zeros
             auto l = i, r = offset+1;
             while (l+1<r) {
                 auto c = l+(r-l)/2;
@@ -93,12 +106,12 @@ struct RRRTable {
             }
             i = l;
         }
-        if (nn == 0) 
-            return res;
         if (nn == 1) {
             res |= s_type(1) << (s_size-1-k);
             return res & mask;
         }
+        if (nn == 0) 
+            return res;
         if (k >= binomial_table_type::binom(s_size-offset-1, nn))
             res |= s_type(1) << offset;
         return res & ((s_type(1)<<bits)-1);
@@ -106,13 +119,21 @@ struct RRRTable {
     static constexpr bool get_bit(unsigned n, number_type k, unsigned offset) {
         auto nn = n;
         unsigned i = 0;
-        // E: expected continuous zeros = \sum j binom(w-j, nn) / binom(w, nn), j=0..w-nn
-        // binary search time for \log_2 w
-        // Approximate function for (1) is nn > min(20, w-1)
+        /*
+        Binary search time B = ceil(\log_2 w)
+        Expected length of consecutive zeros Ez = \sum j binom(w-j, nn) / binom(w, nn), j=1..w-nn
+        Expected length of consecutive ones  Eo = \sum j binom(w-j, nn-j) / binom(w, nn), j=1..nn
+        Approximate simple function from Ez > B to be nn <= min(20, w-1)
+        Approximate simple function from Eo > B to be nn > min(40, w)
+        */
+        // TODO: When nn > 40, use binary search to find length of consecutive ones
         for (; i < offset and nn > 20; i++) {
             auto w = s_size - i;
             if (nn == w) {
                 return 1;
+            }
+            if (nn == w-1) {
+                return offset != i+k;
             }
             // linear search
             auto binom = binomial_table_type::binom(w-1, nn);
@@ -125,6 +146,9 @@ struct RRRTable {
             auto w = s_size - i;
             if (nn == w) {
                 return 1;
+            }
+            if (nn == w-1) {
+                return offset != i+k;
             }
             // binary search
             auto l = i, r = offset+1;
@@ -141,14 +165,13 @@ struct RRRTable {
             }
             i = l;
         }
-        if (nn == 0) 
-            return 0;
         if (nn == 1)
             return offset == s_size-1-k;
+        if (nn == 0) 
+            return 0;
         return k >= binomial_table_type::binom(s_size-offset-1, nn);
     }
-    static std::pair<unsigned, number_type> get_pc_and_number(s_type bitmap) {
-        unsigned pc = bm::popcnt(bitmap);
+    static number_type get_number_for_popcnt(s_type bitmap, unsigned pc) {
         number_type number = 0;
         auto m = bitmap;
         auto n = pc;
@@ -158,7 +181,14 @@ struct RRRTable {
             n--;
             m ^= (s_type(1)<<i);
         }
-        return {pc, number};
+        return number;
+    }
+    static std::pair<unsigned, number_type> get_pc_and_number(s_type bitmap) {
+        unsigned pc = bm::popcnt(bitmap);
+        auto number = pc <= s_size-pc ? get_number_for_popcnt(bitmap, pc) 
+                                      : (number_size(pc)-1-get_number_for_popcnt(
+                                            ~bitmap & ((s_type(1)<<s_size)-1), s_size-pc));
+        return std::make_pair(pc, number);
     }
     static number_type number_size(unsigned n) {
         return binomial_table_type::binom(s_size, n);
@@ -179,30 +209,25 @@ struct RRRTable {
 template<class Def>
 typename RRRTable<Def>::number_bits_table RRRTable<Def>::n_len;
 
-template<unsigned SSize, class SType, unsigned LSize, class LType>
+template<unsigned SSize, class SType>
 struct RRRDefinition {
     static constexpr unsigned s_size = SSize;
     using s_type = SType;
     static constexpr unsigned n_bits = need_bits(s_size);
-    static constexpr unsigned l_size = LSize;
-    using l_type = LType;
 };
 
 /** 
  * @brief Succinct bit vector in memory of B(n, u) + O(u log log n / log n) bits 
- *        where n is number of 1s and $u$ is length of bit vector
+ *        where u is number of bits and n is number of 1s
 */
 template<
     unsigned SSize = 63,
     class SType = uint64_t,
-    unsigned LSize = 512,
-    class LType = uint64_t,
     class MapType = std::map<size_t, SType>
     >
 struct RRR {
-    using def = RRRDefinition<SSize, SType, LSize, LType>;
+    using def = RRRDefinition<SSize, SType>;
     using s_type = typename def::s_type;
-    using l_type = typename def::l_type;
     using rrr_table_type = RRRTable<def>;
     using map_type = MapType;
     using ty_type = TY<size_t>;
@@ -211,17 +236,15 @@ struct RRR {
     map_type s_map;
     ty_type heads;
     Bitmap bm;
-    std::vector<l_type> l_map;
 
     RRR() = default;
-
     void set(size_t i, bool b) {
         if (b)
             s_map[i/def::s_size] |= (s_type)1<<(i%def::s_size);
         else
             s_map[i/def::s_size] &= ~((s_type)1<<(i%def::s_size));
     }
-    void build_bitmap() {
+    void build() {
         size_t h = 0;
         size_t pq = 0;
         for (auto qm : s_map) {
@@ -251,28 +274,6 @@ struct RRR {
         }
         s_map.clear();
     }
-    // void build_rank() {
-    //     auto num_l = (heads.size() + s_per_l - 1) / s_per_l;
-    //     auto l_arr_size = (num_l + 63) / 64;
-    //     l_map.resize(l_arr_size);
-    //     size_t lsum = 0;
-    //     for (size_t l = 0; l < num_l; l++) {
-    //         size_t ssum = 0;
-    //         for (size_t s = 0; s < s_per_l; s++) {
-    //             auto si = s*s_per_l + s;
-    //             auto m = si < heads.size() ? get_mask(si) : 0;
-    //             auto pc = bm::popcnt(m);
-    //             ssum += pc;
-    //         }
-    //         lsum += ssum;
-    //     }
-    // }
-    void build() {
-        build_bitmap();
-        // build_rank();
-        // build_select1();
-        // build_select0();
-    }
     bool get_bit(size_t si, unsigned off) const {
         if (si >= heads.size())
             return false;
@@ -298,7 +299,7 @@ struct RRR {
         return heads.size();
     }
     size_t size() const {
-        return heads.size()*def::s_size;
+        return heads.size() * def::s_size;
     }
     bool empty() const {
         return size() == 0;
