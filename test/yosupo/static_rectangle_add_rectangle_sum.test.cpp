@@ -6,20 +6,24 @@
 using namespace std;
 
 using mint = Modular998244353;
-using ors_type = ORS<int, mint, (int)1e9>;
+using ors_type = ORS<int, mint>;
 
 int main() {
     cin.tie(0); ios::sync_with_stdio(0);
     int n,q; cin>>n>>q;
     vector<array<int, 5>> N(n);
     vector<array<int, 4>> Q(q);
+    int index_max = 0;
+    auto chmax = [](int& a, int b) { a = max(a, b); };
     for (int i = 0; i < n; i++) {
         int l,d,r,u,w; cin>>l>>d>>r>>u>>w;
         N[i] = {l,d,r,u,w};
+        chmax(index_max, max(r,u));
     }
     for (int i = 0; i < q; i++) {
         int l,d,r,u; cin>>l>>d>>r>>u;
         Q[i] = {l,d,r,u};
+        chmax(index_max, max(r,u));
     }
     // add [a, inf) times [b, inf) ->
     // for each xy, add (x-a)(y-b) = xy - ay - bx + ab
@@ -36,7 +40,7 @@ int main() {
         add_topleft(r, d, -w);
         add_topleft(r, u, w);
     }
-    for (auto& o:ors) o.build();
+    for (auto& o:ors) o.build(index_max);
     auto prefix_sum = [&](int x, int y) {
         return ors[0].sum(0, x, 0, y) * x * y +
                ors[1].sum(0, x, 0, y) * y +

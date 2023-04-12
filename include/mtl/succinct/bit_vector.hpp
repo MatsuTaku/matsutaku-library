@@ -1,11 +1,13 @@
 #pragma once
+#include "../bit_manip.hpp"
+#include "select.hpp"
+#include "bv.hpp"
 #include <cstddef>
 #include <cstdint>
 #include <vector>
 #include <iostream>
 #include <array>
 #include <bitset>
-#include "../bit_manip.hpp"
 
 // Bitmap is likes std::vector<bool>
 struct Bitmap {
@@ -19,7 +21,8 @@ struct Bitmap {
   static constexpr W word_filled_by(bool bit) {
     return bit ? 0xFFFFFFFFFFFFFFFF : 0;
   }
-  explicit Bitmap(size_t n = 0, bool bit = false) : arr(required_word_size(n), word_filled_by(bit)), sz(n) {}
+  explicit Bitmap(size_t n = 0, bool bit = false) 
+    : arr(required_word_size(n), word_filled_by(bit)), sz(n) {}
   template<typename It>
   Bitmap(It begin, It end) : sz(0) {
     using trait = std::iterator_traits<It>;
@@ -51,7 +54,7 @@ struct Bitmap {
   void pop_back() {
     --sz;
   }
-  void resize(size_t new_size, bool bit) {
+  void resize(size_t new_size, bool bit=false) { // TODO: fix when bit = true
     auto old_size = size();
     sz = new_size;
     if (new_size < old_size) {
@@ -71,6 +74,9 @@ struct Bitmap {
     sz = new_size;
     arr.assign(required_word_size(new_size), word_filled_by(bit));
   }
+  void reserve(size_t reserved_size) {
+    arr.reserve(required_word_size(reserved_size));
+  }
 
   struct const_reference;
   struct reference;
@@ -85,6 +91,21 @@ struct Bitmap {
   reference operator[](size_t i) {
     return {arr.data() + i / 64, 1ull << (i % 64)};
   }
+  const_reference get(size_t i) const {
+    return operator[](i);
+  }
+  /**
+   * Usable without pre-set required size
+  */
+  void set(size_t i, bool b) {
+    if (i >= size())
+      resize(i + 1);
+    operator[](i) = b;
+  }
+  /**
+   * No build process is needed
+  */
+  void build() const {}
   const_iterator begin() const { return const_iterator(arr.data(), 0); }
   iterator begin() { return iterator(arr.data(), 0); }
   const_iterator cbegin() const { return begin(); }
@@ -249,41 +270,80 @@ struct Bitmap {
       return *(*this + i);
     }
   };
+
+  void range_set(size_t b, size_t e, uint64_t x) {
+    if (b >= e) return;
+    auto r = b % 64;
+    auto w = e-b;
+    auto mask = w < 64 ? (1ull << w) - 1 : ~0ull;
+    assert(x <= mask);
+    arr[b/64] = (arr[b/64] & ~(mask << r)) | x << r;
+    if (mask + r > 64) {
+      arr[b/64+1] = (arr[b/64+1] & ~(mask >> (64-r))) | x >> (64-r);
+    }
+  }
+  uint64_t range_get(size_t b, size_t e) const {
+    if (b >= e) return 0;
+    assert(e-b <= 64);
+    auto r = b % 64;
+    auto w = e-b;
+    auto mask = w < 64 ? (1ull << w) - 1 : ~0ull;
+    auto x = arr[b/64] >> r;
+    if (w + r > 64) 
+      x |= arr[b/64+1] << (64-r);
+    return x & mask;
+  }
+  const uint64_t& get_word(size_t wi) const {
+    return arr[wi];
+  }
+  size_t word_size() const {
+    return arr.size();
+  }
+  // using rank_select_type = BV<Bitmap, 64>;
+};
+
+template<>
+struct RankSelectTraits<Bitmap> {
+  using rank_select_type = BV<Bitmap, 64>;
 };
 
 struct BitVector {
-  static constexpr unsigned L = 512;
-  static constexpr unsigned S = 64;
-  static constexpr unsigned S_PER_L = L / S;
   Bitmap bm;
-  std::vector<uint64_t> _r, _s, _zs;
+  using rs_type = typename RankSelectTraits<Bitmap>::rank_select_type;
+  rs_type rs_support;
+  // std::vector<uint64_t> _r, _s, _zs;
 
-  std::array<std::array<uint8_t, 9>, 1<<8> sel_tb;
-  constexpr void init_sel_tb() {
-    for (int i = 0; i < 1<<8; i++) {
-      int c = 0;
-      int x = i;
-      sel_tb[i].fill(8);
-      for (int j = 0; j < 8; j++) {
-        if (x & 1)
-          sel_tb[i][++c] = j;
-        x >>= 1;
-      }
-    }
+  BitVector(size_t size = 0, bool bit = false) : bm(size, bit) {}
+  BitVector(const BitVector& rhs) : bm(rhs.bm), rs_support(rhs.rs_support) {
+    rs_support.set_ptr(&bm);
   }
-
-  BitVector(size_t size = 0, bool bit = false) : bm(size, bit) {
-    init_sel_tb();
+  BitVector& operator=(const BitVector& rhs) {
+    bm = rhs.bm;
+    rs_support = rhs.rs_support;
+    rs_support.set_ptr(&bm);
+    return *this;
+  }
+  BitVector(BitVector&& rhs) noexcept : 
+    bm(std::move(rhs.bm)), 
+    rs_support(std::move(rhs.rs_support)) {
+    rs_support.set_ptr(&bm);
+  }
+  BitVector& operator=(BitVector&& rhs) noexcept {
+    bm = std::move(rhs.bm);
+    rs_support = std::move(rhs.rs_support);
+    rs_support.set_ptr(&bm);
+    return *this;
   }
   template<typename It>
   BitVector(It begin, It end) : bm(begin, end) {
-    init_sel_tb();
+    build();
   }
   size_t size() const { return bm.size(); }
   bool empty() const { return bm.empty(); }
   void push_back(bool bit) { bm.push_back(bit); }
   void resize(size_t new_size, bool bit) { bm.resize(new_size, bit); }
   void assign(size_t new_size, bool bit) { bm.assign(new_size, bit); }
+  void reserve(size_t reserved_size) { bm.reserve(reserved_size); }
   Bitmap::const_reference operator[](size_t i) const { return bm[i]; }
   Bitmap::reference operator[](size_t i) { return bm[i]; }
   Bitmap::const_iterator begin() const { return bm.begin(); }
@@ -294,129 +354,15 @@ struct BitVector {
   Bitmap::const_iterator cend() const { return bm.cend(); }
 
   void build() {
-    const auto num_l = (bm.size() + L-1) / L;
-    _r.assign((num_l + 1) * 2, 0);
-    _s.clear();
-    _s.push_back(0);
-    _zs.clear();
-    _zs.push_back(0);
-    uint64_t sum = 0;
-    for (size_t l = 0; l < num_l; ++l) {
-      auto psum = sum;
-      uint64_t sum_l = 0;
-      for (size_t s = 0; s < S_PER_L; ++s) {
-        if (l * S_PER_L + s < bm.arr.size())
-          sum_l += bm::popcnt(bm.arr[l * S_PER_L + s]);
-        if (s < S_PER_L-1)
-          _r[l * 2 + 1] |= sum_l << ((7-(s+1)) * 9);
-      }
-      sum += sum_l;
-      _r[(l + 1) * 2] = sum;
-      if (psum / L != sum / L) {
-        _s.push_back(l);
-      }
-      if ((L*l - psum) / L != (L*(l+1) - sum) / L) {
-        _zs.push_back(l);
-      }
-    }
-    _s.push_back(num_l);
-    _zs.push_back(num_l);
-  }
-
-  template<bool B>
-  inline size_t get_l(size_t l) const {
-    return B ? _r[l * 2] : l * L - _r[l * 2];
-  }
-  template<bool B>
-  inline size_t get_s(size_t l, size_t s) const {
-    auto b = (_r[l*2+1] >> ((7-s)*9)) % (1ull<<9);
-    return B ? b : s * S - b;
+    rs_support.build(&bm);
   }
 
   inline size_t rank(size_t i) const {
-    auto l = i / L;
-    auto s = i % L / S;
-    auto q = i / S;
-    auto r = i % S;
-    return get_l<1>(l) + get_s<1>(l, s) + bm::popcnt(bm.arr[q] & ((1ull<<r)-1));
+    return rs_support.rank1(i);
   }
 
   template<bool B>
   size_t select(size_t n) const {
-    ++n; // to 1-indexed
-    if (n > (B ? rank(size()) : size() - rank(size())))
-      return size();
-    // Find L block
-    auto& idx = B ? _s : _zs;
-    size_t l = idx[n / L];
-    {
-      auto r = idx[n / L + 1] + 1;
-      while (l+1 < r) {
-        auto c = l + (r-l)/2;
-        if (get_l<B>(c) < n)
-          l = c;
-        else
-          r = c;
-      }
-    }
-    // Find S block
-    size_t s = 0;
-    auto m = n - get_l<B>(l);
-    /* Following bit-manipulates code is same as ... */
-//    {
-//      auto d = 8;
-//      while (d > 1) {
-//        auto c = s + d/2;
-//        if (get_s<B>(l, c) < m)
-//          s = c;
-//        d /= 2;
-//      }
-//    }
-    {
-      uint64_t x = (uint64_t) (m-1) * 0x0040201008040201ull;
-      uint64_t a = _r[l*2+1];
-      if (!B)
-        a = 0x10100C08050301C0ull - a; // to 0s sum
-      uint64_t xda = x - a;
-      uint64_t sm = 0x4020100804020100ull;
-      uint64_t ok = (~x | a) & sm;
-      uint64_t ng = (~x & a) & sm;
-      uint64_t y = ((x ^ a ^ xda) & ok) | ng;
-      y = y * 0x0001010101010101ull >> (64-1-7);
-      auto id = bm::clz8(y)-1;
-      auto clo = bm::clz((~xda << 1 | 1) << (9*id));
-      auto ns = id + (clo ? (clo - 1) / 9 : 0);
-      s = ns;
-    }
-    // Find byte
-    uint64_t w = bm.arr[l * S_PER_L + s];
-    if constexpr (!B) w = ~w;
-    auto _bs = (uint64_t) bm::popcnt_e8(w) * 0x0101010101010100ull;
-    auto bs = (const uint8_t*) &_bs;
-    size_t b = 0;
-    auto o = m - get_s<B>(l, s);
-    /* Following bit-manipulates code is same as ... */
-//    {
-//      auto d = 8;
-//      while (d > 1) {
-//        auto c = b + d/2;
-//        if (bs[c] < o)
-//          b = c;
-//        d /= 2;
-//      }
-//    }
-    {
-      uint64_t x = (uint64_t) o * 0x0101010101010101ull;
-      uint64_t bmx = (_bs | 0x8080808080808080ull) - x;
-      uint64_t y = ((bmx & 0x8080808080808080ull) * 0x02040810204081ull) >> (64-8);
-      size_t nb = bm::ctz8(y) - 1;
-//      assert(b == nb);
-      b = nb;
-    }
-    // Calc select
-    auto r = o - bs[b];
-    uint8_t byte = ((const uint8_t*)(&w))[b];
-    assert(r and r <= bm::popcnt(byte));
-    return l * L + s * S + b * 8 + sel_tb[byte][r];
+    return rs_support.select<B>(n);
   }
 };

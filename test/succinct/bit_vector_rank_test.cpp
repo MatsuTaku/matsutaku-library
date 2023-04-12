@@ -17,11 +17,11 @@ int main() {
 
   BitVector bm(B.begin(), B.end());
   bm.build();
-  // get
+  // rank
   for (int i = 0; i < n; i++) {
-    auto v = bm[i];
-    if (v != B[i]) {
-      std::cout << "Failed get: " << i << " bm.get " << v << " != B " << B[i] << std::endl;
+    int v = bm.rank(i);
+    if (v != rank[i]) {
+      std::cout << "Failed rank: " << i << " bm.rank " << v << " != rank " << rank[i] << std::endl;
       return 1;
     }
   }
