@@ -23,7 +23,7 @@ int main() {
   for (auto [i,_]:_rank)
     bm.set(i, 1);
   bm.build();
-  typename decltype(bm)::rs_type rs(&bm);
+  typename RankSelectTraits<decltype(bm)>::rank_select_type rs(&bm);
   // rank1
   size_t i = 0;
   size_t r = 0;
