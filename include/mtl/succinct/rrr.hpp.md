@@ -5,30 +5,24 @@ data:
     path: include/mtl/bit_manip.hpp
     title: include/mtl/bit_manip.hpp
   - icon: ':heavy_check_mark:'
-    path: include/mtl/fenwick_tree.hpp
-    title: include/mtl/fenwick_tree.hpp
-  - icon: ':heavy_check_mark:'
-    path: include/mtl/succinct/binary_set.hpp
-    title: include/mtl/succinct/binary_set.hpp
-  - icon: ':heavy_check_mark:'
     path: include/mtl/succinct/bit_vector.hpp
     title: include/mtl/succinct/bit_vector.hpp
   - icon: ':heavy_check_mark:'
     path: include/mtl/succinct/bv.hpp
     title: include/mtl/succinct/bv.hpp
   - icon: ':heavy_check_mark:'
-    path: include/mtl/succinct/rrr.hpp
-    title: Succinct bit vector in memory of B(n, u) + O(u log log n / log n) bits
-  - icon: ':heavy_check_mark:'
     path: include/mtl/succinct/select.hpp
     title: include/mtl/succinct/select.hpp
   - icon: ':heavy_check_mark:'
     path: include/mtl/succinct/ty.hpp
     title: 'TY: Store increasing sequence of integers.'
+  _extendedRequiredBy:
   - icon: ':heavy_check_mark:'
-    path: include/mtl/succinct/wavelet_matrix.hpp
-    title: include/mtl/succinct/wavelet_matrix.hpp
-  _extendedRequiredBy: []
+    path: include/mtl/ordinal_range_search.hpp
+    title: Ordinal Range Search
+  - icon: ':heavy_check_mark:'
+    path: include/mtl/succinct/binary_set.hpp
+    title: include/mtl/succinct/binary_set.hpp
   _extendedVerifiedWith:
   - icon: ':heavy_check_mark:'
     path: test/yosupo/rectangle_sum.test.cpp
@@ -43,7 +37,8 @@ data:
   _pathExtension: hpp
   _verificationStatusIcon: ':heavy_check_mark:'
   attributes:
-    document_title: Ordinal Range Search
+    document_title: Succinct bit vector in memory of B(n, u) + O(u log log n / log
+      n) bits
     links: []
   bundledCode: "#line 2 \"include/mtl/bit_manip.hpp\"\n#include <cstdint>\n#include\
     \ <cassert>\n\nnamespace bm {\n\ninline constexpr uint64_t popcnt_e8(uint64_t\
@@ -79,29 +74,14 @@ data:
     \ 4) | ((x & 0xF0F0F0F0F0F0F0F0) >> 4);\n  x = ((x & 0x3333333333333333) << 2)\
     \ | ((x & 0xCCCCCCCCCCCCCCCC) >> 2);\n  x = ((x & 0x5555555555555555) << 1) |\
     \ ((x & 0xAAAAAAAAAAAAAAAA) >> 1);\n  return x;\n}\n\n} // namespace bm\n#line\
-    \ 3 \"include/mtl/fenwick_tree.hpp\"\n#include <cstddef>\n#include <vector>\n\n\
-    template <typename T>\nclass FenwickTree {\n private:\n  std::vector<T> tree_;\n\
-    \n public:\n  FenwickTree() = default;\n  explicit FenwickTree(size_t size) :\
-    \ tree_(size+1) {}\n\n  size_t size() const { return tree_.size()-1; }\n\n  template\
-    \ <typename Iter>\n  explicit FenwickTree(Iter begin, Iter end) : FenwickTree(end-begin)\
-    \ {\n    for (auto it = begin; it != end; ++it)\n      add(it-begin, *it);\n \
-    \ }\n\n  void add(size_t index, T x) {\n    for (size_t i = index+1; i < tree_.size();\
-    \ i += i&(-i))\n      tree_[i] += x;\n  }\n\n  T sum(size_t index) const {\n \
-    \   T sum = 0;\n    for (size_t i = index+1; i > 0; i -= i&(-i))\n      sum +=\
-    \ tree_[i];\n    return sum;\n  }\n\n  T range_sum(size_t l, size_t r) const {\n\
-    \    auto sl = l > 0 ? sum(l-1) : 0;\n    auto sr = r > 0 ? sum(r-1) : 0;\n  \
-    \  return sr - sl;\n  }\n\n  size_t lower_bound(T _sum) const {\n    size_t ret\
-    \ = 0;\n    T s = 0;\n    for (int k = 63-bm::clz(size()); k >= 0; k--) {\n  \
-    \    size_t j = ret | (1ull<<k);\n      if (j < tree_.size() and s + tree_[j]\
-    \ < _sum) {\n        s += tree_[j];\n        ret = j;\n      }\n    }\n    return\
-    \ ret;\n  }\n\n};\n\n#line 3 \"include/mtl/succinct/select.hpp\"\n#include <array>\n\
-    \nstruct select64 {\n    using size_type = uint8_t;\n    static struct make_select_table\
-    \ {\n        using bitmap_type = uint8_t;\n        std::array<std::array<size_type,\
-    \ 9>, 1<<8> tb;\n        make_select_table() {\n            for (int i = 0; i\
-    \ < 1<<8; i++) {\n                int c = 0;\n                int x = i;\n   \
-    \             tb[i].fill(8);\n                for (int j = 0; j < 8; j++) {\n\
-    \                    if (x & 1)\n                    tb[i][++c] = j;\n       \
-    \             x >>= 1;\n                }\n            }\n        }\n        size_type\
+    \ 3 \"include/mtl/succinct/select.hpp\"\n#include <array>\n\nstruct select64 {\n\
+    \    using size_type = uint8_t;\n    static struct make_select_table {\n     \
+    \   using bitmap_type = uint8_t;\n        std::array<std::array<size_type, 9>,\
+    \ 1<<8> tb;\n        make_select_table() {\n            for (int i = 0; i < 1<<8;\
+    \ i++) {\n                int c = 0;\n                int x = i;\n           \
+    \     tb[i].fill(8);\n                for (int j = 0; j < 8; j++) {\n        \
+    \            if (x & 1)\n                    tb[i][++c] = j;\n               \
+    \     x >>= 1;\n                }\n            }\n        }\n        size_type\
     \ operator()(bitmap_type bitmap, size_type ith) const {\n            return tb[bitmap][ith];\n\
     \        }\n    } sel_tb;\n    template<bool B>\n    static constexpr size_type\
     \ select(size_type ith, uint64_t bitmap) { // 0-indexed\n        assert(ith <\
@@ -122,8 +102,9 @@ data:
     \ r);\n    }\n    static constexpr size_type select1(size_type ith, uint64_t bitmap)\
     \ {\n        return select<1>(ith, bitmap);\n    }\n    static constexpr size_type\
     \ select0(size_type ith, uint64_t bitmap) {\n        return select<0>(ith, bitmap);\n\
-    \    }\n};\n\ntypename select64::make_select_table select64::sel_tb;\n#line 5\
-    \ \"include/mtl/succinct/bv.hpp\"\n#include <bitset>\n#include <iostream>\n\n\
+    \    }\n};\n\ntypename select64::make_select_table select64::sel_tb;\n#line 2\
+    \ \"include/mtl/succinct/bv.hpp\"\n#include <vector>\n#include <cstddef>\n#line\
+    \ 5 \"include/mtl/succinct/bv.hpp\"\n#include <bitset>\n#include <iostream>\n\n\
     #if __cpp_concepts >= 202002L\n#include <concepts>\ntemplate<class T>\nconcept\
     \ ConstructableBV = requires(T t, size_t s) {\n  { t.size() } -> std::same_as<size_t>;\n\
     \  { t.word_size() } -> std::same_as<size_t>;\n  { t.get_word(s) } -> std::convertible_to<uint64_t>;\n\
@@ -325,152 +306,14 @@ data:
     \ cend() const { return bm.cend(); }\r\n\r\n  void build() {\r\n    rs_support.build(&bm);\r\
     \n  }\r\n\r\n  inline size_t rank(size_t i) const {\r\n    return rs_support.rank1(i);\r\
     \n  }\r\n\r\n  template<bool B>\r\n  size_t select(size_t n) const {\r\n    return\
-    \ rs_support.select<B>(n);\r\n  }\r\n};\n#line 4 \"include/mtl/succinct/wavelet_matrix.hpp\"\
-    \n#include <limits>\n#line 7 \"include/mtl/succinct/wavelet_matrix.hpp\"\n#include\
-    \ <iterator>\n#include <algorithm>\n#include <queue>\n#include <tuple>\n\ntemplate<class\
-    \ T, class BitmapType = Bitmap>\nstruct WaveletMatrix {\n  static constexpr unsigned\
-    \ H = 64 - bm::clz(std::numeric_limits<T>::max());\n\n  size_t n,h;\n  using bitmap_type\
-    \ = BitmapType;\n  bitmap_type B;\n  using rs_type = typename RankSelectTraits<bitmap_type>::rank_select_type;\n\
-    \  rs_type rs_b;\n  std::vector<size_t> RO,Z;\n\n  WaveletMatrix() = default;\n\
-    \  template<typename It>\n  WaveletMatrix(It begin, It end)\n      : n(std::distance(begin,\
-    \ end)),\n      h(std::max(1u, 64 - bm::clz(*max_element(begin, end)))),\n   \
-    \   B(n*h, false),\n      rs_b(),\n      RO(h+1),\n      Z(h)\n  {\n    using\
-    \ trait = std::iterator_traits<It>;\n    static_assert(std::is_base_of<std::input_iterator_tag,\
-    \ typename trait::iterator_category>::value, \"\");\n    static_assert(std::is_convertible<typename\
-    \ trait::value_type, T>::value, \"\");\n    assert(*min_element(begin, end) >=\
-    \ 0);\n\n    std::vector<T> S(begin, end), z, o;\n    z.reserve(n);\n    o.reserve(n);\n\
-    \    auto bit = B.begin();\n    for (int k = h-1; k >= 0; k--) {\n      for (size_t\
-    \ i = 0; i < n; i++) {\n        bool b = S[i] >> k & 1;\n        *bit++ = b;\n\
-    \        if (!b)\n          z.push_back(S[i]);\n        else\n          o.push_back(S[i]);\n\
-    \      }\n      Z[k] = n*(h-1-k+1) + z.size();\n      auto j = n;\n      while\
-    \ (!o.empty()) {\n        S[--j] = o.back();\n        o.pop_back();\n      }\n\
-    \      while (!z.empty()) {\n        S[--j] = z.back();\n        z.pop_back();\n\
-    \      }\n      assert(j == 0);\n    }\n    B.build();\n    rs_b.build(&B);\n\
-    \    for (size_t i = 0; i <= h; i++)\n      RO[i] = rs_b.rank1(n * i);\n  }\n\
-    \  WaveletMatrix(const WaveletMatrix& rhs) noexcept :\n    n(rhs.n),\n    h(rhs.h),\n\
-    \    B(rhs.B),\n    rs_b(rhs.rs_b),\n    RO(rhs.RO),\n    Z(rhs.Z) \n  {\n   \
-    \ rs_b.set_ptr(&B);\n  }\n  WaveletMatrix& operator=(const WaveletMatrix& rhs)\
-    \ noexcept {\n    n = rhs.n;\n    h = rhs.h;\n    B = rhs.B;\n    rs_b = rhs.rs_b;\n\
-    \    rs_b.set_ptr(&B);\n    RO = rhs.RO;\n    Z = rhs.Z;\n    return *this;\n\
-    \  }\n  WaveletMatrix(WaveletMatrix&& rhs) noexcept :\n    n(std::move(rhs.n)),\n\
-    \    h(std::move(rhs.h)),\n    B(std::move(rhs.B)),\n    rs_b(std::move(rhs.rs_b)),\n\
-    \    RO(std::move(rhs.RO)),\n    Z(std::move(rhs.Z)) \n  {\n    rs_b.set_ptr(&B);\n\
-    \  }\n  WaveletMatrix& operator=(WaveletMatrix&& rhs) noexcept {\n    n = std::move(rhs.n);\n\
-    \    h = std::move(rhs.h);\n    B = std::move(rhs.B);\n    rs_b = std::move(rhs.rs_b);\n\
-    \    rs_b.set_ptr(&B);\n    RO = std::move(rhs.RO);\n    Z = std::move(rhs.Z);\n\
-    \    return *this;\n  }\n\n  inline size_t _child0(size_t level, size_t i) const\
-    \ {\n      return i + n + RO[level] - rs_b.rank1(i);\n  }\n  inline size_t _child1(size_t\
-    \ level, size_t i) const {\n    return n*(level+2) + rs_b.rank1(i) - RO[level+1];\n\
-    \  }\n  inline size_t child(size_t level, size_t i, bool bit) const {\n    return\
-    \ !bit ? _child0(level, i) : _child1(level, i);\n  }\n  std::pair<size_t, size_t>\
-    \ _child_tie0(size_t level, size_t l, size_t r) const {\n    return std::make_pair(_child0(level,\
-    \ l), _child0(level, r));\n  }\n  std::pair<size_t, size_t> _child_tie1(size_t\
-    \ level, size_t l, size_t r) const {\n    return std::make_pair(_child1(level,\
-    \ l), _child1(level, r));\n  }\n  std::pair<size_t, size_t> child_tie(size_t level,\
-    \ size_t l, size_t r, bool bit) const {\n    return !bit ? _child_tie0(level,\
-    \ l, r) : _child_tie1(level, l, r);\n  }\n\n  inline size_t _parent0(size_t level,\
-    \ size_t i) const {\n    return rs_b.select0(i - n - RO[level]);\n  }\n  inline\
-    \ size_t _parent1(size_t level, size_t i) const {\n    return rs_b.select1(i -\
-    \ Z[h-1-level] + RO[level]);\n  }\n  inline size_t parent(size_t level, size_t\
-    \ i, bool bit) const {\n    return !bit ? _parent0(level, i) : _parent1(level,\
-    \ i);\n  }\n\n  T get(size_t i) const {\n    T c = 0;\n    size_t j = i;\n   \
-    \ for (int k = h-1; k > 0; k--) {\n      bool b = B[j];\n      j = child(h-1-k,\
-    \ j, b);\n      if (b)\n        c |= 1ull<<k;\n    }\n    if (B[j])\n      c |=\
-    \ 1u;\n    return c;\n  }\n\n  size_t range_rank(T c, size_t l, size_t r) const\
-    \ {\n    for (int k = h-1; k >= 0; k--) {\n      if (l == r)\n        break;\n\
-    \      std::tie(l,r) = child_tie(h-1-k, l, r, (c >> k) & 1u);\n    }\n    return\
-    \ r - l;\n  }\n  size_t rank(T c, size_t i) const {\n    return range_rank(c,\
-    \ 0, i);\n  }\n  std::tuple<size_t, size_t, size_t> rank_3way(T c, size_t l, size_t\
-    \ r) const {\n    size_t lt = 0, gt = 0;\n    for (int k = h-1; k >= 0; k--) {\n\
-    \      size_t pr = r - l;\n      if (pr == 0)\n        break;\n      if (((c >>\
-    \ k) & 1u) == 0) {\n        std::tie(l,r) = _child_tie0(h-1-k, l, r);\n      \
-    \  gt += pr - (r - l);\n      } else {\n        std::tie(l,r) = _child_tie1(h-1-k,\
-    \ l, r);\n        lt += pr - (r - l);\n      }\n    }\n    return std::make_tuple(lt,\
-    \ r - l, gt);\n  }\n\n  /// Get frequency of values which (x <= value < y) in\
-    \ S[l,r).\n  size_t range_freq(size_t l, size_t r, T x, T y) const {\n    size_t\
-    \ freq = 0;\n    std::queue<std::tuple<size_t,size_t, T>> qs;\n    qs.emplace(l,\
-    \ r, T(0));\n    while (!qs.empty()) {\n      size_t _l,_r;\n      T c;\n    \
-    \  std::tie(_l,_r,c) = qs.front();\n      qs.pop();\n      size_t level = _l/n;\n\
-    \      if (_l == _r)\n        continue;\n      int shift = h-1-level;\n      T\
-    \ clo = c, chi = c | ((1ull<<(shift+1))-1);\n      if (chi < x or y <= clo)\n\
-    \        continue;\n      if (x <= clo and chi < y) {\n        freq += _r - _l;\n\
-    \        continue;\n      }\n      assert(level < h);\n      size_t nl,nr;\n \
-    \     std::tie(nl,nr) = child_tie(level, _l, _r, 0);\n      qs.emplace(nl, nr,\
-    \ c);\n      std::tie(nl,nr) = child_tie(level, _l, _r, 1);\n      qs.emplace(nl,\
-    \ nr, c | (1ull << shift));\n    }\n    return freq;\n  }\n\n  size_t range_select(T\
-    \ c, size_t l, size_t r, size_t i) const {\n    if (r - l <= i)\n      return\
-    \ n;\n    for (int k = h-1; k >= 0; k--) {\n      std::tie(l,r) = child_tie(h-1-k,\
-    \ l, r, (c >> k) & 1u);\n      if (r - l <= i)\n        return n;\n    }\n   \
-    \ size_t j = l+i;\n    for (size_t k = 0; k < h; k++) {\n      j = parent(h-1-k,\
-    \ j, (c >> k) & 1u);\n      assert((bool)((c>>k)&1u) == B[j]);\n    }\n    return\
-    \ j;\n  }\n  size_t select(T c, size_t i) const {\n    return range_select(c,\
-    \ 0, n, i);\n  }\n\n  /// Get kth (0-indexed) smallest value in S[l,r).\n  T quantile(size_t\
-    \ l, size_t r, size_t k) const {\n    assert(r - l > k);\n    T c = 0;\n    for\
-    \ (int d = h-1; d > 0; d--) {\n      auto os = rs_b.rank1(r) - rs_b.rank1(l);\n\
-    \      auto zs = r - l - os;\n      if (k < zs) {\n        std::tie(l,r) = _child_tie0(h-1-d,\
-    \ l, r);\n      } else {\n        c |= 1ull << d;\n        k -= zs;\n        std::tie(l,r)\
-    \ = _child_tie1(h-1-d, l, r);\n      }\n      assert(l < r);\n    }\n    auto\
-    \ os = rs_b.rank1(r) - rs_b.rank1(l);\n    auto zs = r - l - os;\n    if (k >=\
-    \ zs) {\n      c |= 1ull;\n    }\n    return c;\n  }\n\n  /// Get tuples (value,\
-    \ frequency) of the most k frequently occurring values in S[l,r).\n  std::vector<std::pair<T,\
-    \ size_t>> top_k(size_t l, size_t r, size_t k) const {\n    std::vector<std::pair<T,\
-    \ size_t>> ret;\n    std::priority_queue<std::tuple<size_t, size_t, T>> qs;\n\
-    \    qs.emplace(r-l, l, 0);\n    while (!qs.empty()) {\n      size_t range, s;\n\
-    \      T c;\n      std::tie(range, s, c) = qs.top();\n      qs.pop();\n      auto\
-    \ level = s/n;\n      if (level == h) {\n        ret.emplace_back(c, range);\n\
-    \        if (ret.size() == k)\n          break;\n      } else {\n        size_t\
-    \ _l, _r;\n        for (int b = 0; b < 2; b++) {\n          std::tie(_l,_r) =\
-    \ child_tie(level, s, s+range, b);\n          if (_l != _r)\n            qs.emplace(_r-_l,\
-    \ _l, c | (uint64_t(b) << (h-1-level)));\n        }\n      }\n    }\n    return\
-    \ ret;\n  }\n  /// Get sum of S[l,r) in O(min(r-l, \\sigma) log \\sigma) times.\n\
-    \  template<typename U=T>\n  U sum(size_t l, size_t r) const {\n    U ret = 0;\n\
-    \    for (auto p : top_k(l, r, r-l))\n      ret += (U) p.first * p.second;\n \
-    \   return ret;\n  }\n\n  /// Get k tuples of (value, frequency) that value satisfies\
-    \ condition (x <= value < y) in S[l,r) from the smallest (or largest).\n  ///\
-    \ The complexity is O(k log \\sigma).\n  template<bool ASCENDING, bool VALUE_RANGE\
-    \ = true>\n  std::vector<std::pair<T, size_t>>\n  range_list_k(size_t l, size_t\
-    \ r, size_t k, T x, T y) const {\n    std::vector<std::pair<T, size_t>> ret;\n\
-    \    std::queue<std::tuple<size_t, size_t, T>> qs;\n    qs.emplace(r-l, l, T(0));\n\
-    \    size_t range,s;\n    T c;\n    while (!qs.empty()) {\n      std::tie(range,s,c)\
-    \ = qs.top();\n      qs.pop();\n      auto level = s/n;\n      if (level == h)\
-    \ {\n        assert(!VALUE_RANGE or (x <= c and c < y));\n        ret.emplace_back(c,\
-    \ range);\n        if (ret.size() == k)\n          break;\n      } else {\n  \
-    \      auto shift = (h-1-level);\n        for (int b = ASCENDING ? 0 : 1;\n  \
-    \           ASCENDING ? b < 2 : b >= 0;\n             ASCENDING ? b++ : b--) {\n\
-    \          T nc = (c << 1) | b;\n          if (VALUE_RANGE and (nc < (x >> shift)\
-    \ or ((y-1) >> shift) < nc))\n            continue;\n          size_t nl,nr;\n\
-    \          std::tie(nl,nr) = child_tie(level, s, s+range, b);\n          if (nl\
-    \ != nr)\n            qs.emplace(nr-nl, nl, nc);\n        }\n      }\n    }\n\
-    \    return ret;\n  }\n\n  /// Get tuples of (value, frequency) that value satisfies\
-    \ condition (x <= value < y) in S[l,r).\n  /// The complexity is O(k log \\sigma).\n\
-    \  std::vector<std::pair<T, size_t>> range_list(size_t l, size_t r, T x, T y)\
-    \ const {\n    return range_list_k<true>(l, r, r - l, x, y);\n  }\n\n  /// Get\
-    \ k tuples of (value, frequency) that value satisfies condition (x <= value <\
-    \ y) in S[l,r) from the largest.\n  /// The complexity is O(k log \\sigma).\n\
-    \  std::vector<std::pair<T, size_t>> range_max_k(size_t l, size_t r, size_t k)\
-    \ const {\n    return range_list_k<false, false>(l, r, k, 0, 0);\n  }\n  /// Get\
-    \ k tuples of (value, frequency) that value satisfies condition (x <= value <\
-    \ y) in S[l,r) from the smallest.\n  // The complexity is O(k log \\sigma).\n\
-    \  std::vector<std::pair<T, size_t>> range_min_k(size_t l, size_t r, size_t k)\
-    \ const {\n    return range_list_k<true, false>(l, r, k, 0, 0);\n  }\n\n  ///\
-    \ Get tuples (value, frequency of T1, frequency of T2) that commonly occur between\
-    \ T1=S[l1,r1) and T2=S[l2,r2).\n  std::vector<std::tuple<T, size_t, size_t>> intersect(size_t\
-    \ l1, size_t r1, size_t l2, size_t r2) const {\n    std::vector<std::tuple<T,\
-    \ size_t, size_t>> ret;\n    std::queue<std::pair<std::array<size_t,4>, T>> qs;\n\
-    \    qs.emplace({l1,r1,l2,r2}, 0);\n    std::array<size_t,4> nrs{};\n    while\
-    \ (!qs.empty()) {\n      const auto& rs = qs.front().first;\n      T c = qs.front().second;\n\
-    \      auto level = rs[0]/n;\n      if (level == h) {\n        ret.emplace_back(c,\
-    \ rs[1]-rs[0], rs[3]-rs[2]);\n      } else {\n        for (int b = 0; b < 2; b++)\
-    \ {\n          for (int i = 0; i < 4; i++)\n            nrs[i] = child(level,\
-    \ rs[i], b);\n          if (nrs[0] != nrs[1] and nrs[2] != nrs[3])\n         \
-    \   qs.emplace(nrs, c | (uint64_t(b) << (h-1-level)));\n        }\n      }\n \
-    \     qs.pop();\n    }\n    return ret;\n  }\n};\n#line 7 \"include/mtl/succinct/ty.hpp\"\
-    \n\n/**\n * @brief TY: Store increasing sequence of integers.\n *            Memory\
-    \ needs for store nth integers O(n log d) bits \n *            which d is max\
-    \ diff of consecutive elements.\n*/\ntemplate<class T, class DiffType = uint16_t>\n\
-    struct TY {\n    using value_type = T;\n    static constexpr auto block_size =\
-    \ sizeof(value_type) * 8;\n    using diff_value_type = DiffType;\n    static constexpr\
-    \ unsigned max_diff = std::numeric_limits<diff_value_type>::max();\n    std::vector<value_type>\
+    \ rs_support.select<B>(n);\r\n  }\r\n};\n#line 4 \"include/mtl/succinct/ty.hpp\"\
+    \n#include <limits>\n#line 7 \"include/mtl/succinct/ty.hpp\"\n\n/**\n * @brief\
+    \ TY: Store increasing sequence of integers.\n *            Memory needs for store\
+    \ nth integers O(n log d) bits \n *            which d is max diff of consecutive\
+    \ elements.\n*/\ntemplate<class T, class DiffType = uint16_t>\nstruct TY {\n \
+    \   using value_type = T;\n    static constexpr auto block_size = sizeof(value_type)\
+    \ * 8;\n    using diff_value_type = DiffType;\n    static constexpr unsigned max_diff\
+    \ = std::numeric_limits<diff_value_type>::max();\n    std::vector<value_type>\
     \ head;\n    std::vector<diff_value_type> diff;\n\n    TY() = default;\n    size_t\
     \ size() const {\n        return head.size() + diff.size();\n    }\n    void reserve(size_t\
     \ n) {\n        head.reserve((n + block_size - 1) / block_size);\n        diff.reserve(n\
@@ -616,243 +459,160 @@ data:
     \ size() == 0;\n    }\n\n    bool get(size_t i) const {\n        return get_bit(i/def::s_size,\
     \ i%def::s_size);\n    }\n\n};\n\ntemplate<unsigned SSize, class SType, class\
     \ MapType>\nstruct RankSelectTraits<RRR<SSize, SType, MapType>> {\n    using rank_select_type\
-    \ = BV<RRR<SSize, SType, MapType>, SSize>;\n};\n#line 7 \"include/mtl/succinct/binary_set.hpp\"\
-    \n\ntemplate<class BitmapType = RRR<>>\nclass BinarySet {\npublic:\n    using\
-    \ value_type = uint32_t;\nprivate:\n    using bitmap_type = BitmapType;\n    using\
-    \ rs_type = typename RankSelectTraits<bitmap_type>::rank_select_type;\n    bitmap_type\
-    \ bm_;\n    rs_type rs_;\npublic:\n    BinarySet() = default;\n    BinarySet(const\
-    \ BinarySet& rhs) : bm_(rhs.bm_), rs_(rhs.rs_) {\n        rs_.set_ptr(&bm_);\n\
-    \    }\n    BinarySet& operator=(const BinarySet& rhs) {\n        bm_ = rhs.bm_;\n\
-    \        rs_ = rhs.rs_;\n        rs_.set_ptr(&bm_);\n        return *this;\n \
-    \   }\n    BinarySet(BinarySet&& rhs) : bm_(std::move(rhs.bm_)), rs_(std::move(rhs.rs_))\
-    \ {\n        rs_.set_ptr(&bm_);\n    }\n    BinarySet& operator=(BinarySet&& rhs)\
-    \ {\n        bm_ = std::move(rhs.bm_);\n        rs_ = std::move(rhs.rs_);\n  \
-    \      rs_.set_ptr(&bm_);\n        return *this;\n    }\n    ~BinarySet() = default;\n\
-    \n    void insert(value_type x) {\n        bm_.set(x, 1);\n    }\n    void build()\
-    \ {\n        bm_.build();\n        rs_.build(&bm_);\n    }\n    size_t size()\
-    \ const { return rs_.rank1(bm_.size()); }\n    bool empty() const { return size()\
-    \ == 0;}\n    bool contains(value_type x) const {\n        return bm_.get(x);\n\
-    \    }\n    value_type lower_bound(value_type x) const {\n        if (contains(x))\
-    \ return x;\n        return select(rank(x));\n    }\n    size_t rank(value_type\
-    \ x) const {\n        return rs_.rank1(x);\n    }\n    value_type select(size_t\
-    \ i) const {\n        return rs_.select1(i);\n    }\n};\n\ntemplate<class BitmapType\
-    \ = RRR<>>\nclass BinaryMultiset {\npublic:\n    using value_type = uint32_t;\n\
-    \    static constexpr value_type ValueMax = std::numeric_limits<value_type>::max();\n\
-    private:\n    using bitmap_type = BitmapType;\n    using rs_type = typename RankSelectTraits<bitmap_type>::rank_select_type;\n\
-    \    bitmap_type bm_;\n    rs_type rs_;\n    std::vector<value_type> values_;\n\
-    public:\n    BinaryMultiset() = default;\n    BinaryMultiset(const BinaryMultiset&\
-    \ rhs) : bm_(rhs.bm_), rs_(rhs.rs_), values_(rhs.values_) {\n        rs_.set_ptr(&bm_);\n\
-    \    }\n    BinaryMultiset& operator=(const BinaryMultiset& rhs) {\n        bm_\
-    \ = rhs.bm_;\n        rs_ = rhs.rs_;\n        values_ = rhs.values_;\n       \
-    \ rs_.set_ptr(&bm_);\n        return *this;\n    }\n    BinaryMultiset(BinaryMultiset&&\
-    \ rhs) noexcept \n        : bm_(std::move(rhs.bm_)), rs_(std::move(rhs.rs_)),\
-    \ values_(std::move(rhs.values_)) {\n        rs_.set_ptr(&bm_);\n    }\n    BinaryMultiset&\
-    \ operator=(BinaryMultiset&& rhs) noexcept {\n        bm_ = std::move(rhs.bm_);\n\
-    \        rs_ = std::move(rhs.rs_);\n        values_ = std::move(rhs.values_);\n\
-    \        rs_.set_ptr(&bm_);\n        return *this;\n    }\n    ~BinaryMultiset()\
-    \ = default;\n\n    void insert(value_type x) {\n        values_.push_back(x);\n\
-    \    }\n    void build() {\n        std::sort(values_.begin(), values_.end());\n\
-    \        for (size_t i = 0; i < values_.size(); i++)\n            bm_.set((unsigned\
-    \ long long)values_[i] + i, 1);\n        values_.clear();\n        values_.shrink_to_fit();\n\
-    \        bm_.build();\n        rs_.build(&bm_);\n    }\n    size_t size() const\
-    \ { return rs_.rank1(bm_.size()); }\n    bool empty() const { return size() ==\
-    \ 0;}\n    size_t count(value_type x) const {\n        auto s = rs_.select0(x);\n\
-    \        return s - (x == 0 ? 0 : (rs_.select0(x-1)+1));\n    }\n    bool contains(value_type\
-    \ x) const {\n        auto s = rs_.select0(x);\n        return s and bm_.get(s-1);\n\
-    \    }\n    value_type lower_bound(value_type x) const {\n        return select(rank(x));\n\
-    \    }\n    size_t rank(value_type x) const {\n        return x == 0 ? 0 : (rs_.select0(x-1)\
-    \ - (x-1));\n    }\n    value_type select(size_t i) const {\n        return rs_.select1(i)\
-    \ - i;\n    }\n};\n#line 10 \"include/mtl/ordinal_range_search.hpp\"\n\r\n/**\r\
-    \n * @brief Ordinal Range Search\r\n *   Maintain 2-dimential points (x,y) and\
-    \ their weights.\r\n*/\r\ntemplate<typename T, typename W = long long,\r\n  class\
-    \ BitmapType = RRR<>\r\n  >\r\nstruct ORS {\r\n  using index_type = T;\r\n  using\
-    \ weight_type = W;\r\n  static constexpr index_type IndexLimit = std::numeric_limits<index_type>::max();\r\
-    \n  std::vector<std::tuple<index_type,index_type,weight_type>> ps;\r\n  using\
-    \ x_index_multiset = BinaryMultiset<BitmapType>;\r\n  using y_index_set = BinarySet<BitmapType>;\r\
-    \n  x_index_multiset X;\r\n  y_index_set Y;\r\n  using wm_type = WaveletMatrix<int>;\r\
-    \n  wm_type wm;\r\n  using range_sum_type = FenwickTree<W>;\r\n  range_sum_type\
-    \ rsq;\r\n  index_type value_of_ith_x(size_t i) const {\r\n    return X.select(i);\r\
-    \n  }\r\n  size_t index_of_lower_bound_x(const T& x) const {\r\n    return X.rank(x);\r\
-    \n  }\r\n  std::pair<size_t, size_t> range_on_wm_lower_bound_x(const T& x) const\
-    \ {\r\n    auto l = index_of_lower_bound_x(x);\r\n    auto lb = value_of_ith_x(l);\r\
-    \n    auto c = X.count(lb);\r\n    return std::make_pair(l, l+c);\r\n  }\r\n \
-    \ index_type value_of_ith_y(size_t i) const {\r\n    return Y.select(i);\r\n \
-    \ }\r\n  size_t index_of_lower_bound_y(const T& y) const {\r\n    return Y.rank(y);\r\
-    \n  }\r\n\r\n  ORS() = default;\r\n\r\n  void add(index_type x, index_type y,\
-    \ W w = 1) {\r\n    ps.emplace_back(x,y,w);\r\n  }\r\n  void build(index_type\
-    \ max_index = IndexLimit) {\r\n    std::sort(ps.begin(), ps.end(),\r\n       \
-    \       [](auto l, auto r) {\r\n      return std::get<0>(l) != std::get<0>(r)\
-    \ ? std::get<0>(l) < std::get<0>(r)\r\n                                      \
-    \        : std::get<1>(l) < std::get<1>(r);\r\n    });\r\n\r\n    for (size_t\
-    \ i = 0; i < ps.size(); i++) {\r\n      auto x = std::get<0>(ps[i]);\r\n     \
-    \ auto y = std::get<1>(ps[i]);\r\n      X.insert(x);\r\n      Y.insert(y);\r\n\
-    \    }\r\n    X.insert(max_index);\r\n    Y.insert(max_index);\r\n    X.build();\r\
-    \n    Y.build();\r\n\r\n    {\r\n      std::vector<int> S(ps.size());\r\n    \
-    \  std::vector<std::pair<int, W>> SW(ps.size()), swz, swo;\r\n      for (size_t\
-    \ i = 0; i < ps.size(); i++) {\r\n        auto y = std::get<1>(ps[i]);\r\n   \
-    \     auto w = std::get<2>(ps[i]);\r\n        S[i] = index_of_lower_bound_y(y);\r\
-    \n        SW[i] = {S[i], w};\r\n      }\r\n      ps.clear();\r\n      ps.shrink_to_fit();\r\
-    \n      wm = wm_type(S.begin(), S.end());\r\n      rsq = range_sum_type(wm.n *\
-    \ (wm.h+1));\r\n      for (int k = wm.h-1; k >= 0; k--) {\r\n        for (size_t\
-    \ i = 0; i < wm.n; i++) {\r\n          if (((SW[i].first >> k) & 1u) == 0)\r\n\
-    \            swz.push_back(SW[i]);\r\n          else\r\n            swo.push_back(SW[i]);\r\
-    \n          rsq.add(wm.n * (wm.h-1-k) + i, SW[i].second);\r\n        }\r\n   \
-    \     size_t j = wm.n-1;\r\n        while (!swo.empty()) {\r\n          SW[j--]\
-    \ = swo.back();\r\n          swo.pop_back();\r\n        }\r\n        while (!swz.empty())\
-    \ {\r\n          SW[j--] = swz.back();\r\n          swz.pop_back();\r\n      \
-    \  }\r\n      }\r\n      for (size_t i = 0; i < wm.n; i++) {\r\n        rsq.add(wm.n\
-    \ * wm.h + i, SW[i].second);\r\n      }\r\n    }\r\n  }\r\n\r\n private:\r\n \
-    \ std::tuple<int, int, int, int>\r\n  compress_idx(const index_type& xl, \r\n\
-    \               const index_type& xh, \r\n               const index_type& yl,\
-    \ \r\n               const index_type& yh) const {\r\n    return std::make_tuple(\r\
-    \n      index_of_lower_bound_x(xl),\r\n      index_of_lower_bound_x(xh),\r\n \
-    \     index_of_lower_bound_y(yl),\r\n      index_of_lower_bound_y(yh)\r\n    );\r\
-    \n  }\r\n\r\n  template<typename F, typename G>\r\n  void _traverse(const index_type&\
-    \ xl, \r\n                 const index_type& xh, \r\n                 const index_type&\
-    \ yl, \r\n                 const index_type& yh, \r\n                 F internal_fn,\
-    \ \r\n                 G leaf_fn) const {\r\n    size_t i,j;\r\n    int a,b;\r\
-    \n    std::tie(i,j,a,b) = compress_idx(xl, xh, yl, yh);\r\n    std::queue<std::tuple<size_t,size_t,T>>\
-    \ qs;\r\n    qs.emplace(i,j,T(0));\r\n    while (!qs.empty()) {\r\n      size_t\
-    \ l,r;\r\n      T c;\r\n      std::tie(l,r,c) = qs.front(); qs.pop();\r\n    \
-    \  size_t level = l/wm.n;\r\n      int shift = wm.h-1-level;\r\n      T clo =\
-    \ c, chi = c | ((1ull<<(shift+1))-1);\r\n      if (chi < a or b <= clo)\r\n  \
-    \      continue;\r\n      if (a <= clo and chi < b) {\r\n        internal_fn(l,\
-    \ r, c);\r\n        continue;\r\n      }\r\n      if (level == wm.h) {\r\n   \
-    \     leaf_fn(l, r, c);\r\n        continue;\r\n      }\r\n      size_t nl,nr;\r\
-    \n      std::tie(nl,nr) = wm._child_tie0(level, l, r);\r\n      qs.emplace(nl,\
-    \ nr, c);\r\n      std::tie(nl,nr) = wm._child_tie1(level, l, r);\r\n      qs.emplace(nl,\
-    \ nr, c | (1ull<<shift));\r\n    }\r\n  }\r\n\r\n public:\r\n  size_t freq(const\
-    \ index_type& xl, \r\n              const index_type& xh, \r\n              const\
-    \ index_type& yl, \r\n              const index_type& yh) const {\r\n    size_t\
-    \ i,j;\r\n    int a,b;\r\n    std::tie(i,j,a,b) = compress_idx(xl, xh, yl, yh);\r\
-    \n    return wm.range_freq(i, j, a, b);\r\n  }\r\n\r\n  void weight_add(const\
-    \ index_type& x, const index_type& y, const weight_type& w) {\r\n    size_t l,\
-    \ r;\r\n    std::tie(l,r) = range_on_wm_lower_bound_x(x);\r\n    auto c = index_of_lower_bound_y(y);\r\
-    \n    for (int k = wm.h-1; k >= 0; k--) {\r\n      std::tie(l,r) = wm.child_tie(wm.h-1-k,\
-    \ l, r, (c >> k) & 1u);\r\n    }\r\n    assert(l != r);\r\n    size_t j = l;\r\
-    \n    for (size_t k = 0; k < wm.h; k++) {\r\n      rsq.add(j, w);\r\n      j =\
-    \ wm.parent(wm.h-1-k, j, (c >> k) & 1u);\r\n    }\r\n    rsq.add(j, w);\r\n  }\r\
-    \n\r\n  W sum(const index_type& xl, \r\n        const index_type& xh, \r\n   \
-    \     const index_type& yl, \r\n        const index_type& yh) const {\r\n    W\
-    \ ret = 0;\r\n    _traverse(xl, xh, yl, yh,\r\n              [&](size_t l, size_t\
-    \ r, auto _) { ret += rsq.range_sum(l, r); },\r\n              [](auto,auto,auto){});\r\
-    \n    return ret;\r\n  }\r\n\r\n  std::vector<std::pair<size_t, size_t>>\r\n \
-    \ enumerate(const index_type& xl, \r\n            const index_type& xh, \r\n \
-    \           const index_type& yl, \r\n            const index_type& yh) const\
-    \ {\r\n    std::vector<std::pair<size_t,size_t>> ret;\r\n    _traverse(xl, xh,\
-    \ yl, yh,\r\n              [](auto,auto,auto){},\r\n              [&](size_t l,\
-    \ size_t r, T c) {\r\n      for (size_t idx = l; idx < r; idx++) {\r\n       \
-    \ auto jdx = idx;\r\n        for (size_t k = 0; k < wm.h; k++)\r\n          jdx\
-    \ = wm.parent(wm.h-1-k, jdx, (c >> k) & 1u);\r\n        ret.emplace_back(value_of_ith_x(jdx),\
-    \ value_of_ith_y(c));\r\n      }\r\n    });\r\n    return ret;\r\n  }\r\n};\n"
-  code: "#pragma once\r\n#include \"fenwick_tree.hpp\"\r\n#include \"succinct/wavelet_matrix.hpp\"\
-    \r\n#include \"succinct/bit_vector.hpp\"\r\n#include \"succinct/rrr.hpp\"\r\n\
-    #include \"succinct/binary_set.hpp\"\r\n#include <cstddef>\r\n#include <limits>\r\
-    \n#include <vector>\r\n\r\n/**\r\n * @brief Ordinal Range Search\r\n *   Maintain\
-    \ 2-dimential points (x,y) and their weights.\r\n*/\r\ntemplate<typename T, typename\
-    \ W = long long,\r\n  class BitmapType = RRR<>\r\n  >\r\nstruct ORS {\r\n  using\
-    \ index_type = T;\r\n  using weight_type = W;\r\n  static constexpr index_type\
-    \ IndexLimit = std::numeric_limits<index_type>::max();\r\n  std::vector<std::tuple<index_type,index_type,weight_type>>\
-    \ ps;\r\n  using x_index_multiset = BinaryMultiset<BitmapType>;\r\n  using y_index_set\
-    \ = BinarySet<BitmapType>;\r\n  x_index_multiset X;\r\n  y_index_set Y;\r\n  using\
-    \ wm_type = WaveletMatrix<int>;\r\n  wm_type wm;\r\n  using range_sum_type = FenwickTree<W>;\r\
-    \n  range_sum_type rsq;\r\n  index_type value_of_ith_x(size_t i) const {\r\n \
-    \   return X.select(i);\r\n  }\r\n  size_t index_of_lower_bound_x(const T& x)\
-    \ const {\r\n    return X.rank(x);\r\n  }\r\n  std::pair<size_t, size_t> range_on_wm_lower_bound_x(const\
-    \ T& x) const {\r\n    auto l = index_of_lower_bound_x(x);\r\n    auto lb = value_of_ith_x(l);\r\
-    \n    auto c = X.count(lb);\r\n    return std::make_pair(l, l+c);\r\n  }\r\n \
-    \ index_type value_of_ith_y(size_t i) const {\r\n    return Y.select(i);\r\n \
-    \ }\r\n  size_t index_of_lower_bound_y(const T& y) const {\r\n    return Y.rank(y);\r\
-    \n  }\r\n\r\n  ORS() = default;\r\n\r\n  void add(index_type x, index_type y,\
-    \ W w = 1) {\r\n    ps.emplace_back(x,y,w);\r\n  }\r\n  void build(index_type\
-    \ max_index = IndexLimit) {\r\n    std::sort(ps.begin(), ps.end(),\r\n       \
-    \       [](auto l, auto r) {\r\n      return std::get<0>(l) != std::get<0>(r)\
-    \ ? std::get<0>(l) < std::get<0>(r)\r\n                                      \
-    \        : std::get<1>(l) < std::get<1>(r);\r\n    });\r\n\r\n    for (size_t\
-    \ i = 0; i < ps.size(); i++) {\r\n      auto x = std::get<0>(ps[i]);\r\n     \
-    \ auto y = std::get<1>(ps[i]);\r\n      X.insert(x);\r\n      Y.insert(y);\r\n\
-    \    }\r\n    X.insert(max_index);\r\n    Y.insert(max_index);\r\n    X.build();\r\
-    \n    Y.build();\r\n\r\n    {\r\n      std::vector<int> S(ps.size());\r\n    \
-    \  std::vector<std::pair<int, W>> SW(ps.size()), swz, swo;\r\n      for (size_t\
-    \ i = 0; i < ps.size(); i++) {\r\n        auto y = std::get<1>(ps[i]);\r\n   \
-    \     auto w = std::get<2>(ps[i]);\r\n        S[i] = index_of_lower_bound_y(y);\r\
-    \n        SW[i] = {S[i], w};\r\n      }\r\n      ps.clear();\r\n      ps.shrink_to_fit();\r\
-    \n      wm = wm_type(S.begin(), S.end());\r\n      rsq = range_sum_type(wm.n *\
-    \ (wm.h+1));\r\n      for (int k = wm.h-1; k >= 0; k--) {\r\n        for (size_t\
-    \ i = 0; i < wm.n; i++) {\r\n          if (((SW[i].first >> k) & 1u) == 0)\r\n\
-    \            swz.push_back(SW[i]);\r\n          else\r\n            swo.push_back(SW[i]);\r\
-    \n          rsq.add(wm.n * (wm.h-1-k) + i, SW[i].second);\r\n        }\r\n   \
-    \     size_t j = wm.n-1;\r\n        while (!swo.empty()) {\r\n          SW[j--]\
-    \ = swo.back();\r\n          swo.pop_back();\r\n        }\r\n        while (!swz.empty())\
-    \ {\r\n          SW[j--] = swz.back();\r\n          swz.pop_back();\r\n      \
-    \  }\r\n      }\r\n      for (size_t i = 0; i < wm.n; i++) {\r\n        rsq.add(wm.n\
-    \ * wm.h + i, SW[i].second);\r\n      }\r\n    }\r\n  }\r\n\r\n private:\r\n \
-    \ std::tuple<int, int, int, int>\r\n  compress_idx(const index_type& xl, \r\n\
-    \               const index_type& xh, \r\n               const index_type& yl,\
-    \ \r\n               const index_type& yh) const {\r\n    return std::make_tuple(\r\
-    \n      index_of_lower_bound_x(xl),\r\n      index_of_lower_bound_x(xh),\r\n \
-    \     index_of_lower_bound_y(yl),\r\n      index_of_lower_bound_y(yh)\r\n    );\r\
-    \n  }\r\n\r\n  template<typename F, typename G>\r\n  void _traverse(const index_type&\
-    \ xl, \r\n                 const index_type& xh, \r\n                 const index_type&\
-    \ yl, \r\n                 const index_type& yh, \r\n                 F internal_fn,\
-    \ \r\n                 G leaf_fn) const {\r\n    size_t i,j;\r\n    int a,b;\r\
-    \n    std::tie(i,j,a,b) = compress_idx(xl, xh, yl, yh);\r\n    std::queue<std::tuple<size_t,size_t,T>>\
-    \ qs;\r\n    qs.emplace(i,j,T(0));\r\n    while (!qs.empty()) {\r\n      size_t\
-    \ l,r;\r\n      T c;\r\n      std::tie(l,r,c) = qs.front(); qs.pop();\r\n    \
-    \  size_t level = l/wm.n;\r\n      int shift = wm.h-1-level;\r\n      T clo =\
-    \ c, chi = c | ((1ull<<(shift+1))-1);\r\n      if (chi < a or b <= clo)\r\n  \
-    \      continue;\r\n      if (a <= clo and chi < b) {\r\n        internal_fn(l,\
-    \ r, c);\r\n        continue;\r\n      }\r\n      if (level == wm.h) {\r\n   \
-    \     leaf_fn(l, r, c);\r\n        continue;\r\n      }\r\n      size_t nl,nr;\r\
-    \n      std::tie(nl,nr) = wm._child_tie0(level, l, r);\r\n      qs.emplace(nl,\
-    \ nr, c);\r\n      std::tie(nl,nr) = wm._child_tie1(level, l, r);\r\n      qs.emplace(nl,\
-    \ nr, c | (1ull<<shift));\r\n    }\r\n  }\r\n\r\n public:\r\n  size_t freq(const\
-    \ index_type& xl, \r\n              const index_type& xh, \r\n              const\
-    \ index_type& yl, \r\n              const index_type& yh) const {\r\n    size_t\
-    \ i,j;\r\n    int a,b;\r\n    std::tie(i,j,a,b) = compress_idx(xl, xh, yl, yh);\r\
-    \n    return wm.range_freq(i, j, a, b);\r\n  }\r\n\r\n  void weight_add(const\
-    \ index_type& x, const index_type& y, const weight_type& w) {\r\n    size_t l,\
-    \ r;\r\n    std::tie(l,r) = range_on_wm_lower_bound_x(x);\r\n    auto c = index_of_lower_bound_y(y);\r\
-    \n    for (int k = wm.h-1; k >= 0; k--) {\r\n      std::tie(l,r) = wm.child_tie(wm.h-1-k,\
-    \ l, r, (c >> k) & 1u);\r\n    }\r\n    assert(l != r);\r\n    size_t j = l;\r\
-    \n    for (size_t k = 0; k < wm.h; k++) {\r\n      rsq.add(j, w);\r\n      j =\
-    \ wm.parent(wm.h-1-k, j, (c >> k) & 1u);\r\n    }\r\n    rsq.add(j, w);\r\n  }\r\
-    \n\r\n  W sum(const index_type& xl, \r\n        const index_type& xh, \r\n   \
-    \     const index_type& yl, \r\n        const index_type& yh) const {\r\n    W\
-    \ ret = 0;\r\n    _traverse(xl, xh, yl, yh,\r\n              [&](size_t l, size_t\
-    \ r, auto _) { ret += rsq.range_sum(l, r); },\r\n              [](auto,auto,auto){});\r\
-    \n    return ret;\r\n  }\r\n\r\n  std::vector<std::pair<size_t, size_t>>\r\n \
-    \ enumerate(const index_type& xl, \r\n            const index_type& xh, \r\n \
-    \           const index_type& yl, \r\n            const index_type& yh) const\
-    \ {\r\n    std::vector<std::pair<size_t,size_t>> ret;\r\n    _traverse(xl, xh,\
-    \ yl, yh,\r\n              [](auto,auto,auto){},\r\n              [&](size_t l,\
-    \ size_t r, T c) {\r\n      for (size_t idx = l; idx < r; idx++) {\r\n       \
-    \ auto jdx = idx;\r\n        for (size_t k = 0; k < wm.h; k++)\r\n          jdx\
-    \ = wm.parent(wm.h-1-k, jdx, (c >> k) & 1u);\r\n        ret.emplace_back(value_of_ith_x(jdx),\
-    \ value_of_ith_y(c));\r\n      }\r\n    });\r\n    return ret;\r\n  }\r\n};"
+    \ = BV<RRR<SSize, SType, MapType>, SSize>;\n};\n"
+  code: "#pragma once\n#include \"../bit_manip.hpp\"\n#include \"bit_vector.hpp\"\n\
+    #include \"ty.hpp\"\n#include \"bv.hpp\"\n#include <map>\n#include <array>\n#include\
+    \ <cstdint>\n#include <limits>\n#include <cstddef>\n#include <cstdint>\n#include\
+    \ <vector>\n\nconstexpr unsigned need_bits(uint64_t n) {\n    return 64-bm::clz(n);\n\
+    }\n\ntemplate<unsigned N>\nstruct BinomialTable {\n    static_assert(N < 64, \n\
+    \        \"Too large N for BinomialTable. N must be less than 64\");\n    using\
+    \ number_type = uint64_t;\n    static struct impl {\n        std::array<std::array<number_type,\
+    \ N+1>, N+1> tb;\n        constexpr impl() {\n            tb[0][0] = 1;\n    \
+    \        for (size_t i = 1; i <= N; i++) {\n                tb[i][0] = tb[i-1][0];\n\
+    \                for (size_t j = 1; j <= i; j++) \n                    tb[i][j]\
+    \ = tb[i-1][j-1] + tb[i-1][j];\n            }\n        }\n    } data;\n    static\
+    \ constexpr number_type binom(size_t n, size_t k) {\n        assert(n <= N and\
+    \ k <= N);\n        return data.tb[n][k];\n    }\n};\n\ntemplate<unsigned N>\n\
+    typename BinomialTable<N>::impl BinomialTable<N>::data;\n\ntemplate<class Def>\n\
+    struct RRRTable {\n    using def = Def;\n    static constexpr unsigned s_size\
+    \ = def::s_size;\n    using s_type = typename def::s_type;\n    static constexpr\
+    \ unsigned n_bits = def::n_bits;\n    using binomial_table_type = BinomialTable<s_size>;\n\
+    \    using number_type = typename binomial_table_type::number_type;\n    static\
+    \ constexpr s_type get_int(unsigned n, number_type k, unsigned bits = s_size)\
+    \ {\n        s_type res = 0;\n        const auto offset = bits;\n        s_type\
+    \ mask = ((s_type(1)<<bits)-1);\n        auto nn = n;\n        unsigned i = 0;\n\
+    \        /*\n        Binary search time B = ceil(\\log_2 w)\n        Expected\
+    \ length of consecutive zeros Ez = \\sum j binom(w-j, nn) / binom(w, nn), j=1..w-nn\n\
+    \        Expected length of consecutive ones  Eo = \\sum j binom(w-j, nn-j) /\
+    \ binom(w, nn), j=1..nn\n        Approximate simple function from Ez > B to be\
+    \ nn <= min(20, w-1)\n        Approximate simple function from Eo > B to be nn\
+    \ > min(40, w)\n        */\n        // TODO: When nn > 40, use binary search to\
+    \ find length of consecutive ones\n        for (; i < offset and nn > 20; i++)\
+    \ {\n            auto w = s_size - i;\n            if (nn == w) {\n          \
+    \      res |= ((s_type(1)<<nn)-1) << i;\n                return res & mask;\n\
+    \            }\n            if (nn == w-1) {\n                res |= (((s_type(1)<<w)-1)\
+    \ ^ (s_type(1) << k)) << i;\n                return res & mask;\n            }\n\
+    \            // Linear search\n            auto binom = binomial_table_type::binom(w-1,\
+    \ nn);\n            if (k >= binom) {\n                res |= s_type(1) << i;\n\
+    \                k -= binom;\n                nn--;\n            }\n        }\n\
+    \        for (; i < offset and nn > 1; i++) {\n            auto w = s_size - i;\n\
+    \            if (nn == w) {\n                res |= ((s_type(1)<<nn)-1) << i;\n\
+    \                return res & mask;\n            }\n            if (nn == w-1)\
+    \ {\n                res |= (((s_type(1)<<w)-1) ^ (s_type(1) << k)) << i;\n  \
+    \              return res & mask;\n            }\n            // Binary search\
+    \ to find length of consecutive zeros\n            auto l = i, r = offset+1;\n\
+    \            while (l+1<r) {\n                auto c = l+(r-l)/2;\n          \
+    \      if (k < binomial_table_type::binom(s_size-c, nn))\n                   \
+    \ l = c;\n                else \n                    r = c;\n            }\n \
+    \           if (l < offset) {\n                res |= s_type(1) << l;\n      \
+    \          k -= binomial_table_type::binom(s_size-l-1, nn);\n                nn--;\n\
+    \            }\n            i = l;\n        }\n        if (nn == 1) {\n      \
+    \      res |= s_type(1) << (s_size-1-k);\n            return res & mask;\n   \
+    \     }\n        if (nn == 0) \n            return res;\n        if (k >= binomial_table_type::binom(s_size-offset-1,\
+    \ nn))\n            res |= s_type(1) << offset;\n        return res & ((s_type(1)<<bits)-1);\n\
+    \    }\n    static constexpr bool get_bit(unsigned n, number_type k, unsigned\
+    \ offset) {\n        auto nn = n;\n        unsigned i = 0;\n        /*\n     \
+    \   Binary search time B = ceil(\\log_2 w)\n        Expected length of consecutive\
+    \ zeros Ez = \\sum j binom(w-j, nn) / binom(w, nn), j=1..w-nn\n        Expected\
+    \ length of consecutive ones  Eo = \\sum j binom(w-j, nn-j) / binom(w, nn), j=1..nn\n\
+    \        Approximate simple function from Ez > B to be nn <= min(20, w-1)\n  \
+    \      Approximate simple function from Eo > B to be nn > min(40, w)\n       \
+    \ */\n        // TODO: When nn > 40, use binary search to find length of consecutive\
+    \ ones\n        for (; i < offset and nn > 20; i++) {\n            auto w = s_size\
+    \ - i;\n            if (nn == w) {\n                return 1;\n            }\n\
+    \            if (nn == w-1) {\n                return offset != i+k;\n       \
+    \     }\n            // linear search\n            auto binom = binomial_table_type::binom(w-1,\
+    \ nn);\n            if (k >= binom) {\n                k -= binom;\n         \
+    \       nn--;\n            }\n        }\n        for (; i < offset and nn > 1;\
+    \ i++) {\n            auto w = s_size - i;\n            if (nn == w) {\n     \
+    \           return 1;\n            }\n            if (nn == w-1) {\n         \
+    \       return offset != i+k;\n            }\n            // binary search\n \
+    \           auto l = i, r = offset+1;\n            while (l+1<r) {\n         \
+    \       auto c = l+(r-l)/2;\n                if (k < binomial_table_type::binom(s_size-c,\
+    \ nn))\n                    l = c;\n                else \n                  \
+    \  r = c;\n            }\n            if (l < offset) {\n                k -=\
+    \ binomial_table_type::binom(s_size-l-1, nn);\n                nn--;\n       \
+    \     }\n            i = l;\n        }\n        if (nn == 1)\n            return\
+    \ offset == s_size-1-k;\n        if (nn == 0) \n            return 0;\n      \
+    \  return k >= binomial_table_type::binom(s_size-offset-1, nn);\n    }\n    static\
+    \ number_type get_number_for_popcnt(s_type bitmap, unsigned pc) {\n        number_type\
+    \ number = 0;\n        auto m = bitmap;\n        auto n = pc;\n        while (m)\
+    \ {\n            auto i = bm::ctz(m);\n            number += binomial_table_type::binom(s_size-i-1,\
+    \ n);\n            n--;\n            m ^= (s_type(1)<<i);\n        }\n       \
+    \ return number;\n    }\n    static std::pair<unsigned, number_type> get_pc_and_number(s_type\
+    \ bitmap) {\n        unsigned pc = bm::popcnt(bitmap);\n        auto number =\
+    \ pc <= s_size-pc ? get_number_for_popcnt(bitmap, pc) \n                     \
+    \                 : (number_size(pc)-1-get_number_for_popcnt(\n              \
+    \                              ~bitmap & ((s_type(1)<<s_size)-1), s_size-pc));\n\
+    \        return std::make_pair(pc, number);\n    }\n    static number_type number_size(unsigned\
+    \ n) {\n        return binomial_table_type::binom(s_size, n);\n    }\n    static\
+    \ struct number_bits_table {\n        std::array<unsigned, s_size+1> tb;\n   \
+    \     number_bits_table() {\n            for (unsigned i = 0; i <= s_size; i++)\n\
+    \                tb[i] = need_bits(number_size(i)-1);\n        }\n    } n_len;\n\
+    \    static unsigned number_bits(unsigned n) {\n        return n_len.tb[n];\n\
+    \    }\n\n};\n\ntemplate<class Def>\ntypename RRRTable<Def>::number_bits_table\
+    \ RRRTable<Def>::n_len;\n\ntemplate<unsigned SSize, class SType>\nstruct RRRDefinition\
+    \ {\n    static constexpr unsigned s_size = SSize;\n    using s_type = SType;\n\
+    \    static constexpr unsigned n_bits = need_bits(s_size);\n};\n\n/** \n * @brief\
+    \ Succinct bit vector in memory of B(n, u) + O(u log log n / log n) bits \n *\
+    \        where u is number of bits and n is number of 1s\n*/\ntemplate<\n    unsigned\
+    \ SSize = 63,\n    class SType = uint64_t,\n    class MapType = std::map<size_t,\
+    \ SType>\n    >\nstruct RRR {\n    using def = RRRDefinition<SSize, SType>;\n\
+    \    using s_type = typename def::s_type;\n    using rrr_table_type = RRRTable<def>;\n\
+    \    using map_type = MapType;\n    using ty_type = TY<size_t>;\n\n    map_type\
+    \ s_map;\n    ty_type heads;\n    Bitmap bm;\n\n    RRR() = default;\n    void\
+    \ set(size_t i, bool b) {\n        if (b)\n            s_map[i/def::s_size] |=\
+    \ (s_type)1<<(i%def::s_size);\n        else\n            s_map[i/def::s_size]\
+    \ &= ~((s_type)1<<(i%def::s_size));\n    }\n    void build() {\n        size_t\
+    \ h = 0;\n        size_t pq = 0;\n        for (auto qm : s_map) {\n          \
+    \  auto qidx = qm.first;\n            auto mask = qm.second;\n            while\
+    \ (pq < qidx) {\n                heads.push_back(h);\n                auto w =\
+    \ def::n_bits;\n                bm.resize(h+w);\n                bm.range_set(h,\
+    \ h+w, 0);\n                h += w;\n                pq++;\n            }\n  \
+    \          heads.push_back(h);\n            auto np = rrr_table_type::get_pc_and_number(mask);\n\
+    \            auto n = np.first;\n            auto p = np.second;\n           \
+    \ assert(rrr_table_type::get_int(n, p) == mask);\n            auto w = def::n_bits\
+    \ + rrr_table_type::number_bits(n);\n            bm.resize(h+w);\n           \
+    \ bm.range_set(h, h+def::n_bits, n);\n            bm.range_set(h+def::n_bits,\
+    \ h+w, p);\n            assert(rrr_table_type::get_int(\n                bm.range_get(h,\
+    \ h+def::n_bits), bm.range_get(h+def::n_bits, h+w)) == mask);\n            h +=\
+    \ w;\n            pq++;\n        }\n        s_map.clear();\n    }\n    bool get_bit(size_t\
+    \ si, unsigned off) const {\n        if (si >= heads.size())\n            return\
+    \ false;\n        auto a = heads.get(si);\n        auto b = a+def::n_bits;\n \
+    \       auto n = bm.range_get(a, b);\n        auto p = bm.range_get(b, b+rrr_table_type::number_bits(n));\n\
+    \        return rrr_table_type::get_bit(n, p, off);\n    }\n    s_type get_mask(size_t\
+    \ si) const {\n        if (si >= heads.size())\n            return 0;\n      \
+    \  auto a = heads.get(si);\n        auto b = a+def::n_bits;\n        auto n =\
+    \ bm.range_get(a, b);\n        auto p = bm.range_get(b, b+rrr_table_type::number_bits(n));\n\
+    \        return rrr_table_type::get_int(n, p);\n    }\n    uint64_t get_word(size_t\
+    \ si) const {\n        return get_mask(si);\n    }\n    size_t word_size() const\
+    \ {\n        return heads.size();\n    }\n    size_t size() const {\n        return\
+    \ heads.size() * def::s_size;\n    }\n    bool empty() const {\n        return\
+    \ size() == 0;\n    }\n\n    bool get(size_t i) const {\n        return get_bit(i/def::s_size,\
+    \ i%def::s_size);\n    }\n\n};\n\ntemplate<unsigned SSize, class SType, class\
+    \ MapType>\nstruct RankSelectTraits<RRR<SSize, SType, MapType>> {\n    using rank_select_type\
+    \ = BV<RRR<SSize, SType, MapType>, SSize>;\n};"
   dependsOn:
-  - include/mtl/fenwick_tree.hpp
   - include/mtl/bit_manip.hpp
-  - include/mtl/succinct/wavelet_matrix.hpp
   - include/mtl/succinct/bit_vector.hpp
   - include/mtl/succinct/select.hpp
   - include/mtl/succinct/bv.hpp
-  - include/mtl/succinct/rrr.hpp
   - include/mtl/succinct/ty.hpp
-  - include/mtl/succinct/binary_set.hpp
   isVerificationFile: false
-  path: include/mtl/ordinal_range_search.hpp
-  requiredBy: []
+  path: include/mtl/succinct/rrr.hpp
+  requiredBy:
+  - include/mtl/succinct/binary_set.hpp
+  - include/mtl/ordinal_range_search.hpp
   timestamp: '2023-04-12 22:25:51+09:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
   - test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
   - test/yosupo/rectangle_sum.test.cpp
   - test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
-documentation_of: include/mtl/ordinal_range_search.hpp
+documentation_of: include/mtl/succinct/rrr.hpp
 layout: document
 redirect_from:
-- /library/include/mtl/ordinal_range_search.hpp
-- /library/include/mtl/ordinal_range_search.hpp.html
-title: Ordinal Range Search
+- /library/include/mtl/succinct/rrr.hpp
+- /library/include/mtl/succinct/rrr.hpp.html
+title: Succinct bit vector in memory of B(n, u) + O(u log log n / log n) bits
 ---

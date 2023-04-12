@@ -57,8 +57,17 @@ data:
     path: include/mtl/sparse_table.hpp
     title: include/mtl/sparse_table.hpp
   - icon: ':heavy_check_mark:'
+    path: include/mtl/succinct/binary_set.hpp
+    title: include/mtl/succinct/binary_set.hpp
+  - icon: ':heavy_check_mark:'
     path: include/mtl/succinct/bit_vector.hpp
     title: include/mtl/succinct/bit_vector.hpp
+  - icon: ':heavy_check_mark:'
+    path: include/mtl/succinct/rrr.hpp
+    title: Succinct bit vector in memory of B(n, u) + O(u log log n / log n) bits
+  - icon: ':heavy_check_mark:'
+    path: include/mtl/succinct/select.hpp
+    title: include/mtl/succinct/select.hpp
   - icon: ':heavy_check_mark:'
     path: include/mtl/succinct/wavelet_matrix.hpp
     title: include/mtl/succinct/wavelet_matrix.hpp
@@ -215,9 +224,12 @@ data:
   isVerificationFile: false
   path: include/mtl/bit_manip.hpp
   requiredBy:
+  - include/mtl/succinct/select.hpp
   - include/mtl/succinct/wavelet_matrix.hpp
+  - include/mtl/succinct/binary_set.hpp
   - include/mtl/succinct/wavelet_tree.hpp
   - include/mtl/succinct/bit_vector.hpp
+  - include/mtl/succinct/rrr.hpp
   - include/mtl/ntt.hpp
   - include/mtl/bitmap.hpp
   - include/mtl/yft.hpp

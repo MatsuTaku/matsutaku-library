@@ -176,8 +176,26 @@ data:
   - name: include/mtl/succinct
     pages:
     - icon: ':heavy_check_mark:'
+      path: include/mtl/succinct/binary_set.hpp
+      title: include/mtl/succinct/binary_set.hpp
+    - icon: ':heavy_check_mark:'
       path: include/mtl/succinct/bit_vector.hpp
       title: include/mtl/succinct/bit_vector.hpp
+    - icon: ':heavy_check_mark:'
+      path: include/mtl/succinct/bv.hpp
+      title: include/mtl/succinct/bv.hpp
+    - icon: ':warning:'
+      path: include/mtl/succinct/int_vector.hpp
+      title: Integer Vector store ElementSize bits per element
+    - icon: ':heavy_check_mark:'
+      path: include/mtl/succinct/rrr.hpp
+      title: Succinct bit vector in memory of B(n, u) + O(u log log n / log n) bits
+    - icon: ':heavy_check_mark:'
+      path: include/mtl/succinct/select.hpp
+      title: include/mtl/succinct/select.hpp
+    - icon: ':heavy_check_mark:'
+      path: include/mtl/succinct/ty.hpp
+      title: 'TY: Store increasing sequence of integers.'
     - icon: ':heavy_check_mark:'
       path: include/mtl/succinct/wavelet_matrix.hpp
       title: include/mtl/succinct/wavelet_matrix.hpp
@@ -274,8 +292,26 @@ data:
   - name: test/succinct
     pages:
     - icon: ':warning:'
+      path: test/succinct/bit_vector_rank_test.cpp
+      title: test/succinct/bit_vector_rank_test.cpp
+    - icon: ':warning:'
+      path: test/succinct/bit_vector_select_test.cpp
+      title: test/succinct/bit_vector_select_test.cpp
+    - icon: ':warning:'
       path: test/succinct/bit_vector_test.cpp
       title: test/succinct/bit_vector_test.cpp
+    - icon: ':warning:'
+      path: test/succinct/rrr_rank_test.cpp
+      title: test/succinct/rrr_rank_test.cpp
+    - icon: ':warning:'
+      path: test/succinct/rrr_select_test.cpp
+      title: test/succinct/rrr_select_test.cpp
+    - icon: ':warning:'
+      path: test/succinct/rrr_test.cpp
+      title: test/succinct/rrr_test.cpp
+    - icon: ':warning:'
+      path: test/succinct/ty_test.cpp
+      title: test/succinct/ty_test.cpp
     - icon: ':warning:'
       path: test/succinct/wavelet_matrix_test.cpp
       title: test/succinct/wavelet_matrix_test.cpp
