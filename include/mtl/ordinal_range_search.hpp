@@ -79,6 +79,8 @@ struct ORS {
         S[i] = index_of_lower_bound_y(y);
         SW[i] = {S[i], w};
       }
+      ps.clear();
+      ps.shrink_to_fit();
       wm = wm_type(S.begin(), S.end());
       rsq = range_sum_type(wm.n * (wm.h+1));
       for (int k = wm.h-1; k >= 0; k--) {

@@ -11,7 +11,7 @@ public:
     using value_type = uint32_t;
 private:
     using bitmap_type = BitmapType;
-    using rs_type = typename bitmap_type::rs_type;
+    using rs_type = typename RankSelectTraits<bitmap_type>::rank_select_type;
     bitmap_type bm_;
     rs_type rs_;
 public:
@@ -67,7 +67,7 @@ public:
     static constexpr value_type ValueMax = std::numeric_limits<value_type>::max();
 private:
     using bitmap_type = BitmapType;
-    using rs_type = typename bitmap_type::rs_type;
+    using rs_type = typename RankSelectTraits<bitmap_type>::rank_select_type;
     bitmap_type bm_;
     rs_type rs_;
     std::vector<value_type> values_;
@@ -103,7 +103,8 @@ public:
         std::sort(values_.begin(), values_.end());
         for (size_t i = 0; i < values_.size(); i++)
             bm_.set((unsigned long long)values_[i] + i, 1);
-        values_ = {};
+        values_.clear();
+        values_.shrink_to_fit();
         bm_.build();
         rs_.build(&bm_);
     }

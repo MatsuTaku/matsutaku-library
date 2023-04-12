@@ -9,13 +9,15 @@
 #include <queue>
 #include <tuple>
 
-template<typename T>
+template<class T, class BitmapType = Bitmap>
 struct WaveletMatrix {
   static constexpr unsigned H = 64 - bm::clz(std::numeric_limits<T>::max());
 
   size_t n,h;
-  Bitmap B;
-  Bitmap::rs_type rs_b;
+  using bitmap_type = BitmapType;
+  bitmap_type B;
+  using rs_type = typename RankSelectTraits<bitmap_type>::rank_select_type;
+  rs_type rs_b;
   std::vector<size_t> RO,Z;
 
   WaveletMatrix() = default;
@@ -58,6 +60,7 @@ struct WaveletMatrix {
       }
       assert(j == 0);
     }
+    B.build();
     rs_b.build(&B);
     for (size_t i = 0; i <= h; i++)
       RO[i] = rs_b.rank1(n * i);
@@ -123,10 +126,10 @@ struct WaveletMatrix {
   }
 
   inline size_t _parent0(size_t level, size_t i) const {
-    return rs_b.select<0>(i - n - RO[level]);
+    return rs_b.select0(i - n - RO[level]);
   }
   inline size_t _parent1(size_t level, size_t i) const {
-    return rs_b.select<1>(i - Z[h-1-level] + RO[level]);
+    return rs_b.select1(i - Z[h-1-level] + RO[level]);
   }
   inline size_t parent(size_t level, size_t i, bool bit) const {
     return !bit ? _parent0(level, i) : _parent1(level, i);

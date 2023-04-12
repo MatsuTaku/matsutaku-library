@@ -231,7 +231,6 @@ struct RRR {
     using rrr_table_type = RRRTable<def>;
     using map_type = MapType;
     using ty_type = TY<size_t>;
-    using rs_type = BV<RRR, def::s_size>;
 
     map_type s_map;
     ty_type heads;
@@ -309,4 +308,9 @@ struct RRR {
         return get_bit(i/def::s_size, i%def::s_size);
     }
 
+};
+
+template<unsigned SSize, class SType, class MapType>
+struct RankSelectTraits<RRR<SSize, SType, MapType>> {
+    using rank_select_type = BV<RRR<SSize, SType, MapType>, SSize>;
 };

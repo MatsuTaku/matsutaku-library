@@ -13,7 +13,6 @@
 struct Bitmap {
   using value_type = bool;
   using W = uint64_t;
-  using rs_type = BV<Bitmap, 64>;
   std::vector<W> arr;
   size_t sz;
   static constexpr size_t required_word_size(size_t n) {
@@ -300,11 +299,17 @@ struct Bitmap {
   size_t word_size() const {
     return arr.size();
   }
+  // using rank_select_type = BV<Bitmap, 64>;
+};
+
+template<>
+struct RankSelectTraits<Bitmap> {
+  using rank_select_type = BV<Bitmap, 64>;
 };
 
 struct BitVector {
   Bitmap bm;
-  using rs_type = typename Bitmap::rs_type;
+  using rs_type = typename RankSelectTraits<Bitmap>::rank_select_type;
   rs_type rs_support;
   // std::vector<uint64_t> _r, _s, _zs;
 

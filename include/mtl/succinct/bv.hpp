@@ -5,20 +5,23 @@
 #include <bitset>
 #include <iostream>
 
-#if __cplusplus >= 202002L
+#if __cpp_concepts >= 202002L
 #include <concepts>
 template<class T>
-concept bool isBitVec = requires(T t) {
-  {t.size()} -> std::same_as<size_t>;
-  {t.word_size()} -> std::same_as<size_t>;
-  {t.get_word(0)} -> std::convertible_to<uint64_t>;
+concept ConstructableBV = requires(T t, size_t s) {
+  { t.size() } -> std::same_as<size_t>;
+  { t.word_size() } -> std::same_as<size_t>;
+  { t.get_word(s) } -> std::convertible_to<uint64_t>;
 };
 #endif
 
-template<class BitVec, unsigned WordSize>
-#if __cplusplus >= 202002L
-requires isBitVec<BitVec>
+template<
+#if __cpp_concepts >= 202002L
+  ConstructableBV
+#else
+  class 
 #endif
+    BitVec, unsigned WordSize>
 struct BV {
   static_assert(WordSize <= 64, "WordSize must be <= 64");
   static constexpr unsigned S = WordSize;
@@ -178,3 +181,6 @@ struct BV {
 
 template<class BitVec, unsigned WordSize>
 typename BV<BitVec, WordSize>::l_block_cap_mask BV<BitVec, WordSize>::l_block_cap;
+
+template<class T>
+struct RankSelectTraits : std::false_type {};
