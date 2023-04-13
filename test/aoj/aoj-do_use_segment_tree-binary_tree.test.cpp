@@ -59,24 +59,28 @@ int main() {
     T.add_edge(s,e);
   }
   T.build();
-  vector<int> X(n);
+  vector<int> X(n*2);
   for (int i = 0; i < n; i++)
-    X[T.in[i]] = W[i];
+    X[T.in[i]] = X[n+n-1-T.in[i]] = W[i];
   LazySegmentTree<M,A> RQ(X.begin(), X.end());
   auto range_update = [&](int l, int r, int v) {
     RQ.update(l,r,v);
+    RQ.update(n+n-r, n+n-l, v);
   };
   auto query = [&](int l, int r) {
     return RQ.query(l,r);
+  };
+  auto reverse_query = [&](int l, int r) {
+    return RQ.query(n+n-r, n+n-l);
   };
   for (int i = 0; i < q; i++) {
     int t; cin>>t;
     if (t == 1) {
       int a,b,c; cin>>a>>b>>c; a--; b--;
-      T.update(a,b,c,range_update);
+      T.update(a,b,range_update,c);
     } else if (t == 2) {
       int a,b,c; cin>>a>>b>>c; a--; b--;
-      cout << T.query<M>(a,b,query).v << endl;
+      cout << T.query<M>(a,b,query,reverse_query).v << endl;
     }
   }
 }
