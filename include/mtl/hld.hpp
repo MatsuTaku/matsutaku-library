@@ -3,9 +3,9 @@
 #include <vector>
 
 struct Hld {
-  int n;
+  int r,n;
   std::vector<std::vector<int>> edge;
-  std::vector<int> size, in, out, head, rev, par, depth;
+  std::vector<int> size, in, out, head, rev, par, depth, clen;
  private:
   void dfs_sz(int v, int p, int d) {
     par[v] = p;
@@ -23,11 +23,13 @@ struct Hld {
   void dfs_hld(int v, int p, int& times) {
     in[v] = times++;
     rev[in[v]] = v;
-    if (edge[v][0] != p) {
+    clen[v] = 1;
+    if (!edge[v].empty() and edge[v][0] != p) {
       int t = edge[v][0];
       head[t] = head[v];
       depth[t] = depth[v];
       dfs_hld(t, v, times);
+      clen[v] += clen[t];
     }
     for (size_t i = 1; i < edge[v].size(); i++) {
       int t = edge[v][i];
@@ -40,7 +42,7 @@ struct Hld {
   }
 
  public:
-  Hld(int n) : n(n), edge(n), size(n), in(n), out(n), head(n), rev(n), par(n), depth(n) {}
+  Hld(int n) : r(0), n(n), edge(n), size(n), in(n), out(n), head(n), rev(n), par(n), depth(n), clen(n) {}
 
   inline void add_edge(int a, int b) {
     edge[a].push_back(b);
@@ -48,6 +50,7 @@ struct Hld {
   }
 
   void build(int root = 0) {
+    r = root;
     dfs_sz(root, -1, 0);
     int t = 0;
     head[root] = root;
@@ -67,38 +70,54 @@ struct Hld {
     return in[a] < in[b] ? a : b;
   }
 
-  template<class T, typename Query,
-      bool INCLUDE_LCA = true>
-  T query(int u, int v, Query Q) const {
-    if (depth[u] > depth[v]) std::swap(u,v);
+ private:
+  template<class T, class Query, class ReverseQuery>
+  T _query(int u, int v, Query Q, ReverseQuery RQ, bool include_lca) const {
     T um, vm;
-    auto up = [&](int& v, T& ret) {
-      ret = Q(in[head[v]], in[v]+1) * ret;
+    auto u_up = [&]() {
+      um = um * (T)RQ(in[head[u]], in[u]+1);
+      u = par[head[u]];
+    };
+    auto v_up = [&]() {
+      vm = (T)Q(in[head[v]], in[v]+1) * vm;
       v = par[head[v]];
     };
-    while (depth[u] < depth[v]) {
-      up(v, vm);
-    }
+    while (depth[u] > depth[v])
+      u_up();
+    while (depth[u] < depth[v])
+      v_up();
     while (head[u] != head[v]) {
-      up(u, um);
-      up(v, vm);
+      u_up();
+      v_up();
     }
-    if (in[u] > in[v]) {
-      std::swap(u,v);
-      std::swap(um,vm);
+    if (in[u] < in[v]) {
+      int l = include_lca ? in[u] : in[u]+1;
+      return um * (T)Q(l, in[v]+1) * vm;
+    } else {
+      int l = include_lca ? in[v] : in[v]+1;
+      return um * (T)RQ(l, in[u]+1) * vm;
     }
-    int l = INCLUDE_LCA ? in[u] : in[u]+1;
-    return ~um * Q(l, in[v]+1) * vm;
   }
 
-  template<typename T, typename Set>
-  void set(int i, T&& val, Set S) const {
+ public:
+  template<class T, class Query, class ReverseQuery>
+  T query(int u, int v, Query Q, ReverseQuery RQ, bool include_lca = true) const {
+    return _query<T>(u, v, Q, RQ, include_lca);
+  }
+
+  /// Query for commutative monoid
+  template<class T, class Query>
+  T query(int u, int v, Query Q, bool include_lca = true) const {
+    return _query<T>(u, v, Q, Q, include_lca);
+  }
+
+  template<class Set, class T>
+  void set(int i, Set S, T&& val) const {
     S(in[i], std::forward<T>(val));
   }
 
-  template<typename T, typename Upd,
-      bool INCLUDE_LCA = true>
-  void update(int u, int v, const T& val, Upd U) const {
+  template<typename Upd, typename T>
+  void update(int u, int v, Upd U, const T& val, bool include_lca = true) const {
     if (depth[u] > depth[v]) std::swap(u,v);
     auto up = [&](int& v) {
       U(in[head[v]], in[v]+1, val);
@@ -112,7 +131,36 @@ struct Hld {
       up(v);
     }
     if (in[u] > in[v]) std::swap(u,v);
-    int l = INCLUDE_LCA ? in[u] : in[u]+1;
+    int l = include_lca ? in[u] : in[u]+1;
     U(l, in[v]+1, val);
+  }
+
+public:
+  template<class Add, class Sum>
+  void subtree_build(Add A, Sum S) const {
+    dfs_subtree_build(A, S, r);
+  }
+ private:
+  template<class Add, class Sum>
+  void dfs_subtree_build(Add A, Sum S, int u) const {
+    for (size_t i = 0; i < edge[u].size(); i++) {
+      auto v = edge[u][i];
+      if (v == par[u]) continue;
+      dfs_subtree_build(A, S, v);
+      if (i > 0)
+        A(in[u], S(in[v], in[v]+clen[v]));
+    }
+  }
+ public:
+  template<class T, class Sum>
+  T subtree_sum(int r, Sum S) const {
+    return (T)S(in[r], in[r]+clen[r]);
+  }
+  template<class T, class Add>
+  void subtree_point_add(int u, Add A, const T& val) const {
+    while (u != -1) {
+      A(in[u], val);
+      u = par[head[u]];
+    }
   }
 };

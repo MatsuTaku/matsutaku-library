@@ -1,25 +1,13 @@
 #pragma once
 #include "hld.hpp"
+#include "monoid.hpp"
 #include <cstddef>
 #include <cassert>
-#if __cplusplus >= 202002L
-#include <concepts>
-
-template<typename M>
-concept SegmentHldMonoid = requires (M m) {
-  {m * m} -> std::same_as<M>;
-  {~m} -> std::same_as<M>;
-};
-template<typename A, typename M>
-concept SegmentHldOperatorMonoid = requires (A a, M m) {
-  {a()} -> std::same_as<bool>;
-  {a *= a} -> std::convertible_to<A>;
-  {a.act(m, 1)} -> std::same_as<M>;
-};
-#endif
 
 template<typename Node>
 class SegmentHldBase {
+ public:
+  using monoid_type = typename Node::monoid_type;
  protected:
   int n_;
   std::vector<Node> tree_;
@@ -67,31 +55,46 @@ class SegmentHldBase {
   }
   template<typename InputIt>
   explicit SegmentHldBase(const Hld& tree, InputIt begin, InputIt end) : SegmentHldBase(tree) {
-      int i = 0;
-      for (auto it = begin; it != end; ++it, ++i) {
-        tree_[target_[i]].m = *it;
-      }
-      for (int i = (int)tree_.size()-1; i >= 0; i--) {
-        if (tree_[i].size() == 1) continue;
-        tree_[i].m = tree_[tree_[i].lc].m * tree_[tree_[i].rc].m;
-      }
+    using iterator_value_type = typename std::iterator_traits<InputIt>::value_type;
+    static_assert(std::is_convertible<iterator_value_type, monoid_type>::value, 
+                  "SegmentHldBaseInputIt must be convertible to Monoid");
+    int i = 0;
+    for (auto it = begin; it != end; ++it, ++i) {
+      tree_[target_[i]].set(monoid_type(*it));
     }
+    for (int i = (int)tree_.size()-1; i >= 0; i--) {
+      if (tree_[i].size() == 1) continue;
+      tree_[i].take(tree_[tree_[i].lc], tree_[tree_[i].rc]);
+    }
+  }
 };
 
 template<typename M>
 struct SegmentHldNode {
   using monoid_type = M;
   int l,r,p=-1,lc=-1,rc=-1;
-  M m;
+  monoid_type m, rm;
   int size() const {
     return r-l;
   }
+  void set(const monoid_type& monoid) {
+    m = rm = monoid;
+  }
+  void take(const SegmentHldNode& lhs, const SegmentHldNode& rhs) {
+    m = lhs.m * rhs.m;
+    rm = rhs.rm * lhs.rm;
+  }
 };
-template<typename M>
-class SegmentHld : private SegmentHldBase<SegmentHldNode<M>> {
-#if __cplusplus >= 202002L
-  static_assert(SegmentHldMonoid<M>);
+template<
+#if __cpp_concepts >= 202002L
+  IsMonoid
+#else
+  class
 #endif
+    M>
+class SegmentHld : private SegmentHldBase<SegmentHldNode<M>> {
+ public:
+  using monoid_type = M; 
  private:
   using Node = SegmentHldNode<M>;
   using Base = SegmentHldBase<Node>;
@@ -102,29 +105,48 @@ class SegmentHld : private SegmentHldBase<SegmentHldNode<M>> {
   explicit SegmentHld(const Hld& tree) : Base(tree) {}
   template<typename InputIt>
   explicit SegmentHld(const Hld& tree, InputIt begin, InputIt end) : Base(tree, begin, end) {}
-  template<typename T>
-  void set(int index, T&& v) {
+  const monoid_type& get(int index) const {
+    return tree_[target_[index]].m;
+  }
+  const monoid_type& get_reversed(int index) const {
+    return tree_[target_[index]].rm;
+  }
+  template<class... Args>
+  void set(int index, Args&&... args) {
     int i = target_[index];
-    tree_[i].m = std::forward<T>(v);
+    tree_[i].set(M(std::forward<Args>(args)...));
     i = tree_[i].p;
     while (i != -1) {
-      tree_[i].m = tree_[tree_[i].lc].m * tree_[tree_[i].rc].m;
+      auto lc = tree_[i].lc, rc = tree_[i].rc;
+      tree_[i].take(tree_[lc], tree_[rc]);
       i = tree_[i].p;
     }
   }
   M query(int l, int r) const {
-    return _query(l,r,0);
+    return _query<0>(l,r,0);
+  }
+  M reverse_query(int l, int r) const {
+    return _query<1>(l,r,0);
   }
  private:
+  template<bool Reverse>
   M _query(int l, int r, int u) const {
     if (u == -1)
       return M();
     auto _l = tree_[u].l, _r = tree_[u].r;
     if (_r <= l or r <= _l)
       return M();
-    if (l <= _l and _r <= r)
-      return tree_[u].m;
-    return _query(l, r, tree_[u].lc) * _query(l, r, tree_[u].rc);
+    if (l <= _l and _r <= r) {
+      if constexpr (!Reverse)
+        return tree_[u].m;
+      else
+        return tree_[u].rm;
+    }
+    auto lc = tree_[u].lc, rc = tree_[u].rc;
+    if constexpr (!Reverse)
+      return _query<0>(l, r, lc) * _query<0>(l, r, rc);
+    else
+      return _query<1>(l, r, rc) * _query<1>(l, r, lc);
   }
 };
 
@@ -135,11 +157,13 @@ struct LazySegmentHldNode : SegmentHldNode<M> {
   A a;
 };
 template<typename M, typename A>
-class LazySegmentHld : private SegmentHldBase<LazySegmentHldNode<M,A>> {
-#if __cplusplus >= 202002L
-  static_assert(SegmentHldMonoid<M>);
-  static_assert(SegmentHldOperatorMonoid<A, M>);
+#if __cpp_concepts >= 202002L
+requires IsMonoid<M> && IsOperatorMonoid<A, M>
 #endif
+class LazySegmentHld : private SegmentHldBase<LazySegmentHldNode<M,A>> {
+ public:
+  using monoid_type = M;
+  using operator_monoid_type = A;
  private:
   using Node = LazySegmentHldNode<M,A>;
   using Base = SegmentHldBase<Node>;
@@ -152,14 +176,16 @@ class LazySegmentHld : private SegmentHldBase<LazySegmentHldNode<M,A>> {
   explicit LazySegmentHld(const Hld& tree, InputIt begin, InputIt end) : Base(tree, begin, end) {}
  private:
   inline void _propagate(int u) {
-    auto& a = tree_[u].a;
+    auto& n = tree_[u];
+    auto& a = n.a;
     if (!a()) return;
-    tree_[u].m = a.act(tree_[u].m, tree_[u].size());
-    if (tree_[u].size() > 1) {
-      tree_[tree_[u].lc].a *= a;
-      tree_[tree_[u].rc].a *= a;
+    n.m = a.act(n.m, n.size());
+    n.rm = a.act(n.rm, n.size());
+    if (n.size() > 1) {
+      tree_[n.lc].a *= a;
+      tree_[n.rc].a *= a;
     }
-    tree_[u].a = A();
+    n.a = A();
   }
  public:
   template<typename T>
@@ -175,19 +201,23 @@ class LazySegmentHld : private SegmentHldBase<LazySegmentHldNode<M,A>> {
     for (int i = (int)ids.size()-1; i >= 0; i--) {
       _propagate(ids[i]);
     }
-    tree_[ids[0]].m = std::forward<T>(v);
+    tree_[ids[0]].set(monoid_type(std::forward<T>(v)));
     for (int i = 1; i < ids.size(); i++) {
       u = ids[i];
       auto lc = tree_[u].lc, rc = tree_[u].rc;
       auto ac = lc ^ rc ^ ids[i-1];
       _propagate(ac);
-      tree_[u].m = tree_[lc].m * tree_[rc].m;
+      tree_[u].take(tree_[lc], tree_[rc]);
     }
   }
   M query(int l, int r) {
-    return _query(l,r,0);
+    return _query<0>(l,r,0);
+  }
+  M reverse_query(int l, int r) {
+    return _query<1>(l,r,0);
   }
  private:
+  template<bool Reverse>
   M _query(int l, int r, int u) {
     if (u == -1)
       return M();
@@ -196,9 +226,15 @@ class LazySegmentHld : private SegmentHldBase<LazySegmentHldNode<M,A>> {
       return M();
     _propagate(u);
     if (l <= _l and _r <= r) {
-      return tree_[u].m;
+      if constexpr (!Reverse)
+        return tree_[u].m;
+      else
+        return tree_[u].rm;
     } else {
-      return _query(l, r, tree_[u].lc) * _query(l, r, tree_[u].rc);
+      if constexpr (!Reverse)
+        return _query<0>(l, r, tree_[u].lc) * _query<0>(l, r, tree_[u].rc);
+      else
+        return _query<1>(l, r, tree_[u].rc) * _query<1>(l, r, tree_[u].lc);
     }
   }
  public:
@@ -223,7 +259,7 @@ class LazySegmentHld : private SegmentHldBase<LazySegmentHldNode<M,A>> {
         auto lc = tree_[u].lc, rc = tree_[u].rc;
         _update(l, r, v, lc);
         _update(l, r, v, rc);
-        tree_[u].m = tree_[lc].m * tree_[rc].m;
+        tree_[u].take(tree_[lc], tree_[rc]);
       }
     }
   }
