@@ -5,6 +5,9 @@ data:
     path: include/mtl/hld.hpp
     title: include/mtl/hld.hpp
   - icon: ':question:'
+    path: include/mtl/modular.hpp
+    title: include/mtl/modular.hpp
+  - icon: ':question:'
     path: include/mtl/monoid.hpp
     title: include/mtl/monoid.hpp
   - icon: ':question:'
@@ -12,16 +15,16 @@ data:
     title: include/mtl/segment_hld.hpp
   _extendedRequiredBy: []
   _extendedVerifiedWith: []
-  _isVerificationFailed: false
+  _isVerificationFailed: true
   _pathExtension: cpp
-  _verificationStatusIcon: ':heavy_check_mark:'
+  _verificationStatusIcon: ':x:'
   attributes:
     '*NOT_SPECIAL_COMMENTS*': ''
-    PROBLEM: https://onlinejudge.u-aizu.ac.jp/problems/2450
+    PROBLEM: https://judge.yosupo.jp/problem/vertex_set_path_composite
     links:
-    - https://onlinejudge.u-aizu.ac.jp/problems/2450
-  bundledCode: "#line 1 \"test/aoj/aoj-do_use_segment_tree-balanced_tree.test.cpp\"\
-    \n#define PROBLEM \"https://onlinejudge.u-aizu.ac.jp/problems/2450\"\r\n#line\
+    - https://judge.yosupo.jp/problem/vertex_set_path_composite
+  bundledCode: "#line 1 \"test/yosupo/vertex_set_path_composite.test.cpp\"\n#define\
+    \ PROBLEM \"https://judge.yosupo.jp/problem/vertex_set_path_composite\"\n#line\
     \ 2 \"include/mtl/hld.hpp\"\n#include <cstddef>\n#include <vector>\n\nstruct Hld\
     \ {\n  int r,n;\n  std::vector<std::vector<int>> edge;\n  std::vector<int> size,\
     \ in, out, head, rev, par, depth, clen;\n private:\n  void dfs_sz(int v, int p,\
@@ -191,75 +194,109 @@ data:
     \ else {\r\n      _propagate(u);\r\n      if (tree_[u].size() > 1) {\r\n     \
     \   auto lc = tree_[u].lc, rc = tree_[u].rc;\r\n        _update(l, r, v, lc);\r\
     \n        _update(l, r, v, rc);\r\n        tree_[u].take(tree_[lc], tree_[rc]);\r\
-    \n      }\r\n    }\r\n  }\r\n};\n#line 4 \"test/aoj/aoj-do_use_segment_tree-balanced_tree.test.cpp\"\
-    \n#include <bits/stdc++.h>\r\n\r\nusing namespace std;\r\n\r\nconstexpr int MINF\
-    \ = -1e9;\r\nstruct M {\r\n  int l,r,sum,v;\r\n  M() : v(MINF) {}\r\n  M(int w)\
-    \ : l(w),r(w),sum(w),v(w) {}\r\n  friend M operator*(const M& lhs, const M& rhs)\
-    \ {\r\n    if (lhs.v == MINF) return rhs;\r\n    if (rhs.v == MINF) return lhs;\r\
-    \n    M ret;\r\n    ret.l = max(lhs.l, lhs.sum + rhs.l);\r\n    ret.r = max(lhs.r\
-    \ + rhs.sum, rhs.r);\r\n    ret.v = max({lhs.v, lhs.r + rhs.l, rhs.v});\r\n  \
-    \  ret.sum = lhs.sum + rhs.sum;\r\n    return ret;\r\n  }\r\n};\r\nM rev(M m)\
-    \ {\r\n  M ret = m;\r\n  swap(ret.l, ret.r);\r\n  return ret;\r\n}\r\nstruct A\
-    \ {\r\n  int v;\r\n  bool f;\r\n  A() : f(false) {}\r\n  A(int v) : v(v), f(true)\
-    \ {}\r\n  bool operator()() const { return f; }\r\n  A& operator*=(const A& r)\
-    \ {\r\n    if (r.f) *this = r;\r\n    return *this;\r\n  }\r\n  M act(const M&\
-    \ m,int sz) const {\r\n    assert(f);\r\n    M ret;\r\n    ret.sum = v*sz;\r\n\
-    \    if (v >= 0) {\r\n      ret.l = ret.r = ret.v = ret.sum;\r\n    } else {\r\
-    \n      ret.l = ret.r = ret.v = v;\r\n    }\r\n    return ret;\r\n  }\r\n};\r\n\
-    \r\nint main() {\r\n  int n,q; cin>>n>>q;\r\n  vector<int> W(n);\r\n  for (auto&\
-    \ w:W) cin>>w;\r\n  Hld T(n);\r\n  for (int i = 0; i < n-1; i++) {\r\n    int\
-    \ s,e; cin>>s>>e; s--; e--;\r\n    T.add_edge(s,e);\r\n  }\r\n  T.build();\r\n\
-    \  vector<int> X(n);\r\n  for (int i = 0; i < n; i++) X[T.in[i]] = W[i];\r\n \
-    \ LazySegmentHld<M,A> RQ(T, X.begin(), X.end());\r\n  auto range_update = [&](int\
-    \ l, int r, int v) {\r\n    RQ.update(l,r,v);\r\n  };\r\n  auto query = [&](int\
-    \ l, int r) {\r\n    return RQ.query(l,r);\r\n  };\r\n  auto r_query = [&](int\
-    \ l, int r) {\r\n    return RQ.reverse_query(l,r);\r\n  };\r\n  for (int i = 0;\
-    \ i < q; i++) {\r\n    int t; cin>>t;\r\n    if (t == 1) {\r\n      int a,b,c;\
-    \ cin>>a>>b>>c; a--; b--;\r\n      T.update(a,b,range_update, c);\r\n    } else\
-    \ if (t == 2) {\r\n      int a,b,c; cin>>a>>b>>c; a--; b--;\r\n      cout << T.query<M>(a,b,query,r_query).v\
-    \ << endl;\r\n    }\r\n  }\r\n}\n"
-  code: "#define PROBLEM \"https://onlinejudge.u-aizu.ac.jp/problems/2450\"\r\n#include\
-    \ \"../../include/mtl/hld.hpp\"\r\n#include \"../../include/mtl/segment_hld.hpp\"\
-    \r\n#include <bits/stdc++.h>\r\n\r\nusing namespace std;\r\n\r\nconstexpr int\
-    \ MINF = -1e9;\r\nstruct M {\r\n  int l,r,sum,v;\r\n  M() : v(MINF) {}\r\n  M(int\
-    \ w) : l(w),r(w),sum(w),v(w) {}\r\n  friend M operator*(const M& lhs, const M&\
-    \ rhs) {\r\n    if (lhs.v == MINF) return rhs;\r\n    if (rhs.v == MINF) return\
-    \ lhs;\r\n    M ret;\r\n    ret.l = max(lhs.l, lhs.sum + rhs.l);\r\n    ret.r\
-    \ = max(lhs.r + rhs.sum, rhs.r);\r\n    ret.v = max({lhs.v, lhs.r + rhs.l, rhs.v});\r\
-    \n    ret.sum = lhs.sum + rhs.sum;\r\n    return ret;\r\n  }\r\n};\r\nM rev(M\
-    \ m) {\r\n  M ret = m;\r\n  swap(ret.l, ret.r);\r\n  return ret;\r\n}\r\nstruct\
-    \ A {\r\n  int v;\r\n  bool f;\r\n  A() : f(false) {}\r\n  A(int v) : v(v), f(true)\
-    \ {}\r\n  bool operator()() const { return f; }\r\n  A& operator*=(const A& r)\
-    \ {\r\n    if (r.f) *this = r;\r\n    return *this;\r\n  }\r\n  M act(const M&\
-    \ m,int sz) const {\r\n    assert(f);\r\n    M ret;\r\n    ret.sum = v*sz;\r\n\
-    \    if (v >= 0) {\r\n      ret.l = ret.r = ret.v = ret.sum;\r\n    } else {\r\
-    \n      ret.l = ret.r = ret.v = v;\r\n    }\r\n    return ret;\r\n  }\r\n};\r\n\
-    \r\nint main() {\r\n  int n,q; cin>>n>>q;\r\n  vector<int> W(n);\r\n  for (auto&\
-    \ w:W) cin>>w;\r\n  Hld T(n);\r\n  for (int i = 0; i < n-1; i++) {\r\n    int\
-    \ s,e; cin>>s>>e; s--; e--;\r\n    T.add_edge(s,e);\r\n  }\r\n  T.build();\r\n\
-    \  vector<int> X(n);\r\n  for (int i = 0; i < n; i++) X[T.in[i]] = W[i];\r\n \
-    \ LazySegmentHld<M,A> RQ(T, X.begin(), X.end());\r\n  auto range_update = [&](int\
-    \ l, int r, int v) {\r\n    RQ.update(l,r,v);\r\n  };\r\n  auto query = [&](int\
-    \ l, int r) {\r\n    return RQ.query(l,r);\r\n  };\r\n  auto r_query = [&](int\
-    \ l, int r) {\r\n    return RQ.reverse_query(l,r);\r\n  };\r\n  for (int i = 0;\
-    \ i < q; i++) {\r\n    int t; cin>>t;\r\n    if (t == 1) {\r\n      int a,b,c;\
-    \ cin>>a>>b>>c; a--; b--;\r\n      T.update(a,b,range_update, c);\r\n    } else\
-    \ if (t == 2) {\r\n      int a,b,c; cin>>a>>b>>c; a--; b--;\r\n      cout << T.query<M>(a,b,query,r_query).v\
-    \ << endl;\r\n    }\r\n  }\r\n}"
+    \n      }\r\n    }\r\n  }\r\n};\n#line 2 \"include/mtl/modular.hpp\"\n#include\
+    \ <iostream>\n#line 4 \"include/mtl/modular.hpp\"\n\ntemplate <int MOD>\nclass\
+    \ Modular {\n private:\n  unsigned int val_;\n\n public:\n  static constexpr unsigned\
+    \ int mod() { return MOD; }\n  template<class T>\n  static constexpr unsigned\
+    \ int safe_mod(T v) {\n    auto x = (long long)(v%(long long)mod());\n    if (x\
+    \ < 0) x += mod();\n    return (unsigned int) x;\n  }\n\n  constexpr Modular()\
+    \ : val_(0) {}\n  template<class T,\n      std::enable_if_t<\n          std::is_integral<T>::value\
+    \ && std::is_unsigned<T>::value\n      > * = nullptr>\n  constexpr Modular(T v)\
+    \ : val_(v%mod()) {}\n  template<class T,\n      std::enable_if_t<\n         \
+    \ std::is_integral<T>::value && !std::is_unsigned<T>::value\n      > * = nullptr>\n\
+    \  constexpr Modular(T v) : val_(safe_mod(v)) {}\n\n  constexpr unsigned int val()\
+    \ const { return val_; }\n  constexpr Modular& operator+=(Modular x) {\n    val_\
+    \ += x.val();\n    if (val_ >= mod()) val_ -= mod();\n    return *this;\n  }\n\
+    \  constexpr Modular operator-() const { return {mod() - val_}; }\n  constexpr\
+    \ Modular& operator-=(Modular x) {\n    val_ += mod() - x.val();\n    if (val_\
+    \ >= mod()) val_ -= mod();\n    return *this;\n  }\n  constexpr Modular& operator*=(Modular\
+    \ x) {\n    auto v = (long long) val_ * x.val();\n    if (v >= mod()) v %= mod();\n\
+    \    val_ = v;\n    return *this;\n  }\n  constexpr Modular pow(long long p) const\
+    \ {\n    assert(p >= 0);\n    Modular t = 1;\n    Modular u = *this;\n    while\
+    \ (p) {\n      if (p & 1)\n        t *= u;\n      u *= u;\n      p >>= 1;\n  \
+    \  }\n    return t;\n  }\n  friend constexpr Modular pow(Modular x, long long\
+    \ p) {\n    return x.pow(p);\n  }\n  constexpr Modular inv() const { return pow(mod()-2);\
+    \ }\n  constexpr Modular& operator/=(Modular x) { return *this *= x.inv(); }\n\
+    \  constexpr Modular operator+(Modular x) const { return Modular(*this) += x;\
+    \ }\n  constexpr Modular operator-(Modular x) const { return Modular(*this) -=\
+    \ x; }\n  constexpr Modular operator*(Modular x) const { return Modular(*this)\
+    \ *= x; }\n  constexpr Modular operator/(Modular x) const { return Modular(*this)\
+    \ /= x; }\n  constexpr Modular& operator++() { return *this += 1; }\n  constexpr\
+    \ Modular operator++(int) { Modular c = *this; ++(*this); return c; }\n  constexpr\
+    \ Modular& operator--() { return *this -= 1; }\n  constexpr Modular operator--(int)\
+    \ { Modular c = *this; --(*this); return c; }\n\n  constexpr bool operator==(Modular\
+    \ x) const { return val() == x.val(); }\n  constexpr bool operator!=(Modular x)\
+    \ const { return val() != x.val(); }\n\n  friend std::ostream& operator<<(std::ostream&\
+    \ os, const Modular& x) {\n    return os << x.val();\n  }\n  friend std::istream&\
+    \ operator>>(std::istream& is, Modular& x) {\n    return is >> x.val_;\n  }\n\n\
+    };\n\nusing Modular998244353 = Modular<998244353>;\nusing Modular1000000007 =\
+    \ Modular<(int)1e9+7>;\n\n#include <array>\n\nnamespace math {\n\nconstexpr int\
+    \ mod_pow_constexpr(int x, int p, int m) {\n  int t = 1;\n  int u = x;\n  while\
+    \ (p) {\n    if (p & 1) {\n      t *= u;\n      t %= m;\n    }\n    u *= u;\n\
+    \    u %= m;\n    p >>= 1;\n  }\n  return t;\n}\n\nconstexpr int primitive_root_constexpr(int\
+    \ m) {\n  if (m == 2) return 1;\n  if (m == 998244353) return 3;\n\n  std::array<int,\
+    \ 20> divs{2};\n  int cnt = 1;\n  int x = (m-1) / 2;\n  for (int d = 3; d*d <=\
+    \ x; d += 2) {\n    if (x % d == 0) {\n      divs[cnt++] = d;\n      while (x\
+    \ % d == 0)\n        x /= d;\n    }\n  }\n  if (x > 1) divs[cnt++] = x;\n  for\
+    \ (int g = 2; ; g++) {\n    bool ok = true;\n    for (int i = 0; i < cnt; i++)\
+    \ {\n      if (mod_pow_constexpr(g, (m-1) / divs[cnt], m) == 1) {\n        ok\
+    \ = false;\n        break;\n      }\n    }\n    if (ok) return g;\n  }\n}\n\n\
+    template<int m>\nconstexpr int primitive_root = primitive_root_constexpr(m);\n\
+    \n}\n#line 5 \"test/yosupo/vertex_set_path_composite.test.cpp\"\n#include <bits/stdc++.h>\n\
+    using namespace std;\n\nusing mint = Modular<998244353>;\n\nstruct Composite {\n\
+    \    mint a, b;\n    Composite(mint a=1, mint b=0):a(a),b(b) {}\n    Composite(pair<int,int>\
+    \ p):a(p.first),b(p.second) {}\n    Composite operator*(const Composite& o) const\
+    \ { \n        return Composite(a*o.a, b*o.a + o.b);\n    }\n    mint eval(mint\
+    \ x) const {\n        return a*x+b;\n    }\n};\n\nint main() {\n    int n,q; cin>>n>>q;\n\
+    \    vector<pair<int,int>> C(n);\n    for (int i = 0; i < n; i++) {\n        int\
+    \ a,b; cin>>a>>b;\n        C[i] = {a,b};\n    }\n    Hld T(n);\n    for (int i\
+    \ = 0; i < n-1; i++) {\n        int u,v; cin>>u>>v;\n        T.add_edge(u,v);\n\
+    \    } \n    T.build();\n    decltype(C) D(n);\n    for (int i = 0; i < n; i++)\
+    \ \n        D[T.in[i]] = C[i];\n    SegmentHld<Composite> path_sum(T, D.begin(),\
+    \ D.end());\n    for (int i = 0; i < q; i++) {\n        int t; cin>>t;\n     \
+    \   if (t == 0) {\n            int p,c,d; cin>>p>>c>>d;\n            T.set(p,\
+    \ [&](auto i, auto v) {path_sum.set(i, v);}, Composite(c, d));\n        } else\
+    \ {\n            int u,v,x; cin>>u>>v>>x;\n            auto lq = [&](int l, int\
+    \ r) { \n                return path_sum.query(l, r); \n            };\n     \
+    \       auto rq = [&](int l, int r) { \n                return path_sum.reverse_query(l,\
+    \ r); \n            };\n            auto ret = T.query<Composite>(u,v,lq,rq).eval(x);\n\
+    \            cout << ret << endl;\n        }\n    }\n}\n"
+  code: "#define PROBLEM \"https://judge.yosupo.jp/problem/vertex_set_path_composite\"\
+    \n#include \"../../include/mtl/hld.hpp\"\n#include \"../../include/mtl/segment_hld.hpp\"\
+    \n#include \"../../include/mtl/modular.hpp\"\n#include <bits/stdc++.h>\nusing\
+    \ namespace std;\n\nusing mint = Modular<998244353>;\n\nstruct Composite {\n \
+    \   mint a, b;\n    Composite(mint a=1, mint b=0):a(a),b(b) {}\n    Composite(pair<int,int>\
+    \ p):a(p.first),b(p.second) {}\n    Composite operator*(const Composite& o) const\
+    \ { \n        return Composite(a*o.a, b*o.a + o.b);\n    }\n    mint eval(mint\
+    \ x) const {\n        return a*x+b;\n    }\n};\n\nint main() {\n    int n,q; cin>>n>>q;\n\
+    \    vector<pair<int,int>> C(n);\n    for (int i = 0; i < n; i++) {\n        int\
+    \ a,b; cin>>a>>b;\n        C[i] = {a,b};\n    }\n    Hld T(n);\n    for (int i\
+    \ = 0; i < n-1; i++) {\n        int u,v; cin>>u>>v;\n        T.add_edge(u,v);\n\
+    \    } \n    T.build();\n    decltype(C) D(n);\n    for (int i = 0; i < n; i++)\
+    \ \n        D[T.in[i]] = C[i];\n    SegmentHld<Composite> path_sum(T, D.begin(),\
+    \ D.end());\n    for (int i = 0; i < q; i++) {\n        int t; cin>>t;\n     \
+    \   if (t == 0) {\n            int p,c,d; cin>>p>>c>>d;\n            T.set(p,\
+    \ [&](auto i, auto v) {path_sum.set(i, v);}, Composite(c, d));\n        } else\
+    \ {\n            int u,v,x; cin>>u>>v>>x;\n            auto lq = [&](int l, int\
+    \ r) { \n                return path_sum.query(l, r); \n            };\n     \
+    \       auto rq = [&](int l, int r) { \n                return path_sum.reverse_query(l,\
+    \ r); \n            };\n            auto ret = T.query<Composite>(u,v,lq,rq).eval(x);\n\
+    \            cout << ret << endl;\n        }\n    }\n}\n"
   dependsOn:
   - include/mtl/hld.hpp
   - include/mtl/segment_hld.hpp
   - include/mtl/monoid.hpp
+  - include/mtl/modular.hpp
   isVerificationFile: true
-  path: test/aoj/aoj-do_use_segment_tree-balanced_tree.test.cpp
+  path: test/yosupo/vertex_set_path_composite.test.cpp
   requiredBy: []
   timestamp: '2023-04-13 21:51:40+09:00'
-  verificationStatus: TEST_ACCEPTED
+  verificationStatus: TEST_WRONG_ANSWER
   verifiedWith: []
-documentation_of: test/aoj/aoj-do_use_segment_tree-balanced_tree.test.cpp
+documentation_of: test/yosupo/vertex_set_path_composite.test.cpp
 layout: document
 redirect_from:
-- /verify/test/aoj/aoj-do_use_segment_tree-balanced_tree.test.cpp
-- /verify/test/aoj/aoj-do_use_segment_tree-balanced_tree.test.cpp.html
-title: test/aoj/aoj-do_use_segment_tree-balanced_tree.test.cpp
+- /verify/test/yosupo/vertex_set_path_composite.test.cpp
+- /verify/test/yosupo/vertex_set_path_composite.test.cpp.html
+title: test/yosupo/vertex_set_path_composite.test.cpp
 ---

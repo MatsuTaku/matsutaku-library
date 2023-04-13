@@ -4,7 +4,7 @@ data:
   - icon: ':question:'
     path: include/mtl/bit_manip.hpp
     title: include/mtl/bit_manip.hpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/hld.hpp
     title: include/mtl/hld.hpp
   - icon: ':heavy_check_mark:'
@@ -57,12 +57,12 @@ data:
     \ >> 2);\n  x = ((x & 0x5555555555555555) << 1) | ((x & 0xAAAAAAAAAAAAAAAA) >>\
     \ 1);\n  return x;\n}\n\n} // namespace bm\n#line 3 \"include/mtl/lazy_segment_tree.hpp\"\
     \n#include <cstddef>\n#include <vector>\n#line 6 \"include/mtl/lazy_segment_tree.hpp\"\
-    \n#if __cplusplus >= 202002L\n#include <concepts>\n\ntemplate<typename M>\nconcept\
-    \ LazySegmentTreeMonoid = requires (M m) {\n  {m * m} -> std::same_as<M>;\n};\n\
-    template<typename A, typename M>\nconcept LazySegmentTreeOperatorMonoid = requires(A\
-    \ a, M m) {\n  {a()} -> std::same_as<bool>;\n  {a *= a} -> std::same_as<A>;\n\
+    \n#if __cpp_concepts >= 202002L\n#include <concepts>\n\ntemplate<typename M>\n\
+    concept LazySegmentTreeMonoid = requires (M m) {\n  {m * m} -> std::same_as<M>;\n\
+    };\ntemplate<typename A, typename M>\nconcept LazySegmentTreeOperatorMonoid =\
+    \ requires(A a, M m) {\n  {a()} -> std::same_as<bool>;\n  {a *= a} -> std::same_as<A>;\n\
     \  {a.act(m, 1)} -> std::same_as<M>;\n};\n#endif\n\ntemplate <typename M, typename\
-    \ A>\nclass LazySegmentTree {\n#if __cplusplus >= 202002L\n  static_assert(LazySegmentTreeMonoid<M>);\n\
+    \ A>\nclass LazySegmentTree {\n#if __cpp_concepts >= 202002L\n  static_assert(LazySegmentTreeMonoid<M>);\n\
     \  static_assert(LazySegmentTreeOperatorMonoid<A,M>);\n#endif\n private:\n  size_t\
     \ size_;\n  std::vector<std::pair<M,A>> tree_;\n  std::vector<std::pair<size_t,\
     \ size_t>> ids_;\n\n public:\n  explicit LazySegmentTree(size_t size) :\n    \
@@ -104,42 +104,60 @@ data:
     \ id, size_t sz) {\n    A e = tree_[id].second;\n    if (!e()) return;\n    tree_[id].second\
     \ = A();\n    tree_[id].first = e.act(tree_[id].first, sz);\n    if (id < size_)\
     \ {\n      tree_[id*2].second *= e;\n      tree_[id*2+1].second *= e;\n    }\n\
-    \  }\n\n};\n\n#line 4 \"include/mtl/hld.hpp\"\n\nstruct Hld {\n  int n;\n  std::vector<std::vector<int>>\
-    \ edge;\n  std::vector<int> size, in, out, head, rev, par, depth;\n private:\n\
+    \  }\n\n};\n\n#line 4 \"include/mtl/hld.hpp\"\n\nstruct Hld {\n  int r,n;\n  std::vector<std::vector<int>>\
+    \ edge;\n  std::vector<int> size, in, out, head, rev, par, depth, clen;\n private:\n\
     \  void dfs_sz(int v, int p, int d) {\n    par[v] = p;\n    size[v] = 1;\n   \
     \ if (!edge[v].empty() and edge[v][0] == p)\n      std::swap(edge[v][0], edge[v].back());\n\
     \    for (auto& t:edge[v]) {\n      if (t == p) continue;\n      dfs_sz(t, v,\
     \ d+1);\n      size[v] += size[t];\n      if (size[edge[v][0]] < size[t])\n  \
     \      std::swap(edge[v][0], t);\n    }\n  }\n  void dfs_hld(int v, int p, int&\
-    \ times) {\n    in[v] = times++;\n    rev[in[v]] = v;\n    if (edge[v][0] != p)\
-    \ {\n      int t = edge[v][0];\n      head[t] = head[v];\n      depth[t] = depth[v];\n\
-    \      dfs_hld(t, v, times);\n    }\n    for (size_t i = 1; i < edge[v].size();\
-    \ i++) {\n      int t = edge[v][i];\n      if (t == p) continue;\n      head[t]\
-    \ = t;\n      depth[t] = depth[v] + 1;\n      dfs_hld(t, v, times);\n    }\n \
-    \   out[v] = times;\n  }\n\n public:\n  Hld(int n) : n(n), edge(n), size(n), in(n),\
-    \ out(n), head(n), rev(n), par(n), depth(n) {}\n\n  inline void add_edge(int a,\
-    \ int b) {\n    edge[a].push_back(b);\n    edge[b].push_back(a);\n  }\n\n  void\
-    \ build(int root = 0) {\n    dfs_sz(root, -1, 0);\n    int t = 0;\n    head[root]\
-    \ = root;\n    depth[root] = 0;\n    dfs_hld(root, -1, t);\n  }\n\n  inline int\
-    \ lca(int a, int b) const {\n    if (depth[a] > depth[b]) std::swap(a, b);\n \
-    \   while (depth[a] < depth[b]) {\n      b = par[head[b]];\n    }\n    while (head[a]\
-    \ != head[b]) {\n      a = par[head[a]];\n      b = par[head[b]];\n    }\n   \
-    \ return in[a] < in[b] ? a : b;\n  }\n\n  template<class T, typename Query,\n\
-    \      bool INCLUDE_LCA = true>\n  T query(int u, int v, Query Q) const {\n  \
-    \  if (depth[u] > depth[v]) std::swap(u,v);\n    T um, vm;\n    auto up = [&](int&\
-    \ v, T& ret) {\n      ret = Q(in[head[v]], in[v]+1) * ret;\n      v = par[head[v]];\n\
-    \    };\n    while (depth[u] < depth[v]) {\n      up(v, vm);\n    }\n    while\
-    \ (head[u] != head[v]) {\n      up(u, um);\n      up(v, vm);\n    }\n    if (in[u]\
-    \ > in[v]) {\n      std::swap(u,v);\n      std::swap(um,vm);\n    }\n    int l\
-    \ = INCLUDE_LCA ? in[u] : in[u]+1;\n    return ~um * Q(l, in[v]+1) * vm;\n  }\n\
-    \n  template<typename T, typename Set>\n  void set(int i, T&& val, Set S) const\
-    \ {\n    S(in[i], std::forward<T>(val));\n  }\n\n  template<typename T, typename\
-    \ Upd,\n      bool INCLUDE_LCA = true>\n  void update(int u, int v, const T& val,\
-    \ Upd U) const {\n    if (depth[u] > depth[v]) std::swap(u,v);\n    auto up =\
-    \ [&](int& v) {\n      U(in[head[v]], in[v]+1, val);\n      v = par[head[v]];\n\
-    \    };\n    while (depth[u] < depth[v]) {\n      up(v);\n    }\n    while (head[u]\
-    \ != head[v]) {\n      up(u);\n      up(v);\n    }\n    if (in[u] > in[v]) std::swap(u,v);\n\
-    \    int l = INCLUDE_LCA ? in[u] : in[u]+1;\n    U(l, in[v]+1, val);\n  }\n};\n\
+    \ times) {\n    in[v] = times++;\n    rev[in[v]] = v;\n    clen[v] = 1;\n    if\
+    \ (!edge[v].empty() and edge[v][0] != p) {\n      int t = edge[v][0];\n      head[t]\
+    \ = head[v];\n      depth[t] = depth[v];\n      dfs_hld(t, v, times);\n      clen[v]\
+    \ += clen[t];\n    }\n    for (size_t i = 1; i < edge[v].size(); i++) {\n    \
+    \  int t = edge[v][i];\n      if (t == p) continue;\n      head[t] = t;\n    \
+    \  depth[t] = depth[v] + 1;\n      dfs_hld(t, v, times);\n    }\n    out[v] =\
+    \ times;\n  }\n\n public:\n  Hld(int n) : r(0), n(n), edge(n), size(n), in(n),\
+    \ out(n), head(n), rev(n), par(n), depth(n), clen(n) {}\n\n  inline void add_edge(int\
+    \ a, int b) {\n    edge[a].push_back(b);\n    edge[b].push_back(a);\n  }\n\n \
+    \ void build(int root = 0) {\n    r = root;\n    dfs_sz(root, -1, 0);\n    int\
+    \ t = 0;\n    head[root] = root;\n    depth[root] = 0;\n    dfs_hld(root, -1,\
+    \ t);\n  }\n\n  inline int lca(int a, int b) const {\n    if (depth[a] > depth[b])\
+    \ std::swap(a, b);\n    while (depth[a] < depth[b]) {\n      b = par[head[b]];\n\
+    \    }\n    while (head[a] != head[b]) {\n      a = par[head[a]];\n      b = par[head[b]];\n\
+    \    }\n    return in[a] < in[b] ? a : b;\n  }\n\n private:\n  template<class\
+    \ T, class Query, class ReverseQuery>\n  T _query(int u, int v, Query Q, ReverseQuery\
+    \ RQ, bool include_lca) const {\n    T um, vm;\n    auto u_up = [&]() {\n    \
+    \  um = um * (T)RQ(in[head[u]], in[u]+1);\n      u = par[head[u]];\n    };\n \
+    \   auto v_up = [&]() {\n      vm = (T)Q(in[head[v]], in[v]+1) * vm;\n      v\
+    \ = par[head[v]];\n    };\n    while (depth[u] > depth[v])\n      u_up();\n  \
+    \  while (depth[u] < depth[v])\n      v_up();\n    while (head[u] != head[v])\
+    \ {\n      u_up();\n      v_up();\n    }\n    if (in[u] < in[v]) {\n      int\
+    \ l = include_lca ? in[u] : in[u]+1;\n      return um * (T)Q(l, in[v]+1) * vm;\n\
+    \    } else {\n      int l = include_lca ? in[v] : in[v]+1;\n      return um *\
+    \ (T)RQ(l, in[u]+1) * vm;\n    }\n  }\n\n public:\n  template<class T, class Query,\
+    \ class ReverseQuery>\n  T query(int u, int v, Query Q, ReverseQuery RQ, bool\
+    \ include_lca = true) const {\n    return _query<T>(u, v, Q, RQ, include_lca);\n\
+    \  }\n\n  /// Query for commutative monoid\n  template<class T, class Query>\n\
+    \  T query(int u, int v, Query Q, bool include_lca = true) const {\n    return\
+    \ _query<T>(u, v, Q, Q, include_lca);\n  }\n\n  template<class Set, class T>\n\
+    \  void set(int i, Set S, T&& val) const {\n    S(in[i], std::forward<T>(val));\n\
+    \  }\n\n  template<typename Upd, typename T>\n  void update(int u, int v, Upd\
+    \ U, const T& val, bool include_lca = true) const {\n    if (depth[u] > depth[v])\
+    \ std::swap(u,v);\n    auto up = [&](int& v) {\n      U(in[head[v]], in[v]+1,\
+    \ val);\n      v = par[head[v]];\n    };\n    while (depth[u] < depth[v]) {\n\
+    \      up(v);\n    }\n    while (head[u] != head[v]) {\n      up(u);\n      up(v);\n\
+    \    }\n    if (in[u] > in[v]) std::swap(u,v);\n    int l = include_lca ? in[u]\
+    \ : in[u]+1;\n    U(l, in[v]+1, val);\n  }\n\npublic:\n  template<class Add, class\
+    \ Sum>\n  void subtree_build(Add A, Sum S) const {\n    dfs_subtree_build(A, S,\
+    \ r);\n  }\n private:\n  template<class Add, class Sum>\n  void dfs_subtree_build(Add\
+    \ A, Sum S, int u) const {\n    for (size_t i = 0; i < edge[u].size(); i++) {\n\
+    \      auto v = edge[u][i];\n      if (v == par[u]) continue;\n      dfs_subtree_build(A,\
+    \ S, v);\n      if (i > 0)\n        A(in[u], S(in[v], in[v]+clen[v]));\n    }\n\
+    \  }\n public:\n  template<class T, class Sum>\n  T subtree_sum(int r, Sum S)\
+    \ const {\n    return (T)S(in[r], in[r]+clen[r]);\n  }\n  template<class T, class\
+    \ Add>\n  void subtree_point_add(int u, Add A, const T& val) const {\n    while\
+    \ (u != -1) {\n      A(in[u], val);\n      u = par[head[u]];\n    }\n  }\n};\n\
     #line 4 \"test/aoj/aoj-do_use_segment_tree-binary_tree.test.cpp\"\n#include <bits/stdc++.h>\r\
     \n\r\nusing namespace std;\r\n\r\nconstexpr int MINF = -1e9;\r\nstruct M {\r\n\
     \  int l,r,sum,v;\r\n  M() : v(MINF) {}\r\n  M(int w) : l(w),r(w),sum(w),v(w)\
@@ -157,14 +175,17 @@ data:
     \ ret.v = v;\r\n    }\r\n    return ret;\r\n  }\r\n};\r\n\r\nint main() {\r\n\
     \  int n,q; cin>>n>>q;\r\n  vector<int> W(n);\r\n  for (auto& w:W) cin>>w;\r\n\
     \  Hld T(n);\r\n  for (int i = 0; i < n-1; i++) {\r\n    int s,e; cin>>s>>e; s--;\
-    \ e--;\r\n    T.add_edge(s,e);\r\n  }\r\n  T.build();\r\n  vector<int> X(n);\r\
-    \n  for (int i = 0; i < n; i++)\r\n    X[T.in[i]] = W[i];\r\n  LazySegmentTree<M,A>\
-    \ RQ(X.begin(), X.end());\r\n  auto range_update = [&](int l, int r, int v) {\r\
-    \n    RQ.update(l,r,v);\r\n  };\r\n  auto query = [&](int l, int r) {\r\n    return\
-    \ RQ.query(l,r);\r\n  };\r\n  for (int i = 0; i < q; i++) {\r\n    int t; cin>>t;\r\
-    \n    if (t == 1) {\r\n      int a,b,c; cin>>a>>b>>c; a--; b--;\r\n      T.update(a,b,c,range_update);\r\
+    \ e--;\r\n    T.add_edge(s,e);\r\n  }\r\n  T.build();\r\n  vector<int> X(n*2);\r\
+    \n  for (int i = 0; i < n; i++)\r\n    X[T.in[i]] = X[n+n-1-T.in[i]] = W[i];\r\
+    \n  LazySegmentTree<M,A> RQ(X.begin(), X.end());\r\n  auto range_update = [&](int\
+    \ l, int r, int v) {\r\n    RQ.update(l,r,v);\r\n    RQ.update(n+n-r, n+n-l, v);\r\
+    \n  };\r\n  auto query = [&](int l, int r) {\r\n    return RQ.query(l,r);\r\n\
+    \  };\r\n  auto reverse_query = [&](int l, int r) {\r\n    return RQ.query(n+n-r,\
+    \ n+n-l);\r\n  };\r\n  for (int i = 0; i < q; i++) {\r\n    int t; cin>>t;\r\n\
+    \    if (t == 1) {\r\n      int a,b,c; cin>>a>>b>>c; a--; b--;\r\n      T.update(a,b,range_update,c);\r\
     \n    } else if (t == 2) {\r\n      int a,b,c; cin>>a>>b>>c; a--; b--;\r\n   \
-    \   cout << T.query<M>(a,b,query).v << endl;\r\n    }\r\n  }\r\n}\n"
+    \   cout << T.query<M>(a,b,query,reverse_query).v << endl;\r\n    }\r\n  }\r\n\
+    }\n"
   code: "#define PROBLEM \"https://onlinejudge.u-aizu.ac.jp/problems/2450\"\r\n#include\
     \ \"../../include/mtl/lazy_segment_tree.hpp\"\r\n#include \"../../include/mtl/hld.hpp\"\
     \r\n#include <bits/stdc++.h>\r\n\r\nusing namespace std;\r\n\r\nconstexpr int\
@@ -184,14 +205,16 @@ data:
     \r\nint main() {\r\n  int n,q; cin>>n>>q;\r\n  vector<int> W(n);\r\n  for (auto&\
     \ w:W) cin>>w;\r\n  Hld T(n);\r\n  for (int i = 0; i < n-1; i++) {\r\n    int\
     \ s,e; cin>>s>>e; s--; e--;\r\n    T.add_edge(s,e);\r\n  }\r\n  T.build();\r\n\
-    \  vector<int> X(n);\r\n  for (int i = 0; i < n; i++)\r\n    X[T.in[i]] = W[i];\r\
-    \n  LazySegmentTree<M,A> RQ(X.begin(), X.end());\r\n  auto range_update = [&](int\
-    \ l, int r, int v) {\r\n    RQ.update(l,r,v);\r\n  };\r\n  auto query = [&](int\
-    \ l, int r) {\r\n    return RQ.query(l,r);\r\n  };\r\n  for (int i = 0; i < q;\
-    \ i++) {\r\n    int t; cin>>t;\r\n    if (t == 1) {\r\n      int a,b,c; cin>>a>>b>>c;\
-    \ a--; b--;\r\n      T.update(a,b,c,range_update);\r\n    } else if (t == 2) {\r\
-    \n      int a,b,c; cin>>a>>b>>c; a--; b--;\r\n      cout << T.query<M>(a,b,query).v\
-    \ << endl;\r\n    }\r\n  }\r\n}"
+    \  vector<int> X(n*2);\r\n  for (int i = 0; i < n; i++)\r\n    X[T.in[i]] = X[n+n-1-T.in[i]]\
+    \ = W[i];\r\n  LazySegmentTree<M,A> RQ(X.begin(), X.end());\r\n  auto range_update\
+    \ = [&](int l, int r, int v) {\r\n    RQ.update(l,r,v);\r\n    RQ.update(n+n-r,\
+    \ n+n-l, v);\r\n  };\r\n  auto query = [&](int l, int r) {\r\n    return RQ.query(l,r);\r\
+    \n  };\r\n  auto reverse_query = [&](int l, int r) {\r\n    return RQ.query(n+n-r,\
+    \ n+n-l);\r\n  };\r\n  for (int i = 0; i < q; i++) {\r\n    int t; cin>>t;\r\n\
+    \    if (t == 1) {\r\n      int a,b,c; cin>>a>>b>>c; a--; b--;\r\n      T.update(a,b,range_update,c);\r\
+    \n    } else if (t == 2) {\r\n      int a,b,c; cin>>a>>b>>c; a--; b--;\r\n   \
+    \   cout << T.query<M>(a,b,query,reverse_query).v << endl;\r\n    }\r\n  }\r\n\
+    }"
   dependsOn:
   - include/mtl/lazy_segment_tree.hpp
   - include/mtl/bit_manip.hpp
@@ -199,7 +222,7 @@ data:
   isVerificationFile: true
   path: test/aoj/aoj-do_use_segment_tree-binary_tree.test.cpp
   requiredBy: []
-  timestamp: '2023-04-08 02:15:04+09:00'
+  timestamp: '2023-04-14 00:15:56+09:00'
   verificationStatus: TEST_ACCEPTED
   verifiedWith: []
 documentation_of: test/aoj/aoj-do_use_segment_tree-binary_tree.test.cpp

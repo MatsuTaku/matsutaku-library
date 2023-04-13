@@ -51,7 +51,7 @@ data:
     - icon: ':warning:'
       path: include/mtl/enumerate.hpp
       title: include/mtl/enumerate.hpp
-    - icon: ':heavy_check_mark:'
+    - icon: ':question:'
       path: include/mtl/fenwick_tree.hpp
       title: include/mtl/fenwick_tree.hpp
     - icon: ':warning:'
@@ -69,7 +69,7 @@ data:
     - icon: ':heavy_check_mark:'
       path: include/mtl/graph.hpp
       title: include/mtl/graph.hpp
-    - icon: ':heavy_check_mark:'
+    - icon: ':question:'
       path: include/mtl/hld.hpp
       title: include/mtl/hld.hpp
     - icon: ':warning:'
@@ -96,13 +96,16 @@ data:
     - icon: ':heavy_check_mark:'
       path: include/mtl/mo.hpp
       title: include/mtl/mo.hpp
-    - icon: ':heavy_check_mark:'
+    - icon: ':question:'
       path: include/mtl/modular.hpp
       title: include/mtl/modular.hpp
+    - icon: ':question:'
+      path: include/mtl/monoid.hpp
+      title: include/mtl/monoid.hpp
     - icon: ':heavy_check_mark:'
       path: include/mtl/ntt.hpp
       title: include/mtl/ntt.hpp
-    - icon: ':heavy_check_mark:'
+    - icon: ':question:'
       path: include/mtl/ordinal_range_search.hpp
       title: Ordinal Range Search
     - icon: ':heavy_check_mark:'
@@ -126,10 +129,10 @@ data:
     - icon: ':heavy_check_mark:'
       path: include/mtl/search.hpp
       title: include/mtl/search.hpp
-    - icon: ':heavy_check_mark:'
+    - icon: ':question:'
       path: include/mtl/segment_hld.hpp
       title: include/mtl/segment_hld.hpp
-    - icon: ':heavy_check_mark:'
+    - icon: ':question:'
       path: include/mtl/segment_tree.hpp
       title: include/mtl/segment_tree.hpp
     - icon: ':warning:'
@@ -175,28 +178,28 @@ data:
       title: include/mtl/string/z_algorithm.hpp
   - name: include/mtl/succinct
     pages:
-    - icon: ':heavy_check_mark:'
+    - icon: ':question:'
       path: include/mtl/succinct/binary_set.hpp
       title: include/mtl/succinct/binary_set.hpp
-    - icon: ':heavy_check_mark:'
+    - icon: ':question:'
       path: include/mtl/succinct/bit_vector.hpp
       title: include/mtl/succinct/bit_vector.hpp
-    - icon: ':heavy_check_mark:'
+    - icon: ':question:'
       path: include/mtl/succinct/bv.hpp
       title: include/mtl/succinct/bv.hpp
     - icon: ':warning:'
       path: include/mtl/succinct/int_vector.hpp
       title: Integer Vector store ElementSize bits per element
-    - icon: ':heavy_check_mark:'
+    - icon: ':question:'
       path: include/mtl/succinct/rrr.hpp
       title: Succinct bit vector in memory of B(n, u) + O(u log log n / log n) bits
-    - icon: ':heavy_check_mark:'
+    - icon: ':question:'
       path: include/mtl/succinct/select.hpp
       title: include/mtl/succinct/select.hpp
-    - icon: ':heavy_check_mark:'
+    - icon: ':question:'
       path: include/mtl/succinct/ty.hpp
       title: 'TY: Store increasing sequence of integers.'
-    - icon: ':heavy_check_mark:'
+    - icon: ':question:'
       path: include/mtl/succinct/wavelet_matrix.hpp
       title: include/mtl/succinct/wavelet_matrix.hpp
     - icon: ':warning:'
@@ -422,16 +425,25 @@ data:
     - icon: ':heavy_check_mark:'
       path: test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
       title: test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
-    - icon: ':heavy_check_mark:'
+    - icon: ':x:'
       path: test/yosupo/static_rmq.test.cpp
       title: test/yosupo/static_rmq.test.cpp
     - icon: ':heavy_check_mark:'
       path: test/yosupo/unionfind.test.cpp
       title: test/yosupo/unionfind.test.cpp
+    - icon: ':x:'
+      path: test/yosupo/vertex_add_path_sum.test.cpp
+      title: test/yosupo/vertex_add_path_sum.test.cpp
+    - icon: ':x:'
+      path: test/yosupo/vertex_add_subtree_sum.test.cpp
+      title: test/yosupo/vertex_add_subtree_sum.test.cpp
+    - icon: ':x:'
+      path: test/yosupo/vertex_set_path_composite.test.cpp
+      title: test/yosupo/vertex_set_path_composite.test.cpp
     - icon: ':heavy_check_mark:'
       path: test/yosupo/yosupo-line_add_get_min.test.cpp
       title: test/yosupo/yosupo-line_add_get_min.test.cpp
-    - icon: ':heavy_check_mark:'
+    - icon: ':x:'
       path: test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
       title: test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
     - icon: ':heavy_check_mark:'

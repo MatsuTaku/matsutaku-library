@@ -12,12 +12,12 @@ data:
   - icon: ':heavy_check_mark:'
     path: test/yosupo/point_set_range_composite.test.cpp
     title: test/yosupo/point_set_range_composite.test.cpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':x:'
     path: test/yosupo/static_rmq.test.cpp
     title: test/yosupo/static_rmq.test.cpp
-  _isVerificationFailed: false
+  _isVerificationFailed: true
   _pathExtension: hpp
-  _verificationStatusIcon: ':heavy_check_mark:'
+  _verificationStatusIcon: ':question:'
   attributes:
     links: []
   bundledCode: "#line 2 \"include/mtl/bit_manip.hpp\"\n#include <cstdint>\n#include\
@@ -86,10 +86,7 @@ data:
     \ r--;\n          }\n        }\n        return r + 1 - size_;\n      }\n     \
     \ p = tree_[r] * p;\n    } while ((r & -r) != r);\n    return 0;\n  }\n  template<bool\
     \ (*F)(M)>\n  size_t min_left(size_t begin) const {\n    return min_left(begin,\
-    \ [](M x) { return F(x); });\n  }\n\n};\n\ntemplate<typename T, T (*op)(T, T),\
-    \ T E>\nstruct Monoid {\n  T x;\n  Monoid(T x=E) : x(x) {}\n  Monoid operator*(const\
-    \ Monoid& rhs) const {\n    return Monoid(op(x, rhs.x));\n  }\n  Monoid& operator*=(const\
-    \ Monoid& rhs) {\n    return *this = *this * rhs;\n  }\n};\n"
+    \ [](M x) { return F(x); });\n  }\n\n};\n"
   code: "#pragma once\n#include \"bit_manip.hpp\"\n#include <cstddef>\n#include <vector>\n\
     #if __cplusplus >= 202002L\n#include <concepts>\n\ntemplate<typename M>\nconcept\
     \ SegmentTreeMonoid = requires (M m) {\n  {m * m} -> std::same_as<M>;\n};\n#endif\n\
@@ -122,18 +119,15 @@ data:
     \ r--;\n          }\n        }\n        return r + 1 - size_;\n      }\n     \
     \ p = tree_[r] * p;\n    } while ((r & -r) != r);\n    return 0;\n  }\n  template<bool\
     \ (*F)(M)>\n  size_t min_left(size_t begin) const {\n    return min_left(begin,\
-    \ [](M x) { return F(x); });\n  }\n\n};\n\ntemplate<typename T, T (*op)(T, T),\
-    \ T E>\nstruct Monoid {\n  T x;\n  Monoid(T x=E) : x(x) {}\n  Monoid operator*(const\
-    \ Monoid& rhs) const {\n    return Monoid(op(x, rhs.x));\n  }\n  Monoid& operator*=(const\
-    \ Monoid& rhs) {\n    return *this = *this * rhs;\n  }\n};\n"
+    \ [](M x) { return F(x); });\n  }\n\n};\n"
   dependsOn:
   - include/mtl/bit_manip.hpp
   isVerificationFile: false
   path: include/mtl/segment_tree.hpp
   requiredBy:
   - include/mtl/segment_tree_2d.hpp
-  timestamp: '2023-04-03 11:10:35+09:00'
-  verificationStatus: LIBRARY_ALL_AC
+  timestamp: '2023-04-13 21:51:40+09:00'
+  verificationStatus: LIBRARY_SOME_WA
   verifiedWith:
   - test/yosupo/static_rmq.test.cpp
   - test/yosupo/point_set_range_composite.test.cpp

@@ -7,7 +7,7 @@ data:
   - icon: ':heavy_check_mark:'
     path: include/mtl/lazy_segment_tree.hpp
     title: include/mtl/lazy_segment_tree.hpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/modular.hpp
     title: include/mtl/modular.hpp
   _extendedRequiredBy: []
@@ -57,12 +57,12 @@ data:
     \ >> 2);\n  x = ((x & 0x5555555555555555) << 1) | ((x & 0xAAAAAAAAAAAAAAAA) >>\
     \ 1);\n  return x;\n}\n\n} // namespace bm\n#line 3 \"include/mtl/lazy_segment_tree.hpp\"\
     \n#include <cstddef>\n#include <vector>\n#line 6 \"include/mtl/lazy_segment_tree.hpp\"\
-    \n#if __cplusplus >= 202002L\n#include <concepts>\n\ntemplate<typename M>\nconcept\
-    \ LazySegmentTreeMonoid = requires (M m) {\n  {m * m} -> std::same_as<M>;\n};\n\
-    template<typename A, typename M>\nconcept LazySegmentTreeOperatorMonoid = requires(A\
-    \ a, M m) {\n  {a()} -> std::same_as<bool>;\n  {a *= a} -> std::same_as<A>;\n\
+    \n#if __cpp_concepts >= 202002L\n#include <concepts>\n\ntemplate<typename M>\n\
+    concept LazySegmentTreeMonoid = requires (M m) {\n  {m * m} -> std::same_as<M>;\n\
+    };\ntemplate<typename A, typename M>\nconcept LazySegmentTreeOperatorMonoid =\
+    \ requires(A a, M m) {\n  {a()} -> std::same_as<bool>;\n  {a *= a} -> std::same_as<A>;\n\
     \  {a.act(m, 1)} -> std::same_as<M>;\n};\n#endif\n\ntemplate <typename M, typename\
-    \ A>\nclass LazySegmentTree {\n#if __cplusplus >= 202002L\n  static_assert(LazySegmentTreeMonoid<M>);\n\
+    \ A>\nclass LazySegmentTree {\n#if __cpp_concepts >= 202002L\n  static_assert(LazySegmentTreeMonoid<M>);\n\
     \  static_assert(LazySegmentTreeOperatorMonoid<A,M>);\n#endif\n private:\n  size_t\
     \ size_;\n  std::vector<std::pair<M,A>> tree_;\n  std::vector<std::pair<size_t,\
     \ size_t>> ids_;\n\n public:\n  explicit LazySegmentTree(size_t size) :\n    \
@@ -191,7 +191,7 @@ data:
   isVerificationFile: true
   path: test/yosupo/range_affine_range_sum.test.cpp
   requiredBy: []
-  timestamp: '2023-04-08 02:15:04+09:00'
+  timestamp: '2023-04-13 21:51:40+09:00'
   verificationStatus: TEST_ACCEPTED
   verifiedWith: []
 documentation_of: test/yosupo/range_affine_range_sum.test.cpp

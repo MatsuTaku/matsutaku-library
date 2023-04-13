@@ -4,7 +4,7 @@ data:
   - icon: ':question:'
     path: include/mtl/bit_manip.hpp
     title: include/mtl/bit_manip.hpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/segment_tree.hpp
     title: include/mtl/segment_tree.hpp
   _extendedRequiredBy: []
@@ -80,10 +80,7 @@ data:
     \ r--;\n          }\n        }\n        return r + 1 - size_;\n      }\n     \
     \ p = tree_[r] * p;\n    } while ((r & -r) != r);\n    return 0;\n  }\n  template<bool\
     \ (*F)(M)>\n  size_t min_left(size_t begin) const {\n    return min_left(begin,\
-    \ [](M x) { return F(x); });\n  }\n\n};\n\ntemplate<typename T, T (*op)(T, T),\
-    \ T E>\nstruct Monoid {\n  T x;\n  Monoid(T x=E) : x(x) {}\n  Monoid operator*(const\
-    \ Monoid& rhs) const {\n    return Monoid(op(x, rhs.x));\n  }\n  Monoid& operator*=(const\
-    \ Monoid& rhs) {\n    return *this = *this * rhs;\n  }\n};\n#line 5 \"include/mtl/segment_tree_2d.hpp\"\
+    \ [](M x) { return F(x); });\n  }\n\n};\n#line 5 \"include/mtl/segment_tree_2d.hpp\"\
     \n\r\n// In-memory 2D segment tree.\r\n// It requires enough memory size of O(nm).\r\
     \ntemplate<typename M>\r\nclass SegmentTree2D {\r\n public:\r\n  using seg_type\
     \ = SegmentTree<M>;\r\n private:\r\n  size_t n_,m_;\r\n  std::vector<seg_type>\
@@ -119,7 +116,7 @@ data:
   isVerificationFile: false
   path: include/mtl/segment_tree_2d.hpp
   requiredBy: []
-  timestamp: '2023-04-03 11:10:35+09:00'
+  timestamp: '2023-04-13 21:51:40+09:00'
   verificationStatus: LIBRARY_NO_TESTS
   verifiedWith: []
 documentation_of: include/mtl/segment_tree_2d.hpp

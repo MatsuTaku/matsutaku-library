@@ -4,34 +4,34 @@ data:
   - icon: ':question:'
     path: include/mtl/bit_manip.hpp
     title: include/mtl/bit_manip.hpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/fenwick_tree.hpp
     title: include/mtl/fenwick_tree.hpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/modular.hpp
     title: include/mtl/modular.hpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/ordinal_range_search.hpp
     title: Ordinal Range Search
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/succinct/binary_set.hpp
     title: include/mtl/succinct/binary_set.hpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/succinct/bit_vector.hpp
     title: include/mtl/succinct/bit_vector.hpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/succinct/bv.hpp
     title: include/mtl/succinct/bv.hpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/succinct/rrr.hpp
     title: Succinct bit vector in memory of B(n, u) + O(u log log n / log n) bits
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/succinct/select.hpp
     title: include/mtl/succinct/select.hpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/succinct/ty.hpp
     title: 'TY: Store increasing sequence of integers.'
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/succinct/wavelet_matrix.hpp
     title: include/mtl/succinct/wavelet_matrix.hpp
   _extendedRequiredBy: []
@@ -81,22 +81,25 @@ data:
     \ | ((x & 0xCCCCCCCCCCCCCCCC) >> 2);\n  x = ((x & 0x5555555555555555) << 1) |\
     \ ((x & 0xAAAAAAAAAAAAAAAA) >> 1);\n  return x;\n}\n\n} // namespace bm\n#line\
     \ 3 \"include/mtl/fenwick_tree.hpp\"\n#include <cstddef>\n#include <vector>\n\n\
-    template <typename T>\nclass FenwickTree {\n private:\n  std::vector<T> tree_;\n\
-    \n public:\n  FenwickTree() = default;\n  explicit FenwickTree(size_t size) :\
-    \ tree_(size+1) {}\n\n  size_t size() const { return tree_.size()-1; }\n\n  template\
-    \ <typename Iter>\n  explicit FenwickTree(Iter begin, Iter end) : FenwickTree(end-begin)\
-    \ {\n    for (auto it = begin; it != end; ++it)\n      add(it-begin, *it);\n \
-    \ }\n\n  void add(size_t index, T x) {\n    for (size_t i = index+1; i < tree_.size();\
-    \ i += i&(-i))\n      tree_[i] += x;\n  }\n\n  T sum(size_t index) const {\n \
-    \   T sum = 0;\n    for (size_t i = index+1; i > 0; i -= i&(-i))\n      sum +=\
-    \ tree_[i];\n    return sum;\n  }\n\n  T range_sum(size_t l, size_t r) const {\n\
-    \    auto sl = l > 0 ? sum(l-1) : 0;\n    auto sr = r > 0 ? sum(r-1) : 0;\n  \
-    \  return sr - sl;\n  }\n\n  size_t lower_bound(T _sum) const {\n    size_t ret\
-    \ = 0;\n    T s = 0;\n    for (int k = 63-bm::clz(size()); k >= 0; k--) {\n  \
-    \    size_t j = ret | (1ull<<k);\n      if (j < tree_.size() and s + tree_[j]\
-    \ < _sum) {\n        s += tree_[j];\n        ret = j;\n      }\n    }\n    return\
-    \ ret;\n  }\n\n};\n\n#line 3 \"include/mtl/succinct/select.hpp\"\n#include <array>\n\
-    \nstruct select64 {\n    using size_type = uint8_t;\n    static struct make_select_table\
+    template <class T>\nclass FenwickTree {\n private:\n  std::vector<T> tree_;\n\n\
+    \ public:\n  FenwickTree() = default;\n  explicit FenwickTree(size_t size) : tree_(size+1)\
+    \ {}\n\n  size_t size() const { return tree_.size()-1; }\n\n  template <class\
+    \ Iter>\n  explicit FenwickTree(Iter begin, Iter end) : FenwickTree(std::distance(begin,\
+    \ end)) {\n    size_t i = 1;\n    for (auto it = begin; it != end; ++it) {\n \
+    \     tree_[i] = tree_[i] + *it;\n      auto j = i + (i&(-i));\n      if (j <\
+    \ tree_.size())\n        tree_[j] = tree_[j] + tree_[i];\n      ++i;\n    }\n\
+    \  }\n\n  template<class V>\n  void add(size_t index, const V& x) {\n    for (size_t\
+    \ i = index+1; i < tree_.size(); i += i&(-i))\n      tree_[i] = tree_[i] + x;\n\
+    \  }\n\n  T sum(size_t index) const {\n    T sum = 0;\n    for (size_t i = index+1;\
+    \ i > 0; i -= i&(-i))\n      sum = sum + tree_[i];\n    return sum;\n  }\n\n \
+    \ T range_sum(size_t l, size_t r) const {\n    auto sl = l > 0 ? sum(l-1) : 0;\n\
+    \    auto sr = r > 0 ? sum(r-1) : 0;\n    return sr - sl;\n  }\n\n  template<class\
+    \ V>\n  size_t lower_bound(const V& _sum) const {\n    size_t ret = 0;\n    T\
+    \ s = 0;\n    for (int k = 63-bm::clz(size()); k >= 0; k--) {\n      size_t j\
+    \ = ret | (1ull<<k);\n      if (j < tree_.size() and s + tree_[j] < _sum) {\n\
+    \        s = s + tree_[j];\n        ret = j;\n      }\n    }\n    return ret;\n\
+    \  }\n\n};\n\n#line 3 \"include/mtl/succinct/select.hpp\"\n#include <array>\n\n\
+    struct select64 {\n    using size_type = uint8_t;\n    static struct make_select_table\
     \ {\n        using bitmap_type = uint8_t;\n        std::array<std::array<size_type,\
     \ 9>, 1<<8> tb;\n        make_select_table() {\n            for (int i = 0; i\
     \ < 1<<8; i++) {\n                int c = 0;\n                int x = i;\n   \
@@ -855,7 +858,7 @@ data:
   isVerificationFile: true
   path: test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
   requiredBy: []
-  timestamp: '2023-04-12 22:25:51+09:00'
+  timestamp: '2023-04-14 01:09:23+09:00'
   verificationStatus: TEST_ACCEPTED
   verifiedWith: []
 documentation_of: test/yosupo/static_rectangle_add_rectangle_sum.test.cpp

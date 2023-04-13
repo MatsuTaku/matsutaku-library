@@ -4,13 +4,13 @@ data:
   - icon: ':question:'
     path: include/mtl/bit_manip.hpp
     title: include/mtl/bit_manip.hpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/succinct/bit_vector.hpp
     title: include/mtl/succinct/bit_vector.hpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/succinct/bv.hpp
     title: include/mtl/succinct/bv.hpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/succinct/select.hpp
     title: include/mtl/succinct/select.hpp
   _extendedRequiredBy: []

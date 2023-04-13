@@ -4,10 +4,10 @@ data:
   - icon: ':question:'
     path: include/mtl/bit_manip.hpp
     title: include/mtl/bit_manip.hpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/modular.hpp
     title: include/mtl/modular.hpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/segment_tree.hpp
     title: include/mtl/segment_tree.hpp
   _extendedRequiredBy: []
@@ -88,11 +88,8 @@ data:
     \ r--;\n          }\n        }\n        return r + 1 - size_;\n      }\n     \
     \ p = tree_[r] * p;\n    } while ((r & -r) != r);\n    return 0;\n  }\n  template<bool\
     \ (*F)(M)>\n  size_t min_left(size_t begin) const {\n    return min_left(begin,\
-    \ [](M x) { return F(x); });\n  }\n\n};\n\ntemplate<typename T, T (*op)(T, T),\
-    \ T E>\nstruct Monoid {\n  T x;\n  Monoid(T x=E) : x(x) {}\n  Monoid operator*(const\
-    \ Monoid& rhs) const {\n    return Monoid(op(x, rhs.x));\n  }\n  Monoid& operator*=(const\
-    \ Monoid& rhs) {\n    return *this = *this * rhs;\n  }\n};\n#line 2 \"include/mtl/modular.hpp\"\
-    \n#include <iostream>\n#line 4 \"include/mtl/modular.hpp\"\n\ntemplate <int MOD>\n\
+    \ [](M x) { return F(x); });\n  }\n\n};\n#line 2 \"include/mtl/modular.hpp\"\n\
+    #include <iostream>\n#line 4 \"include/mtl/modular.hpp\"\n\ntemplate <int MOD>\n\
     class Modular {\n private:\n  unsigned int val_;\n\n public:\n  static constexpr\
     \ unsigned int mod() { return MOD; }\n  template<class T>\n  static constexpr\
     \ unsigned int safe_mod(T v) {\n    auto x = (long long)(v%(long long)mod());\n\
@@ -171,7 +168,7 @@ data:
   isVerificationFile: true
   path: test/yosupo/point_set_range_composite.test.cpp
   requiredBy: []
-  timestamp: '2023-04-08 02:15:04+09:00'
+  timestamp: '2023-04-13 21:51:40+09:00'
   verificationStatus: TEST_ACCEPTED
   verifiedWith: []
 documentation_of: test/yosupo/point_set_range_composite.test.cpp

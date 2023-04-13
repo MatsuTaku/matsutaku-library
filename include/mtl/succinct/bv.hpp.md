@@ -2,19 +2,19 @@
 data:
   _extendedDependsOn: []
   _extendedRequiredBy:
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/ordinal_range_search.hpp
     title: Ordinal Range Search
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/succinct/binary_set.hpp
     title: include/mtl/succinct/binary_set.hpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/succinct/bit_vector.hpp
     title: include/mtl/succinct/bit_vector.hpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/succinct/rrr.hpp
     title: Succinct bit vector in memory of B(n, u) + O(u log log n / log n) bits
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/succinct/wavelet_matrix.hpp
     title: include/mtl/succinct/wavelet_matrix.hpp
   - icon: ':warning:'
@@ -30,12 +30,12 @@ data:
   - icon: ':heavy_check_mark:'
     path: test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
     title: test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':x:'
     path: test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
     title: test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
-  _isVerificationFailed: false
+  _isVerificationFailed: true
   _pathExtension: hpp
-  _verificationStatusIcon: ':heavy_check_mark:'
+  _verificationStatusIcon: ':question:'
   attributes:
     links: []
   bundledCode: "#line 2 \"include/mtl/succinct/bv.hpp\"\n#include <vector>\n#include\
@@ -169,7 +169,7 @@ data:
   - include/mtl/succinct/rrr.hpp
   - include/mtl/ordinal_range_search.hpp
   timestamp: '2023-04-12 22:25:51+09:00'
-  verificationStatus: LIBRARY_ALL_AC
+  verificationStatus: LIBRARY_SOME_WA
   verifiedWith:
   - test/succinct/range_kth_smallest.test.cpp
   - test/yosupo/static_rectangle_add_rectangle_sum.test.cpp

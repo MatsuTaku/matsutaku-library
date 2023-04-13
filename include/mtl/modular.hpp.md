@@ -27,12 +27,15 @@ data:
   - icon: ':heavy_check_mark:'
     path: test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
     title: test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
+  - icon: ':x:'
+    path: test/yosupo/vertex_set_path_composite.test.cpp
+    title: test/yosupo/vertex_set_path_composite.test.cpp
   - icon: ':heavy_check_mark:'
     path: test/yosupo/yosupo-range_affine_point_get.test.cpp
     title: test/yosupo/yosupo-range_affine_point_get.test.cpp
-  _isVerificationFailed: false
+  _isVerificationFailed: true
   _pathExtension: hpp
-  _verificationStatusIcon: ':heavy_check_mark:'
+  _verificationStatusIcon: ':question:'
   attributes:
     links: []
   bundledCode: "#line 2 \"include/mtl/modular.hpp\"\n#include <iostream>\n#include\
@@ -140,11 +143,12 @@ data:
   - test/abc116-c-multiple_sequences-dirichlet.cpp
   - test/abc116-c-multiple_sequences-dirichlet-optimized.cpp
   timestamp: '2023-01-28 19:00:09+00:00'
-  verificationStatus: LIBRARY_ALL_AC
+  verificationStatus: LIBRARY_SOME_WA
   verifiedWith:
   - test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
   - test/yosupo/convolution.test.cpp
   - test/yosupo/range_affine_range_sum.test.cpp
+  - test/yosupo/vertex_set_path_composite.test.cpp
   - test/yosupo/point_set_range_composite.test.cpp
   - test/yosupo/yosupo-range_affine_point_get.test.cpp
 documentation_of: include/mtl/modular.hpp

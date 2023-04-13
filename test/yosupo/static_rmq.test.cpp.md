@@ -4,14 +4,14 @@ data:
   - icon: ':question:'
     path: include/mtl/bit_manip.hpp
     title: include/mtl/bit_manip.hpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/segment_tree.hpp
     title: include/mtl/segment_tree.hpp
   _extendedRequiredBy: []
   _extendedVerifiedWith: []
-  _isVerificationFailed: false
+  _isVerificationFailed: true
   _pathExtension: cpp
-  _verificationStatusIcon: ':heavy_check_mark:'
+  _verificationStatusIcon: ':x:'
   attributes:
     '*NOT_SPECIAL_COMMENTS*': ''
     PROBLEM: https://judge.yosupo.jp/problem/staticrmq
@@ -84,10 +84,7 @@ data:
     \ r--;\n          }\n        }\n        return r + 1 - size_;\n      }\n     \
     \ p = tree_[r] * p;\n    } while ((r & -r) != r);\n    return 0;\n  }\n  template<bool\
     \ (*F)(M)>\n  size_t min_left(size_t begin) const {\n    return min_left(begin,\
-    \ [](M x) { return F(x); });\n  }\n\n};\n\ntemplate<typename T, T (*op)(T, T),\
-    \ T E>\nstruct Monoid {\n  T x;\n  Monoid(T x=E) : x(x) {}\n  Monoid operator*(const\
-    \ Monoid& rhs) const {\n    return Monoid(op(x, rhs.x));\n  }\n  Monoid& operator*=(const\
-    \ Monoid& rhs) {\n    return *this = *this * rhs;\n  }\n};\n#line 3 \"test/yosupo/static_rmq.test.cpp\"\
+    \ [](M x) { return F(x); });\n  }\n\n};\n#line 3 \"test/yosupo/static_rmq.test.cpp\"\
     \n#include <bits/stdc++.h>\r\nusing namespace std;\r\nusing ll = long long;\r\n\
     \r\nconstexpr int INF = 11e8;\r\nstruct Min {\r\n  int x = INF;\r\n  Min operator*(const\
     \ Min& r) const {\r\n    return {std::min(x, r.x)};\r\n  }\r\n};\r\n\r\nint main()\
@@ -112,8 +109,8 @@ data:
   isVerificationFile: true
   path: test/yosupo/static_rmq.test.cpp
   requiredBy: []
-  timestamp: '2023-04-08 02:15:04+09:00'
-  verificationStatus: TEST_ACCEPTED
+  timestamp: '2023-04-13 21:51:40+09:00'
+  verificationStatus: TEST_WRONG_ANSWER
   verifiedWith: []
 documentation_of: test/yosupo/static_rmq.test.cpp
 layout: document
