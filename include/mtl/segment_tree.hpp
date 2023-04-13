@@ -112,15 +112,3 @@ class SegmentTree {
   }
 
 };
-
-template<typename T, T (*op)(T, T), T E>
-struct Monoid {
-  T x;
-  Monoid(T x=E) : x(x) {}
-  Monoid operator*(const Monoid& rhs) const {
-    return Monoid(op(x, rhs.x));
-  }
-  Monoid& operator*=(const Monoid& rhs) {
-    return *this = *this * rhs;
-  }
-};

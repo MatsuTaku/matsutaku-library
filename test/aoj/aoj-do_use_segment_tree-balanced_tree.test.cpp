@@ -15,14 +15,9 @@ struct M {
     if (rhs.v == MINF) return lhs;
     M ret;
     ret.l = max(lhs.l, lhs.sum + rhs.l);
-    ret.r = max(rhs.r, lhs.r + rhs.sum);
-    ret.v = max({lhs.v, rhs.v, lhs.r + rhs.l});
+    ret.r = max(lhs.r + rhs.sum, rhs.r);
+    ret.v = max({lhs.v, lhs.r + rhs.l, rhs.v});
     ret.sum = lhs.sum + rhs.sum;
-    return ret;
-  }
-  M operator~() {
-    M ret = *this;
-    swap(ret.l, ret.r);
     return ret;
   }
 };
@@ -73,14 +68,17 @@ int main() {
   auto query = [&](int l, int r) {
     return RQ.query(l,r);
   };
+  auto r_query = [&](int l, int r) {
+    return RQ.reverse_query(l,r);
+  };
   for (int i = 0; i < q; i++) {
     int t; cin>>t;
     if (t == 1) {
       int a,b,c; cin>>a>>b>>c; a--; b--;
-      T.update(a,b,c,range_update);
+      T.update(a,b,range_update, c);
     } else if (t == 2) {
       int a,b,c; cin>>a>>b>>c; a--; b--;
-      cout << T.query<M>(a,b,query).v << endl;
+      cout << T.query<M>(a,b,query,r_query).v << endl;
     }
   }
 }

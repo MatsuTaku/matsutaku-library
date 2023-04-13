@@ -3,7 +3,7 @@
 #include <cstddef>
 #include <vector>
 #include <cassert>
-#if __cplusplus >= 202002L
+#if __cpp_concepts >= 202002L
 #include <concepts>
 
 template<typename M>
@@ -20,7 +20,7 @@ concept LazySegmentTreeOperatorMonoid = requires(A a, M m) {
 
 template <typename M, typename A>
 class LazySegmentTree {
-#if __cplusplus >= 202002L
+#if __cpp_concepts >= 202002L
   static_assert(LazySegmentTreeMonoid<M>);
   static_assert(LazySegmentTreeOperatorMonoid<A,M>);
 #endif
