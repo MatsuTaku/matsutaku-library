@@ -4,23 +4,23 @@ data:
   - icon: ':question:'
     path: include/mtl/bit_manip.hpp
     title: include/mtl/bit_manip.hpp
-  - icon: ':question:'
+  - icon: ':heavy_check_mark:'
     path: include/mtl/succinct/bit_vector.hpp
     title: include/mtl/succinct/bit_vector.hpp
-  - icon: ':question:'
+  - icon: ':heavy_check_mark:'
     path: include/mtl/succinct/bv.hpp
     title: include/mtl/succinct/bv.hpp
-  - icon: ':question:'
+  - icon: ':heavy_check_mark:'
     path: include/mtl/succinct/rrr.hpp
     title: Succinct bit vector in memory of B(n, u) + O(u log log n / log n) bits
-  - icon: ':question:'
+  - icon: ':heavy_check_mark:'
     path: include/mtl/succinct/select.hpp
     title: include/mtl/succinct/select.hpp
-  - icon: ':question:'
+  - icon: ':heavy_check_mark:'
     path: include/mtl/succinct/ty.hpp
     title: 'TY: Store increasing sequence of integers.'
   _extendedRequiredBy:
-  - icon: ':question:'
+  - icon: ':heavy_check_mark:'
     path: include/mtl/ordinal_range_search.hpp
     title: Ordinal Range Search
   _extendedVerifiedWith:
@@ -30,12 +30,12 @@ data:
   - icon: ':heavy_check_mark:'
     path: test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
     title: test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
-  - icon: ':x:'
+  - icon: ':heavy_check_mark:'
     path: test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
     title: test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
-  _isVerificationFailed: true
+  _isVerificationFailed: false
   _pathExtension: hpp
-  _verificationStatusIcon: ':question:'
+  _verificationStatusIcon: ':heavy_check_mark:'
   attributes:
     links: []
   bundledCode: "#line 2 \"include/mtl/bit_manip.hpp\"\n#include <cstdint>\n#include\
@@ -563,7 +563,7 @@ data:
   requiredBy:
   - include/mtl/ordinal_range_search.hpp
   timestamp: '2023-04-12 22:25:51+09:00'
-  verificationStatus: LIBRARY_SOME_WA
+  verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
   - test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
   - test/yosupo/rectangle_sum.test.cpp

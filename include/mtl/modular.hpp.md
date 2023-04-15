@@ -27,15 +27,15 @@ data:
   - icon: ':heavy_check_mark:'
     path: test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
     title: test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
-  - icon: ':x:'
+  - icon: ':heavy_check_mark:'
     path: test/yosupo/vertex_set_path_composite.test.cpp
     title: test/yosupo/vertex_set_path_composite.test.cpp
   - icon: ':heavy_check_mark:'
     path: test/yosupo/yosupo-range_affine_point_get.test.cpp
     title: test/yosupo/yosupo-range_affine_point_get.test.cpp
-  _isVerificationFailed: true
+  _isVerificationFailed: false
   _pathExtension: hpp
-  _verificationStatusIcon: ':question:'
+  _verificationStatusIcon: ':heavy_check_mark:'
   attributes:
     links: []
   bundledCode: "#line 2 \"include/mtl/modular.hpp\"\n#include <iostream>\n#include\
@@ -143,7 +143,7 @@ data:
   - test/abc116-c-multiple_sequences-dirichlet.cpp
   - test/abc116-c-multiple_sequences-dirichlet-optimized.cpp
   timestamp: '2023-01-28 19:00:09+00:00'
-  verificationStatus: LIBRARY_SOME_WA
+  verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
   - test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
   - test/yosupo/convolution.test.cpp

@@ -8,7 +8,7 @@ data:
   - icon: ':warning:'
     path: include/mtl/bitmap.hpp
     title: include/mtl/bitmap.hpp
-  - icon: ':question:'
+  - icon: ':heavy_check_mark:'
     path: include/mtl/ordinal_range_search.hpp
     title: Ordinal Range Search
   _extendedVerifiedWith:
@@ -19,26 +19,26 @@ data:
     path: test/yosupo/rectangle_sum.test.cpp
     title: test/yosupo/rectangle_sum.test.cpp
   - icon: ':heavy_check_mark:'
-    path: test/yosupo/static_range_inversions_query.test.cpp
-    title: test/yosupo/static_range_inversions_query.test.cpp
+    path: test/yosupo/static_range_inversions_query-mo.test.cpp
+    title: test/yosupo/static_range_inversions_query-mo.test.cpp
   - icon: ':heavy_check_mark:'
     path: test/yosupo/static_range_sum.test.cpp
     title: test/yosupo/static_range_sum.test.cpp
   - icon: ':heavy_check_mark:'
     path: test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
     title: test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
-  - icon: ':x:'
+  - icon: ':heavy_check_mark:'
     path: test/yosupo/vertex_add_path_sum.test.cpp
     title: test/yosupo/vertex_add_path_sum.test.cpp
-  - icon: ':x:'
+  - icon: ':heavy_check_mark:'
     path: test/yosupo/vertex_add_subtree_sum.test.cpp
     title: test/yosupo/vertex_add_subtree_sum.test.cpp
-  - icon: ':x:'
+  - icon: ':heavy_check_mark:'
     path: test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
     title: test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
-  _isVerificationFailed: true
+  _isVerificationFailed: false
   _pathExtension: hpp
-  _verificationStatusIcon: ':question:'
+  _verificationStatusIcon: ':heavy_check_mark:'
   attributes:
     links: []
   bundledCode: "#line 2 \"include/mtl/bit_manip.hpp\"\n#include <cstdint>\n#include\
@@ -121,9 +121,8 @@ data:
   - include/mtl/bitmap.hpp
   - include/mtl/ordinal_range_search.hpp
   timestamp: '2023-04-13 21:51:40+09:00'
-  verificationStatus: LIBRARY_SOME_WA
+  verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
-  - test/yosupo/static_range_inversions_query.test.cpp
   - test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
   - test/yosupo/point_add_range_sum.test.cpp
   - test/yosupo/vertex_add_path_sum.test.cpp
@@ -131,6 +130,7 @@ data:
   - test/yosupo/static_range_sum.test.cpp
   - test/yosupo/vertex_add_subtree_sum.test.cpp
   - test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
+  - test/yosupo/static_range_inversions_query-mo.test.cpp
 documentation_of: include/mtl/fenwick_tree.hpp
 layout: document
 redirect_from:

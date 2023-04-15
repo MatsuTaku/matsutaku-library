@@ -1,13 +1,13 @@
 ---
 data:
   _extendedDependsOn:
-  - icon: ':question:'
+  - icon: ':heavy_check_mark:'
     path: include/mtl/hld.hpp
     title: include/mtl/hld.hpp
-  - icon: ':question:'
+  - icon: ':heavy_check_mark:'
     path: include/mtl/monoid.hpp
     title: include/mtl/monoid.hpp
-  - icon: ':question:'
+  - icon: ':heavy_check_mark:'
     path: include/mtl/segment_hld.hpp
     title: include/mtl/segment_hld.hpp
   _extendedRequiredBy: []

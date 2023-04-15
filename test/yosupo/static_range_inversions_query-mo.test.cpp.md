@@ -4,12 +4,12 @@ data:
   - icon: ':question:'
     path: include/mtl/bit_manip.hpp
     title: include/mtl/bit_manip.hpp
-  - icon: ':question:'
+  - icon: ':heavy_check_mark:'
     path: include/mtl/fenwick_tree.hpp
     title: include/mtl/fenwick_tree.hpp
   - icon: ':heavy_check_mark:'
     path: include/mtl/mo.hpp
-    title: include/mtl/mo.hpp
+    title: 'Mo''s algorithm: solve offline segment queries on a sequence'
   _extendedRequiredBy: []
   _extendedVerifiedWith: []
   _isVerificationFailed: false
@@ -20,23 +20,44 @@ data:
     PROBLEM: https://judge.yosupo.jp/problem/static_range_inversions_query
     links:
     - https://judge.yosupo.jp/problem/static_range_inversions_query
-  bundledCode: "#line 1 \"test/yosupo/static_range_inversions_query.test.cpp\"\n#define\
-    \ PROBLEM \"https://judge.yosupo.jp/problem/static_range_inversions_query\"\r\n\
-    #line 2 \"include/mtl/mo.hpp\"\n#include <algorithm>\r\n#include <cmath>\r\n#include\
-    \ <tuple>\r\n#include <vector>\r\n\r\ntemplate <typename T, T (*pushl)(T, int),\
-    \ T (*pushr)(T, int), T (*popl)(T, int),\r\n          T (*popr)(T, int), T (*e)()>\r\
-    \nclass MoSolver {\r\n private:\r\n  std::vector<std::tuple<int, int, int>> segs;\r\
-    \n  int n = 0;\r\n\r\n public:\r\n  MoSolver() = default;\r\n  void add_segment(int\
-    \ l, int r) { segs.emplace_back(n++, l, r); }\r\n  void solve(std::vector<T> &dst)\
-    \ {\r\n    using std::get;\r\n    sort(segs.begin(), segs.end(), [m = (int)std::sqrt(n)](auto\
-    \ &l, auto &r) {\r\n      int ll = get<1>(l), rl = get<2>(l), lr = get<1>(r),\
-    \ rr = get<2>(r);\r\n      int bl = ll / m;\r\n      int br = lr / m;\r\n    \
-    \  return (bl != br) ? bl < br : (rl < rr) ^ (bl % 2);\r\n    });\r\n    dst.resize(n);\r\
-    \n    int _l = 0, _r = 0;\r\n    T val = e();\r\n    for (auto &ilr : segs) {\r\
-    \n      int i = get<0>(ilr), l = get<1>(ilr), r = get<2>(ilr);\r\n      while\
-    \ (l < _l)\r\n        val = pushl(val, --_l);\r\n      while (_r < r)\r\n    \
-    \    val = pushr(val, _r++);\r\n      while (_l < l)\r\n        val = popl(val,\
-    \ _l++);\r\n      while (r < _r)\r\n        val = popr(val, --_r);\r\n      dst[i]\
+  bundledCode: "#line 1 \"test/yosupo/static_range_inversions_query-mo.test.cpp\"\n\
+    #define PROBLEM \"https://judge.yosupo.jp/problem/static_range_inversions_query\"\
+    \r\n#line 2 \"include/mtl/mo.hpp\"\n#include <algorithm>\r\n#include <numeric>\r\
+    \n#include <cmath>\r\n#include <tuple>\r\n#include <vector>\r\n#include <iostream>\r\
+    \n\r\n/**\r\n * @brief Mo's algorithm: solve offline segment queries on a sequence\r\
+    \n * @note  This implementation is optimized by noshi's idea\r\n *          complexity\
+    \ of N sqrt(Q) + O(N).\r\n *        - \u5B9A\u6570\u500D\u304C\u6700\u9069\u306A\
+    \ Mo's Algorithm. noshi91\u306E\u30E1\u30E2. 2023/04/13.\r\n *          https://noshi91.hatenablog.com/entry/2023/04/13/224811\r\
+    \n*/\r\ntemplate <typename T, \r\n          T (*pushl)(T, int), \r\n         \
+    \ T (*pushr)(T, int), \r\n          T (*popl)(T, int),\r\n          T (*popr)(T,\
+    \ int), \r\n          T (*e)()>\r\nclass MoSolver {\r\n private:\r\n  std::vector<std::tuple<int,\
+    \ int, int>> segs;\r\n  int q = 0;\r\n\r\n public:\r\n  void add_segment(int l,\
+    \ int r) { \r\n    segs.emplace_back(q++, l, r);\r\n  }\r\n  void calc_mos_move(std::vector<int>&\
+    \ dst) {\r\n    using std::get;\r\n    int n = 0;\r\n    for (auto s:segs)\r\n\
+    \      n = std::max(n, get<2>(s));\r\n    auto rtq = sqrt(q);\r\n    int b = ceil((double)n\
+    \ / rtq);\r\n    auto bf = b-b/2;\r\n    auto get_bo = [&](int x) {\r\n      if\
+    \ (x < bf) return 0;\r\n      return (x-bf)/b+1;\r\n    };\r\n    auto EvenComp\
+    \ = [&](int u, int v) {\r\n      auto &s = segs[u], &t = segs[v];\r\n      auto\
+    \ ls = get<1>(s), rs = get<2>(s), lt = get<1>(t), rt = get<2>(t);\r\n      auto\
+    \ bs = ls / b, bt = lt / b;\r\n      return bs != bt ? ls < lt : (bs%2==0 ? rs\
+    \ < rt : rs > rt);\r\n    };\r\n    auto OddComp = [&](int u, int v) {\r\n   \
+    \   auto &s = segs[u], &t = segs[v];\r\n      auto ls = get<1>(s), rs = get<2>(s),\
+    \ lt = get<1>(t), rt = get<2>(t);\r\n      auto bs = get_bo(ls), bt = get_bo(lt);\r\
+    \n      return bs != bt ? ls < lt : (bs%2==0 ? rs < rt : rs > rt);\r\n    };\r\
+    \n    auto& IE = dst;\r\n    IE.resize(q);\r\n    std::iota(IE.begin(), IE.end(),\
+    \ 0);\r\n    sort(IE.begin(), IE.end(), EvenComp);\r\n    auto IO = IE;\r\n  \
+    \  sort(IO.begin(), IO.end(), OddComp);\r\n    auto move_distance = [&](const\
+    \ std::vector<int>& ids) {\r\n      long long d = 0;\r\n      for (int i = 0;\
+    \ i < q-1; i++) {\r\n        int j = ids[i], k = ids[i+1];\r\n        d += abs(get<1>(segs[j])\
+    \ - get<1>(segs[k]));\r\n        d += abs(get<2>(segs[j]) - get<2>(segs[k]));\r\
+    \n      }\r\n      return d;\r\n    };\r\n    if (move_distance(IE) > move_distance(IO))\r\
+    \n      std::swap(IE, IO); // IE is reference of dst\r\n  }\r\n  void solve(std::vector<T>\
+    \ &dst) {\r\n    if (q == 0) return;\r\n    std::vector<int> I;\r\n    calc_mos_move(I);\r\
+    \n    dst.resize(q);\r\n    int _l = 0, _r = 0;\r\n    T val = e();\r\n    for\
+    \ (int i:I) {\r\n      int t,l,r;\r\n      std::tie(t,l,r) = segs[i];\r\n    \
+    \  while (l < _l)\r\n        val = pushl(val, --_l);\r\n      while (_r < r)\r\
+    \n        val = pushr(val, _r++);\r\n      while (_l < l)\r\n        val = popl(val,\
+    \ _l++);\r\n      while (r < _r)\r\n        val = popr(val, --_r);\r\n      dst[t]\
     \ = val;\r\n    }\r\n  }\r\n};\r\n#line 2 \"include/mtl/bit_manip.hpp\"\n#include\
     \ <cstdint>\n#include <cassert>\n\nnamespace bm {\n\ninline constexpr uint64_t\
     \ popcnt_e8(uint64_t x) {\n  x = (x & 0x5555555555555555) + ((x>>1) & 0x5555555555555555);\n\
@@ -89,9 +110,9 @@ data:
     \ s = 0;\n    for (int k = 63-bm::clz(size()); k >= 0; k--) {\n      size_t j\
     \ = ret | (1ull<<k);\n      if (j < tree_.size() and s + tree_[j] < _sum) {\n\
     \        s = s + tree_[j];\n        ret = j;\n      }\n    }\n    return ret;\n\
-    \  }\n\n};\n\n#line 4 \"test/yosupo/static_range_inversions_query.test.cpp\"\n\
-    #include <bits/stdc++.h>\r\nusing namespace std;\r\nusing lint = long long;\r\n\
-    \r\nconstexpr int N = 1e5;\r\nFenwickTree<lint> C(N);\r\nint A[N];\r\nmap<int,int>\
+    \  }\n\n};\n\n#line 4 \"test/yosupo/static_range_inversions_query-mo.test.cpp\"\
+    \n#include <bits/stdc++.h>\r\nusing namespace std;\r\nusing lint = long long;\r\
+    \n\r\nconstexpr int N = 1e5;\r\nFenwickTree<lint> C(N);\r\nint A[N];\r\nmap<int,int>\
     \ id;\r\nlint pushl(lint inv, int i) {\r\n  int vi = id[A[i]];\r\n  inv += C.range_sum(0,\
     \ vi);\r\n  C.add(vi, 1);\r\n  return inv;\r\n}\r\nlint pushr(lint inv, int i)\
     \ {\r\n  int vi = id[A[i]];\r\n  inv += C.range_sum(vi+1, N);\r\n  C.add(vi, 1);\r\
@@ -127,15 +148,15 @@ data:
   - include/mtl/fenwick_tree.hpp
   - include/mtl/bit_manip.hpp
   isVerificationFile: true
-  path: test/yosupo/static_range_inversions_query.test.cpp
+  path: test/yosupo/static_range_inversions_query-mo.test.cpp
   requiredBy: []
-  timestamp: '2023-04-13 21:51:40+09:00'
+  timestamp: '2023-04-14 17:06:05+09:00'
   verificationStatus: TEST_ACCEPTED
   verifiedWith: []
-documentation_of: test/yosupo/static_range_inversions_query.test.cpp
+documentation_of: test/yosupo/static_range_inversions_query-mo.test.cpp
 layout: document
 redirect_from:
-- /verify/test/yosupo/static_range_inversions_query.test.cpp
-- /verify/test/yosupo/static_range_inversions_query.test.cpp.html
-title: test/yosupo/static_range_inversions_query.test.cpp
+- /verify/test/yosupo/static_range_inversions_query-mo.test.cpp
+- /verify/test/yosupo/static_range_inversions_query-mo.test.cpp.html
+title: test/yosupo/static_range_inversions_query-mo.test.cpp
 ---

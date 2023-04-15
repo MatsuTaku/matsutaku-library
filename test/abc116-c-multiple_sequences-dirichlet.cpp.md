@@ -4,7 +4,7 @@ data:
   - icon: ':warning:'
     path: include/mtl/dirichlet.hpp
     title: include/mtl/dirichlet.hpp
-  - icon: ':question:'
+  - icon: ':heavy_check_mark:'
     path: include/mtl/modular.hpp
     title: include/mtl/modular.hpp
   _extendedRequiredBy: []

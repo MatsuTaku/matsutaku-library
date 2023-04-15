@@ -2,13 +2,13 @@
 data:
   _extendedDependsOn: []
   _extendedRequiredBy:
-  - icon: ':question:'
+  - icon: ':heavy_check_mark:'
     path: include/mtl/ordinal_range_search.hpp
     title: Ordinal Range Search
-  - icon: ':question:'
+  - icon: ':heavy_check_mark:'
     path: include/mtl/succinct/binary_set.hpp
     title: include/mtl/succinct/binary_set.hpp
-  - icon: ':question:'
+  - icon: ':heavy_check_mark:'
     path: include/mtl/succinct/rrr.hpp
     title: Succinct bit vector in memory of B(n, u) + O(u log log n / log n) bits
   _extendedVerifiedWith:
@@ -18,12 +18,12 @@ data:
   - icon: ':heavy_check_mark:'
     path: test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
     title: test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
-  - icon: ':x:'
+  - icon: ':heavy_check_mark:'
     path: test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
     title: test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
-  _isVerificationFailed: true
+  _isVerificationFailed: false
   _pathExtension: hpp
-  _verificationStatusIcon: ':question:'
+  _verificationStatusIcon: ':heavy_check_mark:'
   attributes:
     document_title: 'TY: Store increasing sequence of integers.'
     links: []
@@ -83,7 +83,7 @@ data:
   - include/mtl/succinct/rrr.hpp
   - include/mtl/ordinal_range_search.hpp
   timestamp: '2023-04-12 01:55:29+09:00'
-  verificationStatus: LIBRARY_SOME_WA
+  verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
   - test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
   - test/yosupo/rectangle_sum.test.cpp

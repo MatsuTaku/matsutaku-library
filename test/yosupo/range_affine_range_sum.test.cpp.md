@@ -7,7 +7,7 @@ data:
   - icon: ':heavy_check_mark:'
     path: include/mtl/lazy_segment_tree.hpp
     title: include/mtl/lazy_segment_tree.hpp
-  - icon: ':question:'
+  - icon: ':heavy_check_mark:'
     path: include/mtl/modular.hpp
     title: include/mtl/modular.hpp
   _extendedRequiredBy: []

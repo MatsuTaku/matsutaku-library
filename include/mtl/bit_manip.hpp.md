@@ -20,7 +20,7 @@ data:
   - icon: ':heavy_check_mark:'
     path: include/mtl/dual_sparse_table.hpp
     title: Apply to [l, r)
-  - icon: ':question:'
+  - icon: ':heavy_check_mark:'
     path: include/mtl/fenwick_tree.hpp
     title: include/mtl/fenwick_tree.hpp
   - icon: ':heavy_check_mark:'
@@ -38,10 +38,10 @@ data:
   - icon: ':heavy_check_mark:'
     path: include/mtl/ntt.hpp
     title: include/mtl/ntt.hpp
-  - icon: ':question:'
+  - icon: ':heavy_check_mark:'
     path: include/mtl/ordinal_range_search.hpp
     title: Ordinal Range Search
-  - icon: ':question:'
+  - icon: ':heavy_check_mark:'
     path: include/mtl/segment_tree.hpp
     title: include/mtl/segment_tree.hpp
   - icon: ':warning:'
@@ -56,19 +56,19 @@ data:
   - icon: ':warning:'
     path: include/mtl/sparse_table.hpp
     title: include/mtl/sparse_table.hpp
-  - icon: ':question:'
+  - icon: ':heavy_check_mark:'
     path: include/mtl/succinct/binary_set.hpp
     title: include/mtl/succinct/binary_set.hpp
-  - icon: ':question:'
+  - icon: ':heavy_check_mark:'
     path: include/mtl/succinct/bit_vector.hpp
     title: include/mtl/succinct/bit_vector.hpp
-  - icon: ':question:'
+  - icon: ':heavy_check_mark:'
     path: include/mtl/succinct/rrr.hpp
     title: Succinct bit vector in memory of B(n, u) + O(u log log n / log n) bits
-  - icon: ':question:'
+  - icon: ':heavy_check_mark:'
     path: include/mtl/succinct/select.hpp
     title: include/mtl/succinct/select.hpp
-  - icon: ':question:'
+  - icon: ':heavy_check_mark:'
     path: include/mtl/succinct/wavelet_matrix.hpp
     title: include/mtl/succinct/wavelet_matrix.hpp
   - icon: ':warning:'
@@ -121,27 +121,27 @@ data:
     path: test/yosupo/set_xor_min.test.cpp
     title: test/yosupo/set_xor_min.test.cpp
   - icon: ':heavy_check_mark:'
-    path: test/yosupo/static_range_inversions_query.test.cpp
-    title: test/yosupo/static_range_inversions_query.test.cpp
+    path: test/yosupo/static_range_inversions_query-mo.test.cpp
+    title: test/yosupo/static_range_inversions_query-mo.test.cpp
   - icon: ':heavy_check_mark:'
     path: test/yosupo/static_range_sum.test.cpp
     title: test/yosupo/static_range_sum.test.cpp
   - icon: ':heavy_check_mark:'
     path: test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
     title: test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
-  - icon: ':x:'
+  - icon: ':heavy_check_mark:'
     path: test/yosupo/static_rmq.test.cpp
     title: test/yosupo/static_rmq.test.cpp
-  - icon: ':x:'
+  - icon: ':heavy_check_mark:'
     path: test/yosupo/vertex_add_path_sum.test.cpp
     title: test/yosupo/vertex_add_path_sum.test.cpp
-  - icon: ':x:'
+  - icon: ':heavy_check_mark:'
     path: test/yosupo/vertex_add_subtree_sum.test.cpp
     title: test/yosupo/vertex_add_subtree_sum.test.cpp
   - icon: ':heavy_check_mark:'
     path: test/yosupo/yosupo-line_add_get_min.test.cpp
     title: test/yosupo/yosupo-line_add_get_min.test.cpp
-  - icon: ':x:'
+  - icon: ':heavy_check_mark:'
     path: test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
     title: test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
   - icon: ':heavy_check_mark:'
@@ -262,7 +262,6 @@ data:
   verifiedWith:
   - test/succinct/range_kth_smallest.test.cpp
   - test/yuki/yuki-no945_ykc_manju.test.cpp
-  - test/yosupo/static_range_inversions_query.test.cpp
   - test/yosupo/yosupo-segment_add_get_min.test.cpp
   - test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
   - test/yosupo/point_add_range_sum.test.cpp
@@ -280,6 +279,7 @@ data:
   - test/yosupo/point_set_range_composite.test.cpp
   - test/yosupo/associative_array-yft.test.cpp
   - test/yosupo/yosupo-range_affine_point_get.test.cpp
+  - test/yosupo/static_range_inversions_query-mo.test.cpp
   - test/aoj/aoj-the_maximum_number_of_customers.test.cpp
   - test/aoj/aoj-do_use_segment_tree-binary_tree.test.cpp
   - test/aoj/aoj-range_update_query.test.cpp

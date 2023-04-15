@@ -4,38 +4,38 @@ data:
   - icon: ':question:'
     path: include/mtl/bit_manip.hpp
     title: include/mtl/bit_manip.hpp
-  - icon: ':question:'
+  - icon: ':heavy_check_mark:'
     path: include/mtl/fenwick_tree.hpp
     title: include/mtl/fenwick_tree.hpp
-  - icon: ':question:'
+  - icon: ':heavy_check_mark:'
     path: include/mtl/ordinal_range_search.hpp
     title: Ordinal Range Search
-  - icon: ':question:'
+  - icon: ':heavy_check_mark:'
     path: include/mtl/succinct/binary_set.hpp
     title: include/mtl/succinct/binary_set.hpp
-  - icon: ':question:'
+  - icon: ':heavy_check_mark:'
     path: include/mtl/succinct/bit_vector.hpp
     title: include/mtl/succinct/bit_vector.hpp
-  - icon: ':question:'
+  - icon: ':heavy_check_mark:'
     path: include/mtl/succinct/bv.hpp
     title: include/mtl/succinct/bv.hpp
-  - icon: ':question:'
+  - icon: ':heavy_check_mark:'
     path: include/mtl/succinct/rrr.hpp
     title: Succinct bit vector in memory of B(n, u) + O(u log log n / log n) bits
-  - icon: ':question:'
+  - icon: ':heavy_check_mark:'
     path: include/mtl/succinct/select.hpp
     title: include/mtl/succinct/select.hpp
-  - icon: ':question:'
+  - icon: ':heavy_check_mark:'
     path: include/mtl/succinct/ty.hpp
     title: 'TY: Store increasing sequence of integers.'
-  - icon: ':question:'
+  - icon: ':heavy_check_mark:'
     path: include/mtl/succinct/wavelet_matrix.hpp
     title: include/mtl/succinct/wavelet_matrix.hpp
   _extendedRequiredBy: []
   _extendedVerifiedWith: []
-  _isVerificationFailed: true
+  _isVerificationFailed: false
   _pathExtension: cpp
-  _verificationStatusIcon: ':x:'
+  _verificationStatusIcon: ':heavy_check_mark:'
   attributes:
     '*NOT_SPECIAL_COMMENTS*': ''
     PROBLEM: https://judge.yosupo.jp/problem/point_add_rectangle_sum
@@ -790,7 +790,7 @@ data:
   path: test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
   requiredBy: []
   timestamp: '2023-04-14 01:09:23+09:00'
-  verificationStatus: TEST_WRONG_ANSWER
+  verificationStatus: TEST_ACCEPTED
   verifiedWith: []
 documentation_of: test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
 layout: document
