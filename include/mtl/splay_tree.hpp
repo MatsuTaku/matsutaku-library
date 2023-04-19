@@ -1,9 +1,6 @@
 #pragma once
 #include <memory>
 #include <cassert>
-#include <string>
-#include <vector>
-#include <iostream>
 
 template<class NodeType>
 struct SplayTreeNodeBase {

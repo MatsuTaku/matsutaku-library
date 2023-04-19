@@ -50,15 +50,16 @@ struct LinkCutTreeBase : public SplayTreeBase<NodeType> {
 
 template<class M, class O>
 struct LinkCutTreeNode : SplayTreeNodeBase<LinkCutTreeNode<M, O>> {
-    M m, prod;
+    M m, prod, rprod;
     O f;
     using Base = SplayTreeNodeBase<LinkCutTreeNode<M, O>>;
+    LinkCutTreeNode() = default;
     template<class... Args>
     LinkCutTreeNode(Args&&... args) 
-        : Base(), m(args...), prod(std::forward<Args>(args)...), f() {}
+        : Base(), m(std::forward<Args>(args)...), prod(m), f() {}
 };
 
-template<class M, class O>
+template<class M, class O=VoidOperatorMonoid>
 #if __cpp_concepts >= 202002L
 requires IsMonoid<M> && IsOperatorMonoid<O, M>
 #endif
@@ -79,18 +80,22 @@ struct LinkCutTree : LinkCutTreeBase<LinkCutTreeNode<M, O>> {
         for (auto it = first; it != last; ++it)
             nodes[i++] = std::make_shared<node_type>(*it);
     }
-    void reverse_prod(const node_shared& u) const override {}
+    void reverse_prod(const node_shared& u) const override {
+        std::swap(u->prod, u->rprod);
+    }
     void propagate(const node_shared& u) const override {
         bool cl = u->l and u->l->p.lock() == u;
         bool cr = u->r and u->r->p.lock() == u;
         if (cl) {
             u->l->m = u->f.act(u->l->m);
             u->l->prod = u->f.act(u->l->prod);
+            u->l->rprod = u->f.act(u->l->rprod);
             u->l->f *= u->f;
         }
         if (cr) {
             u->r->m = u->f.act(u->r->m);
             u->r->prod = u->f.act(u->r->prod);
+            u->r->rprod = u->f.act(u->r->rprod);
             u->r->f *= u->f;
         }
         if (u->rev) {
@@ -109,10 +114,15 @@ struct LinkCutTree : LinkCutTreeBase<LinkCutTreeNode<M, O>> {
     }
     void aggregate(const node_shared& u) const override {
         u->prod = u->m;
-        if (u->l and u->l->p.lock() == u)
+        u->rprod = u->m;
+        if (u->l and u->l->p.lock() == u) {
             u->prod = u->l->prod * u->prod;
-        if (u->r and u->r->p.lock() == u)
+            u->rprod = u->rprod * u->l->rprod;
+        }
+        if (u->r and u->r->p.lock() == u) {
             u->prod = u->prod * u->r->prod;
+            u->rprod = u->r->rprod * u->rprod;
+        }
     }
     void cut(size_t u, size_t v) const {
         Base::evert(nodes[u]);
@@ -131,12 +141,19 @@ struct LinkCutTree : LinkCutTreeBase<LinkCutTreeNode<M, O>> {
         return nodes[v]->prod;
     }
     template<class... Args>
+    void set(size_t i, Args&&... args) const {
+        auto u = nodes[i];
+        Base::splay(u);
+        u->m = monoid_type(std::forward<Args>(args)...);
+        this->aggregate(u);
+    }
+    template<class... Args>
     void update(size_t i, Args&&... args) const {
         operator_monoid_type f(std::forward<Args>(args)...);
         auto u = nodes[i];
         Base::splay(u);
         u->m = f.act(u->m);
-        Base::splay(u);
+        this->aggregate(u);
     }
     template<class... Args>
     void update(size_t u, size_t v, Args&&... args) const {
@@ -146,6 +163,7 @@ struct LinkCutTree : LinkCutTreeBase<LinkCutTreeNode<M, O>> {
         Base::expose(nv);
         nv->m = f.act(nv->m);
         nv->prod = f.act(nv->prod);
+        nv->rprod = f.act(nv->rprod);
         nv->f *= f;
         Base::splay(nv);
     }

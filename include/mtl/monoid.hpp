@@ -6,9 +6,18 @@
 template<class T, T (*op)(T, T), T (*e)()>
 struct Monoid {
   T x;
-  Monoid(T x=e()) : x(x) {}
+  Monoid() : x(e()) {}
+  template<class... Args>
+  Monoid(Args&&... args) : x(std::forward<Args>(args)...) {}
   Monoid operator*(const Monoid& rhs) const {
     return Monoid(op(x, rhs.x));
+  }
+};
+
+struct VoidMonoid {
+  VoidMonoid() {}
+  VoidMonoid operator*(const VoidMonoid& rhs) const {
+    return VoidMonoid();
   }
 };
 
@@ -47,6 +56,17 @@ struct OperatorMonoid {
     }
     S act(const S& s) const {
         return mapping(f, s);
+    }
+};
+
+struct VoidOperatorMonoid {
+    VoidOperatorMonoid() {}
+    VoidOperatorMonoid& operator*=(const VoidOperatorMonoid& rhs) {
+        return *this;
+    }
+    template<class T>
+    T act(const T& s) const {
+        return s;
     }
 };
 
