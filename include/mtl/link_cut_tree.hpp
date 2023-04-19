@@ -1,5 +1,7 @@
 #include "splay_tree.hpp"
 #include "monoid.hpp"
+#include <vector>
+#include <iostream>
 
 template<class NodeType>
 struct LinkCutTreeBase : public SplayTreeBase<NodeType> {
