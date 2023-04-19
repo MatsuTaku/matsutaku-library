@@ -45,8 +45,6 @@ struct SplayTreeBase {
                 q->l = u;
             else if (q->r == p)
                 q->r = u;
-            else 
-                throw "invalid tree";
         }
     }
     void rotate_right(const node_shared& u) const {
@@ -62,8 +60,6 @@ struct SplayTreeBase {
                 q->l = u;
             else if (q->r == p)
                 q->r = u;
-            else 
-                throw "invalid tree";
         }
     }
     virtual void reverse_prod(const node_shared& u) const {}
