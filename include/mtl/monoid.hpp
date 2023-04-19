@@ -3,10 +3,10 @@
 #include <concepts>
 #endif
 
-template<class T, T (*op)(T, T), T E>
+template<class T, T (*op)(T, T), T (*e)()>
 struct Monoid {
   T x;
-  Monoid(T x=E) : x(x) {}
+  Monoid(T x=e()) : x(x) {}
   Monoid operator*(const Monoid& rhs) const {
     return Monoid(op(x, rhs.x));
   }
@@ -19,10 +19,10 @@ concept IsMonoid = requires (T m) {
 };
 #endif
 
-template<class T, T (*op)(T, T), T E>
-struct CommutativeMonoid : public Monoid<T, op, E> {
-    using Base = Monoid<T, op, E>;
-    CommutativeMonoid(T x=E) : Base(x) {}
+template<class T, T (*op)(T, T), T (*e)()>
+struct CommutativeMonoid : public Monoid<T, op, e> {
+    using Base = Monoid<T, op, e>;
+    CommutativeMonoid(T x=e()) : Base(x) {}
     CommutativeMonoid operator+(const CommutativeMonoid& rhs) const {
         return CommutativeMonoid(*this * rhs);
     }
