@@ -106,6 +106,9 @@ struct Bitmap {
    * No build process is needed
   */
   void build() const {}
+  void move_or_build(Bitmap&& src) {
+    *this = std::move(src);
+  }
   const_iterator begin() const { return const_iterator(arr.data(), 0); }
   iterator begin() { return iterator(arr.data(), 0); }
   const_iterator cbegin() const { return begin(); }

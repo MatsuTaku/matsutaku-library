@@ -25,7 +25,7 @@ struct WaveletMatrix {
   WaveletMatrix(It begin, It end)
       : n(std::distance(begin, end)),
       h(Height == 0 ? std::max(1u, 64 - bm::clz(n ? *max_element(begin, end) : 0)) : H),
-      B(n*h, false),
+      B(),
       rs_b(),
       RO(h+1),
       Z(h)
@@ -39,7 +39,8 @@ struct WaveletMatrix {
     std::vector<T> S(begin, end), z, o;
     z.reserve(n);
     o.reserve(n);
-    auto bit = B.begin();
+    Bitmap _B(n*h, false);
+    auto bit = _B.begin();
     for (int k = h-1; k >= 0; k--) {
       for (size_t i = 0; i < n; i++) {
         bool b = S[i] >> k & 1;
@@ -61,7 +62,7 @@ struct WaveletMatrix {
       }
       assert(j == 0);
     }
-    B.build();
+    B.move_or_build(std::move(_B));
     rs_b.build(&B);
     for (size_t i = 0; i <= h; i++)
       RO[i] = rs_b.rank1(n * i);
