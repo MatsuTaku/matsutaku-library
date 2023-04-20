@@ -58,7 +58,7 @@ struct LinkCutTreeNode : SplayTreeNodeBase<LinkCutTreeNode<M, O>> {
     LinkCutTreeNode() = default;
     template<class... Args>
     LinkCutTreeNode(Args&&... args) 
-        : Base(), m(std::forward<Args>(args)...), prod(m), f() {}
+        : Base(), m(std::forward<Args>(args)...), prod(m), rprod(m), f() {}
 };
 
 template<class M, class O=VoidOperatorMonoid>
@@ -149,17 +149,13 @@ struct LinkCutTree : LinkCutTreeBase<LinkCutTreeNode<M, O>> {
         u->m = monoid_type(std::forward<Args>(args)...);
         this->aggregate(u);
     }
-    template<class... Args>
-    void update(size_t i, Args&&... args) const {
-        operator_monoid_type f(std::forward<Args>(args)...);
+    void update(size_t i, const operator_monoid_type& f) const {
         auto u = nodes[i];
         Base::splay(u);
         u->m = f.act(u->m);
         this->aggregate(u);
     }
-    template<class... Args>
-    void update(size_t u, size_t v, Args&&... args) const {
-        operator_monoid_type f(std::forward<Args>(args)...);
+    void update(size_t u, size_t v, const operator_monoid_type& f) const {
         Base::evert(nodes[u]);
         auto nv = nodes[v];
         Base::expose(nv);
