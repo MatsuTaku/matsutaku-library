@@ -9,7 +9,7 @@
 #include <queue>
 #include <tuple>
 
-template<class T, class BitmapType = Bitmap>
+template<class T, class BitmapType = Bitmap, unsigned Height = 0>
 struct WaveletMatrix {
   static constexpr unsigned H = 64 - bm::clz(std::numeric_limits<T>::max());
 
@@ -24,7 +24,7 @@ struct WaveletMatrix {
   template<typename It>
   WaveletMatrix(It begin, It end)
       : n(std::distance(begin, end)),
-      h(std::max(1u, 64 - bm::clz(*max_element(begin, end)))),
+      h(Height == 0 ? std::max(1u, 64 - bm::clz(n ? *max_element(begin, end) : 0)) : H),
       B(n*h, false),
       rs_b(),
       RO(h+1),
@@ -33,6 +33,7 @@ struct WaveletMatrix {
     using trait = std::iterator_traits<It>;
     static_assert(std::is_base_of<std::input_iterator_tag, typename trait::iterator_category>::value, "");
     static_assert(std::is_convertible<typename trait::value_type, T>::value, "");
+    if (n == 0) return;
     assert(*min_element(begin, end) >= 0);
 
     std::vector<T> S(begin, end), z, o;
@@ -150,9 +151,7 @@ struct WaveletMatrix {
   }
 
   size_t range_rank(T c, size_t l, size_t r) const {
-    for (int k = h-1; k >= 0; k--) {
-      if (l == r)
-        break;
+    for (int k = h-1; k >= 0 and l < r; k--) {
       std::tie(l,r) = child_tie(h-1-k, l, r, (c >> k) & 1u);
     }
     return r - l;
@@ -179,6 +178,7 @@ struct WaveletMatrix {
 
   /// Get frequency of values which (x <= value < y) in S[l,r).
   size_t range_freq(size_t l, size_t r, T x, T y) const {
+    if (l == r) return 0;
     size_t freq = 0;
     std::queue<std::tuple<size_t,size_t, T>> qs;
     qs.emplace(l, r, T(0));
@@ -187,9 +187,8 @@ struct WaveletMatrix {
       T c;
       std::tie(_l,_r,c) = qs.front();
       qs.pop();
+      assert(_l < _r);
       size_t level = _l/n;
-      if (_l == _r)
-        continue;
       int shift = h-1-level;
       T clo = c, chi = c | ((1ull<<(shift+1))-1);
       if (chi < x or y <= clo)
@@ -201,9 +200,11 @@ struct WaveletMatrix {
       assert(level < h);
       size_t nl,nr;
       std::tie(nl,nr) = child_tie(level, _l, _r, 0);
-      qs.emplace(nl, nr, c);
+      if (nl < nr)
+        qs.emplace(nl, nr, c);
       std::tie(nl,nr) = child_tie(level, _l, _r, 1);
-      qs.emplace(nl, nr, c | (1ull << shift));
+      if (nl < nr)
+        qs.emplace(nl, nr, c | (1ull << shift));
     }
     return freq;
   }
