@@ -57,24 +57,25 @@ data:
     \ (M m) {\n  {m * m} -> std::same_as<M>;\n};\ntemplate<typename A, typename M>\n\
     concept LazySegmentTreeOperatorMonoid = requires(A a, M m) {\n  {a()} -> std::same_as<bool>;\n\
     \  {a *= a} -> std::same_as<A>;\n  {a.act(m, 1)} -> std::same_as<M>;\n};\n#endif\n\
-    \ntemplate <typename M, typename A>\nclass LazySegmentTree {\n#if __cpp_concepts\
-    \ >= 202002L\n  static_assert(LazySegmentTreeMonoid<M>);\n  static_assert(LazySegmentTreeOperatorMonoid<A,M>);\n\
-    #endif\n private:\n  size_t size_;\n  std::vector<std::pair<M,A>> tree_;\n  std::vector<std::pair<size_t,\
-    \ size_t>> ids_;\n\n public:\n  explicit LazySegmentTree(size_t size) :\n    \
-    \  size_(1ull<<(64-bm::clz(size-1))),\n      tree_(size_*2) {\n    ids_.reserve((64-bm::clz(size-1))*2);\n\
-    \  }\n\n  template <typename Iter>\n  explicit LazySegmentTree(Iter begin, Iter\
-    \ end)\n    : LazySegmentTree(std::distance(begin, end)) {\n    static_assert(std::is_convertible<typename\
-    \ std::iterator_traits<Iter>::value_type, M>::value, \"\");\n    for (auto it\
-    \ = begin; it != end; ++it) {\n      tree_[size_ + it - begin].first = *it;\n\
-    \    }\n    for (size_t i = size_-1; i > 0; i--) {\n      tree_[i].first = tree_[i*2].first\
-    \ * tree_[i*2+1].first;\n    }\n  }\n\n  void range_update(size_t l, size_t r,\
-    \ const A& e) {\n    assert(l <= r and r <= size_);\n    if (l == r) return;\n\
-    \    _set_ids(l, r);\n    for (int i = ids_.size()-1; i >= 0; --i) {\n      _propagate(ids_[i].first,\
-    \ ids_[i].second);\n    }\n\n    for (size_t _l=l+size_, _r=r+size_, s=1; _l<_r;\
-    \ _l>>=1, _r>>=1, s*=2) {\n      if (_l&1) {\n        tree_[_l].second *= e;\n\
-    \        ++_l;\n      }\n      if (_r&1) {\n        --_r;\n        tree_[_r].second\
-    \ *= e;\n      }\n    }\n\n    for (auto is : ids_) {\n      auto id = is.first;\n\
-    \      auto sz = is.second;\n      _propagate(id*2, sz/2);\n      _propagate(id*2+1,\
+    \n\n\ntemplate <typename M, typename A>\n#if __cpp_concepts >= 202002L\nrequired\
+    \ LazySegmentTreeMonoid<M> &&\n         LazySegmentTreeOperatorMonoid<A,M>\n#endif\n\
+    class LazySegmentTree {\n private:\n  size_t size_;\n  std::vector<std::pair<M,A>>\
+    \ tree_;\n  std::vector<std::pair<size_t, size_t>> ids_;\n\n public:\n  explicit\
+    \ LazySegmentTree(size_t size) :\n      size_(1ull<<(64-bm::clz(size-1))),\n \
+    \     tree_(size_*2) {\n    ids_.reserve((64-bm::clz(size-1))*2);\n  }\n\n  template\
+    \ <typename Iter>\n  explicit LazySegmentTree(Iter begin, Iter end)\n    : LazySegmentTree(std::distance(begin,\
+    \ end)) {\n    static_assert(std::is_convertible<typename std::iterator_traits<Iter>::value_type,\
+    \ M>::value, \"\");\n    for (auto it = begin; it != end; ++it) {\n      tree_[size_\
+    \ + it - begin].first = *it;\n    }\n    for (size_t i = size_-1; i > 0; i--)\
+    \ {\n      tree_[i].first = tree_[i*2].first * tree_[i*2+1].first;\n    }\n  }\n\
+    \n  void range_update(size_t l, size_t r, const A& e) {\n    assert(l <= r and\
+    \ r <= size_);\n    if (l == r) return;\n    _set_ids(l, r);\n    for (int i =\
+    \ ids_.size()-1; i >= 0; --i) {\n      _propagate(ids_[i].first, ids_[i].second);\n\
+    \    }\n\n    for (size_t _l=l+size_, _r=r+size_, s=1; _l<_r; _l>>=1, _r>>=1,\
+    \ s*=2) {\n      if (_l&1) {\n        tree_[_l].second *= e;\n        ++_l;\n\
+    \      }\n      if (_r&1) {\n        --_r;\n        tree_[_r].second *= e;\n \
+    \     }\n    }\n\n    for (auto is : ids_) {\n      auto id = is.first;\n    \
+    \  auto sz = is.second;\n      _propagate(id*2, sz/2);\n      _propagate(id*2+1,\
     \ sz/2);\n      tree_[id].first = tree_[id*2].first * tree_[id*2+1].first;\n \
     \   }\n  }\n  inline void update(size_t l, size_t r, const A& e) {\n    range_update(l,\
     \ r, e);\n  }\n  inline void update(size_t i, const A& e) {\n    range_update(i,\
@@ -105,10 +106,10 @@ data:
     \ M>\nconcept LazySegmentTreeMonoid = requires (M m) {\n  {m * m} -> std::same_as<M>;\n\
     };\ntemplate<typename A, typename M>\nconcept LazySegmentTreeOperatorMonoid =\
     \ requires(A a, M m) {\n  {a()} -> std::same_as<bool>;\n  {a *= a} -> std::same_as<A>;\n\
-    \  {a.act(m, 1)} -> std::same_as<M>;\n};\n#endif\n\ntemplate <typename M, typename\
-    \ A>\nclass LazySegmentTree {\n#if __cpp_concepts >= 202002L\n  static_assert(LazySegmentTreeMonoid<M>);\n\
-    \  static_assert(LazySegmentTreeOperatorMonoid<A,M>);\n#endif\n private:\n  size_t\
-    \ size_;\n  std::vector<std::pair<M,A>> tree_;\n  std::vector<std::pair<size_t,\
+    \  {a.act(m, 1)} -> std::same_as<M>;\n};\n#endif\n\n\n\ntemplate <typename M,\
+    \ typename A>\n#if __cpp_concepts >= 202002L\nrequired LazySegmentTreeMonoid<M>\
+    \ &&\n         LazySegmentTreeOperatorMonoid<A,M>\n#endif\nclass LazySegmentTree\
+    \ {\n private:\n  size_t size_;\n  std::vector<std::pair<M,A>> tree_;\n  std::vector<std::pair<size_t,\
     \ size_t>> ids_;\n\n public:\n  explicit LazySegmentTree(size_t size) :\n    \
     \  size_(1ull<<(64-bm::clz(size-1))),\n      tree_(size_*2) {\n    ids_.reserve((64-bm::clz(size-1))*2);\n\
     \  }\n\n  template <typename Iter>\n  explicit LazySegmentTree(Iter begin, Iter\
@@ -154,7 +155,7 @@ data:
   isVerificationFile: false
   path: include/mtl/lazy_segment_tree.hpp
   requiredBy: []
-  timestamp: '2023-04-13 21:51:40+09:00'
+  timestamp: '2023-04-19 10:11:27+09:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
   - test/yosupo/range_affine_range_sum.test.cpp

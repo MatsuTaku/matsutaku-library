@@ -52,40 +52,40 @@ data:
     \ | ((x & 0xCCCCCCCCCCCCCCCC) >> 2);\n  x = ((x & 0x5555555555555555) << 1) |\
     \ ((x & 0xAAAAAAAAAAAAAAAA) >> 1);\n  return x;\n}\n\n} // namespace bm\n#line\
     \ 3 \"include/mtl/dual_segment_tree.hpp\"\n#include <cstddef>\n#include <vector>\n\
-    #include <algorithm>\n#line 7 \"include/mtl/dual_segment_tree.hpp\"\n#if _cplusplus\
-    \ >= 202002L\n#include <concept>\n\ntemplate<typename M>\nconcept DualSegmentTreeMonoid\
-    \ = requires (M m) {\n  {m *= m} -> std::same_as<M>;\n};\n#endif\n\ntemplate <typename\
-    \ M>\nclass DualSegmentTree {\n#if _cplusplus >= 202002L\n  static_assert(DualSegmentTreeMonoid<M>);\n\
-    #endif\n private:\n  size_t size_;\n  std::vector<M> tree_;\n  std::vector<std::pair<size_t,\
-    \ size_t>> ids_;\n\n  int log(size_t x) const {\n    return 64 - bm::clz(x-1);\n\
-    \  }\n\n public:\n  explicit DualSegmentTree(size_t size) :\n      size_(1ull<<log(size)),\n\
-    \      tree_(size_*2) {\n    ids_.reserve(log(size)*2);\n  }\n\n  template <typename\
-    \ Iter>\n  explicit DualSegmentTree(Iter begin, Iter end)\n    : DualSegmentTree(std::distance(begin,\
-    \ end)) {\n    static_assert(std::is_convertible<typename std::iterator_traits<Iter>::value_type,\
-    \ M>::value, \"\");\n    std::copy(begin, end, tree_.begin()+size_);\n  }\n\n\
-    \  void update(size_t l, size_t r, const M& e) {\n    assert(l <= r and r <= size_);\n\
-    \    if (l == r) return;\n    _set_ids(l, r);\n    for (int i = ids_.size()-1;\
-    \ i >= 0; --i) \n      _propagate(ids_[i].first, ids_[i].second);\n\n    for (size_t\
-    \ _l=l+size_, _r=r+size_, s=1; _l<_r; _l>>=1, _r>>=1, s*=2) {\n      if (_l&1)\
-    \ {\n        tree_[_l] *= e;\n        ++_l;\n      }\n      if (_r&1) {\n    \
-    \    --_r;\n        tree_[_r] *= e;\n      }\n    }\n  }\n  void update(size_t\
-    \ i, const M& e) {\n    update(i, i+1, e);\n  }\n\n  M get(size_t index) {\n \
-    \   assert(index < size_);\n    _set_ids(index, index+1);\n    for (int i = ids_.size()-1;\
-    \ i >= 0; --i) \n      _propagate(ids_[i].first, ids_[i].second);\n    return\
-    \ tree_[size_ + index];\n  }\n\n private:\n  void _set_ids(size_t l, size_t r)\
-    \ {\n    ids_.clear();\n    auto _l=l+size_, _r=r+size_;\n    auto lth = _l/(_l&(-_l))/2;\n\
-    \    auto rth = _r/(_r&(-_r))/2;\n    size_t s = 1;\n    for (; _l<_r; _l>>=1,\
-    \ _r>>=1, s*=2) {\n      if (_r <= rth) ids_.emplace_back(_r, s);\n      if (_l\
-    \ <= lth) ids_.emplace_back(_l, s);\n    }\n    for (; _l>0; _l>>=1, s*=2) {\n\
-    \      ids_.emplace_back(_l, s);\n    }\n  }\n\n  void _propagate(size_t id, size_t\
-    \ sz) {\n    if (id >= size_) return;\n    M e = tree_[id];\n    tree_[id] = M();\n\
-    \    tree_[id*2] *= e;\n    tree_[id*2+1] *= e;\n  }\n\n};\n\n"
+    #include <algorithm>\n#line 7 \"include/mtl/dual_segment_tree.hpp\"\n#if __cpp_concepts\
+    \ >= 202002L\n#include <concepts>\n\ntemplate<typename M>\nconcept IdDualSegmentTreeMonoid\
+    \ = requires (M m) {\n  {m *= m} -> std::same_as<M>;\n};\n#endif\n\ntemplate <\n\
+    #if __cpp_concepts >= 202002L\n  IdDualSegmentTreeMonoid\n#else\n  class\n#endif\n\
+    \    M\n>\nclass DualSegmentTree {\n private:\n  size_t size_;\n  std::vector<M>\
+    \ tree_;\n  std::vector<std::pair<size_t, size_t>> ids_;\n\n  int log(size_t x)\
+    \ const {\n    return 64 - bm::clz(x-1);\n  }\n\n public:\n  explicit DualSegmentTree(size_t\
+    \ size) :\n      size_(1ull<<log(size)),\n      tree_(size_*2) {\n    ids_.reserve(log(size)*2);\n\
+    \  }\n\n  template <typename Iter>\n  explicit DualSegmentTree(Iter begin, Iter\
+    \ end)\n    : DualSegmentTree(std::distance(begin, end)) {\n    static_assert(std::is_convertible<typename\
+    \ std::iterator_traits<Iter>::value_type, M>::value, \"\");\n    std::copy(begin,\
+    \ end, tree_.begin()+size_);\n  }\n\n  void update(size_t l, size_t r, const M&\
+    \ e) {\n    assert(l <= r and r <= size_);\n    if (l == r) return;\n    _set_ids(l,\
+    \ r);\n    for (int i = ids_.size()-1; i >= 0; --i) \n      _propagate(ids_[i].first,\
+    \ ids_[i].second);\n\n    for (size_t _l=l+size_, _r=r+size_, s=1; _l<_r; _l>>=1,\
+    \ _r>>=1, s*=2) {\n      if (_l&1) {\n        tree_[_l] *= e;\n        ++_l;\n\
+    \      }\n      if (_r&1) {\n        --_r;\n        tree_[_r] *= e;\n      }\n\
+    \    }\n  }\n  void update(size_t i, const M& e) {\n    update(i, i+1, e);\n \
+    \ }\n\n  M get(size_t index) {\n    assert(index < size_);\n    _set_ids(index,\
+    \ index+1);\n    for (int i = ids_.size()-1; i >= 0; --i) \n      _propagate(ids_[i].first,\
+    \ ids_[i].second);\n    return tree_[size_ + index];\n  }\n\n private:\n  void\
+    \ _set_ids(size_t l, size_t r) {\n    ids_.clear();\n    auto _l=l+size_, _r=r+size_;\n\
+    \    auto lth = _l/(_l&(-_l))/2;\n    auto rth = _r/(_r&(-_r))/2;\n    size_t\
+    \ s = 1;\n    for (; _l<_r; _l>>=1, _r>>=1, s*=2) {\n      if (_r <= rth) ids_.emplace_back(_r,\
+    \ s);\n      if (_l <= lth) ids_.emplace_back(_l, s);\n    }\n    for (; _l>0;\
+    \ _l>>=1, s*=2) {\n      ids_.emplace_back(_l, s);\n    }\n  }\n\n  void _propagate(size_t\
+    \ id, size_t sz) {\n    if (id >= size_) return;\n    M e = tree_[id];\n    tree_[id]\
+    \ = M();\n    tree_[id*2] *= e;\n    tree_[id*2+1] *= e;\n  }\n\n};\n\n"
   code: "#pragma once\n#include \"bit_manip.hpp\"\n#include <cstddef>\n#include <vector>\n\
-    #include <algorithm>\n#include <cassert>\n#if _cplusplus >= 202002L\n#include\
-    \ <concept>\n\ntemplate<typename M>\nconcept DualSegmentTreeMonoid = requires\
-    \ (M m) {\n  {m *= m} -> std::same_as<M>;\n};\n#endif\n\ntemplate <typename M>\n\
-    class DualSegmentTree {\n#if _cplusplus >= 202002L\n  static_assert(DualSegmentTreeMonoid<M>);\n\
-    #endif\n private:\n  size_t size_;\n  std::vector<M> tree_;\n  std::vector<std::pair<size_t,\
+    #include <algorithm>\n#include <cassert>\n#if __cpp_concepts >= 202002L\n#include\
+    \ <concepts>\n\ntemplate<typename M>\nconcept IdDualSegmentTreeMonoid = requires\
+    \ (M m) {\n  {m *= m} -> std::same_as<M>;\n};\n#endif\n\ntemplate <\n#if __cpp_concepts\
+    \ >= 202002L\n  IdDualSegmentTreeMonoid\n#else\n  class\n#endif\n    M\n>\nclass\
+    \ DualSegmentTree {\n private:\n  size_t size_;\n  std::vector<M> tree_;\n  std::vector<std::pair<size_t,\
     \ size_t>> ids_;\n\n  int log(size_t x) const {\n    return 64 - bm::clz(x-1);\n\
     \  }\n\n public:\n  explicit DualSegmentTree(size_t size) :\n      size_(1ull<<log(size)),\n\
     \      tree_(size_*2) {\n    ids_.reserve(log(size)*2);\n  }\n\n  template <typename\
@@ -114,7 +114,7 @@ data:
   isVerificationFile: false
   path: include/mtl/dual_segment_tree.hpp
   requiredBy: []
-  timestamp: '2023-04-06 14:40:12+09:00'
+  timestamp: '2023-04-19 10:11:27+09:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
   - test/yosupo/yosupo-range_affine_point_get.test.cpp

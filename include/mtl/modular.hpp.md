@@ -19,6 +19,12 @@ data:
     path: test/yosupo/convolution.test.cpp
     title: test/yosupo/convolution.test.cpp
   - icon: ':heavy_check_mark:'
+    path: test/yosupo/dynamic_sequence_range_affine_range_sum.test.cpp
+    title: test/yosupo/dynamic_sequence_range_affine_range_sum.test.cpp
+  - icon: ':heavy_check_mark:'
+    path: test/yosupo/dynamic_tree_vertex_set_path_composite.test.cpp
+    title: test/yosupo/dynamic_tree_vertex_set_path_composite.test.cpp
+  - icon: ':heavy_check_mark:'
     path: test/yosupo/point_set_range_composite.test.cpp
     title: test/yosupo/point_set_range_composite.test.cpp
   - icon: ':heavy_check_mark:'
@@ -146,6 +152,8 @@ data:
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
   - test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
+  - test/yosupo/dynamic_sequence_range_affine_range_sum.test.cpp
+  - test/yosupo/dynamic_tree_vertex_set_path_composite.test.cpp
   - test/yosupo/convolution.test.cpp
   - test/yosupo/range_affine_range_sum.test.cpp
   - test/yosupo/vertex_set_path_composite.test.cpp

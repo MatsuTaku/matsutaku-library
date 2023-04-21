@@ -54,12 +54,12 @@ data:
     \ >> 2);\n  x = ((x & 0x5555555555555555) << 1) | ((x & 0xAAAAAAAAAAAAAAAA) >>\
     \ 1);\n  return x;\n}\n\n} // namespace bm\n#line 3 \"include/mtl/dual_segment_tree.hpp\"\
     \n#include <cstddef>\n#include <vector>\n#include <algorithm>\n#line 7 \"include/mtl/dual_segment_tree.hpp\"\
-    \n#if _cplusplus >= 202002L\n#include <concept>\n\ntemplate<typename M>\nconcept\
-    \ DualSegmentTreeMonoid = requires (M m) {\n  {m *= m} -> std::same_as<M>;\n};\n\
-    #endif\n\ntemplate <typename M>\nclass DualSegmentTree {\n#if _cplusplus >= 202002L\n\
-    \  static_assert(DualSegmentTreeMonoid<M>);\n#endif\n private:\n  size_t size_;\n\
-    \  std::vector<M> tree_;\n  std::vector<std::pair<size_t, size_t>> ids_;\n\n \
-    \ int log(size_t x) const {\n    return 64 - bm::clz(x-1);\n  }\n\n public:\n\
+    \n#if __cpp_concepts >= 202002L\n#include <concepts>\n\ntemplate<typename M>\n\
+    concept IdDualSegmentTreeMonoid = requires (M m) {\n  {m *= m} -> std::same_as<M>;\n\
+    };\n#endif\n\ntemplate <\n#if __cpp_concepts >= 202002L\n  IdDualSegmentTreeMonoid\n\
+    #else\n  class\n#endif\n    M\n>\nclass DualSegmentTree {\n private:\n  size_t\
+    \ size_;\n  std::vector<M> tree_;\n  std::vector<std::pair<size_t, size_t>> ids_;\n\
+    \n  int log(size_t x) const {\n    return 64 - bm::clz(x-1);\n  }\n\n public:\n\
     \  explicit DualSegmentTree(size_t size) :\n      size_(1ull<<log(size)),\n  \
     \    tree_(size_*2) {\n    ids_.reserve(log(size)*2);\n  }\n\n  template <typename\
     \ Iter>\n  explicit DualSegmentTree(Iter begin, Iter end)\n    : DualSegmentTree(std::distance(begin,\
@@ -110,7 +110,7 @@ data:
   isVerificationFile: true
   path: test/aoj/aoj-range_update_query.test.cpp
   requiredBy: []
-  timestamp: '2023-04-08 02:15:04+09:00'
+  timestamp: '2023-04-19 10:11:27+09:00'
   verificationStatus: TEST_ACCEPTED
   verifiedWith: []
 documentation_of: test/aoj/aoj-range_update_query.test.cpp

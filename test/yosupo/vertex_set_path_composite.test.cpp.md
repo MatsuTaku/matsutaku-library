@@ -81,33 +81,38 @@ data:
     \ u, Add A, const T& val) const {\n    while (u != -1) {\n      A(in[u], val);\n\
     \      u = par[head[u]];\n    }\n  }\n};\n#line 2 \"include/mtl/monoid.hpp\"\n\
     #if __cpp_concepts >= 202002L\n#include <concepts>\n#endif\n\ntemplate<class T,\
-    \ T (*op)(T, T), T E>\nstruct Monoid {\n  T x;\n  Monoid(T x=E) : x(x) {}\n  Monoid\
-    \ operator*(const Monoid& rhs) const {\n    return Monoid(op(x, rhs.x));\n  }\n\
-    };\n\n#if __cpp_concepts >= 202002L\ntemplate<class T>\nconcept IsMonoid = requires\
-    \ (T m) {\n  { m * m } -> std::same_as<T>;\n};\n#endif\n\ntemplate<class T, T\
-    \ (*op)(T, T), T E>\nstruct CommutativeMonoid : public Monoid<T, op, E> {\n  \
-    \  using Base = Monoid<T, op, E>;\n    CommutativeMonoid(T x=E) : Base(x) {}\n\
-    \    CommutativeMonoid operator+(const CommutativeMonoid& rhs) const {\n     \
-    \   return CommutativeMonoid(*this * rhs);\n    }\n};\n\n#if __cpp_concepts >=\
-    \ 202002L\ntemplate<class T>\nconcept IsCommutativeMonoid = requires (T m) {\n\
-    \  { m + m } -> std::same_as<T>;\n};\n#endif\n\ntemplate<class S, class F, S (*mapping)(F,\
-    \ S), S (*composition)(F, S), F (*id)()>\nstruct OperatorMonoid {\n    F f;\n\
-    \    OperatorMonoid() : f(id()) {}\n    template<class... Args>\n    OperatorMonoid(Args&&...\
-    \ args) : f(std::forward<Args>(args)...) {}\n    OperatorMonoid& operator*=(const\
-    \ OperatorMonoid& rhs) {\n        f = composition(rhs.f, f);\n        return *this;\n\
-    \    }\n    S act(const S& s) const {\n        return mapping(f, s);\n    }\n\
-    };\n\n#if __cpp_concepts >= 202002L\ntemplate<class F, class S>\nconcept IsOperatorMonoid\
-    \ = requires (F f, S s) {\n    { f *= f } -> std::same_as<F&>;\n    { f.act(s)\
-    \ } -> std::same_as<S>;\n};\n#endif\n#line 5 \"include/mtl/segment_hld.hpp\"\n\
-    #include <cassert>\r\n\r\ntemplate<typename Node>\r\nclass SegmentHldBase {\r\n\
-    \ public:\r\n  using monoid_type = typename Node::monoid_type;\r\n protected:\r\
-    \n  int n_;\r\n  std::vector<Node> tree_;\r\n  std::vector<int> target_;\r\n public:\r\
-    \n  explicit SegmentHldBase(const Hld& tree) : n_(tree.n), target_(n_) {\r\n \
-    \   std::vector<long long> cw(n_+1);\r\n    for (int i = 0; i < n_; i++) {\r\n\
-    \      auto w = tree.size[i];\r\n      if (!tree.edge[i].empty() and tree.edge[i][0]\
-    \ != tree.par[i])\r\n        w -= tree.size[tree.edge[i][0]];\r\n      cw[i+1]\
-    \ = cw[i] + w;\r\n    }\r\n    tree_.reserve(n_*2);\r\n    tree_.resize(1);\r\n\
-    \    tree_[0].l = 0;\r\n    tree_[0].r = n_;\r\n    for (int i = 0; i < (int)tree_.size();\
+    \ T (*op)(T, T), T (*e)()>\nstruct Monoid {\n  T x;\n  Monoid() : x(e()) {}\n\
+    \  template<class... Args>\n  Monoid(Args&&... args) : x(std::forward<Args>(args)...)\
+    \ {}\n  Monoid operator*(const Monoid& rhs) const {\n    return Monoid(op(x, rhs.x));\n\
+    \  }\n};\n\nstruct VoidMonoid {\n  VoidMonoid() {}\n  VoidMonoid operator*(const\
+    \ VoidMonoid& rhs) const {\n    return VoidMonoid();\n  }\n};\n\n#if __cpp_concepts\
+    \ >= 202002L\ntemplate<class T>\nconcept IsMonoid = requires (T m) {\n  { m *\
+    \ m } -> std::same_as<T>;\n};\n#endif\n\ntemplate<class T, T (*op)(T, T), T (*e)()>\n\
+    struct CommutativeMonoid : public Monoid<T, op, e> {\n    using Base = Monoid<T,\
+    \ op, e>;\n    CommutativeMonoid(T x=e()) : Base(x) {}\n    CommutativeMonoid\
+    \ operator+(const CommutativeMonoid& rhs) const {\n        return CommutativeMonoid(*this\
+    \ * rhs);\n    }\n};\n\n#if __cpp_concepts >= 202002L\ntemplate<class T>\nconcept\
+    \ IsCommutativeMonoid = requires (T m) {\n  { m + m } -> std::same_as<T>;\n};\n\
+    #endif\n\ntemplate<class S, class F, S (*mapping)(F, S), S (*composition)(F, S),\
+    \ F (*id)()>\nstruct OperatorMonoid {\n    F f;\n    OperatorMonoid() : f(id())\
+    \ {}\n    template<class... Args>\n    OperatorMonoid(Args&&... args) : f(std::forward<Args>(args)...)\
+    \ {}\n    OperatorMonoid& operator*=(const OperatorMonoid& rhs) {\n        f =\
+    \ composition(rhs.f, f);\n        return *this;\n    }\n    S act(const S& s)\
+    \ const {\n        return mapping(f, s);\n    }\n};\n\nstruct VoidOperatorMonoid\
+    \ {\n    VoidOperatorMonoid() {}\n    VoidOperatorMonoid& operator*=(const VoidOperatorMonoid&\
+    \ rhs) {\n        return *this;\n    }\n    template<class T>\n    T act(const\
+    \ T& s) const {\n        return s;\n    }\n};\n\n#if __cpp_concepts >= 202002L\n\
+    template<class F, class S>\nconcept IsOperatorMonoid = requires (F f, S s) {\n\
+    \    { f *= f } -> std::same_as<F&>;\n    { f.act(s) } -> std::same_as<S>;\n};\n\
+    #endif\n#line 5 \"include/mtl/segment_hld.hpp\"\n#include <cassert>\r\n\r\ntemplate<typename\
+    \ Node>\r\nclass SegmentHldBase {\r\n public:\r\n  using monoid_type = typename\
+    \ Node::monoid_type;\r\n protected:\r\n  int n_;\r\n  std::vector<Node> tree_;\r\
+    \n  std::vector<int> target_;\r\n public:\r\n  explicit SegmentHldBase(const Hld&\
+    \ tree) : n_(tree.n), target_(n_) {\r\n    std::vector<long long> cw(n_+1);\r\n\
+    \    for (int i = 0; i < n_; i++) {\r\n      auto w = tree.size[i];\r\n      if\
+    \ (!tree.edge[i].empty() and tree.edge[i][0] != tree.par[i])\r\n        w -= tree.size[tree.edge[i][0]];\r\
+    \n      cw[i+1] = cw[i] + w;\r\n    }\r\n    tree_.reserve(n_*2);\r\n    tree_.resize(1);\r\
+    \n    tree_[0].l = 0;\r\n    tree_[0].r = n_;\r\n    for (int i = 0; i < (int)tree_.size();\
     \ i++) {\r\n      if (tree_[i].size() == 1) {\r\n        target_[tree_[i].l] =\
     \ i;\r\n        continue;\r\n      }\r\n      auto l = tree_[i].l;\r\n      auto\
     \ r = tree_[i].r;\r\n      auto mid = upper_bound(cw.begin()+l, cw.begin()+r,\
@@ -290,7 +295,7 @@ data:
   isVerificationFile: true
   path: test/yosupo/vertex_set_path_composite.test.cpp
   requiredBy: []
-  timestamp: '2023-04-13 21:51:40+09:00'
+  timestamp: '2023-04-20 08:14:31+09:00'
   verificationStatus: TEST_ACCEPTED
   verifiedWith: []
 documentation_of: test/yosupo/vertex_set_path_composite.test.cpp

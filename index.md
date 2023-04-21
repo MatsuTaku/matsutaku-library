@@ -81,6 +81,9 @@ data:
     - icon: ':heavy_check_mark:'
       path: include/mtl/li_chao_tree.hpp
       title: include/mtl/li_chao_tree.hpp
+    - icon: ':heavy_check_mark:'
+      path: include/mtl/link_cut_tree.hpp
+      title: include/mtl/link_cut_tree.hpp
     - icon: ':warning:'
       path: include/mtl/matrix.hpp
       title: include/mtl/matrix.hpp
@@ -147,6 +150,12 @@ data:
     - icon: ':warning:'
       path: include/mtl/sparse_table.hpp
       title: include/mtl/sparse_table.hpp
+    - icon: ':heavy_check_mark:'
+      path: include/mtl/splay_tree.hpp
+      title: include/mtl/splay_tree.hpp
+    - icon: ':heavy_check_mark:'
+      path: include/mtl/splay_tree_list.hpp
+      title: include/mtl/splay_tree_list.hpp
     - icon: ':question:'
       path: include/mtl/treap.hpp
       title: include/mtl/treap.hpp
@@ -389,6 +398,15 @@ data:
     - icon: ':heavy_check_mark:'
       path: test/yosupo/double_ended_priority_queue.test.cpp
       title: test/yosupo/double_ended_priority_queue.test.cpp
+    - icon: ':heavy_check_mark:'
+      path: test/yosupo/dynamic_sequence_range_affine_range_sum.test.cpp
+      title: test/yosupo/dynamic_sequence_range_affine_range_sum.test.cpp
+    - icon: ':heavy_check_mark:'
+      path: test/yosupo/dynamic_tree_vertex_add_path_sum.test.cpp
+      title: test/yosupo/dynamic_tree_vertex_add_path_sum.test.cpp
+    - icon: ':heavy_check_mark:'
+      path: test/yosupo/dynamic_tree_vertex_set_path_composite.test.cpp
+      title: test/yosupo/dynamic_tree_vertex_set_path_composite.test.cpp
     - icon: ':heavy_check_mark:'
       path: test/yosupo/persistent_queue.test.cpp
       title: test/yosupo/persistent_queue.test.cpp

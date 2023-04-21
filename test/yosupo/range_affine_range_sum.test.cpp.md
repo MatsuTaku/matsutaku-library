@@ -61,10 +61,10 @@ data:
     concept LazySegmentTreeMonoid = requires (M m) {\n  {m * m} -> std::same_as<M>;\n\
     };\ntemplate<typename A, typename M>\nconcept LazySegmentTreeOperatorMonoid =\
     \ requires(A a, M m) {\n  {a()} -> std::same_as<bool>;\n  {a *= a} -> std::same_as<A>;\n\
-    \  {a.act(m, 1)} -> std::same_as<M>;\n};\n#endif\n\ntemplate <typename M, typename\
-    \ A>\nclass LazySegmentTree {\n#if __cpp_concepts >= 202002L\n  static_assert(LazySegmentTreeMonoid<M>);\n\
-    \  static_assert(LazySegmentTreeOperatorMonoid<A,M>);\n#endif\n private:\n  size_t\
-    \ size_;\n  std::vector<std::pair<M,A>> tree_;\n  std::vector<std::pair<size_t,\
+    \  {a.act(m, 1)} -> std::same_as<M>;\n};\n#endif\n\n\n\ntemplate <typename M,\
+    \ typename A>\n#if __cpp_concepts >= 202002L\nrequired LazySegmentTreeMonoid<M>\
+    \ &&\n         LazySegmentTreeOperatorMonoid<A,M>\n#endif\nclass LazySegmentTree\
+    \ {\n private:\n  size_t size_;\n  std::vector<std::pair<M,A>> tree_;\n  std::vector<std::pair<size_t,\
     \ size_t>> ids_;\n\n public:\n  explicit LazySegmentTree(size_t size) :\n    \
     \  size_(1ull<<(64-bm::clz(size-1))),\n      tree_(size_*2) {\n    ids_.reserve((64-bm::clz(size-1))*2);\n\
     \  }\n\n  template <typename Iter>\n  explicit LazySegmentTree(Iter begin, Iter\
@@ -191,7 +191,7 @@ data:
   isVerificationFile: true
   path: test/yosupo/range_affine_range_sum.test.cpp
   requiredBy: []
-  timestamp: '2023-04-13 21:51:40+09:00'
+  timestamp: '2023-04-19 10:11:27+09:00'
   verificationStatus: TEST_ACCEPTED
   verifiedWith: []
 documentation_of: test/yosupo/range_affine_range_sum.test.cpp
