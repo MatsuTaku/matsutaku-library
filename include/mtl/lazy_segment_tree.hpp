@@ -18,12 +18,14 @@ concept LazySegmentTreeOperatorMonoid = requires(A a, M m) {
 };
 #endif
 
+
+
 template <typename M, typename A>
-class LazySegmentTree {
 #if __cpp_concepts >= 202002L
-  static_assert(LazySegmentTreeMonoid<M>);
-  static_assert(LazySegmentTreeOperatorMonoid<A,M>);
+required LazySegmentTreeMonoid<M> &&
+         LazySegmentTreeOperatorMonoid<A,M>
 #endif
+class LazySegmentTree {
  private:
   size_t size_;
   std::vector<std::pair<M,A>> tree_;

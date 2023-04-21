@@ -3,12 +3,21 @@
 #include <concepts>
 #endif
 
-template<class T, T (*op)(T, T), T E>
+template<class T, T (*op)(T, T), T (*e)()>
 struct Monoid {
   T x;
-  Monoid(T x=E) : x(x) {}
+  Monoid() : x(e()) {}
+  template<class... Args>
+  Monoid(Args&&... args) : x(std::forward<Args>(args)...) {}
   Monoid operator*(const Monoid& rhs) const {
     return Monoid(op(x, rhs.x));
+  }
+};
+
+struct VoidMonoid {
+  VoidMonoid() {}
+  VoidMonoid operator*(const VoidMonoid& rhs) const {
+    return VoidMonoid();
   }
 };
 
@@ -19,10 +28,10 @@ concept IsMonoid = requires (T m) {
 };
 #endif
 
-template<class T, T (*op)(T, T), T E>
-struct CommutativeMonoid : public Monoid<T, op, E> {
-    using Base = Monoid<T, op, E>;
-    CommutativeMonoid(T x=E) : Base(x) {}
+template<class T, T (*op)(T, T), T (*e)()>
+struct CommutativeMonoid : public Monoid<T, op, e> {
+    using Base = Monoid<T, op, e>;
+    CommutativeMonoid(T x=e()) : Base(x) {}
     CommutativeMonoid operator+(const CommutativeMonoid& rhs) const {
         return CommutativeMonoid(*this * rhs);
     }
@@ -47,6 +56,17 @@ struct OperatorMonoid {
     }
     S act(const S& s) const {
         return mapping(f, s);
+    }
+};
+
+struct VoidOperatorMonoid {
+    VoidOperatorMonoid() {}
+    VoidOperatorMonoid& operator*=(const VoidOperatorMonoid& rhs) {
+        return *this;
+    }
+    template<class T>
+    T act(const T& s) const {
+        return s;
     }
 };
 

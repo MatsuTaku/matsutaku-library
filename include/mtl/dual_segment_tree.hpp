@@ -4,20 +4,24 @@
 #include <vector>
 #include <algorithm>
 #include <cassert>
-#if _cplusplus >= 202002L
-#include <concept>
+#if __cpp_concepts >= 202002L
+#include <concepts>
 
 template<typename M>
-concept DualSegmentTreeMonoid = requires (M m) {
+concept IdDualSegmentTreeMonoid = requires (M m) {
   {m *= m} -> std::same_as<M>;
 };
 #endif
 
-template <typename M>
-class DualSegmentTree {
-#if _cplusplus >= 202002L
-  static_assert(DualSegmentTreeMonoid<M>);
+template <
+#if __cpp_concepts >= 202002L
+  IdDualSegmentTreeMonoid
+#else
+  class
 #endif
+    M
+>
+class DualSegmentTree {
  private:
   size_t size_;
   std::vector<M> tree_;
