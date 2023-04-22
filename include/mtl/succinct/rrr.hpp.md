@@ -199,29 +199,29 @@ data:
     \ return operator[](i);\r\n  }\r\n  /**\r\n   * Usable without pre-set required\
     \ size\r\n  */\r\n  void set(size_t i, bool b) {\r\n    if (i >= size())\r\n \
     \     resize(i + 1);\r\n    operator[](i) = b;\r\n  }\r\n  /**\r\n   * No build\
-    \ process is needed\r\n  */\r\n  void build() const {}\r\n  const_iterator begin()\
-    \ const { return const_iterator(arr.data(), 0); }\r\n  iterator begin() { return\
-    \ iterator(arr.data(), 0); }\r\n  const_iterator cbegin() const { return begin();\
-    \ }\r\n  const_iterator end() const { return const_iterator(arr.data() + sz /\
-    \ 64, sz % 64); }\r\n  iterator end() { return iterator(arr.data() + sz / 64,\
-    \ sz % 64); }\r\n  const_iterator cend() const { return end(); }\r\n\r\n  template<bool\
-    \ Const>\r\n  struct reference_base {\r\n    using _pointer = typename std::conditional<Const,\
-    \ const W*, W*>::type;\r\n    using _iterator = typename std::conditional<Const,\
-    \ const_iterator, iterator>::type;\r\n    _pointer ptr;\r\n    W mask;\r\n   \
-    \ reference_base(_pointer ptr, W mask) : ptr(ptr), mask(mask) {}\r\n    reference_base(const\
-    \ reference_base&) = delete;\r\n    reference_base& operator=(const reference_base&)\
-    \ = delete;\r\n    reference_base(reference_base&&) noexcept = default;\r\n  \
-    \  reference_base& operator=(reference_base&&) noexcept = default;\r\n    inline\
-    \ operator bool() const {\r\n      return (*ptr & mask) != 0;\r\n    }\r\n   \
-    \ inline bool operator==(bool r) const {\r\n      return (bool) *this == r;\r\n\
-    \    }\r\n    inline friend bool operator==(bool l, const reference_base& r) {\r\
-    \n      return r == l;\r\n    }\r\n    inline bool operator!=(bool r) const {\r\
-    \n      return (bool) *this != r;\r\n    }\r\n    inline friend bool operator!=(bool\
-    \ l, const reference_base& r) {\r\n      return r != l;\r\n    }\r\n    _iterator\
-    \ operator&() const {\r\n      return {ptr, bm::ctz(mask)};\r\n    }\r\n    std::ostream&\
-    \ operator<<(std::ostream& os) const {\r\n      return os << (bool) *this;\r\n\
-    \    }\r\n  };\r\n  struct const_reference : public reference_base<true> {\r\n\
-    \    using _base = reference_base<true>;\r\n    const_reference(_base::_pointer\
+    \ process is needed\r\n  */\r\n  void build() const {}\r\n  void move_or_build(Bitmap&&\
+    \ src) {\r\n    *this = std::move(src);\r\n  }\r\n  const_iterator begin() const\
+    \ { return const_iterator(arr.data(), 0); }\r\n  iterator begin() { return iterator(arr.data(),\
+    \ 0); }\r\n  const_iterator cbegin() const { return begin(); }\r\n  const_iterator\
+    \ end() const { return const_iterator(arr.data() + sz / 64, sz % 64); }\r\n  iterator\
+    \ end() { return iterator(arr.data() + sz / 64, sz % 64); }\r\n  const_iterator\
+    \ cend() const { return end(); }\r\n\r\n  template<bool Const>\r\n  struct reference_base\
+    \ {\r\n    using _pointer = typename std::conditional<Const, const W*, W*>::type;\r\
+    \n    using _iterator = typename std::conditional<Const, const_iterator, iterator>::type;\r\
+    \n    _pointer ptr;\r\n    W mask;\r\n    reference_base(_pointer ptr, W mask)\
+    \ : ptr(ptr), mask(mask) {}\r\n    reference_base(const reference_base&) = delete;\r\
+    \n    reference_base& operator=(const reference_base&) = delete;\r\n    reference_base(reference_base&&)\
+    \ noexcept = default;\r\n    reference_base& operator=(reference_base&&) noexcept\
+    \ = default;\r\n    inline operator bool() const {\r\n      return (*ptr & mask)\
+    \ != 0;\r\n    }\r\n    inline bool operator==(bool r) const {\r\n      return\
+    \ (bool) *this == r;\r\n    }\r\n    inline friend bool operator==(bool l, const\
+    \ reference_base& r) {\r\n      return r == l;\r\n    }\r\n    inline bool operator!=(bool\
+    \ r) const {\r\n      return (bool) *this != r;\r\n    }\r\n    inline friend\
+    \ bool operator!=(bool l, const reference_base& r) {\r\n      return r != l;\r\
+    \n    }\r\n    _iterator operator&() const {\r\n      return {ptr, bm::ctz(mask)};\r\
+    \n    }\r\n    std::ostream& operator<<(std::ostream& os) const {\r\n      return\
+    \ os << (bool) *this;\r\n    }\r\n  };\r\n  struct const_reference : public reference_base<true>\
+    \ {\r\n    using _base = reference_base<true>;\r\n    const_reference(_base::_pointer\
     \ ptr, W mask) : _base(ptr, mask) {}\r\n    const_reference(const reference& rhs)\
     \ : _base(rhs.ptr, rhs.mask) {}\r\n  };\r\n  struct reference : public reference_base<false>\
     \ {\r\n    using _base = reference_base<false>;\r\n    reference(_base::_pointer\
@@ -444,10 +444,15 @@ data:
     \ bm.range_set(h, h+def::n_bits, n);\n            bm.range_set(h+def::n_bits,\
     \ h+w, p);\n            assert(rrr_table_type::get_int(\n                bm.range_get(h,\
     \ h+def::n_bits), bm.range_get(h+def::n_bits, h+w)) == mask);\n            h +=\
-    \ w;\n            pq++;\n        }\n        s_map.clear();\n    }\n    bool get_bit(size_t\
-    \ si, unsigned off) const {\n        if (si >= heads.size())\n            return\
-    \ false;\n        auto a = heads.get(si);\n        auto b = a+def::n_bits;\n \
-    \       auto n = bm.range_get(a, b);\n        auto p = bm.range_get(b, b+rrr_table_type::number_bits(n));\n\
+    \ w;\n            pq++;\n        }\n        s_map.clear();\n    }\n    void move_or_build(RRR&&\
+    \ src) {\n        *this = std::move(src);\n    }\n    void move_or_build(const\
+    \ Bitmap& bm) {\n        for (size_t i = 0; i < bm.size(); i += def::s_size) {\n\
+    \            auto w = bm.range_get(i, std::min(i+def::s_size, bm.size()));\n \
+    \           if (w or i+def::s_size >= bm.size()) s_map.emplace(i/def::s_size,\
+    \ w);\n        }\n        build();\n    }\n    bool get_bit(size_t si, unsigned\
+    \ off) const {\n        if (si >= heads.size())\n            return false;\n \
+    \       auto a = heads.get(si);\n        auto b = a+def::n_bits;\n        auto\
+    \ n = bm.range_get(a, b);\n        auto p = bm.range_get(b, b+rrr_table_type::number_bits(n));\n\
     \        return rrr_table_type::get_bit(n, p, off);\n    }\n    s_type get_mask(size_t\
     \ si) const {\n        if (si >= heads.size())\n            return 0;\n      \
     \  auto a = heads.get(si);\n        auto b = a+def::n_bits;\n        auto n =\
@@ -576,10 +581,15 @@ data:
     \ bm.range_set(h, h+def::n_bits, n);\n            bm.range_set(h+def::n_bits,\
     \ h+w, p);\n            assert(rrr_table_type::get_int(\n                bm.range_get(h,\
     \ h+def::n_bits), bm.range_get(h+def::n_bits, h+w)) == mask);\n            h +=\
-    \ w;\n            pq++;\n        }\n        s_map.clear();\n    }\n    bool get_bit(size_t\
-    \ si, unsigned off) const {\n        if (si >= heads.size())\n            return\
-    \ false;\n        auto a = heads.get(si);\n        auto b = a+def::n_bits;\n \
-    \       auto n = bm.range_get(a, b);\n        auto p = bm.range_get(b, b+rrr_table_type::number_bits(n));\n\
+    \ w;\n            pq++;\n        }\n        s_map.clear();\n    }\n    void move_or_build(RRR&&\
+    \ src) {\n        *this = std::move(src);\n    }\n    void move_or_build(const\
+    \ Bitmap& bm) {\n        for (size_t i = 0; i < bm.size(); i += def::s_size) {\n\
+    \            auto w = bm.range_get(i, std::min(i+def::s_size, bm.size()));\n \
+    \           if (w or i+def::s_size >= bm.size()) s_map.emplace(i/def::s_size,\
+    \ w);\n        }\n        build();\n    }\n    bool get_bit(size_t si, unsigned\
+    \ off) const {\n        if (si >= heads.size())\n            return false;\n \
+    \       auto a = heads.get(si);\n        auto b = a+def::n_bits;\n        auto\
+    \ n = bm.range_get(a, b);\n        auto p = bm.range_get(b, b+rrr_table_type::number_bits(n));\n\
     \        return rrr_table_type::get_bit(n, p, off);\n    }\n    s_type get_mask(size_t\
     \ si) const {\n        if (si >= heads.size())\n            return 0;\n      \
     \  auto a = heads.get(si);\n        auto b = a+def::n_bits;\n        auto n =\
@@ -603,7 +613,7 @@ data:
   requiredBy:
   - include/mtl/succinct/binary_set.hpp
   - include/mtl/ordinal_range_search.hpp
-  timestamp: '2023-04-12 22:25:51+09:00'
+  timestamp: '2023-04-20 21:24:28+09:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
   - test/yosupo/static_rectangle_add_rectangle_sum.test.cpp

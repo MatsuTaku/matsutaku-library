@@ -180,29 +180,29 @@ data:
     \ return operator[](i);\r\n  }\r\n  /**\r\n   * Usable without pre-set required\
     \ size\r\n  */\r\n  void set(size_t i, bool b) {\r\n    if (i >= size())\r\n \
     \     resize(i + 1);\r\n    operator[](i) = b;\r\n  }\r\n  /**\r\n   * No build\
-    \ process is needed\r\n  */\r\n  void build() const {}\r\n  const_iterator begin()\
-    \ const { return const_iterator(arr.data(), 0); }\r\n  iterator begin() { return\
-    \ iterator(arr.data(), 0); }\r\n  const_iterator cbegin() const { return begin();\
-    \ }\r\n  const_iterator end() const { return const_iterator(arr.data() + sz /\
-    \ 64, sz % 64); }\r\n  iterator end() { return iterator(arr.data() + sz / 64,\
-    \ sz % 64); }\r\n  const_iterator cend() const { return end(); }\r\n\r\n  template<bool\
-    \ Const>\r\n  struct reference_base {\r\n    using _pointer = typename std::conditional<Const,\
-    \ const W*, W*>::type;\r\n    using _iterator = typename std::conditional<Const,\
-    \ const_iterator, iterator>::type;\r\n    _pointer ptr;\r\n    W mask;\r\n   \
-    \ reference_base(_pointer ptr, W mask) : ptr(ptr), mask(mask) {}\r\n    reference_base(const\
-    \ reference_base&) = delete;\r\n    reference_base& operator=(const reference_base&)\
-    \ = delete;\r\n    reference_base(reference_base&&) noexcept = default;\r\n  \
-    \  reference_base& operator=(reference_base&&) noexcept = default;\r\n    inline\
-    \ operator bool() const {\r\n      return (*ptr & mask) != 0;\r\n    }\r\n   \
-    \ inline bool operator==(bool r) const {\r\n      return (bool) *this == r;\r\n\
-    \    }\r\n    inline friend bool operator==(bool l, const reference_base& r) {\r\
-    \n      return r == l;\r\n    }\r\n    inline bool operator!=(bool r) const {\r\
-    \n      return (bool) *this != r;\r\n    }\r\n    inline friend bool operator!=(bool\
-    \ l, const reference_base& r) {\r\n      return r != l;\r\n    }\r\n    _iterator\
-    \ operator&() const {\r\n      return {ptr, bm::ctz(mask)};\r\n    }\r\n    std::ostream&\
-    \ operator<<(std::ostream& os) const {\r\n      return os << (bool) *this;\r\n\
-    \    }\r\n  };\r\n  struct const_reference : public reference_base<true> {\r\n\
-    \    using _base = reference_base<true>;\r\n    const_reference(_base::_pointer\
+    \ process is needed\r\n  */\r\n  void build() const {}\r\n  void move_or_build(Bitmap&&\
+    \ src) {\r\n    *this = std::move(src);\r\n  }\r\n  const_iterator begin() const\
+    \ { return const_iterator(arr.data(), 0); }\r\n  iterator begin() { return iterator(arr.data(),\
+    \ 0); }\r\n  const_iterator cbegin() const { return begin(); }\r\n  const_iterator\
+    \ end() const { return const_iterator(arr.data() + sz / 64, sz % 64); }\r\n  iterator\
+    \ end() { return iterator(arr.data() + sz / 64, sz % 64); }\r\n  const_iterator\
+    \ cend() const { return end(); }\r\n\r\n  template<bool Const>\r\n  struct reference_base\
+    \ {\r\n    using _pointer = typename std::conditional<Const, const W*, W*>::type;\r\
+    \n    using _iterator = typename std::conditional<Const, const_iterator, iterator>::type;\r\
+    \n    _pointer ptr;\r\n    W mask;\r\n    reference_base(_pointer ptr, W mask)\
+    \ : ptr(ptr), mask(mask) {}\r\n    reference_base(const reference_base&) = delete;\r\
+    \n    reference_base& operator=(const reference_base&) = delete;\r\n    reference_base(reference_base&&)\
+    \ noexcept = default;\r\n    reference_base& operator=(reference_base&&) noexcept\
+    \ = default;\r\n    inline operator bool() const {\r\n      return (*ptr & mask)\
+    \ != 0;\r\n    }\r\n    inline bool operator==(bool r) const {\r\n      return\
+    \ (bool) *this == r;\r\n    }\r\n    inline friend bool operator==(bool l, const\
+    \ reference_base& r) {\r\n      return r == l;\r\n    }\r\n    inline bool operator!=(bool\
+    \ r) const {\r\n      return (bool) *this != r;\r\n    }\r\n    inline friend\
+    \ bool operator!=(bool l, const reference_base& r) {\r\n      return r != l;\r\
+    \n    }\r\n    _iterator operator&() const {\r\n      return {ptr, bm::ctz(mask)};\r\
+    \n    }\r\n    std::ostream& operator<<(std::ostream& os) const {\r\n      return\
+    \ os << (bool) *this;\r\n    }\r\n  };\r\n  struct const_reference : public reference_base<true>\
+    \ {\r\n    using _base = reference_base<true>;\r\n    const_reference(_base::_pointer\
     \ ptr, W mask) : _base(ptr, mask) {}\r\n    const_reference(const reference& rhs)\
     \ : _base(rhs.ptr, rhs.mask) {}\r\n  };\r\n  struct reference : public reference_base<false>\
     \ {\r\n    using _base = reference_base<false>;\r\n    reference(_base::_pointer\
@@ -482,7 +482,7 @@ data:
   isVerificationFile: false
   path: include/mtl/succinct/wavelet_tree.hpp
   requiredBy: []
-  timestamp: '2023-04-12 22:25:51+09:00'
+  timestamp: '2023-04-20 21:24:28+09:00'
   verificationStatus: LIBRARY_NO_TESTS
   verifiedWith: []
 documentation_of: include/mtl/succinct/wavelet_tree.hpp

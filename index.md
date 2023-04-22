@@ -435,6 +435,9 @@ data:
       path: test/yosupo/set_xor_min.test.cpp
       title: test/yosupo/set_xor_min.test.cpp
     - icon: ':heavy_check_mark:'
+      path: test/yosupo/static_range_frequency.test.cpp
+      title: test/yosupo/static_range_frequency.test.cpp
+    - icon: ':heavy_check_mark:'
       path: test/yosupo/static_range_inversions_query-mo.test.cpp
       title: test/yosupo/static_range_inversions_query-mo.test.cpp
     - icon: ':heavy_check_mark:'

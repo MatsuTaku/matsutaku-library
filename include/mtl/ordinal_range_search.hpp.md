@@ -221,29 +221,29 @@ data:
     \ return operator[](i);\r\n  }\r\n  /**\r\n   * Usable without pre-set required\
     \ size\r\n  */\r\n  void set(size_t i, bool b) {\r\n    if (i >= size())\r\n \
     \     resize(i + 1);\r\n    operator[](i) = b;\r\n  }\r\n  /**\r\n   * No build\
-    \ process is needed\r\n  */\r\n  void build() const {}\r\n  const_iterator begin()\
-    \ const { return const_iterator(arr.data(), 0); }\r\n  iterator begin() { return\
-    \ iterator(arr.data(), 0); }\r\n  const_iterator cbegin() const { return begin();\
-    \ }\r\n  const_iterator end() const { return const_iterator(arr.data() + sz /\
-    \ 64, sz % 64); }\r\n  iterator end() { return iterator(arr.data() + sz / 64,\
-    \ sz % 64); }\r\n  const_iterator cend() const { return end(); }\r\n\r\n  template<bool\
-    \ Const>\r\n  struct reference_base {\r\n    using _pointer = typename std::conditional<Const,\
-    \ const W*, W*>::type;\r\n    using _iterator = typename std::conditional<Const,\
-    \ const_iterator, iterator>::type;\r\n    _pointer ptr;\r\n    W mask;\r\n   \
-    \ reference_base(_pointer ptr, W mask) : ptr(ptr), mask(mask) {}\r\n    reference_base(const\
-    \ reference_base&) = delete;\r\n    reference_base& operator=(const reference_base&)\
-    \ = delete;\r\n    reference_base(reference_base&&) noexcept = default;\r\n  \
-    \  reference_base& operator=(reference_base&&) noexcept = default;\r\n    inline\
-    \ operator bool() const {\r\n      return (*ptr & mask) != 0;\r\n    }\r\n   \
-    \ inline bool operator==(bool r) const {\r\n      return (bool) *this == r;\r\n\
-    \    }\r\n    inline friend bool operator==(bool l, const reference_base& r) {\r\
-    \n      return r == l;\r\n    }\r\n    inline bool operator!=(bool r) const {\r\
-    \n      return (bool) *this != r;\r\n    }\r\n    inline friend bool operator!=(bool\
-    \ l, const reference_base& r) {\r\n      return r != l;\r\n    }\r\n    _iterator\
-    \ operator&() const {\r\n      return {ptr, bm::ctz(mask)};\r\n    }\r\n    std::ostream&\
-    \ operator<<(std::ostream& os) const {\r\n      return os << (bool) *this;\r\n\
-    \    }\r\n  };\r\n  struct const_reference : public reference_base<true> {\r\n\
-    \    using _base = reference_base<true>;\r\n    const_reference(_base::_pointer\
+    \ process is needed\r\n  */\r\n  void build() const {}\r\n  void move_or_build(Bitmap&&\
+    \ src) {\r\n    *this = std::move(src);\r\n  }\r\n  const_iterator begin() const\
+    \ { return const_iterator(arr.data(), 0); }\r\n  iterator begin() { return iterator(arr.data(),\
+    \ 0); }\r\n  const_iterator cbegin() const { return begin(); }\r\n  const_iterator\
+    \ end() const { return const_iterator(arr.data() + sz / 64, sz % 64); }\r\n  iterator\
+    \ end() { return iterator(arr.data() + sz / 64, sz % 64); }\r\n  const_iterator\
+    \ cend() const { return end(); }\r\n\r\n  template<bool Const>\r\n  struct reference_base\
+    \ {\r\n    using _pointer = typename std::conditional<Const, const W*, W*>::type;\r\
+    \n    using _iterator = typename std::conditional<Const, const_iterator, iterator>::type;\r\
+    \n    _pointer ptr;\r\n    W mask;\r\n    reference_base(_pointer ptr, W mask)\
+    \ : ptr(ptr), mask(mask) {}\r\n    reference_base(const reference_base&) = delete;\r\
+    \n    reference_base& operator=(const reference_base&) = delete;\r\n    reference_base(reference_base&&)\
+    \ noexcept = default;\r\n    reference_base& operator=(reference_base&&) noexcept\
+    \ = default;\r\n    inline operator bool() const {\r\n      return (*ptr & mask)\
+    \ != 0;\r\n    }\r\n    inline bool operator==(bool r) const {\r\n      return\
+    \ (bool) *this == r;\r\n    }\r\n    inline friend bool operator==(bool l, const\
+    \ reference_base& r) {\r\n      return r == l;\r\n    }\r\n    inline bool operator!=(bool\
+    \ r) const {\r\n      return (bool) *this != r;\r\n    }\r\n    inline friend\
+    \ bool operator!=(bool l, const reference_base& r) {\r\n      return r != l;\r\
+    \n    }\r\n    _iterator operator&() const {\r\n      return {ptr, bm::ctz(mask)};\r\
+    \n    }\r\n    std::ostream& operator<<(std::ostream& os) const {\r\n      return\
+    \ os << (bool) *this;\r\n    }\r\n  };\r\n  struct const_reference : public reference_base<true>\
+    \ {\r\n    using _base = reference_base<true>;\r\n    const_reference(_base::_pointer\
     \ ptr, W mask) : _base(ptr, mask) {}\r\n    const_reference(const reference& rhs)\
     \ : _base(rhs.ptr, rhs.mask) {}\r\n  };\r\n  struct reference : public reference_base<false>\
     \ {\r\n    using _base = reference_base<false>;\r\n    reference(_base::_pointer\
@@ -331,40 +331,42 @@ data:
     \ rs_support.select<B>(n);\r\n  }\r\n};\n#line 4 \"include/mtl/succinct/wavelet_matrix.hpp\"\
     \n#include <limits>\n#line 7 \"include/mtl/succinct/wavelet_matrix.hpp\"\n#include\
     \ <iterator>\n#include <algorithm>\n#include <queue>\n#include <tuple>\n\ntemplate<class\
-    \ T, class BitmapType = Bitmap>\nstruct WaveletMatrix {\n  static constexpr unsigned\
-    \ H = 64 - bm::clz(std::numeric_limits<T>::max());\n\n  size_t n,h;\n  using bitmap_type\
-    \ = BitmapType;\n  bitmap_type B;\n  using rs_type = typename RankSelectTraits<bitmap_type>::rank_select_type;\n\
-    \  rs_type rs_b;\n  std::vector<size_t> RO,Z;\n\n  WaveletMatrix() = default;\n\
-    \  template<typename It>\n  WaveletMatrix(It begin, It end)\n      : n(std::distance(begin,\
-    \ end)),\n      h(std::max(1u, 64 - bm::clz(*max_element(begin, end)))),\n   \
-    \   B(n*h, false),\n      rs_b(),\n      RO(h+1),\n      Z(h)\n  {\n    using\
-    \ trait = std::iterator_traits<It>;\n    static_assert(std::is_base_of<std::input_iterator_tag,\
+    \ T, class BitmapType = Bitmap, unsigned Height = 0>\nstruct WaveletMatrix {\n\
+    \  static constexpr unsigned H = 64 - bm::clz(std::numeric_limits<T>::max());\n\
+    \n  size_t n,h;\n  using bitmap_type = BitmapType;\n  bitmap_type B;\n  using\
+    \ rs_type = typename RankSelectTraits<bitmap_type>::rank_select_type;\n  rs_type\
+    \ rs_b;\n  std::vector<size_t> RO,Z;\n\n  WaveletMatrix() = default;\n  template<typename\
+    \ It>\n  WaveletMatrix(It begin, It end)\n      : n(std::distance(begin, end)),\n\
+    \      h(Height == 0 ? std::max(1u, 64 - bm::clz(n ? *max_element(begin, end)\
+    \ : 0)) : H),\n      B(),\n      rs_b(),\n      RO(h+1),\n      Z(h)\n  {\n  \
+    \  using trait = std::iterator_traits<It>;\n    static_assert(std::is_base_of<std::input_iterator_tag,\
     \ typename trait::iterator_category>::value, \"\");\n    static_assert(std::is_convertible<typename\
-    \ trait::value_type, T>::value, \"\");\n    assert(*min_element(begin, end) >=\
-    \ 0);\n\n    std::vector<T> S(begin, end), z, o;\n    z.reserve(n);\n    o.reserve(n);\n\
-    \    auto bit = B.begin();\n    for (int k = h-1; k >= 0; k--) {\n      for (size_t\
-    \ i = 0; i < n; i++) {\n        bool b = S[i] >> k & 1;\n        *bit++ = b;\n\
-    \        if (!b)\n          z.push_back(S[i]);\n        else\n          o.push_back(S[i]);\n\
-    \      }\n      Z[k] = n*(h-1-k+1) + z.size();\n      auto j = n;\n      while\
-    \ (!o.empty()) {\n        S[--j] = o.back();\n        o.pop_back();\n      }\n\
-    \      while (!z.empty()) {\n        S[--j] = z.back();\n        z.pop_back();\n\
-    \      }\n      assert(j == 0);\n    }\n    B.build();\n    rs_b.build(&B);\n\
-    \    for (size_t i = 0; i <= h; i++)\n      RO[i] = rs_b.rank1(n * i);\n  }\n\
-    \  WaveletMatrix(const WaveletMatrix& rhs) noexcept :\n    n(rhs.n),\n    h(rhs.h),\n\
-    \    B(rhs.B),\n    rs_b(rhs.rs_b),\n    RO(rhs.RO),\n    Z(rhs.Z) \n  {\n   \
-    \ rs_b.set_ptr(&B);\n  }\n  WaveletMatrix& operator=(const WaveletMatrix& rhs)\
-    \ noexcept {\n    n = rhs.n;\n    h = rhs.h;\n    B = rhs.B;\n    rs_b = rhs.rs_b;\n\
-    \    rs_b.set_ptr(&B);\n    RO = rhs.RO;\n    Z = rhs.Z;\n    return *this;\n\
-    \  }\n  WaveletMatrix(WaveletMatrix&& rhs) noexcept :\n    n(std::move(rhs.n)),\n\
-    \    h(std::move(rhs.h)),\n    B(std::move(rhs.B)),\n    rs_b(std::move(rhs.rs_b)),\n\
-    \    RO(std::move(rhs.RO)),\n    Z(std::move(rhs.Z)) \n  {\n    rs_b.set_ptr(&B);\n\
-    \  }\n  WaveletMatrix& operator=(WaveletMatrix&& rhs) noexcept {\n    n = std::move(rhs.n);\n\
-    \    h = std::move(rhs.h);\n    B = std::move(rhs.B);\n    rs_b = std::move(rhs.rs_b);\n\
-    \    rs_b.set_ptr(&B);\n    RO = std::move(rhs.RO);\n    Z = std::move(rhs.Z);\n\
-    \    return *this;\n  }\n\n  inline size_t _child0(size_t level, size_t i) const\
-    \ {\n      return i + n + RO[level] - rs_b.rank1(i);\n  }\n  inline size_t _child1(size_t\
-    \ level, size_t i) const {\n    return n*(level+2) + rs_b.rank1(i) - RO[level+1];\n\
-    \  }\n  inline size_t child(size_t level, size_t i, bool bit) const {\n    return\
+    \ trait::value_type, T>::value, \"\");\n    if (n == 0) return;\n    assert(*min_element(begin,\
+    \ end) >= 0);\n\n    std::vector<T> S(begin, end), z, o;\n    z.reserve(n);\n\
+    \    o.reserve(n);\n    Bitmap _B(n*h, false);\n    auto bit = _B.begin();\n \
+    \   for (int k = h-1; k >= 0; k--) {\n      for (size_t i = 0; i < n; i++) {\n\
+    \        bool b = S[i] >> k & 1;\n        *bit++ = b;\n        if (!b)\n     \
+    \     z.push_back(S[i]);\n        else\n          o.push_back(S[i]);\n      }\n\
+    \      Z[k] = n*(h-1-k+1) + z.size();\n      auto j = n;\n      while (!o.empty())\
+    \ {\n        S[--j] = o.back();\n        o.pop_back();\n      }\n      while (!z.empty())\
+    \ {\n        S[--j] = z.back();\n        z.pop_back();\n      }\n      assert(j\
+    \ == 0);\n    }\n    B.move_or_build(std::move(_B));\n    rs_b.build(&B);\n  \
+    \  for (size_t i = 0; i <= h; i++)\n      RO[i] = rs_b.rank1(n * i);\n  }\n  WaveletMatrix(const\
+    \ WaveletMatrix& rhs) noexcept :\n    n(rhs.n),\n    h(rhs.h),\n    B(rhs.B),\n\
+    \    rs_b(rhs.rs_b),\n    RO(rhs.RO),\n    Z(rhs.Z) \n  {\n    rs_b.set_ptr(&B);\n\
+    \  }\n  WaveletMatrix& operator=(const WaveletMatrix& rhs) noexcept {\n    n =\
+    \ rhs.n;\n    h = rhs.h;\n    B = rhs.B;\n    rs_b = rhs.rs_b;\n    rs_b.set_ptr(&B);\n\
+    \    RO = rhs.RO;\n    Z = rhs.Z;\n    return *this;\n  }\n  WaveletMatrix(WaveletMatrix&&\
+    \ rhs) noexcept :\n    n(std::move(rhs.n)),\n    h(std::move(rhs.h)),\n    B(std::move(rhs.B)),\n\
+    \    rs_b(std::move(rhs.rs_b)),\n    RO(std::move(rhs.RO)),\n    Z(std::move(rhs.Z))\
+    \ \n  {\n    rs_b.set_ptr(&B);\n  }\n  WaveletMatrix& operator=(WaveletMatrix&&\
+    \ rhs) noexcept {\n    n = std::move(rhs.n);\n    h = std::move(rhs.h);\n    B\
+    \ = std::move(rhs.B);\n    rs_b = std::move(rhs.rs_b);\n    rs_b.set_ptr(&B);\n\
+    \    RO = std::move(rhs.RO);\n    Z = std::move(rhs.Z);\n    return *this;\n \
+    \ }\n\n  inline size_t _child0(size_t level, size_t i) const {\n      return i\
+    \ + n + RO[level] - rs_b.rank1(i);\n  }\n  inline size_t _child1(size_t level,\
+    \ size_t i) const {\n    return n*(level+2) + rs_b.rank1(i) - RO[level+1];\n \
+    \ }\n  inline size_t child(size_t level, size_t i, bool bit) const {\n    return\
     \ !bit ? _child0(level, i) : _child1(level, i);\n  }\n  std::pair<size_t, size_t>\
     \ _child_tie0(size_t level, size_t l, size_t r) const {\n    return std::make_pair(_child0(level,\
     \ l), _child0(level, r));\n  }\n  std::pair<size_t, size_t> _child_tie1(size_t\
@@ -380,27 +382,27 @@ data:
     \ for (int k = h-1; k > 0; k--) {\n      bool b = B[j];\n      j = child(h-1-k,\
     \ j, b);\n      if (b)\n        c |= 1ull<<k;\n    }\n    if (B[j])\n      c |=\
     \ 1u;\n    return c;\n  }\n\n  size_t range_rank(T c, size_t l, size_t r) const\
-    \ {\n    for (int k = h-1; k >= 0; k--) {\n      if (l == r)\n        break;\n\
-    \      std::tie(l,r) = child_tie(h-1-k, l, r, (c >> k) & 1u);\n    }\n    return\
-    \ r - l;\n  }\n  size_t rank(T c, size_t i) const {\n    return range_rank(c,\
-    \ 0, i);\n  }\n  std::tuple<size_t, size_t, size_t> rank_3way(T c, size_t l, size_t\
-    \ r) const {\n    size_t lt = 0, gt = 0;\n    for (int k = h-1; k >= 0; k--) {\n\
-    \      size_t pr = r - l;\n      if (pr == 0)\n        break;\n      if (((c >>\
-    \ k) & 1u) == 0) {\n        std::tie(l,r) = _child_tie0(h-1-k, l, r);\n      \
-    \  gt += pr - (r - l);\n      } else {\n        std::tie(l,r) = _child_tie1(h-1-k,\
-    \ l, r);\n        lt += pr - (r - l);\n      }\n    }\n    return std::make_tuple(lt,\
-    \ r - l, gt);\n  }\n\n  /// Get frequency of values which (x <= value < y) in\
-    \ S[l,r).\n  size_t range_freq(size_t l, size_t r, T x, T y) const {\n    size_t\
-    \ freq = 0;\n    std::queue<std::tuple<size_t,size_t, T>> qs;\n    qs.emplace(l,\
-    \ r, T(0));\n    while (!qs.empty()) {\n      size_t _l,_r;\n      T c;\n    \
-    \  std::tie(_l,_r,c) = qs.front();\n      qs.pop();\n      size_t level = _l/n;\n\
-    \      if (_l == _r)\n        continue;\n      int shift = h-1-level;\n      T\
-    \ clo = c, chi = c | ((1ull<<(shift+1))-1);\n      if (chi < x or y <= clo)\n\
-    \        continue;\n      if (x <= clo and chi < y) {\n        freq += _r - _l;\n\
-    \        continue;\n      }\n      assert(level < h);\n      size_t nl,nr;\n \
-    \     std::tie(nl,nr) = child_tie(level, _l, _r, 0);\n      qs.emplace(nl, nr,\
-    \ c);\n      std::tie(nl,nr) = child_tie(level, _l, _r, 1);\n      qs.emplace(nl,\
-    \ nr, c | (1ull << shift));\n    }\n    return freq;\n  }\n\n  size_t range_select(T\
+    \ {\n    for (int k = h-1; k >= 0 and l < r; k--) {\n      std::tie(l,r) = child_tie(h-1-k,\
+    \ l, r, (c >> k) & 1u);\n    }\n    return r - l;\n  }\n  size_t rank(T c, size_t\
+    \ i) const {\n    return range_rank(c, 0, i);\n  }\n  std::tuple<size_t, size_t,\
+    \ size_t> rank_3way(T c, size_t l, size_t r) const {\n    size_t lt = 0, gt =\
+    \ 0;\n    for (int k = h-1; k >= 0; k--) {\n      size_t pr = r - l;\n      if\
+    \ (pr == 0)\n        break;\n      if (((c >> k) & 1u) == 0) {\n        std::tie(l,r)\
+    \ = _child_tie0(h-1-k, l, r);\n        gt += pr - (r - l);\n      } else {\n \
+    \       std::tie(l,r) = _child_tie1(h-1-k, l, r);\n        lt += pr - (r - l);\n\
+    \      }\n    }\n    return std::make_tuple(lt, r - l, gt);\n  }\n\n  /// Get\
+    \ frequency of values which (x <= value < y) in S[l,r).\n  size_t range_freq(size_t\
+    \ l, size_t r, T x, T y) const {\n    if (l == r) return 0;\n    size_t freq =\
+    \ 0;\n    std::queue<std::tuple<size_t,size_t, T>> qs;\n    qs.emplace(l, r, T(0));\n\
+    \    while (!qs.empty()) {\n      size_t _l,_r;\n      T c;\n      std::tie(_l,_r,c)\
+    \ = qs.front();\n      qs.pop();\n      assert(_l < _r);\n      size_t level =\
+    \ _l/n;\n      int shift = h-1-level;\n      T clo = c, chi = c | ((1ull<<(shift+1))-1);\n\
+    \      if (chi < x or y <= clo)\n        continue;\n      if (x <= clo and chi\
+    \ < y) {\n        freq += _r - _l;\n        continue;\n      }\n      assert(level\
+    \ < h);\n      size_t nl,nr;\n      std::tie(nl,nr) = child_tie(level, _l, _r,\
+    \ 0);\n      if (nl < nr)\n        qs.emplace(nl, nr, c);\n      std::tie(nl,nr)\
+    \ = child_tie(level, _l, _r, 1);\n      if (nl < nr)\n        qs.emplace(nl, nr,\
+    \ c | (1ull << shift));\n    }\n    return freq;\n  }\n\n  size_t range_select(T\
     \ c, size_t l, size_t r, size_t i) const {\n    if (r - l <= i)\n      return\
     \ n;\n    for (int k = h-1; k >= 0; k--) {\n      std::tie(l,r) = child_tie(h-1-k,\
     \ l, r, (c >> k) & 1u);\n      if (r - l <= i)\n        return n;\n    }\n   \
@@ -604,10 +606,15 @@ data:
     \ bm.range_set(h, h+def::n_bits, n);\n            bm.range_set(h+def::n_bits,\
     \ h+w, p);\n            assert(rrr_table_type::get_int(\n                bm.range_get(h,\
     \ h+def::n_bits), bm.range_get(h+def::n_bits, h+w)) == mask);\n            h +=\
-    \ w;\n            pq++;\n        }\n        s_map.clear();\n    }\n    bool get_bit(size_t\
-    \ si, unsigned off) const {\n        if (si >= heads.size())\n            return\
-    \ false;\n        auto a = heads.get(si);\n        auto b = a+def::n_bits;\n \
-    \       auto n = bm.range_get(a, b);\n        auto p = bm.range_get(b, b+rrr_table_type::number_bits(n));\n\
+    \ w;\n            pq++;\n        }\n        s_map.clear();\n    }\n    void move_or_build(RRR&&\
+    \ src) {\n        *this = std::move(src);\n    }\n    void move_or_build(const\
+    \ Bitmap& bm) {\n        for (size_t i = 0; i < bm.size(); i += def::s_size) {\n\
+    \            auto w = bm.range_get(i, std::min(i+def::s_size, bm.size()));\n \
+    \           if (w or i+def::s_size >= bm.size()) s_map.emplace(i/def::s_size,\
+    \ w);\n        }\n        build();\n    }\n    bool get_bit(size_t si, unsigned\
+    \ off) const {\n        if (si >= heads.size())\n            return false;\n \
+    \       auto a = heads.get(si);\n        auto b = a+def::n_bits;\n        auto\
+    \ n = bm.range_get(a, b);\n        auto p = bm.range_get(b, b+rrr_table_type::number_bits(n));\n\
     \        return rrr_table_type::get_bit(n, p, off);\n    }\n    s_type get_mask(size_t\
     \ si) const {\n        if (si >= heads.size())\n            return 0;\n      \
     \  auto a = heads.get(si);\n        auto b = a+def::n_bits;\n        auto n =\
@@ -846,7 +853,7 @@ data:
   isVerificationFile: false
   path: include/mtl/ordinal_range_search.hpp
   requiredBy: []
-  timestamp: '2023-04-14 01:09:23+09:00'
+  timestamp: '2023-04-20 21:24:28+09:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
   - test/yosupo/static_rectangle_add_rectangle_sum.test.cpp

@@ -28,6 +28,9 @@ data:
     path: test/yosupo/rectangle_sum.test.cpp
     title: test/yosupo/rectangle_sum.test.cpp
   - icon: ':heavy_check_mark:'
+    path: test/yosupo/static_range_frequency.test.cpp
+    title: test/yosupo/static_range_frequency.test.cpp
+  - icon: ':heavy_check_mark:'
     path: test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
     title: test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
   - icon: ':heavy_check_mark:'
@@ -173,6 +176,7 @@ data:
   verifiedWith:
   - test/succinct/range_kth_smallest.test.cpp
   - test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
+  - test/yosupo/static_range_frequency.test.cpp
   - test/yosupo/rectangle_sum.test.cpp
   - test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
 documentation_of: include/mtl/succinct/bv.hpp
