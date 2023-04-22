@@ -273,6 +273,16 @@ struct RRR {
         }
         s_map.clear();
     }
+    void move_or_build(RRR&& src) {
+        *this = std::move(src);
+    }
+    void move_or_build(const Bitmap& bm) {
+        for (size_t i = 0; i < bm.size(); i += def::s_size) {
+            auto w = bm.range_get(i, std::min(i+def::s_size, bm.size()));
+            if (w or i+def::s_size >= bm.size()) s_map.emplace(i/def::s_size, w);
+        }
+        build();
+    }
     bool get_bit(size_t si, unsigned off) const {
         if (si >= heads.size())
             return false;
