@@ -160,3 +160,28 @@ std::vector<int> SuffixArray(It begin, It end) {
   sa_is(S, bucket, A.begin(), false);
   return std::vector<int>(A.begin()+1, A.end());
 }
+
+template<typename It>
+[[nodiscard]]
+std::vector<int> LCPArray(It begin, It end, const std::vector<int>& sa) {
+  auto n = std::distance(begin, end);
+  std::vector<int> isa(n);
+  for (int i = 0; i < n; i++)
+    isa[sa[i]] = i;
+  std::vector<int> lcp(n);
+  size_t k = 0;
+  for (size_t i = 0; i < n; i++) {
+    auto a = isa[i];
+    if (a == n-1) {
+      lcp[a] = 0;
+      k = 0;
+      continue;
+    }
+    size_t j = sa[a+1];
+    while (std::max(i,j)+k < n and *(begin+i+k) == *(begin+j+k))
+      ++k;
+    lcp[a] = k;
+    if (k) --k;
+  }
+  return lcp;
+}
