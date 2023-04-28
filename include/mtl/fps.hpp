@@ -216,7 +216,7 @@ class Fps : public std::vector<Modular<Mod>> {
     _base::resize(m + s);
     for (size_t i = 0; i < s; i++)
       (*this)[m+s-1-i] = (*this)[s-1-i];
-    _base::fill(_base::begin(), _base::begin()+m, 0);
+    std::fill(_base::begin(), _base::begin()+m, 0);
     return *this;
   }
   Fps& operator>>=(size_t m) {

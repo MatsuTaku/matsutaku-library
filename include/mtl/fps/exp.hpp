@@ -1,6 +1,12 @@
 #pragma once
 #include "../fps.hpp"
 
+/**
+ * We adopt version2 of the exponential computation algorithm in [1].
+ * reference:
+ *  [1] Alin Bostan and Eric Schost, A simple and fast algorithm for computing exponentials of power series, Information Processing Letters 109, 13 (2009) 754-756
+ *      https://doi.org/10.1016/j.ipl.2009.03.012
+*/
 template<int M>
 Fps<M> Fps<M>::exp_dense(int n) const {
     // Newton descent
@@ -16,63 +22,54 @@ Fps<M> Fps<M>::exp_dense(int n) const {
     if (n == 0) return Fps();
     Fps<M> f, g, t, q;
     f.reserve(n*2-1);
+    f.push_back(1);
     g.reserve(n-1);
+    g.push_back(1);
     t.reserve(n*2-1);
     q.reserve(n-1);
-    f.push_back(1);
-    g.push_back(1);
     auto term = [&](size_t i) {
       return i < this->size() ? this->operator[](i) : 0;
     };
+    ModularUtil<mint> mu;
+    mu.set_inv(n);
     for (size_t i = 1; i < (size_t)n; i *= 2) {
-      // std::cerr<<"["<<i<<"] "<<std::endl; 
+      /*
+      Exact computation
+      f = f + f*(pre(i*2) - f.log(i*2));
+      f.inline_pre(ni);
+      */
+      if (i > 1) {
+        // t = (f*g*g).pre(i)
+        t = g;
+        t *= g;
+        t *= f;
+        t.inline_pre(i);
+        // g = (2*g-f*g*g).pre(i)
+        g.inline_pre(i);
+        for (size_t j = i/2; j < i; j++)
+          g[j] = -t[j];
+        // q = pre(i).diff()
+        q.resize(i-1);
+        for (size_t j = i/2; j < i; j++)
+          q[j-1] = term(j) * j;
+      }
       auto ni = i*2;
-      // t = (f*g*g).pre(i)
-      t = g;
-      t *= g;
-      t *= f;
-      t.inline_pre(i);
-    //   assert(t == (f*g*g).pre(i));
-      // g = (2*g-f*g*g).pre(i)
-      g *= 2;
-      g -= t;
-    //   assert(g == (2*g-f*g*g).pre(i));
-      // q = pre(i).diff()
-      q.resize(i-1);
-      for (size_t j = std::max((size_t)1, i/2); j < i; j++)
-        q[j-1] = term(j) * j;
-    //   assert(q == pre(i).diff());
-      // t = (f*q).pre(ni-1);
+      auto l = std::min(ni, (size_t) n);
+      // t = fq % x^{2i-1}
       t = f;
       t *= q;
-      t.inline_pre(ni-1);
-    //   assert(t == (f*q).pre(ni-1));
-      // t = (f.diff()-f*q).pre(ni-1)
-      t *= -1;
-      for (size_t j = 1; j < i; j++)
-        t[j-1] += f[j] * j;
-    //   assert(t == (f.diff()-(f*q)).pre(ni-1));
-      // t = (g*(f.diff()-f*q)).pre(ni-1)
+      t.inline_pre(l-1);
+      // t = fqg div x^{i-1}
+      t >>= i-1;
       t *= g;
-      t.inline_pre(ni-1);
-    //   assert(t == (g*(f.diff()-f*q)).pre(ni-1));
-      // t = (q + g*(f.diff()-f*q)).pre(ni-1).inte()
-      t += q;
-      t.inline_inte();
-    //   assert(t == (q + g*(f.diff()-f*q)).pre(ni-1).inte());
-    //   assert(t == f.log(ni));
-      // t = pre(ni)-t
-      for (size_t j = 0; j < ni; j++)
-        t[j] = -t[j] + term(j);
-      // f = f(1+pre(ni)-t).pre(ni)
-      auto pf = f;
-      t += 1;
-      f *= t;
-      f.inline_pre(ni);
-    //   assert(f == (pf*t).pre(ni));
-      // For exact computation
-      // f = f + f*(pre(i*2) - f.log(i*2));
-      // f.inline_pre(ni);
+      t.inline_pre(l-i+1);
+      // t = (h + (t x^{i-1}).inte()) div x^m
+      for (size_t j = 0; j < l-i+1; j++)
+        t[j] = t[j] * mu.inv(i+j) + term(i+j);
+      t *= f;
+      f.inline_pre(l);
+      for (size_t j = i; j < l; j++)
+        f[j] = t[j-i];
     }
     return f.inline_pre(n);
 }
