@@ -87,6 +87,30 @@ class Modular {
 using Modular998244353 = Modular<998244353>;
 using Modular1000000007 = Modular<(int)1e9+7>;
 
+#include <vector>
+
+template<class ModInt>
+struct ModularUtil {
+  static constexpr int mod = ModInt::mod();
+  static struct inv_table {
+    std::vector<ModInt> tb{0,1};
+    inv_table() : tb({0,1}) {}
+  } inv_;
+  void set_inv(int n) {
+    int m = inv_.tb.size();
+    if (m > n) return;
+    inv_.tb.resize(n+1);
+    for (int i = m; i < n+1; i++)
+      inv_.tb[i] = -inv_.tb[mod % i] * (mod / i);
+  }
+  ModInt& inv(int i) {
+    set_inv(i);
+    return inv_.tb[i];
+  }
+};
+template<class ModInt>
+typename ModularUtil<ModInt>::inv_table ModularUtil<ModInt>::inv_;
+
 #include <array>
 
 namespace math {
