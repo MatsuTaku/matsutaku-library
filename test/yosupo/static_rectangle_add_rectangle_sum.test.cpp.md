@@ -4,41 +4,41 @@ data:
   - icon: ':question:'
     path: include/mtl/bit_manip.hpp
     title: include/mtl/bit_manip.hpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/fenwick_tree.hpp
     title: include/mtl/fenwick_tree.hpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/modular.hpp
     title: include/mtl/modular.hpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/ordinal_range_search.hpp
     title: Ordinal Range Search
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/succinct/binary_set.hpp
     title: include/mtl/succinct/binary_set.hpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/succinct/bit_vector.hpp
     title: include/mtl/succinct/bit_vector.hpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/succinct/bv.hpp
     title: include/mtl/succinct/bv.hpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/succinct/rrr.hpp
     title: Succinct bit vector in memory of B(n, u) + O(u log log n / log n) bits
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/succinct/select.hpp
     title: include/mtl/succinct/select.hpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/succinct/ty.hpp
     title: 'TY: Store increasing sequence of integers.'
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/succinct/wavelet_matrix.hpp
     title: include/mtl/succinct/wavelet_matrix.hpp
   _extendedRequiredBy: []
   _extendedVerifiedWith: []
-  _isVerificationFailed: false
+  _isVerificationFailed: true
   _pathExtension: cpp
-  _verificationStatusIcon: ':heavy_check_mark:'
+  _verificationStatusIcon: ':x:'
   attributes:
     '*NOT_SPECIAL_COMMENTS*': ''
     PROBLEM: https://judge.yosupo.jp/problem/static_rectangle_add_rectangle_sum
@@ -756,7 +756,7 @@ data:
     \ auto jdx = idx;\r\n        for (size_t k = 0; k < wm.h; k++)\r\n          jdx\
     \ = wm.parent(wm.h-1-k, jdx, (c >> k) & 1u);\r\n        ret.emplace_back(value_of_ith_x(jdx),\
     \ value_of_ith_y(c));\r\n      }\r\n    });\r\n    return ret;\r\n  }\r\n};\n\
-    #line 4 \"include/mtl/modular.hpp\"\n\ntemplate <int MOD>\nclass Modular {\n private:\n\
+    #line 5 \"include/mtl/modular.hpp\"\n\ntemplate <int MOD>\nclass Modular {\n private:\n\
     \  unsigned int val_;\n\n public:\n  static constexpr unsigned int mod() { return\
     \ MOD; }\n  template<class T>\n  static constexpr unsigned int safe_mod(T v) {\n\
     \    auto x = (long long)(v%(long long)mod());\n    if (x < 0) x += mod();\n \
@@ -786,25 +786,99 @@ data:
     \ c; }\n  constexpr Modular& operator--() { return *this -= 1; }\n  constexpr\
     \ Modular operator--(int) { Modular c = *this; --(*this); return c; }\n\n  constexpr\
     \ bool operator==(Modular x) const { return val() == x.val(); }\n  constexpr bool\
-    \ operator!=(Modular x) const { return val() != x.val(); }\n\n  friend std::ostream&\
-    \ operator<<(std::ostream& os, const Modular& x) {\n    return os << x.val();\n\
-    \  }\n  friend std::istream& operator>>(std::istream& is, Modular& x) {\n    return\
-    \ is >> x.val_;\n  }\n\n};\n\nusing Modular998244353 = Modular<998244353>;\nusing\
-    \ Modular1000000007 = Modular<(int)1e9+7>;\n\n#line 91 \"include/mtl/modular.hpp\"\
-    \n\nnamespace math {\n\nconstexpr int mod_pow_constexpr(int x, int p, int m) {\n\
-    \  int t = 1;\n  int u = x;\n  while (p) {\n    if (p & 1) {\n      t *= u;\n\
-    \      t %= m;\n    }\n    u *= u;\n    u %= m;\n    p >>= 1;\n  }\n  return t;\n\
-    }\n\nconstexpr int primitive_root_constexpr(int m) {\n  if (m == 2) return 1;\n\
-    \  if (m == 998244353) return 3;\n\n  std::array<int, 20> divs{2};\n  int cnt\
-    \ = 1;\n  int x = (m-1) / 2;\n  for (int d = 3; d*d <= x; d += 2) {\n    if (x\
-    \ % d == 0) {\n      divs[cnt++] = d;\n      while (x % d == 0)\n        x /=\
-    \ d;\n    }\n  }\n  if (x > 1) divs[cnt++] = x;\n  for (int g = 2; ; g++) {\n\
-    \    bool ok = true;\n    for (int i = 0; i < cnt; i++) {\n      if (mod_pow_constexpr(g,\
-    \ (m-1) / divs[cnt], m) == 1) {\n        ok = false;\n        break;\n      }\n\
-    \    }\n    if (ok) return g;\n  }\n}\n\ntemplate<int m>\nconstexpr int primitive_root\
-    \ = primitive_root_constexpr(m);\n\n}\n#line 5 \"test/yosupo/static_rectangle_add_rectangle_sum.test.cpp\"\
-    \n#include <bits/stdc++.h>\nusing namespace std;\n\nusing mint = Modular998244353;\n\
-    using ors_type = ORS<int, mint>;\n\nint main() {\n    cin.tie(0); ios::sync_with_stdio(0);\n\
+    \ operator!=(Modular x) const { return val() != x.val(); }\n\n  constexpr bool\
+    \ is_square() const {\n    return pow((mod()-1)/2) == 1;\n  }\n  /**\n   * Return\
+    \ x s.t. x * x = a mod p\n   * reference: https://zenn.dev/peria/articles/c6afc72b6b003c\n\
+    \  */\n  constexpr Modular sqrt() const {\n    if (!is_square()) \n      throw\
+    \ std::runtime_error(\"not square\");\n    auto mod_eight = mod() % 8;\n    if\
+    \ (mod_eight == 3 || mod_eight == 7) {\n      return pow((mod()+1)/4);\n    }\
+    \ else if (mod_eight == 5) {\n      auto x = pow((mod()+3)/8);\n      if (x *\
+    \ x != *this)\n        x *= Modular(2).pow((mod()-1)/4);\n      return x;\n  \
+    \  } else {\n      Modular d = 2;\n      while (d.is_square())\n        d += 1;\n\
+    \      auto t = mod()-1;\n      int s = bm::ctz(t);\n      t >>= s;\n      auto\
+    \ a = pow(t);\n      auto D = d.pow(t);\n      int m = 0;\n      Modular dt =\
+    \ 1;\n      Modular du = D;\n      for (int i = 0; i < s; i++) {\n        if ((a*dt).pow(1u<<(s-1-i))\
+    \ == -1) {\n          m |= 1u << i;\n          dt *= du;\n        }\n        du\
+    \ *= du;\n      }\n      return pow((t+1)/2) * D.pow(m/2);\n    }\n  }\n\n  friend\
+    \ std::ostream& operator<<(std::ostream& os, const Modular& x) {\n    return os\
+    \ << x.val();\n  }\n  friend std::istream& operator>>(std::istream& is, Modular&\
+    \ x) {\n    return is >> x.val_;\n  }\n\n};\n\nusing Modular998244353 = Modular<998244353>;\n\
+    using Modular1000000007 = Modular<(int)1e9+7>;\n\ntemplate<int Id=0>\nclass DynamicModular\
+    \ {\n private:\n  static unsigned int mod_;\n  unsigned int val_;\n\n public:\n\
+    \  static unsigned int mod() { return mod_; }\n  static void set_mod(unsigned\
+    \ int m) { mod_ = m; }\n  template<class T>\n  static constexpr unsigned int safe_mod(T\
+    \ v) {\n    auto x = (long long)(v%(long long)mod());\n    if (x < 0) x += mod();\n\
+    \    return (unsigned int) x;\n  }\n\n  constexpr DynamicModular() : val_(0) {}\n\
+    \  template<class T,\n      std::enable_if_t<\n          std::is_integral<T>::value\
+    \ && std::is_unsigned<T>::value\n      > * = nullptr>\n  constexpr DynamicModular(T\
+    \ v) : val_(v%mod()) {}\n  template<class T,\n      std::enable_if_t<\n      \
+    \    std::is_integral<T>::value && !std::is_unsigned<T>::value\n      > * = nullptr>\n\
+    \  constexpr DynamicModular(T v) : val_(safe_mod(v)) {}\n\n  constexpr unsigned\
+    \ int val() const { return val_; }\n  constexpr DynamicModular& operator+=(DynamicModular\
+    \ x) {\n    val_ += x.val();\n    if (val_ >= mod()) val_ -= mod();\n    return\
+    \ *this;\n  }\n  constexpr DynamicModular operator-() const { return {mod() -\
+    \ val_}; }\n  constexpr DynamicModular& operator-=(DynamicModular x) {\n    val_\
+    \ += mod() - x.val();\n    if (val_ >= mod()) val_ -= mod();\n    return *this;\n\
+    \  }\n  constexpr DynamicModular& operator*=(DynamicModular x) {\n    auto v =\
+    \ (long long) val_ * x.val();\n    if (v >= mod()) v %= mod();\n    val_ = v;\n\
+    \    return *this;\n  }\n  constexpr DynamicModular pow(long long p) const {\n\
+    \    assert(p >= 0);\n    DynamicModular t = 1;\n    DynamicModular u = *this;\n\
+    \    while (p) {\n      if (p & 1)\n        t *= u;\n      u *= u;\n      p >>=\
+    \ 1;\n    }\n    return t;\n  }\n  friend constexpr DynamicModular pow(DynamicModular\
+    \ x, long long p) {\n    return x.pow(p);\n  }\n  // TODO: implement when mod\
+    \ is not prime\n  constexpr DynamicModular inv() const { return pow(mod()-2);\
+    \ }\n  constexpr DynamicModular& operator/=(DynamicModular x) { return *this *=\
+    \ x.inv(); }\n  constexpr DynamicModular operator+(DynamicModular x) const { return\
+    \ DynamicModular(*this) += x; }\n  constexpr DynamicModular operator-(DynamicModular\
+    \ x) const { return DynamicModular(*this) -= x; }\n  constexpr DynamicModular\
+    \ operator*(DynamicModular x) const { return DynamicModular(*this) *= x; }\n \
+    \ constexpr DynamicModular operator/(DynamicModular x) const { return DynamicModular(*this)\
+    \ /= x; }\n  constexpr DynamicModular& operator++() { return *this += 1; }\n \
+    \ constexpr DynamicModular operator++(int) { DynamicModular c = *this; ++(*this);\
+    \ return c; }\n  constexpr DynamicModular& operator--() { return *this -= 1; }\n\
+    \  constexpr DynamicModular operator--(int) { DynamicModular c = *this; --(*this);\
+    \ return c; }\n\n  constexpr bool operator==(DynamicModular x) const { return\
+    \ val() == x.val(); }\n  constexpr bool operator!=(DynamicModular x) const { return\
+    \ val() != x.val(); }\n\n  constexpr bool is_square() const {\n    return val()\
+    \ == 0 or pow((mod()-1)/2) == 1;\n  }\n  /**\n   * Return x s.t. x * x = a mod\
+    \ p\n   * reference: https://zenn.dev/peria/articles/c6afc72b6b003c\n  */\n  constexpr\
+    \ DynamicModular sqrt() const {\n    // assert mod is prime\n    if (!is_square())\
+    \ \n      throw std::runtime_error(\"not square\");\n    if (val() < 2)\n    \
+    \  return val();\n    auto mod_eight = mod() % 8;\n    if (mod_eight == 3 || mod_eight\
+    \ == 7) {\n      return pow((mod()+1)/4);\n    } else if (mod_eight == 5) {\n\
+    \      auto x = pow((mod()+3)/8);\n      if (x * x != *this)\n        x *= DynamicModular(2).pow((mod()-1)/4);\n\
+    \      return x;\n    } else {\n      DynamicModular d = 2;\n      while (d.is_square())\n\
+    \        ++d;\n      auto t = mod()-1;\n      int s = bm::ctz(t);\n      t >>=\
+    \ s;\n      auto a = pow(t);\n      auto D = d.pow(t);\n      int m = 0;\n   \
+    \   DynamicModular dt = 1;\n      DynamicModular du = D;\n      for (int i = 0;\
+    \ i < s; i++) {\n        if ((a*dt).pow(1u<<(s-1-i)) == -1) {\n          m |=\
+    \ 1u << i;\n          dt *= du;\n        }\n        du *= du;\n      }\n     \
+    \ return pow((t+1)/2) * D.pow(m/2);\n    }\n  }\n\n  friend std::ostream& operator<<(std::ostream&\
+    \ os, const DynamicModular& x) {\n    return os << x.val();\n  }\n  friend std::istream&\
+    \ operator>>(std::istream& is, DynamicModular& x) {\n    return is >> x.val_;\n\
+    \  }\n\n};\ntemplate<int Id>\nunsigned int DynamicModular<Id>::mod_;\n\n#line\
+    \ 264 \"include/mtl/modular.hpp\"\n\ntemplate<class ModInt>\nstruct ModularUtil\
+    \ {\n  static constexpr int mod = ModInt::mod();\n  static struct inv_table {\n\
+    \    std::vector<ModInt> tb{0,1};\n    inv_table() : tb({0,1}) {}\n  } inv_;\n\
+    \  void set_inv(int n) {\n    int m = inv_.tb.size();\n    if (m > n) return;\n\
+    \    inv_.tb.resize(n+1);\n    for (int i = m; i < n+1; i++)\n      inv_.tb[i]\
+    \ = -inv_.tb[mod % i] * (mod / i);\n  }\n  ModInt& inv(int i) {\n    set_inv(i);\n\
+    \    return inv_.tb[i];\n  }\n};\ntemplate<class ModInt>\ntypename ModularUtil<ModInt>::inv_table\
+    \ ModularUtil<ModInt>::inv_;\n\n#line 288 \"include/mtl/modular.hpp\"\n\nnamespace\
+    \ math {\n\nconstexpr int mod_pow_constexpr(int x, int p, int m) {\n  int t =\
+    \ 1;\n  int u = x;\n  while (p) {\n    if (p & 1) {\n      t *= u;\n      t %=\
+    \ m;\n    }\n    u *= u;\n    u %= m;\n    p >>= 1;\n  }\n  return t;\n}\n\nconstexpr\
+    \ int primitive_root_constexpr(int m) {\n  if (m == 2) return 1;\n  if (m == 998244353)\
+    \ return 3;\n\n  std::array<int, 20> divs{2};\n  int cnt = 1;\n  int x = (m-1)\
+    \ / 2;\n  for (int d = 3; d*d <= x; d += 2) {\n    if (x % d == 0) {\n      divs[cnt++]\
+    \ = d;\n      while (x % d == 0)\n        x /= d;\n    }\n  }\n  if (x > 1) divs[cnt++]\
+    \ = x;\n  for (int g = 2; ; g++) {\n    bool ok = true;\n    for (int i = 0; i\
+    \ < cnt; i++) {\n      if (mod_pow_constexpr(g, (m-1) / divs[cnt], m) == 1) {\n\
+    \        ok = false;\n        break;\n      }\n    }\n    if (ok) return g;\n\
+    \  }\n}\n\ntemplate<int m>\nconstexpr int primitive_root = primitive_root_constexpr(m);\n\
+    \n}\n#line 5 \"test/yosupo/static_rectangle_add_rectangle_sum.test.cpp\"\n#include\
+    \ <bits/stdc++.h>\nusing namespace std;\n\nusing mint = Modular998244353;\nusing\
+    \ ors_type = ORS<int, mint>;\n\nint main() {\n    cin.tie(0); ios::sync_with_stdio(0);\n\
     \    int n,q; cin>>n>>q;\n    vector<array<int, 5>> N(n);\n    vector<array<int,\
     \ 4>> Q(q);\n    int index_max = 0;\n    auto chmax = [](int& a, int b) { a =\
     \ max(a, b); };\n    for (int i = 0; i < n; i++) {\n        int l,d,r,u,w; cin>>l>>d>>r>>u>>w;\n\
@@ -865,8 +939,8 @@ data:
   isVerificationFile: true
   path: test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
   requiredBy: []
-  timestamp: '2023-04-20 21:24:28+09:00'
-  verificationStatus: TEST_ACCEPTED
+  timestamp: '2023-04-29 13:51:09+09:00'
+  verificationStatus: TEST_WRONG_ANSWER
   verifiedWith: []
 documentation_of: test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
 layout: document

@@ -5,66 +5,35 @@ data:
     path: include/mtl/bit_manip.hpp
     title: include/mtl/bit_manip.hpp
   - icon: ':question:'
-    path: include/mtl/modular.hpp
-    title: include/mtl/modular.hpp
-  _extendedRequiredBy:
-  - icon: ':question:'
     path: include/mtl/fps.hpp
     title: include/mtl/fps.hpp
   - icon: ':question:'
-    path: include/mtl/fps/exp.hpp
-    title: include/mtl/fps/exp.hpp
+    path: include/mtl/modular.hpp
+    title: include/mtl/modular.hpp
   - icon: ':question:'
-    path: include/mtl/fps/pow.hpp
-    title: include/mtl/fps/pow.hpp
-  _extendedVerifiedWith:
-  - icon: ':heavy_check_mark:'
-    path: test/yosupo/convolution.test.cpp
-    title: test/yosupo/convolution.test.cpp
-  - icon: ':heavy_check_mark:'
-    path: test/yosupo/polynomial/exp_of_formal_power_series.test.cpp
-    title: test/yosupo/polynomial/exp_of_formal_power_series.test.cpp
-  - icon: ':heavy_check_mark:'
-    path: test/yosupo/polynomial/exp_of_formal_power_series_sparse.test.cpp
-    title: test/yosupo/polynomial/exp_of_formal_power_series_sparse.test.cpp
-  - icon: ':heavy_check_mark:'
-    path: test/yosupo/polynomial/inv_of_formal_power_series.test.cpp
-    title: test/yosupo/polynomial/inv_of_formal_power_series.test.cpp
-  - icon: ':heavy_check_mark:'
-    path: test/yosupo/polynomial/inv_of_formal_power_series_sparse.test.cpp
-    title: test/yosupo/polynomial/inv_of_formal_power_series_sparse.test.cpp
-  - icon: ':heavy_check_mark:'
-    path: test/yosupo/polynomial/log_of_formal_power_series.test.cpp
-    title: test/yosupo/polynomial/log_of_formal_power_series.test.cpp
-  - icon: ':heavy_check_mark:'
-    path: test/yosupo/polynomial/log_of_formal_power_series_sparse.test.cpp
-    title: test/yosupo/polynomial/log_of_formal_power_series_sparse.test.cpp
-  - icon: ':heavy_check_mark:'
-    path: test/yosupo/polynomial/pow_of_formal_power_series.test.cpp
-    title: test/yosupo/polynomial/pow_of_formal_power_series.test.cpp
-  - icon: ':x:'
-    path: test/yosupo/polynomial/pow_of_formal_power_series_sparse.test.cpp
-    title: test/yosupo/polynomial/pow_of_formal_power_series_sparse.test.cpp
-  - icon: ':x:'
-    path: test/yosupo/polynomial/sqrt_of_formal_power_series.test.cpp
-    title: test/yosupo/polynomial/sqrt_of_formal_power_series.test.cpp
-  - icon: ':x:'
-    path: test/yosupo/polynomial/sqrt_of_formal_power_series_sparse.test.cpp
-    title: test/yosupo/polynomial/sqrt_of_formal_power_series_sparse.test.cpp
-  _isVerificationFailed: true
-  _pathExtension: hpp
-  _verificationStatusIcon: ':question:'
+    path: include/mtl/ntt.hpp
+    title: include/mtl/ntt.hpp
+  _extendedRequiredBy: []
+  _extendedVerifiedWith: []
+  _isVerificationFailed: false
+  _pathExtension: cpp
+  _verificationStatusIcon: ':heavy_check_mark:'
   attributes:
-    links: []
-  bundledCode: "#line 2 \"include/mtl/bit_manip.hpp\"\n#include <cstdint>\n#include\
-    \ <cassert>\n\nnamespace bm {\n\ninline constexpr uint64_t popcnt_e8(uint64_t\
-    \ x) {\n  x = (x & 0x5555555555555555) + ((x>>1) & 0x5555555555555555);\n  x =\
-    \ (x & 0x3333333333333333) + ((x>>2) & 0x3333333333333333);\n  x = (x & 0x0F0F0F0F0F0F0F0F)\
-    \ + ((x>>4) & 0x0F0F0F0F0F0F0F0F);\n  return x;\n}\n// Count 1s\ninline constexpr\
-    \ unsigned popcnt(uint64_t x) {\n  return (popcnt_e8(x) * 0x0101010101010101)\
-    \ >> 56;\n}\n// Count trailing 0s. ...01101000 -> 3\ninline constexpr unsigned\
-    \ ctz(uint64_t x) {\n  return popcnt((x & (-x)) - 1);\n}\ninline constexpr unsigned\
-    \ ctz8(uint8_t x) {\n  return x == 0 ? 8 : popcnt_e8((x & (-x)) - 1);\n}\n// [00..0](8bit)\
+    '*NOT_SPECIAL_COMMENTS*': ''
+    PROBLEM: https://judge.yosupo.jp/problem/inv_of_formal_power_series
+    links:
+    - https://judge.yosupo.jp/problem/inv_of_formal_power_series
+  bundledCode: "#line 1 \"test/yosupo/polynomial/inv_of_formal_power_series.test.cpp\"\
+    \n#define PROBLEM \"https://judge.yosupo.jp/problem/inv_of_formal_power_series\"\
+    \n#line 2 \"include/mtl/bit_manip.hpp\"\n#include <cstdint>\n#include <cassert>\n\
+    \nnamespace bm {\n\ninline constexpr uint64_t popcnt_e8(uint64_t x) {\n  x = (x\
+    \ & 0x5555555555555555) + ((x>>1) & 0x5555555555555555);\n  x = (x & 0x3333333333333333)\
+    \ + ((x>>2) & 0x3333333333333333);\n  x = (x & 0x0F0F0F0F0F0F0F0F) + ((x>>4) &\
+    \ 0x0F0F0F0F0F0F0F0F);\n  return x;\n}\n// Count 1s\ninline constexpr unsigned\
+    \ popcnt(uint64_t x) {\n  return (popcnt_e8(x) * 0x0101010101010101) >> 56;\n\
+    }\n// Count trailing 0s. ...01101000 -> 3\ninline constexpr unsigned ctz(uint64_t\
+    \ x) {\n  return popcnt((x & (-x)) - 1);\n}\ninline constexpr unsigned ctz8(uint8_t\
+    \ x) {\n  return x == 0 ? 8 : popcnt_e8((x & (-x)) - 1);\n}\n// [00..0](8bit)\
     \ -> 0, [**..*](not only 0) -> 1\ninline constexpr uint8_t summary(uint64_t x)\
     \ {\n  constexpr uint64_t hmask = 0x8080808080808080ull;\n  constexpr uint64_t\
     \ lmask = 0x7F7F7F7F7F7F7F7Full;\n  auto a = x & hmask;\n  auto b = x & lmask;\n\
@@ -248,73 +217,172 @@ data:
     \  intt_inline(f);\r\n  auto n_inv = mint(n).inv();\r\n  for (int i = 0; i < n;\
     \ i++)\r\n    f[i] *= n_inv;\r\n  return f;\r\n}\r\n\r\nsize_t complexity_of_convolution(size_t\
     \ fsize, size_t gsize) {\r\n  int lg = math::ceil_pow2(fsize + gsize - 1);\r\n\
-    \  return lg << lg;\r\n}\r\n"
-  code: "#pragma once\r\n#include \"modular.hpp\"\r\n#include \"bit_manip.hpp\"\r\n\
-    #include <vector>\r\n#include <cassert>\r\n\r\nnamespace math {\r\n\r\nconstexpr\
-    \ int ceil_pow2(unsigned long long x) {\r\n  return x == 0 ? 0 : 64-bm::clz(x-1);\r\
-    \n}\r\n\r\n}\r\n\r\nnamespace _ntt {\r\n\r\ntemplate<int mod>\r\nstruct ntt_info\
-    \ {\r\n  using mint = Modular<mod>;\r\n  static constexpr int primitive_root()\
-    \ {\r\n    return math::primitive_root<mod>;\r\n  }\r\n  static constexpr int\
-    \ log_n() {\r\n    return bm::ctz(mod-1);\r\n  }\r\n  static constexpr std::array<Modular<mod>,\
-    \ log_n()> coeff(bool forward) {\r\n    mint r = mint(primitive_root()).pow((mod-1)\
-    \ >> log_n());\r\n    std::array<mint, log_n()> coeff{};\r\n    mint iw = forward\
-    \ ? r.inv() : r;\r\n    for (int i = log_n()-1; i >= 0; i--) {\r\n      coeff[i]\
-    \ = iw;\r\n      iw *= iw;\r\n    }\r\n    return coeff;\r\n  }\r\n};\r\n\r\n\
-    template <bool Forward, int mod>\r\nvoid _fft_impl(std::vector<Modular<mod>>&\
-    \ f) {\r\n  using mint = Modular<mod>;\r\n  int log_n = math::ceil_pow2(f.size());\r\
-    \n  using info = ntt_info<mod>;\r\n  assert(info::log_n() >= log_n);\r\n  int\
-    \ n = 1 << log_n;\r\n  f.resize(n, 0);\r\n  // iterative bit reversal\r\n  for\
-    \ (int i = 0, j = 1; j < n-1; j++) {\r\n    for (int k = n >> 1; k > (i ^= k);\
-    \ k >>= 1);\r\n    if (i < j) std::swap(f[i], f[j]);\r\n  }\r\n  // Cooley-Tukey\
-    \ FFT\r\n  static constexpr auto coeff = info::coeff(Forward);\r\n  for (int log_m\
-    \ = 0; log_m < log_n; log_m++) {\r\n    int m = 1<<log_m;\r\n    mint w0 = coeff[log_m];\r\
-    \n    for (int chunk = 0; chunk < n; chunk += 2*m) {\r\n      mint w = 1;\r\n\
-    \      for (int i = 0; i < m; i++) {\r\n        auto p = chunk + i;\r\n      \
-    \  auto a = f[p + 0];\r\n        auto b = f[p + m] * w;\r\n        f[p + 0] =\
-    \ a + b;\r\n        f[p + m] = a - b;\r\n        w *= w0;\r\n      }\r\n    }\r\
-    \n  }\r\n}\r\ntemplate<class mint>\r\nvoid _fft(std::vector<mint>& f) { _fft_impl<true>(f);\
-    \ }\r\ntemplate<class mint>\r\nvoid _ifft(std::vector<mint>& f) { _fft_impl<false>(f);\
-    \ }\r\n\r\n}\r\n\r\ntemplate<class mint>\r\nvoid ntt_inline(std::vector<mint>&\
-    \ f) {\r\n  _ntt::_fft(f);\r\n}\r\n\r\ntemplate<class mint>\r\nstd::vector<mint>\
-    \ ntt(std::vector<mint> f) {\r\n  _ntt::_fft(f);\r\n  return f;\r\n}\r\n\r\ntemplate<class\
-    \ mint>\r\nvoid intt_inline(std::vector<mint>& f) {\r\n  _ntt::_ifft(f);\r\n}\r\
-    \n\r\ntemplate<class mint>\r\nstd::vector<mint> intt(std::vector<mint> f) {\r\n\
-    \  _ntt::_ifft(f);\r\n  return f;\r\n}\r\n\r\ntemplate<class mint>\r\nstd::vector<mint>\
-    \ convolution(std::vector<mint> f, std::vector<mint> g) {\r\n  if (f.empty() or\
-    \ g.empty())\r\n    return {};\r\n  int l = 1 << math::ceil_pow2(f.size() + g.size()\
-    \ - 1);\r\n  f.resize(l);\r\n  ntt_inline(f);\r\n  g.resize(l);\r\n  ntt_inline(g);\r\
-    \n  int n = f.size();\r\n  for (int i = 0; i < n; i++)\r\n    f[i] *= g[i];\r\n\
-    \  intt_inline(f);\r\n  auto n_inv = mint(n).inv();\r\n  for (int i = 0; i < n;\
-    \ i++)\r\n    f[i] *= n_inv;\r\n  return f;\r\n}\r\n\r\nsize_t complexity_of_convolution(size_t\
-    \ fsize, size_t gsize) {\r\n  int lg = math::ceil_pow2(fsize + gsize - 1);\r\n\
-    \  return lg << lg;\r\n}\r\n"
+    \  return lg << lg;\r\n}\r\n#line 4 \"include/mtl/fps.hpp\"\n#include <initializer_list>\n\
+    #line 6 \"include/mtl/fps.hpp\"\n#include <algorithm>\n\ntemplate<int Mod = 998244353>\n\
+    class Fps : public std::vector<Modular<Mod>> {\n  using _base = std::vector<Modular<Mod>>;\n\
+    \ public:\n  using mint = Modular<Mod>;\n  using f = std::vector<mint>;\n  explicit\
+    \ Fps(size_t n=0, mint v=0) : f(n, v) {}\n  template<typename It> Fps(It begin,\
+    \ It end) : f(begin, end) {}\n  Fps(std::initializer_list<mint> l) : f(l) {}\n\
+    \  explicit Fps(const std::vector<mint>& l) : f(l) {}\n  explicit Fps(std::vector<mint>&&\
+    \ l) : f(std::move(l)) {}\n\n  Fps& normalize() {\n    int n = (int) _base::size();\n\
+    \    while (n-1 >= 0 and (*this)[n-1] == 0) n--;\n    _base::resize(n);\n    return\
+    \ *this;\n  }\n  Fps& inline_pre(size_t m) {\n    _base::resize(m, 0);\n    return\
+    \ *this;\n  }\n  /// f mod x^m\n  Fps pre(size_t m) const {\n    if (m <= _base::size())\n\
+    \      return Fps(_base::begin(), _base::begin()+m);\n    else \n      return\
+    \ Fps(*this).inline_pre(m);\n  }\n  bool operator==(const Fps& rhs) const {\n\
+    \    for (size_t i = 0, n = std::max(_base::size(), rhs.size()); i < n; i++) {\n\
+    \      auto l = i < _base::size() ? (*this)[i] : 0;\n      auto r = i < rhs.size()\
+    \ ? rhs[i] : 0;\n      if (l != r) return false;\n    }\n    return true;\n  }\n\
+    \  bool operator!=(const Fps& rhs) const {\n    return !(*this == rhs);\n  }\n\
+    \  Fps& operator+=(mint x) {\n    if (_base::empty())\n      _base::resize(1);\n\
+    \    (*this)[0] += x;\n    return *this;\n  }\n  Fps& operator-=(mint x) { return\
+    \ *this += -x; }\n  Fps& operator*=(mint x) {\n    for (auto& v : *this) v *=\
+    \ x;\n    return *this;\n  }\n  Fps& operator/=(mint x) { return *this *= x.inv();\
+    \ }\n  Fps operator+(mint x) const { return Fps(*this) += x; }\n  Fps operator-(mint\
+    \ x) const { return Fps(*this) -= x; }\n  Fps operator*(mint x) const { return\
+    \ Fps(*this) *= x; }\n  Fps operator/(mint x) const { return Fps(*this) /= x;\
+    \ }\n  Fps operator-() const {\n    auto g = *this;\n    for (auto& v : g) v =\
+    \ -v;\n    return g;\n  }\n  friend Fps operator+(mint x, const Fps& y) { return\
+    \ y+x; }\n  friend Fps operator-(mint x, const Fps& y) { return -y+x; }\n  friend\
+    \ Fps operator*(mint x, const Fps& y) { return y*x; }\n  friend Fps operator/(mint\
+    \ x, const Fps& y) { return y.inv()*x; }\n  Fps& operator+=(const Fps& r) {\n\
+    \    if (r.size() > _base::size())\n      _base::resize(r.size());\n    for (size_t\
+    \ i = 0; i < r.size(); i++)\n      (*this)[i] += r[i];\n    return *this;\n  }\n\
+    \  Fps& operator-=(const Fps& r) {\n    if (r.size() > _base::size())\n      _base::resize(r.size());\n\
+    \    for (size_t i = 0; i < r.size(); i++)\n      (*this)[i] -= r[i];\n    return\
+    \ *this;\n  }\n  Fps& dot(const Fps& r) {\n    if (_base::size() > r.size())\n\
+    \      _base::resize(r.size());\n    for (size_t i = 0; i < _base::size(); i++)\n\
+    \      (*this)[i] *= r[i];\n    return *this;\n  }\n  size_t count_terms(int n\
+    \ = -1) const {\n    if (n == -1) n = (int)_base::size();\n    n = std::min(n,\
+    \ (int)_base::size());\n    return std::count_if(_base::begin(), _base::begin()+n,\
+    \ [](mint x) { return x != 0; });\n  }\n  std::vector<std::pair<size_t, mint>>\
+    \ term_ties() const {\n    return term_ties(0, _base::size());\n  }\n  std::vector<std::pair<size_t,\
+    \ mint>> term_ties(size_t n) const {\n    return term_ties(0, n);\n  }\n  std::vector<std::pair<size_t,\
+    \ mint>> term_ties(size_t front, size_t back) const {\n    std::vector<std::pair<size_t,\
+    \ mint>> ret;\n    for (size_t i = front; i < back; i++)\n      if ((*this)[i]\
+    \ != 0)\n        ret.emplace_back(i, (*this)[i]);\n    return ret;\n  }\n private:\n\
+    \  template<class F>\n  Fps& _mul_set_dense(F&& r) {\n    return *this = Fps(convolution(std::move(*this),\
+    \ std::forward<F>(r)));\n  }\n  /** \n   * Complexity: O(NK) \n   *          \
+    \   where N is count of non-zero terms of self and K is count of non-zero terms\
+    \ of r\n  */\n  Fps& _mul_set_sparse(const Fps& r) {\n    auto ri = r.term_ties();\n\
+    \    if (ri.empty()) return *this = Fps();\n    Fps ret(_base::size() + ri.back().first);\n\
+    \    for (size_t i = 0; i < _base::size(); i++) if ((*this)[i] != 0) for (auto\
+    \ j:ri) {\n      ret[i + j.first] += (*this)[i] * j.second;\n    }\n    return\
+    \ *this = ret;\n  }\n  template<class F>\n  Fps& _mul_set(F&& r) {\n    return\n\
+    \      r.count_terms() < 100 ?\n      _mul_set_sparse(std::forward<F>(r)) :\n\
+    \      _mul_set_dense(std::forward<F>(r));\n  }\n public:\n  Fps& operator*=(const\
+    \ Fps& r) {\n    return _mul_set(r);\n  }\n  Fps& operator*=(Fps&& r) {\n    return\
+    \ _mul_set(std::move(r));\n  }\n  Fps inv_dense(int n = -1) const {\n    assert(!_base::empty()\
+    \ and (*this)[0] != 0);\n    if (n == -1) n = (int) _base::size();\n    if (n\
+    \ == 0) return Fps();\n    // Newton descent\n    // find g, s.t. F(g) = a\n \
+    \   //   g_{n+1} = g_n - (F(g_n) - a) / F'(g_n)\n    // find g, s.t. g^{-1} =\
+    \ f\n    //   g_{n+1} = g_n - (g_n^{-1} - f) / -g_n^{-2}\n    //           = 2g_n\
+    \ - g_n^2 f\n    //   g_0 = f_0^{-1}\n    Fps g,fm,fgg;\n    g.reserve(n); fm.reserve(n);\
+    \ fgg.reserve(n*2-1);\n    g.push_back((*this)[0].inv());\n    fm.push_back((*this)[0]);\n\
+    \    for (int m = 1; m < n; m <<= 1) {\n      int nm = std::min(m*2, n);\n   \
+    \   fm.resize(nm);\n      for (int i = m; i < std::min(nm, (int)_base::size());\
+    \ i++)\n        fm[i] = (*this)[i];\n      fgg = g;\n      fgg *= g;\n      fgg\
+    \ *= fm;\n      fgg.inline_pre(nm);\n      g.resize(nm);\n      for (int i = m;\
+    \ i < nm; i++)\n        g[i] = -fgg[i];\n    }\n    // assert((pre(n)*g).pre(n)\
+    \ == Fps{1});\n    return g;\n  }\n  Fps inv_sparse(int n = -1) const {\n    assert(!_base::empty()\
+    \ and (*this)[0] != 0);\n    if (n == -1) n = (int) _base::size();\n    if (n\
+    \ == 0) return Fps();\n    // fg = 1 => (n>0) sum_i f_i g_{n-i} = 0\n    // f_0\
+    \ g_n = - sum_{i=1}^n f_i g_{n-i}\n    auto tf = term_ties(n);\n    Fps g(n);\n\
+    \    auto ifz = (*this)[0].inv();\n    g[0] = ifz;\n    for (size_t i = 1; i <\
+    \ (size_t) n; i++) {\n      mint s = 0;\n      for (size_t j = 1; j < tf.size();\
+    \ j++) {\n        if (tf[j].first > i) break;\n        s += tf[j].second * g[i-tf[j].first];\n\
+    \      }\n      g[i] = -s * ifz;\n    }\n    // assert((pre(n)*g).pre(n) == Fps{1});\n\
+    \    return g;\n  }\n  Fps inv(int n = -1) const {\n    if (n == -1) n = (int)\
+    \ _base::size();\n    return count_terms(n) < 100 ? inv_sparse(n) : inv_dense(n);\n\
+    \  }\n  Fps& operator/=(const Fps& r) {\n    return *this *= r.inv();\n  }\n \
+    \ // f x^m = sum f_i x^{i+m}\n  Fps operator<<(size_t m) const {\n    Fps ret(m\
+    \ + _base::size());\n    std::copy(_base::begin(), _base::end(), ret.begin()+m);\n\
+    \    return ret;\n  }\n  // sum f_{i+m} x^i\n  Fps operator>>(size_t m) const\
+    \ {\n    if (m >= _base::size()) return Fps();\n    return Fps(_base::begin()+m,\
+    \ _base::end());\n  }\n  Fps& operator<<=(size_t m) {\n    size_t s = _base::size();\n\
+    \    _base::resize(m + s);\n    for (size_t i = 0; i < s; i++)\n      (*this)[m+s-1-i]\
+    \ = (*this)[s-1-i];\n    std::fill(_base::begin(), _base::begin()+m, 0);\n   \
+    \ return *this;\n  }\n  Fps& operator>>=(size_t m) {\n    if (m >= _base::size())\
+    \ return *this = Fps();\n    _base::erase(_base::begin(), _base::begin()+m);\n\
+    \    return *this;\n  }\n  Fps& inline_diff() {\n    if (_base::empty()) return\
+    \ *this;\n    for (size_t i = 1; i < _base::size(); i++)\n      (*this)[i-1] =\
+    \ (*this)[i] * i;\n    _base::pop_back();\n    return *this;\n  }\n  Fps diff()\
+    \ const {\n    return Fps(*this).inline_diff();\n  }\n  Fps& inline_inte() {\n\
+    \    if (_base::empty()) return *this;\n    _base::push_back(0);\n    ModularUtil<mint>\
+    \ mu;\n    mu.set_inv(_base::size());\n    for (int i = (int) _base::size()-1;\
+    \ i > 0; i--)\n      (*this)[i] = (*this)[i-1] * mu.inv(i);\n    (*this)[0] =\
+    \ 0;\n    return *this;\n  }\n  Fps inte() const {\n    return Fps(*this).inline_inte();\n\
+    \  }\n  Fps log_dense(int n = -1) const {\n    assert(!_base::empty() and _base::operator[](0)\
+    \ == 1);\n    if (n == -1) n = (int) _base::size();\n    // integral(f' / f)\n\
+    \    return (diff() * inv_dense(n-1)).inline_pre(n-1).inline_inte().inline_pre(n);\n\
+    \  }\n  Fps log_sparse(int n = -1) const {\n    assert(!_base::empty() and _base::operator[](0)\
+    \ == 1);\n    if (n == -1) n = (int) _base::size();\n    // integral(f' / f)\n\
+    \    return (diff() * inv_sparse(n-1)).inline_pre(n-1).inline_inte().inline_pre(n);\n\
+    \  }\n  /**\n   * define log (1-f) = -sum_n f^n / n\n   * satisfy log(f)' = f'/f,\
+    \ log(fg) = log f + log g\n  */\n  Fps log(int n = -1) const {\n    assert(!_base::empty()\
+    \ and _base::operator[](0) == 1);\n    if (n == -1) n = (int) _base::size();\n\
+    \    // integral(f' / f)\n    return (diff() * inv(n-1)).inline_pre(n-1).inline_inte().inline_pre(n);\n\
+    \  }\n  Fps exp_dense(int n = -1) const;\n  Fps exp_sparse(int n = -1) const;\n\
+    \  /**\n   * define exp f = sum_n f^n / n!\n   * satisfy (exp f)' = (exp f)f',\
+    \ exp(f + g) = exp(f)exp(g)\n  */\n  Fps exp(int n = -1) const {\n    assert(_base::empty()\
+    \ or _base::operator[](0) == 0);\n    return count_terms() < 100 ? exp_sparse(n)\
+    \ : exp_dense(n);\n  }\n private:\n  Fps _pow_1_dense(long long n) const;\n  Fps\
+    \ _pow_1_sparse(long long n) const;\n  Fps _pow_1(long long n) const {\n    assert(!_base::empty()\
+    \ and _base::operator[](0) == 1);\n    return count_terms() < 100 ? _pow_1_sparse(n)\
+    \ : _pow_1_dense(n);\n  }\n public:\n  /**\n   * f^n = exp(n log f)\n   * f^{ab}\
+    \ = (f^a)^b, f^{a+b} = f^a f^b\n  */\n  Fps pow(long long n) const;\n private:\n\
+    \  /**\n   * define f^{1/2}' = 1/2f^{-1/2} if [x^0]f = 1\n   * F = f^{1/2}\n \
+    \  * fF' = 1/2 F f'\n   */\n  Fps _sqrt_1() const {\n    assert(!_base::empty()\
+    \ and (*this)[0] == 1);\n    return _pow_1(mint(2).inv().val());\n  }\n public:\n\
+    \  Fps sqrt() const {\n    // f = sum_i a_i x^i = c_k x^k sum_i a_i/c_k x^{i-k}\
+    \ = c_k x^k g\n    // f^{1/2} = c_k^{1/2} x^{k/2} g^{1/2}\n    // s.t. c_k is\
+    \ square and k is even\n    size_t k = 0;\n    while (k < _base::size() and (*this)[k]\
+    \ == 0) k++;\n    if (k == _base::size()) return Fps();\n    if (k%2==1) \n  \
+    \    throw std::runtime_error(\"minimum degree must be even\");\n    auto ck =\
+    \ (*this)[k];\n    if (!ck.is_square())\n      throw std::runtime_error(\"not\
+    \ square\");\n    auto g = *this >> k;\n    g /= ck;\n    g = g._sqrt_1();\n \
+    \   g *= ck.sqrt();\n    g <<= k/2;\n    return g;\n  }\n  bool is_square() const\
+    \ {\n    size_t k = 0;\n    while (k < _base::size() and (*this)[k] == 0) k++;\n\
+    \    if (k == _base::size()) return true;\n    if (k%2==1) \n      return false;\n\
+    \    if (!(*this)[k].is_square()) \n      return false;\n    return true;\n  }\n\
+    \ private:\n  template<class F>\n  Fps& _mod_set(F&& r) {\n    normalize();\n\
+    \    Fps q = *this / r;\n    return *this -= q * std::forward<F>(r);\n  }\n public:\n\
+    \  Fps& operator%=(const Fps& r) {\n    return _mod_set(r);\n  }\n  Fps& operator%=(Fps&&\
+    \ r) {\n    return _mod_set(std::move(r));\n  }\n  Fps operator+(const Fps& r)\
+    \ const { return Fps(*this) += r; }\n  Fps operator+(Fps&& r) const { return Fps(*this)\
+    \ += std::move(r); }\n  Fps operator-(const Fps& r) const { return Fps(*this)\
+    \ -= r; }\n  Fps operator-(Fps&& r) const { return Fps(*this) -= std::move(r);\
+    \ }\n  Fps operator*(const Fps& r) const { return Fps(*this) *= r; }\n  Fps operator*(Fps&&\
+    \ r) const { return Fps(*this) *= std::move(r); }\n  Fps operator/(const Fps&\
+    \ r) const { return Fps(*this) /= r; }\n  Fps operator/(Fps&& r) const { return\
+    \ Fps(*this) /= std::move(r); }\n  Fps operator%(const Fps& r) const { return\
+    \ Fps(*this) %= r; }\n  Fps operator%(Fps&& r) const { return Fps(*this) %= std::move(r);\
+    \ }\n};\n#line 3 \"test/yosupo/polynomial/inv_of_formal_power_series.test.cpp\"\
+    \n#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    int n; cin>>n;\n\
+    \    vector<int> A(n);\n    for (int i = 0; i < n; i++) cin>>A[i];\n    Fps f(A.begin(),\
+    \ A.end());\n    auto g = f.inv_dense();\n    for (int i = 0; i < n; i++)\n  \
+    \      cout << g[i] << ' ';\n    cout << endl;\n}\n"
+  code: "#define PROBLEM \"https://judge.yosupo.jp/problem/inv_of_formal_power_series\"\
+    \n#include \"../../../include/mtl/fps.hpp\"\n#include <bits/stdc++.h>\nusing namespace\
+    \ std;\n\nint main() {\n    int n; cin>>n;\n    vector<int> A(n);\n    for (int\
+    \ i = 0; i < n; i++) cin>>A[i];\n    Fps f(A.begin(), A.end());\n    auto g =\
+    \ f.inv_dense();\n    for (int i = 0; i < n; i++)\n        cout << g[i] << ' ';\n\
+    \    cout << endl;\n}"
   dependsOn:
+  - include/mtl/fps.hpp
+  - include/mtl/ntt.hpp
   - include/mtl/modular.hpp
   - include/mtl/bit_manip.hpp
-  isVerificationFile: false
-  path: include/mtl/ntt.hpp
-  requiredBy:
-  - include/mtl/fps/pow.hpp
-  - include/mtl/fps/exp.hpp
-  - include/mtl/fps.hpp
+  isVerificationFile: true
+  path: test/yosupo/polynomial/inv_of_formal_power_series.test.cpp
+  requiredBy: []
   timestamp: '2023-04-29 13:51:09+09:00'
-  verificationStatus: LIBRARY_SOME_WA
-  verifiedWith:
-  - test/yosupo/convolution.test.cpp
-  - test/yosupo/polynomial/exp_of_formal_power_series_sparse.test.cpp
-  - test/yosupo/polynomial/inv_of_formal_power_series_sparse.test.cpp
-  - test/yosupo/polynomial/inv_of_formal_power_series.test.cpp
-  - test/yosupo/polynomial/log_of_formal_power_series_sparse.test.cpp
-  - test/yosupo/polynomial/sqrt_of_formal_power_series.test.cpp
-  - test/yosupo/polynomial/exp_of_formal_power_series.test.cpp
-  - test/yosupo/polynomial/sqrt_of_formal_power_series_sparse.test.cpp
-  - test/yosupo/polynomial/pow_of_formal_power_series.test.cpp
-  - test/yosupo/polynomial/pow_of_formal_power_series_sparse.test.cpp
-  - test/yosupo/polynomial/log_of_formal_power_series.test.cpp
-documentation_of: include/mtl/ntt.hpp
+  verificationStatus: TEST_ACCEPTED
+  verifiedWith: []
+documentation_of: test/yosupo/polynomial/inv_of_formal_power_series.test.cpp
 layout: document
 redirect_from:
-- /library/include/mtl/ntt.hpp
-- /library/include/mtl/ntt.hpp.html
-title: include/mtl/ntt.hpp
+- /verify/test/yosupo/polynomial/inv_of_formal_power_series.test.cpp
+- /verify/test/yosupo/polynomial/inv_of_formal_power_series.test.cpp.html
+title: test/yosupo/polynomial/inv_of_formal_power_series.test.cpp
 ---

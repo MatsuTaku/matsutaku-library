@@ -214,16 +214,16 @@ data:
   isVerificationFile: false
   path: include/mtl/traits/set_traits.hpp
   requiredBy:
-  - include/mtl/yft.hpp
   - include/mtl/xft.hpp
   - include/mtl/binary_trie.hpp
+  - include/mtl/yft.hpp
   - test/yosupo/test_binary_trie.cpp
   timestamp: '2023-04-06 14:40:12+09:00'
   verificationStatus: LIBRARY_SOME_WA
   verifiedWith:
+  - test/yosupo/associative_array-yft.test.cpp
   - test/yosupo/set_xor_min.test.cpp
   - test/yosupo/predecessor_problem-yft.test.cpp
-  - test/yosupo/associative_array-yft.test.cpp
 documentation_of: include/mtl/traits/set_traits.hpp
 layout: document
 redirect_from:

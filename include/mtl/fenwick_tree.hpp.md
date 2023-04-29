@@ -8,7 +8,7 @@ data:
   - icon: ':warning:'
     path: include/mtl/bitmap.hpp
     title: include/mtl/bitmap.hpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/ordinal_range_search.hpp
     title: Ordinal Range Search
   _extendedVerifiedWith:
@@ -24,7 +24,7 @@ data:
   - icon: ':heavy_check_mark:'
     path: test/yosupo/static_range_sum.test.cpp
     title: test/yosupo/static_range_sum.test.cpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':x:'
     path: test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
     title: test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
   - icon: ':heavy_check_mark:'
@@ -36,9 +36,9 @@ data:
   - icon: ':heavy_check_mark:'
     path: test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
     title: test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
-  _isVerificationFailed: false
+  _isVerificationFailed: true
   _pathExtension: hpp
-  _verificationStatusIcon: ':heavy_check_mark:'
+  _verificationStatusIcon: ':question:'
   attributes:
     links: []
   bundledCode: "#line 2 \"include/mtl/bit_manip.hpp\"\n#include <cstdint>\n#include\
@@ -118,17 +118,17 @@ data:
   isVerificationFile: false
   path: include/mtl/fenwick_tree.hpp
   requiredBy:
-  - include/mtl/bitmap.hpp
   - include/mtl/ordinal_range_search.hpp
+  - include/mtl/bitmap.hpp
   timestamp: '2023-04-13 21:51:40+09:00'
-  verificationStatus: LIBRARY_ALL_AC
+  verificationStatus: LIBRARY_SOME_WA
   verifiedWith:
-  - test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
-  - test/yosupo/point_add_range_sum.test.cpp
-  - test/yosupo/vertex_add_path_sum.test.cpp
-  - test/yosupo/rectangle_sum.test.cpp
-  - test/yosupo/static_range_sum.test.cpp
   - test/yosupo/vertex_add_subtree_sum.test.cpp
+  - test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
+  - test/yosupo/vertex_add_path_sum.test.cpp
+  - test/yosupo/point_add_range_sum.test.cpp
+  - test/yosupo/static_range_sum.test.cpp
+  - test/yosupo/rectangle_sum.test.cpp
   - test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
   - test/yosupo/static_range_inversions_query-mo.test.cpp
 documentation_of: include/mtl/fenwick_tree.hpp

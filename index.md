@@ -42,7 +42,7 @@ data:
     - icon: ':heavy_check_mark:'
       path: include/mtl/dual_disjoint_sparse_table.hpp
       title: include/mtl/dual_disjoint_sparse_table.hpp
-    - icon: ':heavy_check_mark:'
+    - icon: ':question:'
       path: include/mtl/dual_segment_tree.hpp
       title: include/mtl/dual_segment_tree.hpp
     - icon: ':heavy_check_mark:'
@@ -51,7 +51,7 @@ data:
     - icon: ':warning:'
       path: include/mtl/enumerate.hpp
       title: include/mtl/enumerate.hpp
-    - icon: ':heavy_check_mark:'
+    - icon: ':question:'
       path: include/mtl/fenwick_tree.hpp
       title: include/mtl/fenwick_tree.hpp
     - icon: ':warning:'
@@ -60,7 +60,7 @@ data:
     - icon: ':heavy_check_mark:'
       path: include/mtl/fibonacci_heap.hpp
       title: include/mtl/fibonacci_heap.hpp
-    - icon: ':heavy_check_mark:'
+    - icon: ':question:'
       path: include/mtl/fps.hpp
       title: include/mtl/fps.hpp
     - icon: ':warning:'
@@ -69,13 +69,13 @@ data:
     - icon: ':heavy_check_mark:'
       path: include/mtl/graph.hpp
       title: include/mtl/graph.hpp
-    - icon: ':heavy_check_mark:'
+    - icon: ':question:'
       path: include/mtl/hld.hpp
       title: include/mtl/hld.hpp
     - icon: ':warning:'
       path: include/mtl/integer_set.hpp
       title: include/mtl/integer_set.hpp
-    - icon: ':heavy_check_mark:'
+    - icon: ':question:'
       path: include/mtl/lazy_segment_tree.hpp
       title: include/mtl/lazy_segment_tree.hpp
     - icon: ':heavy_check_mark:'
@@ -99,16 +99,16 @@ data:
     - icon: ':heavy_check_mark:'
       path: include/mtl/mo.hpp
       title: 'Mo''s algorithm: solve offline segment queries on a sequence'
-    - icon: ':heavy_check_mark:'
+    - icon: ':question:'
       path: include/mtl/modular.hpp
       title: include/mtl/modular.hpp
-    - icon: ':heavy_check_mark:'
+    - icon: ':question:'
       path: include/mtl/monoid.hpp
       title: include/mtl/monoid.hpp
-    - icon: ':heavy_check_mark:'
+    - icon: ':question:'
       path: include/mtl/ntt.hpp
       title: include/mtl/ntt.hpp
-    - icon: ':heavy_check_mark:'
+    - icon: ':question:'
       path: include/mtl/ordinal_range_search.hpp
       title: Ordinal Range Search
     - icon: ':heavy_check_mark:'
@@ -132,7 +132,7 @@ data:
     - icon: ':heavy_check_mark:'
       path: include/mtl/search.hpp
       title: include/mtl/search.hpp
-    - icon: ':heavy_check_mark:'
+    - icon: ':question:'
       path: include/mtl/segment_hld.hpp
       title: include/mtl/segment_hld.hpp
     - icon: ':heavy_check_mark:'
@@ -168,6 +168,14 @@ data:
     - icon: ':question:'
       path: include/mtl/yft.hpp
       title: include/mtl/yft.hpp
+  - name: include/mtl/fps
+    pages:
+    - icon: ':question:'
+      path: include/mtl/fps/exp.hpp
+      title: include/mtl/fps/exp.hpp
+    - icon: ':question:'
+      path: include/mtl/fps/pow.hpp
+      title: include/mtl/fps/pow.hpp
   - name: include/mtl/string
     pages:
     - icon: ':warning:'
@@ -187,28 +195,28 @@ data:
       title: include/mtl/string/z_algorithm.hpp
   - name: include/mtl/succinct
     pages:
-    - icon: ':heavy_check_mark:'
+    - icon: ':question:'
       path: include/mtl/succinct/binary_set.hpp
       title: include/mtl/succinct/binary_set.hpp
-    - icon: ':heavy_check_mark:'
+    - icon: ':question:'
       path: include/mtl/succinct/bit_vector.hpp
       title: include/mtl/succinct/bit_vector.hpp
-    - icon: ':heavy_check_mark:'
+    - icon: ':question:'
       path: include/mtl/succinct/bv.hpp
       title: include/mtl/succinct/bv.hpp
     - icon: ':warning:'
       path: include/mtl/succinct/int_vector.hpp
       title: Integer Vector store ElementSize bits per element
-    - icon: ':heavy_check_mark:'
+    - icon: ':question:'
       path: include/mtl/succinct/rrr.hpp
       title: Succinct bit vector in memory of B(n, u) + O(u log log n / log n) bits
-    - icon: ':heavy_check_mark:'
+    - icon: ':question:'
       path: include/mtl/succinct/select.hpp
       title: include/mtl/succinct/select.hpp
-    - icon: ':heavy_check_mark:'
+    - icon: ':question:'
       path: include/mtl/succinct/ty.hpp
       title: 'TY: Store increasing sequence of integers.'
-    - icon: ':heavy_check_mark:'
+    - icon: ':question:'
       path: include/mtl/succinct/wavelet_matrix.hpp
       title: include/mtl/succinct/wavelet_matrix.hpp
     - icon: ':warning:'
@@ -425,7 +433,7 @@ data:
     - icon: ':x:'
       path: test/yosupo/predecessor_problem-yft.test.cpp
       title: test/yosupo/predecessor_problem-yft.test.cpp
-    - icon: ':heavy_check_mark:'
+    - icon: ':x:'
       path: test/yosupo/range_affine_range_sum.test.cpp
       title: test/yosupo/range_affine_range_sum.test.cpp
     - icon: ':heavy_check_mark:'
@@ -434,6 +442,9 @@ data:
     - icon: ':heavy_check_mark:'
       path: test/yosupo/set_xor_min.test.cpp
       title: test/yosupo/set_xor_min.test.cpp
+    - icon: ':x:'
+      path: test/yosupo/sqrt_mod.test.cpp
+      title: test/yosupo/sqrt_mod.test.cpp
     - icon: ':heavy_check_mark:'
       path: test/yosupo/static_range_frequency.test.cpp
       title: test/yosupo/static_range_frequency.test.cpp
@@ -446,7 +457,7 @@ data:
     - icon: ':heavy_check_mark:'
       path: test/yosupo/static_range_sum.test.cpp
       title: test/yosupo/static_range_sum.test.cpp
-    - icon: ':heavy_check_mark:'
+    - icon: ':x:'
       path: test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
       title: test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
     - icon: ':heavy_check_mark:'
@@ -461,7 +472,7 @@ data:
     - icon: ':heavy_check_mark:'
       path: test/yosupo/vertex_add_subtree_sum.test.cpp
       title: test/yosupo/vertex_add_subtree_sum.test.cpp
-    - icon: ':heavy_check_mark:'
+    - icon: ':x:'
       path: test/yosupo/vertex_set_path_composite.test.cpp
       title: test/yosupo/vertex_set_path_composite.test.cpp
     - icon: ':heavy_check_mark:'
@@ -470,12 +481,44 @@ data:
     - icon: ':heavy_check_mark:'
       path: test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
       title: test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
-    - icon: ':heavy_check_mark:'
+    - icon: ':x:'
       path: test/yosupo/yosupo-range_affine_point_get.test.cpp
       title: test/yosupo/yosupo-range_affine_point_get.test.cpp
     - icon: ':heavy_check_mark:'
       path: test/yosupo/yosupo-segment_add_get_min.test.cpp
       title: test/yosupo/yosupo-segment_add_get_min.test.cpp
+  - name: test/yosupo/polynomial
+    pages:
+    - icon: ':heavy_check_mark:'
+      path: test/yosupo/polynomial/exp_of_formal_power_series.test.cpp
+      title: test/yosupo/polynomial/exp_of_formal_power_series.test.cpp
+    - icon: ':heavy_check_mark:'
+      path: test/yosupo/polynomial/exp_of_formal_power_series_sparse.test.cpp
+      title: test/yosupo/polynomial/exp_of_formal_power_series_sparse.test.cpp
+    - icon: ':heavy_check_mark:'
+      path: test/yosupo/polynomial/inv_of_formal_power_series.test.cpp
+      title: test/yosupo/polynomial/inv_of_formal_power_series.test.cpp
+    - icon: ':heavy_check_mark:'
+      path: test/yosupo/polynomial/inv_of_formal_power_series_sparse.test.cpp
+      title: test/yosupo/polynomial/inv_of_formal_power_series_sparse.test.cpp
+    - icon: ':heavy_check_mark:'
+      path: test/yosupo/polynomial/log_of_formal_power_series.test.cpp
+      title: test/yosupo/polynomial/log_of_formal_power_series.test.cpp
+    - icon: ':heavy_check_mark:'
+      path: test/yosupo/polynomial/log_of_formal_power_series_sparse.test.cpp
+      title: test/yosupo/polynomial/log_of_formal_power_series_sparse.test.cpp
+    - icon: ':heavy_check_mark:'
+      path: test/yosupo/polynomial/pow_of_formal_power_series.test.cpp
+      title: test/yosupo/polynomial/pow_of_formal_power_series.test.cpp
+    - icon: ':x:'
+      path: test/yosupo/polynomial/pow_of_formal_power_series_sparse.test.cpp
+      title: test/yosupo/polynomial/pow_of_formal_power_series_sparse.test.cpp
+    - icon: ':x:'
+      path: test/yosupo/polynomial/sqrt_of_formal_power_series.test.cpp
+      title: test/yosupo/polynomial/sqrt_of_formal_power_series.test.cpp
+    - icon: ':x:'
+      path: test/yosupo/polynomial/sqrt_of_formal_power_series_sparse.test.cpp
+      title: test/yosupo/polynomial/sqrt_of_formal_power_series_sparse.test.cpp
   - name: test/yuki
     pages:
     - icon: ':heavy_check_mark:'

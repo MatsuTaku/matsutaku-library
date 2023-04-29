@@ -14,31 +14,40 @@ data:
   - icon: ':heavy_check_mark:'
     path: include/mtl/dual_disjoint_sparse_table.hpp
     title: include/mtl/dual_disjoint_sparse_table.hpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/dual_segment_tree.hpp
     title: include/mtl/dual_segment_tree.hpp
   - icon: ':heavy_check_mark:'
     path: include/mtl/dual_sparse_table.hpp
     title: Apply to [l, r)
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/fenwick_tree.hpp
     title: include/mtl/fenwick_tree.hpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/fps.hpp
     title: include/mtl/fps.hpp
+  - icon: ':question:'
+    path: include/mtl/fps/exp.hpp
+    title: include/mtl/fps/exp.hpp
+  - icon: ':question:'
+    path: include/mtl/fps/pow.hpp
+    title: include/mtl/fps/pow.hpp
   - icon: ':warning:'
     path: include/mtl/integer_set.hpp
     title: include/mtl/integer_set.hpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/lazy_segment_tree.hpp
     title: include/mtl/lazy_segment_tree.hpp
   - icon: ':heavy_check_mark:'
     path: include/mtl/li_chao_tree.hpp
     title: include/mtl/li_chao_tree.hpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
+    path: include/mtl/modular.hpp
+    title: include/mtl/modular.hpp
+  - icon: ':question:'
     path: include/mtl/ntt.hpp
     title: include/mtl/ntt.hpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/ordinal_range_search.hpp
     title: Ordinal Range Search
   - icon: ':heavy_check_mark:'
@@ -56,19 +65,19 @@ data:
   - icon: ':warning:'
     path: include/mtl/sparse_table.hpp
     title: include/mtl/sparse_table.hpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/succinct/binary_set.hpp
     title: include/mtl/succinct/binary_set.hpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/succinct/bit_vector.hpp
     title: include/mtl/succinct/bit_vector.hpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/succinct/rrr.hpp
     title: Succinct bit vector in memory of B(n, u) + O(u log log n / log n) bits
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/succinct/select.hpp
     title: include/mtl/succinct/select.hpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/succinct/wavelet_matrix.hpp
     title: include/mtl/succinct/wavelet_matrix.hpp
   - icon: ':warning:'
@@ -80,6 +89,12 @@ data:
   - icon: ':question:'
     path: include/mtl/yft.hpp
     title: include/mtl/yft.hpp
+  - icon: ':warning:'
+    path: test/abc116-c-multiple_sequences-dirichlet-optimized.cpp
+    title: test/abc116-c-multiple_sequences-dirichlet-optimized.cpp
+  - icon: ':warning:'
+    path: test/abc116-c-multiple_sequences-dirichlet.cpp
+    title: test/abc116-c-multiple_sequences-dirichlet.cpp
   - icon: ':warning:'
     path: test/yosupo/test_binary_trie.cpp
     title: test/yosupo/test_binary_trie.cpp
@@ -103,15 +118,51 @@ data:
     path: test/yosupo/convolution.test.cpp
     title: test/yosupo/convolution.test.cpp
   - icon: ':heavy_check_mark:'
+    path: test/yosupo/dynamic_sequence_range_affine_range_sum.test.cpp
+    title: test/yosupo/dynamic_sequence_range_affine_range_sum.test.cpp
+  - icon: ':heavy_check_mark:'
+    path: test/yosupo/dynamic_tree_vertex_set_path_composite.test.cpp
+    title: test/yosupo/dynamic_tree_vertex_set_path_composite.test.cpp
+  - icon: ':heavy_check_mark:'
     path: test/yosupo/point_add_range_sum.test.cpp
     title: test/yosupo/point_add_range_sum.test.cpp
   - icon: ':heavy_check_mark:'
     path: test/yosupo/point_set_range_composite.test.cpp
     title: test/yosupo/point_set_range_composite.test.cpp
+  - icon: ':heavy_check_mark:'
+    path: test/yosupo/polynomial/exp_of_formal_power_series.test.cpp
+    title: test/yosupo/polynomial/exp_of_formal_power_series.test.cpp
+  - icon: ':heavy_check_mark:'
+    path: test/yosupo/polynomial/exp_of_formal_power_series_sparse.test.cpp
+    title: test/yosupo/polynomial/exp_of_formal_power_series_sparse.test.cpp
+  - icon: ':heavy_check_mark:'
+    path: test/yosupo/polynomial/inv_of_formal_power_series.test.cpp
+    title: test/yosupo/polynomial/inv_of_formal_power_series.test.cpp
+  - icon: ':heavy_check_mark:'
+    path: test/yosupo/polynomial/inv_of_formal_power_series_sparse.test.cpp
+    title: test/yosupo/polynomial/inv_of_formal_power_series_sparse.test.cpp
+  - icon: ':heavy_check_mark:'
+    path: test/yosupo/polynomial/log_of_formal_power_series.test.cpp
+    title: test/yosupo/polynomial/log_of_formal_power_series.test.cpp
+  - icon: ':heavy_check_mark:'
+    path: test/yosupo/polynomial/log_of_formal_power_series_sparse.test.cpp
+    title: test/yosupo/polynomial/log_of_formal_power_series_sparse.test.cpp
+  - icon: ':heavy_check_mark:'
+    path: test/yosupo/polynomial/pow_of_formal_power_series.test.cpp
+    title: test/yosupo/polynomial/pow_of_formal_power_series.test.cpp
+  - icon: ':x:'
+    path: test/yosupo/polynomial/pow_of_formal_power_series_sparse.test.cpp
+    title: test/yosupo/polynomial/pow_of_formal_power_series_sparse.test.cpp
+  - icon: ':x:'
+    path: test/yosupo/polynomial/sqrt_of_formal_power_series.test.cpp
+    title: test/yosupo/polynomial/sqrt_of_formal_power_series.test.cpp
+  - icon: ':x:'
+    path: test/yosupo/polynomial/sqrt_of_formal_power_series_sparse.test.cpp
+    title: test/yosupo/polynomial/sqrt_of_formal_power_series_sparse.test.cpp
   - icon: ':x:'
     path: test/yosupo/predecessor_problem-yft.test.cpp
     title: test/yosupo/predecessor_problem-yft.test.cpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':x:'
     path: test/yosupo/range_affine_range_sum.test.cpp
     title: test/yosupo/range_affine_range_sum.test.cpp
   - icon: ':heavy_check_mark:'
@@ -120,6 +171,9 @@ data:
   - icon: ':heavy_check_mark:'
     path: test/yosupo/set_xor_min.test.cpp
     title: test/yosupo/set_xor_min.test.cpp
+  - icon: ':x:'
+    path: test/yosupo/sqrt_mod.test.cpp
+    title: test/yosupo/sqrt_mod.test.cpp
   - icon: ':heavy_check_mark:'
     path: test/yosupo/static_range_frequency.test.cpp
     title: test/yosupo/static_range_frequency.test.cpp
@@ -129,7 +183,7 @@ data:
   - icon: ':heavy_check_mark:'
     path: test/yosupo/static_range_sum.test.cpp
     title: test/yosupo/static_range_sum.test.cpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':x:'
     path: test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
     title: test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
   - icon: ':heavy_check_mark:'
@@ -141,13 +195,16 @@ data:
   - icon: ':heavy_check_mark:'
     path: test/yosupo/vertex_add_subtree_sum.test.cpp
     title: test/yosupo/vertex_add_subtree_sum.test.cpp
+  - icon: ':x:'
+    path: test/yosupo/vertex_set_path_composite.test.cpp
+    title: test/yosupo/vertex_set_path_composite.test.cpp
   - icon: ':heavy_check_mark:'
     path: test/yosupo/yosupo-line_add_get_min.test.cpp
     title: test/yosupo/yosupo-line_add_get_min.test.cpp
   - icon: ':heavy_check_mark:'
     path: test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
     title: test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':x:'
     path: test/yosupo/yosupo-range_affine_point_get.test.cpp
     title: test/yosupo/yosupo-range_affine_point_get.test.cpp
   - icon: ':heavy_check_mark:'
@@ -233,60 +290,79 @@ data:
   isVerificationFile: false
   path: include/mtl/bit_manip.hpp
   requiredBy:
-  - include/mtl/succinct/select.hpp
-  - include/mtl/succinct/wavelet_matrix.hpp
-  - include/mtl/succinct/binary_set.hpp
-  - include/mtl/succinct/wavelet_tree.hpp
-  - include/mtl/succinct/bit_vector.hpp
-  - include/mtl/succinct/rrr.hpp
-  - include/mtl/ntt.hpp
-  - include/mtl/bitmap.hpp
-  - include/mtl/yft.hpp
-  - include/mtl/skewbinary_list.hpp
-  - include/mtl/ordinal_range_search.hpp
-  - include/mtl/lazy_segment_tree.hpp
-  - include/mtl/dual_disjoint_sparse_table.hpp
   - include/mtl/segment_tree_2d.hpp
-  - include/mtl/fps.hpp
-  - include/mtl/dual_sparse_table.hpp
+  - include/mtl/fps/pow.hpp
+  - include/mtl/fps/exp.hpp
+  - include/mtl/dual_segment_tree.hpp
+  - include/mtl/li_chao_tree.hpp
+  - include/mtl/lazy_segment_tree.hpp
+  - include/mtl/ordinal_range_search.hpp
+  - include/mtl/skewbinary_list.hpp
   - include/mtl/skiplist.hpp
-  - include/mtl/disjoint_sparse_table.hpp
-  - include/mtl/fenwick_tree.hpp
-  - include/mtl/sparse_table.hpp
   - include/mtl/xft.hpp
   - include/mtl/segment_tree.hpp
   - include/mtl/binary_trie.hpp
-  - include/mtl/li_chao_tree.hpp
-  - include/mtl/dual_segment_tree.hpp
+  - include/mtl/disjoint_sparse_table.hpp
+  - include/mtl/ntt.hpp
+  - include/mtl/modular.hpp
+  - include/mtl/succinct/select.hpp
+  - include/mtl/succinct/wavelet_matrix.hpp
+  - include/mtl/succinct/wavelet_tree.hpp
+  - include/mtl/succinct/binary_set.hpp
+  - include/mtl/succinct/bit_vector.hpp
+  - include/mtl/succinct/rrr.hpp
+  - include/mtl/fenwick_tree.hpp
+  - include/mtl/dual_disjoint_sparse_table.hpp
+  - include/mtl/fps.hpp
+  - include/mtl/dual_sparse_table.hpp
+  - include/mtl/sparse_table.hpp
+  - include/mtl/bitmap.hpp
+  - include/mtl/yft.hpp
   - include/mtl/integer_set.hpp
   - test/yosupo/test_binary_trie.cpp
+  - test/abc116-c-multiple_sequences-dirichlet-optimized.cpp
+  - test/abc116-c-multiple_sequences-dirichlet.cpp
   timestamp: '2022-12-18 04:26:00+09:00'
   verificationStatus: LIBRARY_SOME_WA
   verifiedWith:
-  - test/succinct/range_kth_smallest.test.cpp
   - test/yuki/yuki-no945_ykc_manju.test.cpp
-  - test/yosupo/yosupo-segment_add_get_min.test.cpp
-  - test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
-  - test/yosupo/point_add_range_sum.test.cpp
-  - test/yosupo/yosupo-line_add_get_min.test.cpp
-  - test/yosupo/set_xor_min.test.cpp
-  - test/yosupo/static_range_frequency.test.cpp
-  - test/yosupo/predecessor_problem-yft.test.cpp
-  - test/yosupo/vertex_add_path_sum.test.cpp
-  - test/yosupo/convolution.test.cpp
-  - test/yosupo/rectangle_sum.test.cpp
-  - test/yosupo/static_range_sum.test.cpp
-  - test/yosupo/vertex_add_subtree_sum.test.cpp
-  - test/yosupo/static_rmq.test.cpp
-  - test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
-  - test/yosupo/range_affine_range_sum.test.cpp
   - test/yosupo/point_set_range_composite.test.cpp
   - test/yosupo/associative_array-yft.test.cpp
+  - test/yosupo/convolution.test.cpp
+  - test/yosupo/vertex_add_subtree_sum.test.cpp
+  - test/yosupo/dynamic_tree_vertex_set_path_composite.test.cpp
+  - test/yosupo/static_rmq.test.cpp
+  - test/yosupo/polynomial/exp_of_formal_power_series_sparse.test.cpp
+  - test/yosupo/polynomial/inv_of_formal_power_series_sparse.test.cpp
+  - test/yosupo/polynomial/inv_of_formal_power_series.test.cpp
+  - test/yosupo/polynomial/log_of_formal_power_series_sparse.test.cpp
+  - test/yosupo/polynomial/sqrt_of_formal_power_series.test.cpp
+  - test/yosupo/polynomial/exp_of_formal_power_series.test.cpp
+  - test/yosupo/polynomial/sqrt_of_formal_power_series_sparse.test.cpp
+  - test/yosupo/polynomial/pow_of_formal_power_series.test.cpp
+  - test/yosupo/polynomial/pow_of_formal_power_series_sparse.test.cpp
+  - test/yosupo/polynomial/log_of_formal_power_series.test.cpp
+  - test/yosupo/yosupo-segment_add_get_min.test.cpp
+  - test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
   - test/yosupo/yosupo-range_affine_point_get.test.cpp
+  - test/yosupo/dynamic_sequence_range_affine_range_sum.test.cpp
+  - test/yosupo/vertex_add_path_sum.test.cpp
+  - test/yosupo/set_xor_min.test.cpp
+  - test/yosupo/yosupo-line_add_get_min.test.cpp
+  - test/yosupo/point_add_range_sum.test.cpp
+  - test/yosupo/range_affine_range_sum.test.cpp
+  - test/yosupo/static_range_sum.test.cpp
+  - test/yosupo/rectangle_sum.test.cpp
+  - test/yosupo/sqrt_mod.test.cpp
+  - test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
+  - test/yosupo/vertex_set_path_composite.test.cpp
+  - test/yosupo/static_range_frequency.test.cpp
   - test/yosupo/static_range_inversions_query-mo.test.cpp
-  - test/aoj/aoj-the_maximum_number_of_customers.test.cpp
+  - test/yosupo/predecessor_problem-yft.test.cpp
   - test/aoj/aoj-do_use_segment_tree-binary_tree.test.cpp
+  - test/aoj/aoj-the_maximum_number_of_customers.test.cpp
   - test/aoj/aoj-range_update_query.test.cpp
+  - test/succinct/range_kth_smallest.test.cpp
 documentation_of: include/mtl/bit_manip.hpp
 layout: document
 redirect_from:

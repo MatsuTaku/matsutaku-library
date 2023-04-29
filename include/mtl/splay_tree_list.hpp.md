@@ -1,7 +1,7 @@
 ---
 data:
   _extendedDependsOn:
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/monoid.hpp
     title: include/mtl/monoid.hpp
   - icon: ':heavy_check_mark:'

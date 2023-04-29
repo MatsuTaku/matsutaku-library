@@ -129,8 +129,8 @@ data:
   timestamp: '2023-04-13 21:51:40+09:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
-  - test/yosupo/static_rmq.test.cpp
   - test/yosupo/point_set_range_composite.test.cpp
+  - test/yosupo/static_rmq.test.cpp
 documentation_of: include/mtl/segment_tree.hpp
 layout: document
 redirect_from:

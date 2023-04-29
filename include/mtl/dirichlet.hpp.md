@@ -120,8 +120,8 @@ data:
   isVerificationFile: false
   path: include/mtl/dirichlet.hpp
   requiredBy:
-  - test/abc116-c-multiple_sequences-dirichlet.cpp
   - test/abc116-c-multiple_sequences-dirichlet-optimized.cpp
+  - test/abc116-c-multiple_sequences-dirichlet.cpp
   timestamp: '2022-11-27 16:09:45+09:00'
   verificationStatus: LIBRARY_NO_TESTS
   verifiedWith: []

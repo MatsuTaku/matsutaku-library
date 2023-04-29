@@ -88,9 +88,9 @@ data:
   isVerificationFile: false
   path: include/mtl/graph.hpp
   requiredBy:
+  - include/mtl/dijkstra.hpp
   - include/mtl/rerooting.hpp
   - include/mtl/scc.hpp
-  - include/mtl/dijkstra.hpp
   timestamp: '2022-11-27 16:09:45+09:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:

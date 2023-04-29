@@ -198,13 +198,13 @@ data:
   isVerificationFile: false
   path: include/mtl/fibonacci_heap.hpp
   requiredBy:
-  - include/mtl/dijkstra.hpp
   - include/mtl/min_cost_flow.hpp
+  - include/mtl/dijkstra.hpp
   timestamp: '2022-12-20 20:34:44+09:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
-  - test/aoj/dijkstra_fibonacci.test.cpp
   - test/aoj/min_cost_flow.test.cpp
+  - test/aoj/dijkstra_fibonacci.test.cpp
 documentation_of: include/mtl/fibonacci_heap.hpp
 layout: document
 redirect_from:

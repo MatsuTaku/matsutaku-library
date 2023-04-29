@@ -1,10 +1,10 @@
 ---
 data:
   _extendedDependsOn:
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/hld.hpp
     title: include/mtl/hld.hpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/monoid.hpp
     title: include/mtl/monoid.hpp
   _extendedRequiredBy: []
@@ -12,12 +12,12 @@ data:
   - icon: ':heavy_check_mark:'
     path: test/aoj/aoj-do_use_segment_tree-balanced_tree.test.cpp
     title: test/aoj/aoj-do_use_segment_tree-balanced_tree.test.cpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':x:'
     path: test/yosupo/vertex_set_path_composite.test.cpp
     title: test/yosupo/vertex_set_path_composite.test.cpp
-  _isVerificationFailed: false
+  _isVerificationFailed: true
   _pathExtension: hpp
-  _verificationStatusIcon: ':heavy_check_mark:'
+  _verificationStatusIcon: ':question:'
   attributes:
     links: []
   bundledCode: "#line 2 \"include/mtl/hld.hpp\"\n#include <cstddef>\n#include <vector>\n\
@@ -299,7 +299,7 @@ data:
   path: include/mtl/segment_hld.hpp
   requiredBy: []
   timestamp: '2023-04-20 08:14:31+09:00'
-  verificationStatus: LIBRARY_ALL_AC
+  verificationStatus: LIBRARY_SOME_WA
   verifiedWith:
   - test/yosupo/vertex_set_path_composite.test.cpp
   - test/aoj/aoj-do_use_segment_tree-balanced_tree.test.cpp

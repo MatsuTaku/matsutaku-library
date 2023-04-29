@@ -463,8 +463,8 @@ data:
   timestamp: '2023-04-08 02:02:19+09:00'
   verificationStatus: LIBRARY_SOME_WA
   verifiedWith:
-  - test/yosupo/predecessor_problem-yft.test.cpp
   - test/yosupo/associative_array-yft.test.cpp
+  - test/yosupo/predecessor_problem-yft.test.cpp
 documentation_of: include/mtl/xft.hpp
 layout: document
 redirect_from:

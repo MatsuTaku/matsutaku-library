@@ -513,15 +513,15 @@ data:
   isVerificationFile: false
   path: include/mtl/binary_trie.hpp
   requiredBy:
-  - include/mtl/yft.hpp
   - include/mtl/xft.hpp
+  - include/mtl/yft.hpp
   - test/yosupo/test_binary_trie.cpp
   timestamp: '2023-04-08 02:02:19+09:00'
   verificationStatus: LIBRARY_SOME_WA
   verifiedWith:
+  - test/yosupo/associative_array-yft.test.cpp
   - test/yosupo/set_xor_min.test.cpp
   - test/yosupo/predecessor_problem-yft.test.cpp
-  - test/yosupo/associative_array-yft.test.cpp
 documentation_of: include/mtl/binary_trie.hpp
 layout: document
 redirect_from:

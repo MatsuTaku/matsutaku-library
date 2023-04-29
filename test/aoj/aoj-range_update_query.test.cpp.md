@@ -4,7 +4,7 @@ data:
   - icon: ':question:'
     path: include/mtl/bit_manip.hpp
     title: include/mtl/bit_manip.hpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/dual_segment_tree.hpp
     title: include/mtl/dual_segment_tree.hpp
   _extendedRequiredBy: []

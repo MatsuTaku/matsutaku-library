@@ -9,12 +9,12 @@ data:
   - icon: ':heavy_check_mark:'
     path: test/aoj/aoj-range_update_query.test.cpp
     title: test/aoj/aoj-range_update_query.test.cpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':x:'
     path: test/yosupo/yosupo-range_affine_point_get.test.cpp
     title: test/yosupo/yosupo-range_affine_point_get.test.cpp
-  _isVerificationFailed: false
+  _isVerificationFailed: true
   _pathExtension: hpp
-  _verificationStatusIcon: ':heavy_check_mark:'
+  _verificationStatusIcon: ':question:'
   attributes:
     links: []
   bundledCode: "#line 2 \"include/mtl/bit_manip.hpp\"\n#include <cstdint>\n#include\
@@ -115,7 +115,7 @@ data:
   path: include/mtl/dual_segment_tree.hpp
   requiredBy: []
   timestamp: '2023-04-19 10:11:27+09:00'
-  verificationStatus: LIBRARY_ALL_AC
+  verificationStatus: LIBRARY_SOME_WA
   verifiedWith:
   - test/yosupo/yosupo-range_affine_point_get.test.cpp
   - test/aoj/aoj-range_update_query.test.cpp

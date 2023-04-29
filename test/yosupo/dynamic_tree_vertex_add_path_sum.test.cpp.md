@@ -4,7 +4,7 @@ data:
   - icon: ':heavy_check_mark:'
     path: include/mtl/link_cut_tree.hpp
     title: include/mtl/link_cut_tree.hpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: include/mtl/monoid.hpp
     title: include/mtl/monoid.hpp
   - icon: ':heavy_check_mark:'

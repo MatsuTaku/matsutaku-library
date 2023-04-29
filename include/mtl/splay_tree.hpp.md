@@ -131,9 +131,9 @@ data:
   timestamp: '2023-04-20 08:14:31+09:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
-  - test/yosupo/dynamic_sequence_range_affine_range_sum.test.cpp
-  - test/yosupo/dynamic_tree_vertex_set_path_composite.test.cpp
   - test/yosupo/dynamic_tree_vertex_add_path_sum.test.cpp
+  - test/yosupo/dynamic_tree_vertex_set_path_composite.test.cpp
+  - test/yosupo/dynamic_sequence_range_affine_range_sum.test.cpp
 documentation_of: include/mtl/splay_tree.hpp
 layout: document
 redirect_from:
