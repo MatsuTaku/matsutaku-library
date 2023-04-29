@@ -1,18 +1,24 @@
-file(GLOB test_files *test.cpp */*test.cpp)
+file(GLOB_RECURSE
+  test_files *test.cpp
+)
 foreach(test_file ${test_files})
   get_Filename_component(base_name ${test_file} NAME_WE)
   add_executable(${base_name} ${test_file})
 endforeach()
 
 add_custom_target(verify)
-file(GLOB verify_files *.test.cpp */*.test.cpp)
+file(GLOB_RECURSE
+  verify_files *.test.cpp
+)
 foreach(verify_file ${verify_files})
   get_Filename_component(base_name ${verify_file} NAME_WE)
   add_dependencies(verify ${base_name})
 endforeach()
 
 add_custom_target(build_ctest)
-file(GLOB ctest_files *_test.cpp */*_test.cpp)
+file(GLOB_RECURSE
+  ctest_files *_test.cpp
+)
 foreach(ctest_file ${ctest_files})
   get_Filename_component(base_name ${ctest_file} NAME_WE)
   add_test(${base_name} ${base_name})

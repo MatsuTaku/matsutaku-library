@@ -113,3 +113,8 @@ std::vector<mint> convolution(std::vector<mint> f, std::vector<mint> g) {
     f[i] *= n_inv;
   return f;
 }
+
+size_t complexity_of_convolution(size_t fsize, size_t gsize) {
+  int lg = math::ceil_pow2(fsize + gsize - 1);
+  return lg << lg;
+}

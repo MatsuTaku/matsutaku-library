@@ -13,6 +13,7 @@ int main() {
   for (auto& a : A) cin>>a;
   for (auto& b : B) cin>>b;
   auto C = A * B;
+  C.inline_pre(N+M-1);
   for (int i = 0; i < N+M-1; i++)
     cout << C[i] << " ";
   cout << endl;
