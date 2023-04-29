@@ -293,6 +293,46 @@ class Fps : public std::vector<Modular<Mod>> {
   */
   Fps pow(long long n) const;
  private:
+  /**
+   * define f^{1/2}' = 1/2f^{-1/2} if [x^0]f = 1
+   * F = f^{1/2}
+   * fF' = 1/2 F f'
+   */
+  Fps _sqrt_1() const {
+    assert(!_base::empty() and (*this)[0] == 1);
+    return _pow_1(mint(2).inv().val());
+  }
+ public:
+  Fps sqrt() const {
+    // f = sum_i a_i x^i = c_k x^k sum_i a_i/c_k x^{i-k} = c_k x^k g
+    // f^{1/2} = c_k^{1/2} x^{k/2} g^{1/2}
+    // s.t. c_k is square and k is even
+    size_t k = 0;
+    while (k < _base::size() and (*this)[k] == 0) k++;
+    if (k == _base::size()) return Fps();
+    if (k%2==1) 
+      throw std::runtime_error("minimum degree must be even");
+    auto ck = (*this)[k];
+    if (!ck.is_square())
+      throw std::runtime_error("not square");
+    auto g = *this >> k;
+    g /= ck;
+    g = g._sqrt_1();
+    g *= ck.sqrt();
+    g <<= k/2;
+    return g;
+  }
+  bool is_square() const {
+    size_t k = 0;
+    while (k < _base::size() and (*this)[k] == 0) k++;
+    if (k == _base::size()) return true;
+    if (k%2==1) 
+      return false;
+    if (!(*this)[k].is_square()) 
+      return false;
+    return true;
+  }
+ private:
   template<class F>
   Fps& _mod_set(F&& r) {
     normalize();

@@ -1,4 +1,5 @@
 #pragma once
+#include "bit_manip.hpp"
 #include <iostream>
 #include <cassert>
 
@@ -75,6 +76,47 @@ class Modular {
   constexpr bool operator==(Modular x) const { return val() == x.val(); }
   constexpr bool operator!=(Modular x) const { return val() != x.val(); }
 
+  constexpr bool is_square() const {
+    return pow((mod()-1)/2) == 1;
+  }
+  /**
+   * Return x s.t. x * x = a mod p
+   * reference: https://zenn.dev/peria/articles/c6afc72b6b003c
+  */
+  constexpr Modular sqrt() const {
+    if (!is_square()) 
+      throw std::runtime_error("not square");
+    auto mod_eight = mod() % 8;
+    if (mod_eight == 3 || mod_eight == 7) {
+      return pow((mod()+1)/4);
+    } else if (mod_eight == 5) {
+      auto x = pow((mod()+3)/8);
+      if (x * x != *this)
+        x *= Modular(2).pow((mod()-1)/4);
+      return x;
+    } else {
+      Modular d = 2;
+      while (d.is_square())
+        d += 1;
+      auto t = mod()-1;
+      int s = bm::ctz(t);
+      t >>= s;
+      auto a = pow(t);
+      auto D = d.pow(t);
+      int m = 0;
+      Modular dt = 1;
+      Modular du = D;
+      for (int i = 0; i < s; i++) {
+        if ((a*dt).pow(1u<<(s-1-i)) == -1) {
+          m |= 1u << i;
+          dt *= du;
+        }
+        du *= du;
+      }
+      return pow((t+1)/2) * D.pow(m/2);
+    }
+  }
+
   friend std::ostream& operator<<(std::ostream& os, const Modular& x) {
     return os << x.val();
   }
@@ -86,6 +128,137 @@ class Modular {
 
 using Modular998244353 = Modular<998244353>;
 using Modular1000000007 = Modular<(int)1e9+7>;
+
+template<int Id=0>
+class DynamicModular {
+ private:
+  static unsigned int mod_;
+  unsigned int val_;
+
+ public:
+  static unsigned int mod() { return mod_; }
+  static void set_mod(unsigned int m) { mod_ = m; }
+  template<class T>
+  static constexpr unsigned int safe_mod(T v) {
+    auto x = (long long)(v%(long long)mod());
+    if (x < 0) x += mod();
+    return (unsigned int) x;
+  }
+
+  constexpr DynamicModular() : val_(0) {}
+  template<class T,
+      std::enable_if_t<
+          std::is_integral<T>::value && std::is_unsigned<T>::value
+      > * = nullptr>
+  constexpr DynamicModular(T v) : val_(v%mod()) {}
+  template<class T,
+      std::enable_if_t<
+          std::is_integral<T>::value && !std::is_unsigned<T>::value
+      > * = nullptr>
+  constexpr DynamicModular(T v) : val_(safe_mod(v)) {}
+
+  constexpr unsigned int val() const { return val_; }
+  constexpr DynamicModular& operator+=(DynamicModular x) {
+    val_ += x.val();
+    if (val_ >= mod()) val_ -= mod();
+    return *this;
+  }
+  constexpr DynamicModular operator-() const { return {mod() - val_}; }
+  constexpr DynamicModular& operator-=(DynamicModular x) {
+    val_ += mod() - x.val();
+    if (val_ >= mod()) val_ -= mod();
+    return *this;
+  }
+  constexpr DynamicModular& operator*=(DynamicModular x) {
+    auto v = (long long) val_ * x.val();
+    if (v >= mod()) v %= mod();
+    val_ = v;
+    return *this;
+  }
+  constexpr DynamicModular pow(long long p) const {
+    assert(p >= 0);
+    DynamicModular t = 1;
+    DynamicModular u = *this;
+    while (p) {
+      if (p & 1)
+        t *= u;
+      u *= u;
+      p >>= 1;
+    }
+    return t;
+  }
+  friend constexpr DynamicModular pow(DynamicModular x, long long p) {
+    return x.pow(p);
+  }
+  // TODO: implement when mod is not prime
+  constexpr DynamicModular inv() const { return pow(mod()-2); }
+  constexpr DynamicModular& operator/=(DynamicModular x) { return *this *= x.inv(); }
+  constexpr DynamicModular operator+(DynamicModular x) const { return DynamicModular(*this) += x; }
+  constexpr DynamicModular operator-(DynamicModular x) const { return DynamicModular(*this) -= x; }
+  constexpr DynamicModular operator*(DynamicModular x) const { return DynamicModular(*this) *= x; }
+  constexpr DynamicModular operator/(DynamicModular x) const { return DynamicModular(*this) /= x; }
+  constexpr DynamicModular& operator++() { return *this += 1; }
+  constexpr DynamicModular operator++(int) { DynamicModular c = *this; ++(*this); return c; }
+  constexpr DynamicModular& operator--() { return *this -= 1; }
+  constexpr DynamicModular operator--(int) { DynamicModular c = *this; --(*this); return c; }
+
+  constexpr bool operator==(DynamicModular x) const { return val() == x.val(); }
+  constexpr bool operator!=(DynamicModular x) const { return val() != x.val(); }
+
+  constexpr bool is_square() const {
+    return val() == 0 or pow((mod()-1)/2) == 1;
+  }
+  /**
+   * Return x s.t. x * x = a mod p
+   * reference: https://zenn.dev/peria/articles/c6afc72b6b003c
+  */
+  constexpr DynamicModular sqrt() const {
+    // assert mod is prime
+    if (!is_square()) 
+      throw std::runtime_error("not square");
+    if (val() < 2)
+      return val();
+    auto mod_eight = mod() % 8;
+    if (mod_eight == 3 || mod_eight == 7) {
+      return pow((mod()+1)/4);
+    } else if (mod_eight == 5) {
+      auto x = pow((mod()+3)/8);
+      if (x * x != *this)
+        x *= DynamicModular(2).pow((mod()-1)/4);
+      return x;
+    } else {
+      DynamicModular d = 2;
+      while (d.is_square())
+        ++d;
+      auto t = mod()-1;
+      int s = bm::ctz(t);
+      t >>= s;
+      auto a = pow(t);
+      auto D = d.pow(t);
+      int m = 0;
+      DynamicModular dt = 1;
+      DynamicModular du = D;
+      for (int i = 0; i < s; i++) {
+        if ((a*dt).pow(1u<<(s-1-i)) == -1) {
+          m |= 1u << i;
+          dt *= du;
+        }
+        du *= du;
+      }
+      return pow((t+1)/2) * D.pow(m/2);
+    }
+  }
+
+  friend std::ostream& operator<<(std::ostream& os, const DynamicModular& x) {
+    return os << x.val();
+  }
+  friend std::istream& operator>>(std::istream& is, DynamicModular& x) {
+    return is >> x.val_;
+  }
+
+};
+template<int Id>
+unsigned int DynamicModular<Id>::mod_;
 
 #include <vector>
 

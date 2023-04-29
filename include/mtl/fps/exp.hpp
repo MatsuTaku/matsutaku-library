@@ -21,12 +21,15 @@ Fps<M> Fps<M>::exp_dense(int n) const {
     if (n == -1) n = (int) this->size();
     if (n == 0) return Fps();
     Fps<M> f, g, t, q;
+    // f = (exp h)_0 = {1}
+    // g = (exp h)^{-1}_0 = {1}
+    // q = h' = {}
     f.reserve(n*2-1);
     f.push_back(1);
     g.reserve(n-1);
-    g.push_back(1);
+    g.push_back(1); 
     t.reserve(n*2-1);
-    q.reserve(n-1);
+    q.reserve(n-1); 
     auto term = [&](size_t i) {
       return i < this->size() ? this->operator[](i) : 0;
     };
@@ -67,6 +70,7 @@ Fps<M> Fps<M>::exp_dense(int n) const {
       for (size_t j = 0; j < l-i+1; j++)
         t[j] = t[j] * mu.inv(i+j) + term(i+j);
       t *= f;
+      t.inline_pre(l-i);
       f.inline_pre(l);
       for (size_t j = i; j < l; j++)
         f[j] = t[j-i];
@@ -86,13 +90,15 @@ Fps<M> Fps<M>::exp_sparse(int n) const {
     auto td = pre(std::min(n, (int)this->size())).diff().term_ties();
     Fps<M> ret(n);
     ret[0] = 1;
+    ModularUtil<mint> mu;
+    mu.set_inv(n-1);
     for (int i = 1; i < n; i++) {
       Fps<M>::mint pf = 0;
       for (auto& t:td) {
-        if (t.first > i-1) break;
+        if ((int)t.first > i-1) break;
         pf += ret[i-1-t.first] * t.second;
       }
-      ret[i] = pf / i;
+      ret[i] = pf * mu.inv(i);
     }
     return ret;
 }
