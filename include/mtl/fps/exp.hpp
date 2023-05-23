@@ -78,27 +78,45 @@ Fps<M> Fps<M>::exp_dense(int n) const {
     return f.inline_pre(n);
 }
 
+#include "../sparse_fps.hpp"
+
+template<int M>
+Fps<M> exp_sparse_impl(const SparseFps<M>& td, int n) {
+    // F = exp f
+    // F' = Ff'
+    // F'_{n-1} = sum_{i=1}^{n-1} F_i f'_{n-i-1}, F_0 = 0;
+    Fps<M> ret(n);
+    ret[0] = 1;
+    using mint = typename Fps<M>::mint;
+    ModularUtil<mint> mu;
+    mu.set_inv(n-1);
+    for (int i = 1; i < n; i++) {
+      mint pf = 0;
+      for (auto& t:td) {
+        if (t.first == 0) continue;
+        int d = t.first-1;
+        auto c = t.second * t.first;
+        if (d > i-1) break;
+        pf += ret[i-1-d] * c;
+      }
+      ret[i] = pf * mu.inv(i);
+    }
+    return ret;
+}
+
 template<int M>
 Fps<M> Fps<M>::exp_sparse(int n) const {
     assert(this->empty() or this->operator[](0) == 0);
     if (n == -1) n = (int) this->size();
     if (n == 0) return Fps();
-    if (this->empty()) return Fps(n);
-    // F = exp f
-    // F' = Ff'
-    // F'_{n-1} = sum_{i=1}^{n-1} F_i f'_{n-i-1}, F_0 = 0;
-    auto td = pre(std::min(n, (int)this->size())).diff().term_ties();
-    Fps<M> ret(n);
-    ret[0] = 1;
-    ModularUtil<mint> mu;
-    mu.set_inv(n-1);
-    for (int i = 1; i < n; i++) {
-      Fps<M>::mint pf = 0;
-      for (auto& t:td) {
-        if ((int)t.first > i-1) break;
-        pf += ret[i-1-t.first] * t.second;
-      }
-      ret[i] = pf * mu.inv(i);
-    }
-    return ret;
+    if (this->empty()) return Fps{1};
+    return exp_sparse_impl(SparseFps<M>(*this, std::min(n, (int)this->size())), n);
+}
+
+template<int M>
+Fps<M> SparseFps<M>::exp(int deg) const {
+    assert(this->empty() or this->front().first != 0 or this->front().second == 0);
+    if (deg == 0) return fps_type();
+    if (this->empty()) return fps_type{1};
+    return exp_sparse_impl(*this, deg);
 }

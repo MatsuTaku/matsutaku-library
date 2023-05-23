@@ -5,6 +5,9 @@
 #include <cassert>
 #include <algorithm>
 
+template<int Mod>
+class SparseFps;
+
 template<int Mod = 998244353>
 class Fps : public std::vector<Modular<Mod>> {
   using _base = std::vector<Modular<Mod>>;
@@ -96,14 +99,15 @@ class Fps : public std::vector<Modular<Mod>> {
     n = std::min(n, (int)_base::size());
     return std::count_if(_base::begin(), _base::begin()+n, [](mint x) { return x != 0; });
   }
-  std::vector<std::pair<size_t, mint>> term_ties() const {
+  using sparse_type = std::vector<std::pair<size_t, mint>>;
+  sparse_type term_ties() const {
     return term_ties(0, _base::size());
   }
-  std::vector<std::pair<size_t, mint>> term_ties(size_t n) const {
+  sparse_type term_ties(size_t n) const {
     return term_ties(0, n);
   }
-  std::vector<std::pair<size_t, mint>> term_ties(size_t front, size_t back) const {
-    std::vector<std::pair<size_t, mint>> ret;
+  sparse_type term_ties(size_t front, size_t back) const {
+    sparse_type ret;
     for (size_t i = front; i < back; i++)
       if ((*this)[i] != 0)
         ret.emplace_back(i, (*this)[i]);
@@ -172,27 +176,7 @@ class Fps : public std::vector<Modular<Mod>> {
     // assert((pre(n)*g).pre(n) == Fps{1});
     return g;
   }
-  Fps inv_sparse(int n = -1) const {
-    assert(!_base::empty() and (*this)[0] != 0);
-    if (n == -1) n = (int) _base::size();
-    if (n == 0) return Fps();
-    // fg = 1 => (n>0) sum_i f_i g_{n-i} = 0
-    // f_0 g_n = - sum_{i=1}^n f_i g_{n-i}
-    auto tf = term_ties(n);
-    Fps g(n);
-    auto ifz = (*this)[0].inv();
-    g[0] = ifz;
-    for (size_t i = 1; i < (size_t) n; i++) {
-      mint s = 0;
-      for (size_t j = 1; j < tf.size(); j++) {
-        if (tf[j].first > i) break;
-        s += tf[j].second * g[i-tf[j].first];
-      }
-      g[i] = -s * ifz;
-    }
-    // assert((pre(n)*g).pre(n) == Fps{1});
-    return g;
-  }
+  Fps inv_sparse(int n = -1) const;
   Fps inv(int n = -1) const {
     if (n == -1) n = (int) _base::size();
     return count_terms(n) < 100 ? inv_sparse(n) : inv_dense(n);
@@ -257,7 +241,7 @@ class Fps : public std::vector<Modular<Mod>> {
     assert(!_base::empty() and _base::operator[](0) == 1);
     if (n == -1) n = (int) _base::size();
     // integral(f' / f)
-    return (diff() * inv_sparse(n-1)).inline_pre(n-1).inline_inte().inline_pre(n);
+    return (diff() / SparseFps<Mod>(*this, n-1)).inline_pre(n-1).inline_inte().inline_pre(n);
   }
   /**
    * define log (1-f) = -sum_n f^n / n
@@ -357,3 +341,13 @@ class Fps : public std::vector<Modular<Mod>> {
   Fps operator%(const Fps& r) const { return Fps(*this) %= r; }
   Fps operator%(Fps&& r) const { return Fps(*this) %= std::move(r); }
 };
+
+#include "sparse_fps.hpp"
+
+template<int Mod>
+Fps<Mod> Fps<Mod>::inv_sparse(int n) const {
+    assert(!_base::empty() and (*this)[0] != 0);
+    if (n == -1) n = (int) _base::size();
+    if (n == 0) return Fps();
+    return SparseFps<Mod>(*this, n).inv(n);
+}
