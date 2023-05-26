@@ -35,7 +35,17 @@ struct ntt_info {
   }
 };
 
-template <bool Forward, int mod>
+template<class T>
+void _iterative_bit_reverse(std::vector<T>& f) {
+  int log_n = math::ceil_pow2(f.size());
+  int n = 1 << log_n;
+  for (int i = 0, j = 1; j < n-1; j++) {
+    for (int k = n >> 1; k > (i ^= k); k >>= 1);
+    if (i < j) std::swap(f[i], f[j]);
+  }
+}
+
+template <bool Forward, bool BitReverse, int mod>
 void _fft_impl(std::vector<Modular<mod>>& f) {
   using mint = Modular<mod>;
   int log_n = math::ceil_pow2(f.size());
@@ -43,52 +53,127 @@ void _fft_impl(std::vector<Modular<mod>>& f) {
   assert(info::log_n() >= log_n);
   int n = 1 << log_n;
   f.resize(n, 0);
-  // iterative bit reversal
-  for (int i = 0, j = 1; j < n-1; j++) {
-    for (int k = n >> 1; k > (i ^= k); k >>= 1);
-    if (i < j) std::swap(f[i], f[j]);
-  }
+  if constexpr (!Forward and BitReverse)
+    _iterative_bit_reverse(f);
   // Cooley-Tukey FFT
   static constexpr auto coeff = info::coeff(Forward);
-  for (int log_m = 0; log_m < log_n; log_m++) {
-    int m = 1<<log_m;
-    mint w0 = coeff[log_m];
-    for (int chunk = 0; chunk < n; chunk += 2*m) {
-      mint w = 1;
-      for (int i = 0; i < m; i++) {
-        auto p = chunk + i;
+  if constexpr (Forward) {
+    for (int log_m = log_n-1; log_m >= 0; log_m -= 2) {
+      int m = 1<<log_m;
+      mint w0 = coeff[log_m];
+      if (log_m == 0) {
+        for (int chunk = 0; chunk < n; chunk += 2*m) {
+          mint w = 1;
+          for (int i = 0; i < m; i++) {
+            auto p = chunk + i;
+            auto a = f[p + 0];
+            auto b = f[p + m];
+            f[p + 0] = (a + b);
+            f[p + m] = (a - b) * w;
+            w *= w0;
+          }
+        }
+      } else { // 4-base
+        auto w1 = coeff[log_m-1];
+        auto wh = w0.pow(m/2).val();
+        for (int chunk = 0; chunk < n; chunk += 2*m) {
+          mint w = 1, x = 1;
+          for (int i = 0; i < m/2; i++) {
+            auto p = chunk + i;
+            auto ia = p + 0*m/2;
+            auto ib = p + 1*m/2;
+            auto ic = p + 2*m/2;
+            auto id = p + 3*m/2;
+            long long a = f[ia].val(), b = f[ib].val(), c = f[ic].val(), d = f[id].val();
+            auto s = a + c, t = b + d, u = (a - c + mod) * w.val() % mod, v = (b - d + mod) * w.val() % mod * wh % mod;
+            f[ia] = (s + t);
+            f[ib] = (s - t) * x.val();
+            f[ic] = (u + v);
+            f[id] = (u - v) * x.val();
+            w *= w0;
+            x *= w1;
+          }
+        }
+      }
+    }
+  } else {
+    int _log_m = 0;
+    if (log_n % 2 == 1) {
+      for (int chunk = 0; chunk < n; chunk += 2) {
+        auto p = chunk;
         auto a = f[p + 0];
-        auto b = f[p + m] * w;
+        auto b = f[p + 1];
         f[p + 0] = a + b;
-        f[p + m] = a - b;
-        w *= w0;
+        f[p + 1] = a - b;
+      }
+      _log_m = 1;
+    }
+    // 4-base
+    for (int log_m = _log_m; log_m < log_n; log_m += 2) {
+      int m = 1<<(log_m+1);
+      mint w0 = coeff[log_m];
+      auto w1 = coeff[log_m+1];
+      auto wh = w1.pow(m/2).val();
+      for (int chunk = 0; chunk < n; chunk += 2*m) {
+        mint w = 1, x = 1;
+        for (int i = 0; i < m/2; i++) {
+          auto p = chunk + i;
+          auto ia = p + 0*m/2;
+          auto ib = p + 1*m/2;
+          auto ic = p + 2*m/2;
+          auto id = p + 3*m/2;
+          long long a = f[ia].val(), b = (long long)f[ib].val() * w.val() % mod, 
+                    c = f[ic].val(), d = (long long)f[id].val() * w.val() % mod;
+          auto s = a + b, t = a - b + mod, u = (c + d) * x.val() % mod, v = (c - d + mod) * x.val() % mod * wh % mod;
+          f[ia] = s + u;
+          f[ib] = t + v;
+          f[ic] = s - u; 
+          f[id] = t - v;
+          w *= w0;
+          x *= w1;
+        }
       }
     }
   }
+  if constexpr (Forward and BitReverse)
+    _iterative_bit_reverse(f);
+  if constexpr (!Forward) {
+    mint inv = mint(n).inv();
+    for (int i = 0; i < n; i++) f[i] *= inv;
+  }
 }
-template<class mint>
-void _fft(std::vector<mint>& f) { _fft_impl<true>(f); }
-template<class mint>
-void _ifft(std::vector<mint>& f) { _fft_impl<false>(f); }
+template <int mod>
+void _fft(std::vector<Modular<mod>>& f) { 
+  _fft_impl<true, true>(f); 
+}
+template <int mod>
+void _ifft(std::vector<Modular<mod>>& f) { 
+  _fft_impl<false, true>(f); 
+}
+template <int mod>
+void _convolution_fft(std::vector<Modular<mod>>& f) { 
+  _fft_impl<true, false>(f); 
+}
+template <int mod>
+void _convolution_ifft(std::vector<Modular<mod>>& f) { 
+  _fft_impl<false, false>(f); 
+}
 
-}
+} // namespace _ntt
 
 template<class mint>
 void ntt_inline(std::vector<mint>& f) {
   _ntt::_fft(f);
 }
-
 template<class mint>
 std::vector<mint> ntt(std::vector<mint> f) {
   _ntt::_fft(f);
   return f;
 }
-
 template<class mint>
 void intt_inline(std::vector<mint>& f) {
   _ntt::_ifft(f);
 }
-
 template<class mint>
 std::vector<mint> intt(std::vector<mint> f) {
   _ntt::_ifft(f);
@@ -96,25 +181,20 @@ std::vector<mint> intt(std::vector<mint> f) {
 }
 
 template<class mint>
-std::vector<mint> convolution(std::vector<mint> f, std::vector<mint> g) {
-  if (f.empty() or g.empty())
-    return {};
-  int l = 1 << math::ceil_pow2(f.size() + g.size() - 1);
-  f.resize(l);
-  ntt_inline(f);
-  g.resize(l);
-  ntt_inline(g);
-  int n = f.size();
-  for (int i = 0; i < n; i++)
-    f[i] *= g[i];
-  intt_inline(f);
-  auto n_inv = mint(n).inv();
-  for (int i = 0; i < n; i++)
-    f[i] *= n_inv;
+void ntt_convolution_inline(std::vector<mint>& f) {
+  _ntt::_convolution_fft(f);
+}
+template<class mint>
+std::vector<mint> ntt_convolution(std::vector<mint> f) {
+  _ntt::_convolution_fft(f);
   return f;
 }
-
-size_t complexity_of_convolution(size_t fsize, size_t gsize) {
-  int lg = math::ceil_pow2(fsize + gsize - 1);
-  return lg << lg;
+template<class mint>
+void intt_convolution_inline(std::vector<mint>& f) {
+  _ntt::_convolution_ifft(f);
+}
+template<class mint>
+std::vector<mint> intt_convolution(std::vector<mint> f) {
+  _ntt::_convolution_ifft(f);
+  return f;
 }

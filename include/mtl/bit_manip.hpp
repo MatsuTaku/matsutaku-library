@@ -14,7 +14,7 @@ inline constexpr uint64_t popcnt_e8(uint64_t x) {
 inline constexpr unsigned popcnt(uint64_t x) {
   return (popcnt_e8(x) * 0x0101010101010101) >> 56;
 }
-// Count trailing 0s. ...01101000 -> 3
+// Count trailing 0s. s.t. *11011000 -> 3
 inline constexpr unsigned ctz(uint64_t x) {
   return popcnt((x & (-x)) - 1);
 }

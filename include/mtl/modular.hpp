@@ -289,8 +289,8 @@ typename ModularUtil<ModInt>::inv_table ModularUtil<ModInt>::inv_;
 namespace math {
 
 constexpr int mod_pow_constexpr(int x, int p, int m) {
-  int t = 1;
-  int u = x;
+  long long t = 1;
+  long long u = x;
   while (p) {
     if (p & 1) {
       t *= u;
@@ -300,16 +300,24 @@ constexpr int mod_pow_constexpr(int x, int p, int m) {
     u %= m;
     p >>= 1;
   }
-  return t;
+  return (int) t;
 }
 
 constexpr int primitive_root_constexpr(int m) {
   if (m == 2) return 1;
+  if (m == 167772161) return 3;
+  if (m == 469762049) return 3;
+  if (m == 754974721) return 11;
+  if (m == 880803841) return 26;
   if (m == 998244353) return 3;
 
-  std::array<int, 20> divs{2};
-  int cnt = 1;
-  int x = (m-1) / 2;
+  std::array<int, 20> divs{};
+  int cnt = 0;
+  int x = m-1;
+  if (x % 2 == 0) {
+    divs[cnt++] = 2;
+    x >>= bm::ctz(x);
+  }
   for (int d = 3; d*d <= x; d += 2) {
     if (x % d == 0) {
       divs[cnt++] = d;
@@ -318,16 +326,17 @@ constexpr int primitive_root_constexpr(int m) {
     }
   }
   if (x > 1) divs[cnt++] = x;
-  for (int g = 2; ; g++) {
+  for (int g = 2; g < m; g++) {
     bool ok = true;
     for (int i = 0; i < cnt; i++) {
-      if (mod_pow_constexpr(g, (m-1) / divs[cnt], m) == 1) {
+      if (mod_pow_constexpr(g, (m-1) / divs[i], m) == 1) {
         ok = false;
         break;
       }
     }
     if (ok) return g;
   }
+  return -1;
 }
 
 template<int m>
