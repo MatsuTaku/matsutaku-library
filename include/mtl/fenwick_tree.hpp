@@ -44,6 +44,10 @@ class FenwickTree {
     auto sr = r > 0 ? sum(r-1) : 0;
     return sr - sl;
   }
+  /// @brief Alias of range_sum(l, r)
+  T sum(size_t l, size_t r) const {
+    return range_sum(l, r);
+  }
 
   template<class V>
   size_t lower_bound(const V& _sum) const {

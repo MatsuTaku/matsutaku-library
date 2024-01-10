@@ -4,7 +4,7 @@
 #include <vector>
 
 // In-memory 2D segment tree.
-// It requires enough memory size of O(nm).
+// It requires memory size of O(nm).
 template<typename M>
 class SegmentTree2D {
  public:
