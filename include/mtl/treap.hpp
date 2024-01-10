@@ -7,7 +7,8 @@
 #include <iostream>
 
 template<class T, class V=void,
-    class Compare = std::less<>>
+    class Compare = std::less<>,
+    bool UniqueKey = true>
 class Treap {
  public:
   using key_type = T;
@@ -223,7 +224,7 @@ class Treap {
   std::pair<iterator, bool> _insert_node_subtree(node_ptr u, node_ptr new_node) {
     auto x = new_node->key();
     while (true) {
-      if (u != sentinel_ and x == u->key())
+      if constexpr (UniqueKey) if (u != sentinel_ and x == u->key())
         return std::make_pair(iterator(u), false);
       auto& c = u == sentinel_ or comp_(x, u->key()) ? u->left : u->right;
       if (!c) {
@@ -249,7 +250,7 @@ class Treap {
       auto p = u->parent.lock();
       if (p != sentinel_) {
         T xp = p->key();
-        if (xp == x) [[unlikely]]
+        if constexpr (UniqueKey) if (xp == x) [[unlikely]]
           return iterator(p);
         // Check hint is malicious
         if (   (p->left == u and comp_(xp, x))
@@ -573,11 +574,14 @@ class Treap {
 
 };
 
-template<typename T>
-using TreapSet = Treap<T, void>;
+template<class T, class Compare=std::less<>>
+using TreapSet = Treap<T, void, Compare>;
 
-template<typename T, typename V>
-class TreapMap : public Treap<T, V> {
+template<class T, class Compare=std::less<>>
+using TreapMultiset = Treap<T, void, Compare, false>;
+
+template<class T, class V, class Compare=std::less<>, bool UniqueKey=true>
+class _TreapMap : public Treap<T, V, Compare, UniqueKey> {
   static_assert(!std::is_same<V, void>::value, "");
   using _base = Treap<T, V>;
  public:
@@ -590,3 +594,25 @@ class TreapMap : public Treap<T, V> {
     return _base::insert({std::move(x), mapped_type()}).first->second;
   }
 };
+
+template<class T, class V, class Compare=std::less<>>
+using TreapMap = _TreapMap<T, V, Compare, true>;
+
+template<class T, class V, class Compare=std::less<>>
+using TreapMultimap = _TreapMap<T, V, Compare, false>;
+
+namespace treap {
+
+template<class T, class Compare=std::less<>>
+using set = TreapSet<T, Compare>;
+
+template<class T, class Compare=std::less<>>
+using multiset = TreapMultiset<T, Compare>;
+
+template<class T, class V, class Compare=std::less<>>
+using map = TreapMap<T, V, Compare>;
+
+template<class T, class V, class Compare=std::less<>>
+using multimap = TreapMultimap<T, V, Compare>;
+
+} // naamespace treap
