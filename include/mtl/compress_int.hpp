@@ -4,9 +4,13 @@
 #include <vector>
 #include <algorithm>
 
-template<typename T>
-struct Compressor {
+template<class T, class MapContainer=std::unordered_map<T, int>>
+class Compressor {
+ public:
+  using map_type = MapContainer;
+ private:
   std::vector<T> vs;
+ public:
   Compressor() = default;
   template<typename It>
   Compressor(It begin, It end) : vs(begin, end) {}
@@ -18,11 +22,10 @@ struct Compressor {
   void add(It begin, It end) {
     vs.insert(vs.end(), begin, end);
   }
-  using map_type = std::unordered_map<T,int>;
   map_type release() {
     std::sort(vs.begin(), vs.end());
     vs.erase(std::unique(vs.begin(), vs.end()), vs.end());
-    std::unordered_map<T,int> mp;
+    map_type mp;
     mp.reserve(vs.size());
     int k = 0;
     for (auto v : vs) mp[v] = k++;

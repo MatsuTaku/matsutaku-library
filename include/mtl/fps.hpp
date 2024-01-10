@@ -1,5 +1,6 @@
 #pragma once
 #include "ntt.hpp"
+#include "convolution.hpp"
 #include <vector>
 #include <initializer_list>
 #include <cassert>
@@ -116,7 +117,7 @@ class Fps : public std::vector<Modular<Mod>> {
  private:
   template<class F>
   Fps& _mul_set_dense(F&& r) {
-    return *this = Fps(convolution(std::move(*this), std::forward<F>(r)));
+    return *this = Fps(convolution_ntt(std::move(*this), std::forward<F>(r)));
   }
   /** 
    * Complexity: O(NK) 

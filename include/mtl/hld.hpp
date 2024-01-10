@@ -42,7 +42,7 @@ struct Hld {
   }
 
  public:
-  Hld(int n) : r(0), n(n), edge(n), size(n), in(n), out(n), head(n), rev(n), par(n), depth(n), clen(n) {}
+  Hld(int n) : r(0), n(n), edge(n), size(n), in(n, -1), out(n, -1), head(n, -1), rev(n, -1), par(n, -1), depth(n, -1), clen(n) {}
 
   inline void add_edge(int a, int b) {
     edge[a].push_back(b);
