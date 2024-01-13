@@ -71,8 +71,9 @@ struct Hld {
   }
 
  private:
-  template<class T, class Query, class ReverseQuery>
-  T _query(int u, int v, Query Q, ReverseQuery RQ, bool include_lca) const {
+  template<class Query, class ReverseQuery>
+  auto _query(int u, int v, Query Q, ReverseQuery RQ, bool include_lca) const -> decltype(Q(0,0)) {
+    using T = decltype(Q(0,0));
     T um, vm;
     auto u_up = [&]() {
       um = um * (T)RQ(in[head[u]], in[u]+1);
@@ -100,15 +101,15 @@ struct Hld {
   }
 
  public:
-  template<class T, class Query, class ReverseQuery>
-  T query(int u, int v, Query Q, ReverseQuery RQ, bool include_lca = true) const {
-    return _query<T>(u, v, Q, RQ, include_lca);
+  template<class Query, class ReverseQuery>
+  auto query(int u, int v, Query Q, ReverseQuery RQ, bool include_lca = true) const -> decltype(Q(0,0)) {
+    return _query(u, v, Q, RQ, include_lca);
   }
 
   /// Query for commutative monoid
-  template<class T, class Query>
-  T query(int u, int v, Query Q, bool include_lca = true) const {
-    return _query<T>(u, v, Q, Q, include_lca);
+  template<class Query>
+  auto query(int u, int v, Query Q, bool include_lca = true) const -> decltype(Q(0,0)) {
+    return _query(u, v, Q, Q, include_lca);
   }
 
   template<class Set, class T>

@@ -180,8 +180,8 @@ class LazySegmentHld : private SegmentHldBase<LazySegmentHldNode<M,A>> {
     auto& n = tree_[u];
     auto& a = n.a;
     if (!a()) return;
-    n.m = a.act(n.m, n.size());
-    n.rm = a.act(n.rm, n.size());
+    n.m = a.act(n.m);
+    n.rm = a.act(n.rm);
     if (n.size() > 1) {
       tree_[n.lc].a *= a;
       tree_[n.rc].a *= a;
