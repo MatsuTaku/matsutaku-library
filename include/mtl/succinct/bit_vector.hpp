@@ -190,16 +190,19 @@ struct Bitmap {
   };
 
   template<bool Const>
-  struct _iterator
-      : public std::iterator<std::random_access_iterator_tag, bool, std::ptrdiff_t, iterator, typename std::conditional<Const, const_reference, reference>::type>
-  {
+  struct _iterator {
+    using iterator_category = std::random_access_iterator_tag;
+    using value_type = bool;
+    using difference_type = std::ptrdiff_t;
+    using pointer = iterator;
+    using reference = typename std::conditional<Const, const_reference, Bitmap::reference>::type;
+
     using _pointer = typename std::conditional<Const, const W*, W*>::type;
-    using _reference = typename std::conditional<Const, const_reference, reference>::type;
     _pointer ptr;
     unsigned ctz;
     _iterator(_pointer ptr, unsigned ctz) : ptr(ptr), ctz(ctz) {}
-    inline _reference operator*() const {
-      return _reference(ptr, 1ull << ctz);
+    inline reference operator*() const {
+      return reference(ptr, 1ull << ctz);
     }
     template<bool C>
     inline bool operator==(const _iterator<C>& r) const {
@@ -269,7 +272,7 @@ struct Bitmap {
     inline _iterator operator-(std::ptrdiff_t d) const {
       return _iterator(*this) -= d;
     }
-    inline _reference operator[](size_t i) const {
+    inline reference operator[](size_t i) const {
       return *(*this + i);
     }
   };
