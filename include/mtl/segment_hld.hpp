@@ -16,9 +16,10 @@ class SegmentHldBase {
   explicit SegmentHldBase(const Hld& tree) : n_(tree.n), target_(n_) {
     std::vector<long long> cw(n_+1);
     for (int i = 0; i < n_; i++) {
-      auto w = tree.size[i];
-      if (!tree.edge[i].empty() and tree.edge[i][0] != tree.par[i])
-        w -= tree.size[tree.edge[i][0]];
+      int u = tree.rev[i];
+      auto w = tree.size[u];
+      if (!tree.edge[u].empty() and tree.edge[u][0] != tree.par[u])
+        w -= tree.size[tree.edge[u][0]];
       cw[i+1] = cw[i] + w;
     }
     tree_.reserve(n_*2);
@@ -179,8 +180,8 @@ class LazySegmentHld : private SegmentHldBase<LazySegmentHldNode<M,A>> {
     auto& n = tree_[u];
     auto& a = n.a;
     if (!a()) return;
-    n.m = a.act(n.m, n.size());
-    n.rm = a.act(n.rm, n.size());
+    n.m = a.act(n.m);
+    n.rm = a.act(n.rm);
     if (n.size() > 1) {
       tree_[n.lc].a *= a;
       tree_[n.rc].a *= a;

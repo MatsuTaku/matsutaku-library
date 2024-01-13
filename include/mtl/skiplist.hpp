@@ -118,6 +118,8 @@ class Skiplist {
     i++;
     auto u = sentinel_;
     int hw = pick_height();
+    if (hw > height_)
+      height_ = hw;
     auto w = std::make_shared<Node>(v, hw);
     for (int r = height_; r >= 0; r--) {
       while (u->next[r] and u->length[r] < i) {
@@ -125,7 +127,7 @@ class Skiplist {
         u = u->next[r];
       }
       if (r <= hw) {
-        w->length[r] = u->next[r] ? u->length[r] - (i - 1) : 0;
+        w->length[r] = u->next[r] ? u->length[r] - (i-1) : 0;
         u->length[r] = i;
         w->next[r] = u->next[r];
         u->next[r] = w;
@@ -173,11 +175,11 @@ class SkiplistSet : public Skiplist<T> {
   using typename _base::Node;
   using typename _base::iterator;
   std::vector<std::shared_ptr<Node>> stack_;
-  std::vector<int> idx_;
+  std::vector<size_t> idx_;
  public:
   SkiplistSet() : Skiplist<T>(),
                   stack_(_base::kMaxHeight+1, _base::sentinel_),
-                  idx_(_base::kMaxHeight+1, -1) {}
+                  idx_(_base::kMaxHeight+1, 0) {}
 
   void print_for_debug() const {
     for (int r = _base::height_; r >= 0; r--){
@@ -249,65 +251,81 @@ class SkiplistSet : public Skiplist<T> {
     return u != _base::sentinel_ ? iterator(u) : _base::end();
   }
 
-  iterator insert(const T& v) {
+  template<class... Args>
+  std::pair<iterator, bool> emplace(Args&&... args) {
     auto u = _base::sentinel_;
-    int j = -1;
+    size_t j = 1;
+    T v(std::forward<Args>(args)...);
     for (int r = _base::height_; r >= 0; r--) {
       while (u->next[r] and u->next[r]->v < v) {
         j += u->length[r];
         u = u->next[r];
       }
       if (u->next[r] and u->next[r]->v == v)
-        return iterator(u->next[r]);
+        return std::make_pair(iterator(u->next[r]), false);
       stack_[r] = u;
-      idx_[r] = j;
+      idx_[r] = j-1;
     }
     int hw = _base::pick_height();
-    if (hw > _base::height_) {
+    if (_base::height_ < hw) {
       _base::height_ = hw;
     }
-    auto w = std::make_shared<Node>(v, hw);
-    if (hw > _base::height_) {
-      _base::height_ = hw;
-    }
+    auto w = std::make_shared<Node>(std::move(v), hw);
     for (int r = _base::height_; r >= 0; r--) {
       if (r <= hw) {
+        assert(idx_[r] < j);
         if (stack_[r]->next[r]) {
-          w->length[r] = stack_[r]->length[r] - (j - idx_[r]);
+          w->length[r] = stack_[r]->length[r] - (j - idx_[r]) + 1;
         } else {
           w->length[r] = 0;
         }
-        stack_[r]->length[r] = j - idx_[r] + 1;
+        stack_[r]->length[r] = j - idx_[r];
         w->next[r] = stack_[r]->next[r];
         stack_[r]->next[r] = w;
       } else if (stack_[r]->next[r]) {
-        stack_[r]->length[r]++;
+        if (stack_[r]->next[r])
+          stack_[r]->length[r]++;
       }
     }
     _base::size_++;
-    return iterator(w);
+    return std::make_pair(iterator(w), true);
+  }
+  std::pair<iterator, bool> insert(const T& v) {
+    return emplace(v);
+  }
+  std::pair<iterator, bool> insert(T&& v) {
+    return emplace(std::move(v));
   }
 
   iterator erase(const T& v) {
     bool erased = false;
     auto u = _base::sentinel_;
-    for (int r = _base::height_; r >= 0; r--) {
+    int r = _base::height_;
+    for (; r >= 0; r--) {
       while (u->next[r] and u->next[r]->v < v)
         u = u->next[r];
       if (u->next[r] and u->next[r]->v == v) {
         erased = true;
-        if (u->next[r]->next[r]) {
-          u->length[r] = u->length[r] + u->next[r]->length[r] - 1;
-        } else {
-          u->length[r] = 0;
+        break;
+      }
+      stack_[r] = u;
+    }
+    if (erased) {
+      _base::size_--;
+      for (int i = _base::height_; i > r; i--)
+        if (stack_[i]->next[i])
+          stack_[i]->length[i]--;
+      for(; r >= 0; r--) {
+        if (u->next[r] and u->next[r]->v == v) {
+          if (u->next[r]->next[r]) {
+            u->length[r] = u->length[r] + u->next[r]->length[r] - 1;
+          } else {
+            u->length[r] = 0;
+          }
+          u->next[r] = u->next[r]->next[r];
         }
-        u->next[r] = u->next[r]->next[r];
-      } else if (u->next[r]) {
-        u->length[r]--;
       }
     }
-    if (erased)
-      _base::size_--;
     return iterator(u->next[0]);
   }
 };

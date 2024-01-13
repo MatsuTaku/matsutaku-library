@@ -1,6 +1,8 @@
 #pragma once
 #include "bit_manip.hpp"
+// #include "monoid.hpp"
 #include <cstddef>
+#include <utility>
 #include <vector>
 #include <cassert>
 #if __cpp_concepts >= 202002L
@@ -12,9 +14,8 @@ concept LazySegmentTreeMonoid = requires (M m) {
 };
 template<typename A, typename M>
 concept LazySegmentTreeOperatorMonoid = requires(A a, M m) {
-  {a()} -> std::same_as<bool>;
-  {a *= a} -> std::same_as<A>;
-  {a.act(m, 1)} -> std::same_as<M>;
+  {a *= a} -> std::same_as<A&>;
+  {a.act(m)} -> std::same_as<M>;
 };
 #endif
 
@@ -22,14 +23,14 @@ concept LazySegmentTreeOperatorMonoid = requires(A a, M m) {
 
 template <typename M, typename A>
 #if __cpp_concepts >= 202002L
-required LazySegmentTreeMonoid<M> &&
+requires LazySegmentTreeMonoid<M> &&
          LazySegmentTreeOperatorMonoid<A,M>
 #endif
 class LazySegmentTree {
  private:
   size_t size_;
-  std::vector<std::pair<M,A>> tree_;
-  std::vector<std::pair<size_t, size_t>> ids_;
+  std::vector<std::pair<M, A>> tree_;
+  std::vector<size_t> ids_;
 
  public:
   explicit LazySegmentTree(size_t size) :
@@ -50,30 +51,22 @@ class LazySegmentTree {
     }
   }
 
-  void range_update(size_t l, size_t r, const A& e) {
-    assert(l <= r and r <= size_);
+  inline void range_update(size_t l, size_t r, const A& e) {
+    assert(l <= r);
+    assert(r <= size_);
     if (l == r) return;
-    _set_ids(l, r);
-    for (int i = ids_.size()-1; i >= 0; --i) {
-      _propagate(ids_[i].first, ids_[i].second);
+    _lazy_propagation(l, r);
+
+    for (size_t _l=l+size_, _r=r+size_; _l<_r; _l>>=1, _r>>=1) {
+      if (_l&1) 
+        tree_[_l++].second *= e;
+      if (_r&1) 
+        tree_[--_r].second *= e;
     }
 
-    for (size_t _l=l+size_, _r=r+size_, s=1; _l<_r; _l>>=1, _r>>=1, s*=2) {
-      if (_l&1) {
-        tree_[_l].second *= e;
-        ++_l;
-      }
-      if (_r&1) {
-        --_r;
-        tree_[_r].second *= e;
-      }
-    }
-
-    for (auto is : ids_) {
-      auto id = is.first;
-      auto sz = is.second;
-      _propagate(id*2, sz/2);
-      _propagate(id*2+1, sz/2);
+    for (auto id : ids_) {
+      _propagate(id*2);
+      _propagate(id*2+1);
       tree_[id].first = tree_[id*2].first * tree_[id*2+1].first;
     }
   }
@@ -86,69 +79,75 @@ class LazySegmentTree {
 
   template<typename T>
   inline void set(size_t i, T&& e) {
-    _set_ids(i,i+1);
-    for (long long j = ids_.size()-1; j >= 0; --j)
-      _propagate(ids_[j].first, ids_[j].second);
+    _lazy_propagation(i, i+1);
     int u = i+size_;
-    tree_[u].first = M(std::forward(e));
-    u /= 2;
+    tree_[u].first = M(std::forward<T>(e));
+    u >>= 1;
     while (u > 0) {
       tree_[u].first = tree_[u*2].first * tree_[u*2+1].first;
-      u /= 2;
+      u >>= 1;
     }
   }
 
   inline M query(size_t l, size_t r) {
-    _set_ids(l, r);
-    for (int i = ids_.size()-1; i >= 0; --i) {
-      _propagate(ids_[i].first, ids_[i].second);
-    }
+    _lazy_propagation(l, r);
 
     M lhs,rhs;
-    for (size_t _l=l+size_, _r=r+size_, s=1; _l<_r; _l>>=1, _r>>=1, s*=2) {
+    for (size_t _l=l+size_, _r=r+size_; _l<_r; _l>>=1, _r>>=1) {
       if (_l&1) {
-        _propagate(_l, s);
+        _propagate(_l);
         lhs = lhs * tree_[_l].first;
         ++_l;
       }
       if (_r&1) {
         --_r;
-        _propagate(_r, s);
+        _propagate(_r);
         rhs = tree_[_r].first * rhs;
       }
     }
     return lhs * rhs;
   }
+  /// Alias for query(l, r)
+  M prod(size_t l, size_t r) {
+    return query(l, r);
+  }
 
-  inline M get(size_t index) {
-    return query(index, index+1);
+  inline const M& get(size_t index) {
+    _lazy_propagation(index, index+1);
+    auto l = index+size_;
+    _propagate(l);
+    return tree_[l].first;
   }
 
  private:
-  inline void _set_ids(size_t l, size_t r) {
+  void _set_ids(size_t l, size_t r) {
     ids_.clear();
     auto _l=l+size_, _r=r+size_;
     auto lth = _l/(_l&(-_l))/2;
     auto rth = _r/(_r&(-_r))/2;
-    size_t s = 1;
-    for (; _l<_r; _l>>=1, _r>>=1, s*=2) {
-      if (_r <= rth) ids_.emplace_back(_r, s);
-      if (_l <= lth) ids_.emplace_back(_l, s);
+    for (; _l<_r; _l>>=1, _r>>=1) {
+      if (_r <= rth) ids_.push_back(_r);
+      if (_l <= lth) ids_.push_back(_l);
     }
-    for (; _l>0; _l>>=1, s*=2) {
-      ids_.emplace_back(_l, s);
-    }
+    for (; _l>0; _l>>=1)
+      ids_.push_back(_l);
   }
 
-  inline void _propagate(size_t id, size_t sz) {
-    A e = tree_[id].second;
-    if (!e()) return;
-    tree_[id].second = A();
-    tree_[id].first = e.act(tree_[id].first, sz);
+  inline void _propagate(size_t id) {
+    A& e = tree_[id].second;
+    tree_[id].first = e.act(tree_[id].first);
     if (id < size_) {
       tree_[id*2].second *= e;
       tree_[id*2+1].second *= e;
     }
+    tree_[id].second = A();
+  }
+
+  void _lazy_propagation(size_t l, size_t r) {
+    if (l == r) return;
+    _set_ids(l, r);
+    for (auto it = ids_.rbegin(); it != ids_.rend(); ++it)
+      _propagate(*it);
   }
 
 };

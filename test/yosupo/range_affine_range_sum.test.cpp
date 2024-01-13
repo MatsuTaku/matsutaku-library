@@ -10,21 +10,22 @@ using mint = Modular<MOD>;
 
 struct SumMonoid {
   mint a=0;
+  int sz=0;
   SumMonoid operator*(SumMonoid r) const {
-    return {a+r.a};
+    return {a+r.a, sz+r.sz};
   }
   SumMonoid& operator*=(SumMonoid r) {return *this = *this * r;}
 };
 
 struct FnMonoid {
   mint b=1, c=0;
-  FnMonoid operator*(FnMonoid r) const {
-    return {b*r.b, c*r.b+r.c};
+  FnMonoid& operator*=(FnMonoid r) {
+    b *= r.b;
+    c = c*r.b + r.c;
+    return *this;
   }
-  FnMonoid& operator*=(FnMonoid r) {return *this = *this * r;}
-  bool operator()() const {return !(b == 1 and c == 0);}
-  SumMonoid act(SumMonoid a, size_t num) const {
-    return {b*a.a + c*num};
+  SumMonoid act(SumMonoid a) const {
+    return {b*a.a + c*a.sz, a.sz};
   }
 };
 
@@ -32,7 +33,11 @@ int main() {
   cin.tie(nullptr); ios::sync_with_stdio(false);
 
   int N,Q; cin>>N>>Q;
-  vector<SumMonoid> A(N); for (auto& a : A) cin>>a.a;
+  vector<SumMonoid> A(N); 
+  for (auto& a : A) {
+    cin>>a.a;
+    a.sz = 1;
+  }
   LazySegmentTree<SumMonoid, FnMonoid> rsq(A.begin(), A.end());
 
   for (int q = 0; q < Q; q++) {

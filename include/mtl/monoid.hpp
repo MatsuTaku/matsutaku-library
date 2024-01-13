@@ -1,4 +1,5 @@
 #pragma once
+#include <utility>
 #if __cpp_concepts >= 202002L
 #include <concepts>
 #endif
@@ -11,6 +12,9 @@ struct Monoid {
   Monoid(Args&&... args) : x(std::forward<Args>(args)...) {}
   Monoid operator*(const Monoid& rhs) const {
     return Monoid(op(x, rhs.x));
+  }
+  const T& val() const {
+    return x;
   }
 };
 
@@ -44,7 +48,7 @@ concept IsCommutativeMonoid = requires (T m) {
 };
 #endif
 
-template<class S, class F, S (*mapping)(F, S), S (*composition)(F, S), F (*id)()>
+template<class S, class F, S (*mapping)(F, S), F (*composition)(F, F), F (*id)()>
 struct OperatorMonoid {
     F f;
     OperatorMonoid() : f(id()) {}

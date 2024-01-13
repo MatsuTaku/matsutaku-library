@@ -7,25 +7,21 @@ using namespace std;
 
 constexpr int MINF = -1e9;
 struct M {
-  int l,r,sum,v;
-  M() : v(MINF) {}
-  M(int w) : l(w),r(w),sum(w),v(w) {}
+  int l,r,sum,v,sz;
+  M() : v(MINF), sz(0) {}
+  M(int w) : l(w),r(w),sum(w),v(w), sz(1) {}
   friend M operator*(const M& lhs, const M& rhs) {
     if (lhs.v == MINF) return rhs;
     if (rhs.v == MINF) return lhs;
     M ret;
     ret.l = max(lhs.l, lhs.sum + rhs.l);
-    ret.r = max(lhs.r + rhs.sum, rhs.r);
-    ret.v = max({lhs.v, lhs.r + rhs.l, rhs.v});
+    ret.r = max(rhs.r, lhs.r + rhs.sum);
+    ret.v = max({lhs.v, rhs.v, lhs.r + rhs.l});
     ret.sum = lhs.sum + rhs.sum;
+    ret.sz = lhs.sz + rhs.sz;
     return ret;
   }
 };
-M rev(M m) {
-  M ret = m;
-  swap(ret.l, ret.r);
-  return ret;
-}
 struct A {
   int v;
   bool f;
@@ -36,15 +32,11 @@ struct A {
     if (r.f) *this = r;
     return *this;
   }
-  M act(const M& m,int sz) const {
-    assert(f);
-    M ret;
-    ret.sum = v*sz;
-    if (v >= 0) {
-      ret.l = ret.r = ret.v = ret.sum;
-    } else {
-      ret.l = ret.r = ret.v = v;
-    }
+  M act(const M& m) const {
+    if (!f) return m;
+    M ret = m;
+    ret.sum = v*m.sz;
+    ret.l = ret.r = ret.v = (v >= 0 ? ret.sum : v);
     return ret;
   }
 };
@@ -78,7 +70,7 @@ int main() {
       T.update(a,b,range_update, c);
     } else if (t == 2) {
       int a,b,c; cin>>a>>b>>c; a--; b--;
-      cout << T.query<M>(a,b,query,r_query).v << endl;
+      cout << T.query(a,b,query,r_query).v << endl;
     }
   }
 }
