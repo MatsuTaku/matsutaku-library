@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <iostream>
 #include <typeinfo>
+#include <limits>
 
 template<typename T, typename = std::void_t<>>
 struct AcMachineNodeTraits {};
@@ -167,14 +168,13 @@ class _AcMachine {
     return res;
   }
 
-  class key_iterator {
+  struct key_iterator {
    public:
     using value_type = _AcMachine::value_type;
     using reference = const value_type&;
     using pointer = const value_type*;
     using iterator_category = std::forward_iterator_tag;
     using difference_type = long long;
-   private:
     const _AcMachine* ac_;
     index_type u_;
     void _forward_until_data() {
@@ -182,18 +182,19 @@ class _AcMachine {
         u_ = ac_->nodes_[u_].fail;
       }
     }
-   public:
-    key_iterator() = default;
-    explicit key_iterator(const _AcMachine* ac, index_type u) : ac_(ac), u_(u) {
+    key_iterator& to_exact() {
       _forward_until_data();
+      return *this;
     }
-    reference operator*() const { return ac_->keys_[ac_->nodes_[u_].id]; }
-    pointer operator->() const { return &ac_->keys_[ac_->nodes_[u_].id]; }
+    key_iterator() = default;
+    explicit key_iterator(const _AcMachine* ac, index_type u) : ac_(ac), u_(u) {}
+    reference operator*() const { return ac_->container_[ac_->nodes_[u_].id]; }
+    pointer operator->() const { return &ac_->container_[ac_->nodes_[u_].id]; }
     bool operator==(const key_iterator& r) const { return u_ == r.u_; }
     bool operator!=(const key_iterator& r) const { return !(*this == r); }
     key_iterator& operator++() {
       u_ = ac_->nodes_[u_].fail;
-      _forward_until_data();
+      to_exact();
       return *this;
     }
     key_iterator operator++(int) {
@@ -201,40 +202,54 @@ class _AcMachine {
       ++*this;
       return ret;
     }
+    key_iterator& push(char_type c) {
+      index_type target;
+      while ((target = ac_->_go(u_, c)) == -1)
+        u_ = ac_->nodes_[u_].fail;
+      u_ = target;
+      return *this;
+    }
+    key_iterator pushed(char_type c) const {
+      return key_iterator(*this).push(c);
+    }
   };
+  key_iterator key_begin() const {
+    return key_iterator(this, 0);
+  }
   key_iterator key_end() const {
     return key_iterator(this, 0);
   }
-  std::vector<std::pair<size_t, key_iterator>> find(const std::string& text) const {
+  std::vector<std::pair<size_t, key_iterator>> find_all(const std::string& text) const {
     std::vector<std::pair<size_t, key_iterator>> ret;
-    auto u = 0;
+    auto it = key_begin();
     for (size_t i = 0; i < text.size(); i++) {
-      char_type c = text[i];
-      index_type target;
-      while ((target = _go(u, c)) == -1)
-        u = nodes_[u].fail;
-      u = target;
-      if (u != 0) {
-        auto out = key_iterator(this, u, 0);
-        if (out != key_end())
-          ret.emplace_back(i, out);
+      it.push(text[i]);
+      auto c = it;
+      c.to_exact();
+      if (c != key_end()) {
+        ret.emplace_back(i+1, c);
       }
     }
     return ret;
   }
-  std::pair<std::pair<size_t, key_iterator>, bool> find_first(const std::string& text) const {
-    auto u = 0;
+  std::pair<std::pair<size_t, key_iterator>, bool> find(const std::string& text) const {
+    auto it = key_begin();
     for (size_t i = 0; i < text.size(); i++) {
-      char_type c = text[i];
-      index_type target;
-      while ((target = _go(u, c)) == -1)
-        u = nodes_[u].fail;
-      u = target;
-      auto out = key_iterator(this, u);
-      if (out != key_end())
-        return {{i+1, out}, true};
+      it.push(text[i]);
+      auto c = it;
+      c.to_exact();
+      if (c != key_end()) {
+        return {{i+1, c}, true};
+      }
     }
     return {{}, false};
+  }
+  key_iterator find_suffix(const std::string& text) const {
+    auto it = key_begin();
+    for (auto c : text) {
+      it.push(c);
+    }
+    return it.to_exact();
   }
 };
 template<typename T>
