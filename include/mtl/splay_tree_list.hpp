@@ -209,6 +209,7 @@ struct SplayTreeList : SplayTreeBase<SplayTreeListNode<M, O>> {
         return between(l, r)->prod;
     }
     void reverse(size_t l, size_t r) {
+        if (l == r) return;
         auto u = between(l, r);
         u->rev ^= true;
         reverse_prod(u);
