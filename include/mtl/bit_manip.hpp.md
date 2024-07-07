@@ -1,0 +1,412 @@
+---
+data:
+  _extendedDependsOn: []
+  _extendedRequiredBy:
+  - icon: ':question:'
+    path: include/mtl/binary_trie.hpp
+    title: include/mtl/binary_trie.hpp
+  - icon: ':warning:'
+    path: include/mtl/bitmap.hpp
+    title: include/mtl/bitmap.hpp
+  - icon: ':question:'
+    path: include/mtl/convolution.hpp
+    title: include/mtl/convolution.hpp
+  - icon: ':warning:'
+    path: include/mtl/disjoint_sparse_table.hpp
+    title: include/mtl/disjoint_sparse_table.hpp
+  - icon: ':heavy_check_mark:'
+    path: include/mtl/dual_disjoint_sparse_table.hpp
+    title: include/mtl/dual_disjoint_sparse_table.hpp
+  - icon: ':question:'
+    path: include/mtl/dual_segment_tree.hpp
+    title: include/mtl/dual_segment_tree.hpp
+  - icon: ':x:'
+    path: include/mtl/dual_sparse_table.hpp
+    title: Apply to [l, r)
+  - icon: ':x:'
+    path: include/mtl/fenwick_tree.hpp
+    title: Alias of range_sum(l, r)
+  - icon: ':x:'
+    path: include/mtl/fps.hpp
+    title: include/mtl/fps.hpp
+  - icon: ':x:'
+    path: include/mtl/fps/exp.hpp
+    title: include/mtl/fps/exp.hpp
+  - icon: ':x:'
+    path: include/mtl/fps/pow.hpp
+    title: include/mtl/fps/pow.hpp
+  - icon: ':warning:'
+    path: include/mtl/integer_set.hpp
+    title: include/mtl/integer_set.hpp
+  - icon: ':question:'
+    path: include/mtl/lazy_segment_tree.hpp
+    title: include/mtl/lazy_segment_tree.hpp
+  - icon: ':x:'
+    path: include/mtl/li_chao_tree.hpp
+    title: include/mtl/li_chao_tree.hpp
+  - icon: ':question:'
+    path: include/mtl/modular.hpp
+    title: include/mtl/modular.hpp
+  - icon: ':question:'
+    path: include/mtl/ntt.hpp
+    title: include/mtl/ntt.hpp
+  - icon: ':x:'
+    path: include/mtl/ordinal_range_search.hpp
+    title: Ordinal Range Search
+  - icon: ':x:'
+    path: include/mtl/segment_tree.hpp
+    title: include/mtl/segment_tree.hpp
+  - icon: ':warning:'
+    path: include/mtl/segment_tree_2d.hpp
+    title: include/mtl/segment_tree_2d.hpp
+  - icon: ':warning:'
+    path: include/mtl/skewbinary_list.hpp
+    title: include/mtl/skewbinary_list.hpp
+  - icon: ':warning:'
+    path: include/mtl/skiplist.hpp
+    title: include/mtl/skiplist.hpp
+  - icon: ':x:'
+    path: include/mtl/sparse_fps.hpp
+    title: include/mtl/sparse_fps.hpp
+  - icon: ':warning:'
+    path: include/mtl/sparse_table.hpp
+    title: include/mtl/sparse_table.hpp
+  - icon: ':x:'
+    path: include/mtl/succinct/binary_set.hpp
+    title: include/mtl/succinct/binary_set.hpp
+  - icon: ':question:'
+    path: include/mtl/succinct/bit_vector.hpp
+    title: include/mtl/succinct/bit_vector.hpp
+  - icon: ':x:'
+    path: include/mtl/succinct/rrr.hpp
+    title: Succinct bit vector in memory of B(n, u) + O(u log log n / log n) bits
+  - icon: ':question:'
+    path: include/mtl/succinct/select.hpp
+    title: include/mtl/succinct/select.hpp
+  - icon: ':question:'
+    path: include/mtl/succinct/wavelet_matrix.hpp
+    title: include/mtl/succinct/wavelet_matrix.hpp
+  - icon: ':warning:'
+    path: include/mtl/succinct/wavelet_tree.hpp
+    title: include/mtl/succinct/wavelet_tree.hpp
+  - icon: ':question:'
+    path: include/mtl/xft.hpp
+    title: include/mtl/xft.hpp
+  - icon: ':question:'
+    path: include/mtl/yft.hpp
+    title: include/mtl/yft.hpp
+  - icon: ':warning:'
+    path: test/abc116-c-multiple_sequences-dirichlet-optimized.cpp
+    title: test/abc116-c-multiple_sequences-dirichlet-optimized.cpp
+  - icon: ':warning:'
+    path: test/abc116-c-multiple_sequences-dirichlet.cpp
+    title: test/abc116-c-multiple_sequences-dirichlet.cpp
+  - icon: ':warning:'
+    path: test/yosupo/test_binary_trie.cpp
+    title: test/yosupo/test_binary_trie.cpp
+  _extendedVerifiedWith:
+  - icon: ':heavy_check_mark:'
+    path: test/aoj/aoj-do_use_segment_tree-binary_tree.test.cpp
+    title: test/aoj/aoj-do_use_segment_tree-binary_tree.test.cpp
+  - icon: ':heavy_check_mark:'
+    path: test/aoj/aoj-range_update_query.test.cpp
+    title: test/aoj/aoj-range_update_query.test.cpp
+  - icon: ':heavy_check_mark:'
+    path: test/aoj/aoj-the_maximum_number_of_customers.test.cpp
+    title: test/aoj/aoj-the_maximum_number_of_customers.test.cpp
+  - icon: ':heavy_check_mark:'
+    path: test/succinct/range_kth_smallest.test.cpp
+    title: test/succinct/range_kth_smallest.test.cpp
+  - icon: ':heavy_check_mark:'
+    path: test/yosupo/associative_array-yft.test.cpp
+    title: test/yosupo/associative_array-yft.test.cpp
+  - icon: ':heavy_check_mark:'
+    path: test/yosupo/convolution.test.cpp
+    title: test/yosupo/convolution.test.cpp
+  - icon: ':heavy_check_mark:'
+    path: test/yosupo/convolution_garner.test.cpp
+    title: test/yosupo/convolution_garner.test.cpp
+  - icon: ':heavy_check_mark:'
+    path: test/yosupo/convolution_large.test.cpp
+    title: test/yosupo/convolution_large.test.cpp
+  - icon: ':x:'
+    path: test/yosupo/dynamic_sequence_range_affine_range_sum.test.cpp
+    title: test/yosupo/dynamic_sequence_range_affine_range_sum.test.cpp
+  - icon: ':x:'
+    path: test/yosupo/dynamic_tree_vertex_set_path_composite.test.cpp
+    title: test/yosupo/dynamic_tree_vertex_set_path_composite.test.cpp
+  - icon: ':x:'
+    path: test/yosupo/matrix/determinant_of_matrix.test.cpp
+    title: test/yosupo/matrix/determinant_of_matrix.test.cpp
+  - icon: ':x:'
+    path: test/yosupo/matrix/inverse_matrix.test.cpp
+    title: test/yosupo/matrix/inverse_matrix.test.cpp
+  - icon: ':x:'
+    path: test/yosupo/matrix/matrix_product.test.cpp
+    title: test/yosupo/matrix/matrix_product.test.cpp
+  - icon: ':x:'
+    path: test/yosupo/matrix/system_of_linear_equations.test.cpp
+    title: test/yosupo/matrix/system_of_linear_equations.test.cpp
+  - icon: ':x:'
+    path: test/yosupo/point_add_range_sum.test.cpp
+    title: test/yosupo/point_add_range_sum.test.cpp
+  - icon: ':x:'
+    path: test/yosupo/point_set_range_composite.test.cpp
+    title: test/yosupo/point_set_range_composite.test.cpp
+  - icon: ':x:'
+    path: test/yosupo/polynomial/exp_of_formal_power_series.test.cpp
+    title: test/yosupo/polynomial/exp_of_formal_power_series.test.cpp
+  - icon: ':x:'
+    path: test/yosupo/polynomial/exp_of_formal_power_series_sparse.test.cpp
+    title: test/yosupo/polynomial/exp_of_formal_power_series_sparse.test.cpp
+  - icon: ':x:'
+    path: test/yosupo/polynomial/inv_of_formal_power_series.test.cpp
+    title: test/yosupo/polynomial/inv_of_formal_power_series.test.cpp
+  - icon: ':x:'
+    path: test/yosupo/polynomial/inv_of_formal_power_series_sparse.test.cpp
+    title: test/yosupo/polynomial/inv_of_formal_power_series_sparse.test.cpp
+  - icon: ':x:'
+    path: test/yosupo/polynomial/log_of_formal_power_series.test.cpp
+    title: test/yosupo/polynomial/log_of_formal_power_series.test.cpp
+  - icon: ':x:'
+    path: test/yosupo/polynomial/log_of_formal_power_series_sparse.test.cpp
+    title: test/yosupo/polynomial/log_of_formal_power_series_sparse.test.cpp
+  - icon: ':x:'
+    path: test/yosupo/polynomial/pow_of_formal_power_series.test.cpp
+    title: test/yosupo/polynomial/pow_of_formal_power_series.test.cpp
+  - icon: ':x:'
+    path: test/yosupo/polynomial/pow_of_formal_power_series_sparse.test.cpp
+    title: test/yosupo/polynomial/pow_of_formal_power_series_sparse.test.cpp
+  - icon: ':x:'
+    path: test/yosupo/polynomial/sqrt_of_formal_power_series.test.cpp
+    title: test/yosupo/polynomial/sqrt_of_formal_power_series.test.cpp
+  - icon: ':x:'
+    path: test/yosupo/polynomial/sqrt_of_formal_power_series_sparse.test.cpp
+    title: test/yosupo/polynomial/sqrt_of_formal_power_series_sparse.test.cpp
+  - icon: ':x:'
+    path: test/yosupo/predecessor_problem-yft.test.cpp
+    title: test/yosupo/predecessor_problem-yft.test.cpp
+  - icon: ':x:'
+    path: test/yosupo/range_affine_range_sum-splay_tree.test.cpp
+    title: test/yosupo/range_affine_range_sum-splay_tree.test.cpp
+  - icon: ':x:'
+    path: test/yosupo/range_affine_range_sum.test.cpp
+    title: test/yosupo/range_affine_range_sum.test.cpp
+  - icon: ':x:'
+    path: test/yosupo/rectangle_sum.test.cpp
+    title: test/yosupo/rectangle_sum.test.cpp
+  - icon: ':x:'
+    path: test/yosupo/set_xor_min.test.cpp
+    title: test/yosupo/set_xor_min.test.cpp
+  - icon: ':x:'
+    path: test/yosupo/sqrt_mod.test.cpp
+    title: test/yosupo/sqrt_mod.test.cpp
+  - icon: ':x:'
+    path: test/yosupo/static_range_frequency.test.cpp
+    title: test/yosupo/static_range_frequency.test.cpp
+  - icon: ':x:'
+    path: test/yosupo/static_range_inversions_query-mo.test.cpp
+    title: test/yosupo/static_range_inversions_query-mo.test.cpp
+  - icon: ':x:'
+    path: test/yosupo/static_range_inversions_query-mo_rollback.test.cpp
+    title: test/yosupo/static_range_inversions_query-mo_rollback.test.cpp
+  - icon: ':x:'
+    path: test/yosupo/static_range_sum.test.cpp
+    title: test/yosupo/static_range_sum.test.cpp
+  - icon: ':x:'
+    path: test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
+    title: test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
+  - icon: ':x:'
+    path: test/yosupo/static_rmq.test.cpp
+    title: test/yosupo/static_rmq.test.cpp
+  - icon: ':x:'
+    path: test/yosupo/vertex_add_path_sum.test.cpp
+    title: test/yosupo/vertex_add_path_sum.test.cpp
+  - icon: ':x:'
+    path: test/yosupo/vertex_add_subtree_sum.test.cpp
+    title: test/yosupo/vertex_add_subtree_sum.test.cpp
+  - icon: ':x:'
+    path: test/yosupo/vertex_set_path_composite.test.cpp
+    title: test/yosupo/vertex_set_path_composite.test.cpp
+  - icon: ':x:'
+    path: test/yosupo/yosupo-line_add_get_min.test.cpp
+    title: test/yosupo/yosupo-line_add_get_min.test.cpp
+  - icon: ':x:'
+    path: test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
+    title: test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
+  - icon: ':x:'
+    path: test/yosupo/yosupo-range_affine_point_get.test.cpp
+    title: test/yosupo/yosupo-range_affine_point_get.test.cpp
+  - icon: ':x:'
+    path: test/yosupo/yosupo-segment_add_get_min.test.cpp
+    title: test/yosupo/yosupo-segment_add_get_min.test.cpp
+  - icon: ':x:'
+    path: test/yuki/yuki-no945_ykc_manju.test.cpp
+    title: test/yuki/yuki-no945_ykc_manju.test.cpp
+  _isVerificationFailed: true
+  _pathExtension: hpp
+  _verificationStatusIcon: ':question:'
+  attributes:
+    links: []
+  bundledCode: "#line 2 \"include/mtl/bit_manip.hpp\"\n#include <cstdint>\n#include\
+    \ <cassert>\n\nnamespace bm {\n\ninline constexpr uint64_t popcnt_e8(uint64_t\
+    \ x) {\n  x = (x & 0x5555555555555555) + ((x>>1) & 0x5555555555555555);\n  x =\
+    \ (x & 0x3333333333333333) + ((x>>2) & 0x3333333333333333);\n  x = (x & 0x0F0F0F0F0F0F0F0F)\
+    \ + ((x>>4) & 0x0F0F0F0F0F0F0F0F);\n  return x;\n}\n// Count 1s\ninline constexpr\
+    \ unsigned popcnt(uint64_t x) {\n  return (popcnt_e8(x) * 0x0101010101010101)\
+    \ >> 56;\n}\n// Count trailing 0s. s.t. *11011000 -> 3\ninline constexpr unsigned\
+    \ ctz(uint64_t x) {\n  return popcnt((x & (-x)) - 1);\n}\ninline constexpr unsigned\
+    \ ctz8(uint8_t x) {\n  return x == 0 ? 8 : popcnt_e8((x & (-x)) - 1);\n}\n// [00..0](8bit)\
+    \ -> 0, [**..*](not only 0) -> 1\ninline constexpr uint8_t summary(uint64_t x)\
+    \ {\n  constexpr uint64_t hmask = 0x8080808080808080ull;\n  constexpr uint64_t\
+    \ lmask = 0x7F7F7F7F7F7F7F7Full;\n  auto a = x & hmask;\n  auto b = x & lmask;\n\
+    \  b = hmask - b;\n  b = ~b;\n  auto c = (a | b) & hmask;\n  c *= 0x0002040810204081ull;\n\
+    \  return uint8_t(c >> 56);\n}\n// Extract target area of bits\ninline constexpr\
+    \ uint64_t bextr(uint64_t x, unsigned start, unsigned len) {\n  uint64_t mask\
+    \ = len < 64 ? (1ull<<len)-1 : 0xFFFFFFFFFFFFFFFFull;\n  return (x >> start) &\
+    \ mask;\n}\n// 00101101 -> 00111111 -count_1s-> 6\ninline constexpr unsigned log2p1(uint8_t\
+    \ x) {\n  if (x & 0x80)\n    return 8;\n  uint64_t p = uint64_t(x) * 0x0101010101010101ull;\n\
+    \  p -= 0x8040201008040201ull;\n  p = ~p & 0x8080808080808080ull;\n  p = (p >>\
+    \ 7) * 0x0101010101010101ull;\n  p >>= 56;\n  return p;\n}\n// 00101100 -mask_mssb->\
+    \ 00100000 -to_index-> 5\ninline constexpr unsigned mssb8(uint8_t x) {\n  assert(x\
+    \ != 0);\n  return log2p1(x) - 1;\n}\n// 00101100 -mask_lssb-> 00000100 -to_index->\
+    \ 2\ninline constexpr unsigned lssb8(uint8_t x) {\n  assert(x != 0);\n  return\
+    \ popcnt_e8((x & -x) - 1);\n}\n// Count leading 0s. 00001011... -> 4\ninline constexpr\
+    \ unsigned clz(uint64_t x) {\n  if (x == 0)\n    return 64;\n  auto i = mssb8(summary(x));\n\
+    \  auto j = mssb8(bextr(x, 8 * i, 8));\n  return 63 - (8 * i + j);\n}\ninline\
+    \ constexpr unsigned clz8(uint8_t x) {\n  return x == 0 ? 8 : 7 - mssb8(x);\n\
+    }\ninline constexpr uint64_t bit_reverse(uint64_t x) {\n  x = ((x & 0x00000000FFFFFFFF)\
+    \ << 32) | ((x & 0xFFFFFFFF00000000) >> 32);\n  x = ((x & 0x0000FFFF0000FFFF)\
+    \ << 16) | ((x & 0xFFFF0000FFFF0000) >> 16);\n  x = ((x & 0x00FF00FF00FF00FF)\
+    \ << 8) | ((x & 0xFF00FF00FF00FF00) >> 8);\n  x = ((x & 0x0F0F0F0F0F0F0F0F) <<\
+    \ 4) | ((x & 0xF0F0F0F0F0F0F0F0) >> 4);\n  x = ((x & 0x3333333333333333) << 2)\
+    \ | ((x & 0xCCCCCCCCCCCCCCCC) >> 2);\n  x = ((x & 0x5555555555555555) << 1) |\
+    \ ((x & 0xAAAAAAAAAAAAAAAA) >> 1);\n  return x;\n}\n\n} // namespace bm\n"
+  code: "#pragma once\n#include <cstdint>\n#include <cassert>\n\nnamespace bm {\n\n\
+    inline constexpr uint64_t popcnt_e8(uint64_t x) {\n  x = (x & 0x5555555555555555)\
+    \ + ((x>>1) & 0x5555555555555555);\n  x = (x & 0x3333333333333333) + ((x>>2) &\
+    \ 0x3333333333333333);\n  x = (x & 0x0F0F0F0F0F0F0F0F) + ((x>>4) & 0x0F0F0F0F0F0F0F0F);\n\
+    \  return x;\n}\n// Count 1s\ninline constexpr unsigned popcnt(uint64_t x) {\n\
+    \  return (popcnt_e8(x) * 0x0101010101010101) >> 56;\n}\n// Count trailing 0s.\
+    \ s.t. *11011000 -> 3\ninline constexpr unsigned ctz(uint64_t x) {\n  return popcnt((x\
+    \ & (-x)) - 1);\n}\ninline constexpr unsigned ctz8(uint8_t x) {\n  return x ==\
+    \ 0 ? 8 : popcnt_e8((x & (-x)) - 1);\n}\n// [00..0](8bit) -> 0, [**..*](not only\
+    \ 0) -> 1\ninline constexpr uint8_t summary(uint64_t x) {\n  constexpr uint64_t\
+    \ hmask = 0x8080808080808080ull;\n  constexpr uint64_t lmask = 0x7F7F7F7F7F7F7F7Full;\n\
+    \  auto a = x & hmask;\n  auto b = x & lmask;\n  b = hmask - b;\n  b = ~b;\n \
+    \ auto c = (a | b) & hmask;\n  c *= 0x0002040810204081ull;\n  return uint8_t(c\
+    \ >> 56);\n}\n// Extract target area of bits\ninline constexpr uint64_t bextr(uint64_t\
+    \ x, unsigned start, unsigned len) {\n  uint64_t mask = len < 64 ? (1ull<<len)-1\
+    \ : 0xFFFFFFFFFFFFFFFFull;\n  return (x >> start) & mask;\n}\n// 00101101 -> 00111111\
+    \ -count_1s-> 6\ninline constexpr unsigned log2p1(uint8_t x) {\n  if (x & 0x80)\n\
+    \    return 8;\n  uint64_t p = uint64_t(x) * 0x0101010101010101ull;\n  p -= 0x8040201008040201ull;\n\
+    \  p = ~p & 0x8080808080808080ull;\n  p = (p >> 7) * 0x0101010101010101ull;\n\
+    \  p >>= 56;\n  return p;\n}\n// 00101100 -mask_mssb-> 00100000 -to_index-> 5\n\
+    inline constexpr unsigned mssb8(uint8_t x) {\n  assert(x != 0);\n  return log2p1(x)\
+    \ - 1;\n}\n// 00101100 -mask_lssb-> 00000100 -to_index-> 2\ninline constexpr unsigned\
+    \ lssb8(uint8_t x) {\n  assert(x != 0);\n  return popcnt_e8((x & -x) - 1);\n}\n\
+    // Count leading 0s. 00001011... -> 4\ninline constexpr unsigned clz(uint64_t\
+    \ x) {\n  if (x == 0)\n    return 64;\n  auto i = mssb8(summary(x));\n  auto j\
+    \ = mssb8(bextr(x, 8 * i, 8));\n  return 63 - (8 * i + j);\n}\ninline constexpr\
+    \ unsigned clz8(uint8_t x) {\n  return x == 0 ? 8 : 7 - mssb8(x);\n}\ninline constexpr\
+    \ uint64_t bit_reverse(uint64_t x) {\n  x = ((x & 0x00000000FFFFFFFF) << 32) |\
+    \ ((x & 0xFFFFFFFF00000000) >> 32);\n  x = ((x & 0x0000FFFF0000FFFF) << 16) |\
+    \ ((x & 0xFFFF0000FFFF0000) >> 16);\n  x = ((x & 0x00FF00FF00FF00FF) << 8) | ((x\
+    \ & 0xFF00FF00FF00FF00) >> 8);\n  x = ((x & 0x0F0F0F0F0F0F0F0F) << 4) | ((x &\
+    \ 0xF0F0F0F0F0F0F0F0) >> 4);\n  x = ((x & 0x3333333333333333) << 2) | ((x & 0xCCCCCCCCCCCCCCCC)\
+    \ >> 2);\n  x = ((x & 0x5555555555555555) << 1) | ((x & 0xAAAAAAAAAAAAAAAA) >>\
+    \ 1);\n  return x;\n}\n\n} // namespace bm\n"
+  dependsOn: []
+  isVerificationFile: false
+  path: include/mtl/bit_manip.hpp
+  requiredBy:
+  - include/mtl/modular.hpp
+  - include/mtl/disjoint_sparse_table.hpp
+  - include/mtl/fps.hpp
+  - include/mtl/sparse_table.hpp
+  - include/mtl/li_chao_tree.hpp
+  - include/mtl/fenwick_tree.hpp
+  - include/mtl/xft.hpp
+  - include/mtl/yft.hpp
+  - include/mtl/segment_tree_2d.hpp
+  - include/mtl/skewbinary_list.hpp
+  - include/mtl/integer_set.hpp
+  - include/mtl/dual_sparse_table.hpp
+  - include/mtl/fps/pow.hpp
+  - include/mtl/fps/exp.hpp
+  - include/mtl/bitmap.hpp
+  - include/mtl/ordinal_range_search.hpp
+  - include/mtl/convolution.hpp
+  - include/mtl/dual_segment_tree.hpp
+  - include/mtl/succinct/binary_set.hpp
+  - include/mtl/succinct/wavelet_tree.hpp
+  - include/mtl/succinct/wavelet_matrix.hpp
+  - include/mtl/succinct/bit_vector.hpp
+  - include/mtl/succinct/select.hpp
+  - include/mtl/succinct/rrr.hpp
+  - include/mtl/ntt.hpp
+  - include/mtl/segment_tree.hpp
+  - include/mtl/lazy_segment_tree.hpp
+  - include/mtl/skiplist.hpp
+  - include/mtl/binary_trie.hpp
+  - include/mtl/sparse_fps.hpp
+  - include/mtl/dual_disjoint_sparse_table.hpp
+  - test/abc116-c-multiple_sequences-dirichlet-optimized.cpp
+  - test/yosupo/test_binary_trie.cpp
+  - test/abc116-c-multiple_sequences-dirichlet.cpp
+  timestamp: '2024-07-08 03:47:08+09:00'
+  verificationStatus: LIBRARY_SOME_WA
+  verifiedWith:
+  - test/aoj/aoj-range_update_query.test.cpp
+  - test/aoj/aoj-do_use_segment_tree-binary_tree.test.cpp
+  - test/aoj/aoj-the_maximum_number_of_customers.test.cpp
+  - test/yosupo/range_affine_range_sum-splay_tree.test.cpp
+  - test/yosupo/dynamic_tree_vertex_set_path_composite.test.cpp
+  - test/yosupo/static_range_inversions_query-mo.test.cpp
+  - test/yosupo/sqrt_mod.test.cpp
+  - test/yosupo/point_add_range_sum.test.cpp
+  - test/yosupo/vertex_add_path_sum.test.cpp
+  - test/yosupo/range_affine_range_sum.test.cpp
+  - test/yosupo/yosupo-line_add_get_min.test.cpp
+  - test/yosupo/static_rectangle_add_rectangle_sum.test.cpp
+  - test/yosupo/point_set_range_composite.test.cpp
+  - test/yosupo/associative_array-yft.test.cpp
+  - test/yosupo/predecessor_problem-yft.test.cpp
+  - test/yosupo/set_xor_min.test.cpp
+  - test/yosupo/convolution.test.cpp
+  - test/yosupo/yosupo-point_add_rectangle_sum-wm.test.cpp
+  - test/yosupo/polynomial/log_of_formal_power_series_sparse.test.cpp
+  - test/yosupo/polynomial/inv_of_formal_power_series.test.cpp
+  - test/yosupo/polynomial/pow_of_formal_power_series_sparse.test.cpp
+  - test/yosupo/polynomial/exp_of_formal_power_series.test.cpp
+  - test/yosupo/polynomial/sqrt_of_formal_power_series.test.cpp
+  - test/yosupo/polynomial/inv_of_formal_power_series_sparse.test.cpp
+  - test/yosupo/polynomial/pow_of_formal_power_series.test.cpp
+  - test/yosupo/polynomial/exp_of_formal_power_series_sparse.test.cpp
+  - test/yosupo/polynomial/sqrt_of_formal_power_series_sparse.test.cpp
+  - test/yosupo/polynomial/log_of_formal_power_series.test.cpp
+  - test/yosupo/static_rmq.test.cpp
+  - test/yosupo/yosupo-range_affine_point_get.test.cpp
+  - test/yosupo/convolution_large.test.cpp
+  - test/yosupo/matrix/inverse_matrix.test.cpp
+  - test/yosupo/matrix/matrix_product.test.cpp
+  - test/yosupo/matrix/system_of_linear_equations.test.cpp
+  - test/yosupo/matrix/determinant_of_matrix.test.cpp
+  - test/yosupo/static_range_inversions_query-mo_rollback.test.cpp
+  - test/yosupo/rectangle_sum.test.cpp
+  - test/yosupo/dynamic_sequence_range_affine_range_sum.test.cpp
+  - test/yosupo/vertex_add_subtree_sum.test.cpp
+  - test/yosupo/static_range_frequency.test.cpp
+  - test/yosupo/convolution_garner.test.cpp
+  - test/yosupo/static_range_sum.test.cpp
+  - test/yosupo/vertex_set_path_composite.test.cpp
+  - test/yosupo/yosupo-segment_add_get_min.test.cpp
+  - test/succinct/range_kth_smallest.test.cpp
+  - test/yuki/yuki-no945_ykc_manju.test.cpp
+documentation_of: include/mtl/bit_manip.hpp
+layout: document
+redirect_from:
+- /library/include/mtl/bit_manip.hpp
+- /library/include/mtl/bit_manip.hpp.html
+title: include/mtl/bit_manip.hpp
+---
