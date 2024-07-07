@@ -49,7 +49,7 @@ int main() {
             auto rq = [&](int l, int r) { 
                 return path_sum.reverse_query(l, r); 
             };
-            auto ret = T.query<Composite>(u,v,lq,rq).eval(x);
+            auto ret = T.query(u,v,lq,rq).eval(x);
             cout << ret << endl;
         }
     }

@@ -1,9 +1,12 @@
 #pragma once
 #if __cplusplus >= 202002L
-#define CPL_CPP20
+#ifndef MTL_CPP20
+#define MTL_CPP20
+#endif
 #include <compare>
 #endif
 #include <numeric>
+#include <cmath>
 #include <cassert>
 
 template<typename I>
@@ -19,11 +22,12 @@ struct FractionBase {
     }
   }
   FractionBase(I _u = 0) : FractionBase(_u, 1) {}
-  FractionBase& reduct() {
+  FractionBase reducted() const {
     int g = std::gcd(u,v);
-    u /= g;
-    v /= g;
-    return *this;
+    return {u/g, v/g};
+  }
+  FractionBase& reduct() {
+    return *this = reducted();
   }
   template<typename T>
   inline T get() const {
@@ -32,76 +36,79 @@ struct FractionBase {
   
 };
 
-struct FractionOrdering : public FractionBase<int> {
-  FractionOrdering(int _u, int _v) : FractionBase<int>(_u,_v) {}
-  FractionOrdering(int u = 0) : FractionOrdering(u, 1) {}
+struct FractionOrdering : public FractionBase<long long int> {
+  FractionOrdering(long long int _u, long long int _v) : 
+    FractionBase<long long int>((_v >= 0 ? _u : -_u), std::abs(_v)) {}
+  FractionOrdering(long long int u = 0) : FractionOrdering(u, 1) {}
 
   inline bool operator==(const FractionOrdering& rhs) const {
-    return (long long int) u * rhs.v == (long long int) v * rhs.u;
+    return u * rhs.v == v * rhs.u;
   }
-#ifdef CPL_CPP20
-  auto operator<=>(const FractionOrdering&) const {
-    auto lv = (long long int) u * rhs.v;
-    auto rv = (long long int) v * rhs.u;
-    if (lv != rv) {
-      return lv <=> rv;
-    } else {
-      return std::string_ordering::equal;
-    }
+#ifdef MTL_CPP20
+  auto operator<=>(const FractionOrdering& rhs) const -> std::strong_ordering {
+    auto lv = u * rhs.v;
+    auto rv = v * rhs.u;
+    return lv <=> rv;
+  }
+  auto operator<=>(long long int rhs) const -> std::strong_ordering {
+    return u <=> v * rhs;
+  }
+  friend auto operator==(long long int lhs, const FractionOrdering& rhs) -> std::strong_ordering {
+    return lhs * rhs.v <=> rhs.u;
   }
 #else
   inline bool operator!=(const FractionOrdering& rhs) const {
-    return (long long int) u * rhs.v != (long long int) v * rhs.u;
+    return u * rhs.v != v * rhs.u;
   }
   inline bool operator<(const FractionOrdering& rhs) const {
-    return (long long int) u * rhs.v < (long long int) v * rhs.u;
+    return u * rhs.v < v * rhs.u;
   }
   inline bool operator<=(const FractionOrdering& rhs) const {
-    return (long long int) u * rhs.v <= (long long int) v * rhs.u;
+    return u * rhs.v <= v * rhs.u;
   }
   inline bool operator>(const FractionOrdering& rhs) const {
-    return (long long int) u * rhs.v > (long long int) v * rhs.u;
+    return u * rhs.v > v * rhs.u;
   }
   inline bool operator>=(const FractionOrdering& rhs) const {
-    return (long long int) u * rhs.v >= (long long int) v * rhs.u;
+    return u * rhs.v >= v * rhs.u;
   }
-#endif
-  inline bool operator==(int rhs) const {
-    return u == (long long int) v * rhs;
+  inline bool operator==(long long int rhs) const {
+    return u == v * rhs;
   }
-  inline bool operator!=(int rhs) const {
-    return u != (long long int) v * rhs;
+  inline bool operator!=(long long int rhs) const {
+    return u != v * rhs;
   }
-  inline bool operator<(int rhs) const {
-    return u < (long long int) v * rhs;
+  inline bool operator<(long long int rhs) const {
+    return u < v * rhs;
   }
-  inline bool operator<=(int rhs) const {
-    return u <= (long long int) v * rhs;
+  inline bool operator<=(long long int rhs) const {
+    return u <= v * rhs;
   }
-  inline bool operator>(int rhs) const {
-    return u > (long long int) v * rhs;
+  inline bool operator>(long long int rhs) const {
+    return u > v * rhs;
   }
-  inline bool operator>=(int rhs) const {
-    return u >= (long long int) v * rhs;
+  inline bool operator>=(long long int rhs) const {
+    return u >= v * rhs;
   }
-  inline friend bool operator==(int lhs, const FractionOrdering& rhs) {
+  inline friend bool operator==(long long int lhs, const FractionOrdering& rhs) {
     return rhs == lhs;
   }
-  inline friend bool operator!=(int lhs, const FractionOrdering& rhs) {
+  inline friend bool operator!=(long long int lhs, const FractionOrdering& rhs) {
     return rhs != lhs;
   }
-  inline friend bool operator<(int lhs, const FractionOrdering& rhs) {
+  inline friend bool operator<(long long int lhs, const FractionOrdering& rhs) {
     return rhs > lhs;
   }
-  inline friend bool operator<=(int lhs, const FractionOrdering& rhs) {
+  inline friend bool operator<=(long long int lhs, const FractionOrdering& rhs) {
     return rhs >= lhs;
   }
-  inline friend bool operator>(int lhs, const FractionOrdering& rhs) {
+  inline friend bool operator>(long long int lhs, const FractionOrdering& rhs) {
     return rhs < lhs;
   }
-  inline friend bool operator>=(int lhs, const FractionOrdering& rhs) {
+  inline friend bool operator>=(long long int lhs, const FractionOrdering& rhs) {
     return rhs <= lhs;
   }
+#endif
 
 };
 
@@ -111,9 +118,10 @@ struct Fraction : public FractionBase<long long> {
   Fraction(const FractionOrdering& fo) : Fraction(fo.u,fo.v) {}
 
   Fraction& reduct() {
-    FractionBase<long long>::reduct();
+    FractionBase::reduct();
     return *this;
   }
+
   Fraction& operator+=(const Fraction& r) {
     auto g = std::gcd(v, r.v);
     auto rvbg = r.v / g;
@@ -196,6 +204,20 @@ struct Fraction : public FractionBase<long long> {
   friend Fraction operator/(long long x, const Fraction& r) {
     return x * r.inv();
   }
+
+  FractionOrdering to_cmp() const {
+    return FractionOrdering(u,v);
+  }
+
+  bool operator==(const Fraction& rhs) const {
+    return u * rhs.v == v * rhs.u;
+  }
+
+#ifdef MTL_CPP20
+  auto operator<=>(const Fraction& rhs) const -> decltype(to_cmp() <=> rhs.to_cmp()) {
+    return to_cmp() <=> rhs.to_cmp();
+  }
+#endif
 
 };
 

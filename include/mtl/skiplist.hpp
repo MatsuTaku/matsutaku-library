@@ -75,6 +75,14 @@ class Skiplist {
       rnd_gen(std::random_device()()),
       dist(0, (1ull<<kMaxHeight)-1) {}
 
+  template<class InputIt>
+  Skiplist(InputIt first, InputIt last) : Skiplist() {
+    // TODO: Optimize
+    // Howto: Handle vector that end pointers for each height.
+    for (auto it = first; it != last; it++)
+      insert_at(size(), *it);
+  }
+
   size_t size() const {return size_;}
   bool empty() const {return size() == 0;}
 
