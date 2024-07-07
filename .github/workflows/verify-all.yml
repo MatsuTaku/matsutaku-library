@@ -1,13 +1,20 @@
-name: verify-test
+name: verify-all
 
-on: pull_request
+on: 
+  workflow_dispatch:
+  push:
+    branches: main
 
 jobs:
-  verify:
+  ctest:
+    uses: ./.github/workflows/ctest.yml
+
+  oj-verify-all:
+    needs: ctest
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -74,4 +81,4 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
         GH_PAT: ${{ secrets.GH_PAT }}
-      run: oj-verify run
+      run: oj-verify all
