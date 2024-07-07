@@ -8,23 +8,22 @@ using ll = long long;
 constexpr ll MOD = 998244353;
 using mint = Modular<MOD>;
 
-struct SumMonoid {
+struct Sum {
   mint a=0;
   int sz=0;
-  SumMonoid operator*(SumMonoid r) const {
+  Sum operator*(const Sum& r) const {
     return {a+r.a, sz+r.sz};
   }
-  SumMonoid& operator*=(SumMonoid r) {return *this = *this * r;}
 };
 
-struct FnMonoid {
+struct Affine {
   mint b=1, c=0;
-  FnMonoid& operator*=(FnMonoid r) {
+  Affine& operator*=(const Affine& r) {
     b *= r.b;
     c = c*r.b + r.c;
     return *this;
   }
-  SumMonoid act(SumMonoid a) const {
+  Sum act(const Sum& a) const {
     return {b*a.a + c*a.sz, a.sz};
   }
 };
@@ -33,12 +32,12 @@ int main() {
   cin.tie(nullptr); ios::sync_with_stdio(false);
 
   int N,Q; cin>>N>>Q;
-  vector<SumMonoid> A(N); 
+  vector<Sum> A(N); 
   for (auto& a : A) {
     cin>>a.a;
     a.sz = 1;
   }
-  SplayTreeList<SumMonoid, FnMonoid> rsq(A.begin(), A.end());
+  SplayTreeList<Sum, Affine> rsq(A.begin(), A.end());
 
   for (int q = 0; q < Q; q++) {
     int t; cin>>t;
