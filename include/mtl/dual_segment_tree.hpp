@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <vector>
 #include <algorithm>
+#include <stack>
 #include <cassert>
 #if __cpp_concepts >= 202002L
 #include <concepts>
@@ -49,9 +50,7 @@ class DualSegmentTree {
   void update(size_t l, size_t r, const M& e) {
     assert(l <= r and r <= size_);
     if (l == r) return;
-    _set_ids(l, r);
-    for (int i = ids_.size()-1; i >= 0; --i) 
-      _propagate(ids_[i]);
+    _lazy_propagation(l, r);
 
     for (size_t _l=l+size_, _r=r+size_, s=1; _l<_r; _l>>=1, _r>>=1, s*=2) {
       if (_l&1) {
@@ -68,11 +67,15 @@ class DualSegmentTree {
     update(i, i+1, e);
   }
 
+  void set(size_t index, const M& e) {
+    assert(index < size_);
+    _lazy_propagation(index, index+1);
+    tree_[size_ + index] = e;
+  }
+
   M get(size_t index) {
     assert(index < size_);
-    _set_ids(index, index+1);
-    for (int i = ids_.size()-1; i >= 0; --i) 
-      _propagate(ids_[i]);
+    _lazy_propagation(index, index+1);
     return tree_[size_ + index];
   }
 
@@ -99,6 +102,111 @@ class DualSegmentTree {
     tree_[id*2+1] *= e;
   }
 
+  void _lazy_propagation(size_t l, size_t r) {
+    if (l == r) return;
+    _set_ids(l, r);
+    for (auto it = ids_.rbegin(); it != ids_.rend(); ++it)
+      _propagate(*it);
+  }
+
+ public:
+  template<class F>
+  size_t max_right(size_t begin, size_t end, F f) {
+    if (begin == end) return end;
+    M p;
+    std::stack<std::pair<size_t, M>> rps;
+    auto l = size_ + begin;
+    auto r = size_ + end;
+    _lazy_propagation(begin, end);
+    auto access = [&](size_t i) {
+      _propagate(i);
+      return tree_[i].first;
+    };
+    while (l < r and f(p * access(l))) {
+      if (l&1) p = p * tree_[l++].first;
+      if (r&1) {
+        rps.emplace(r, access(r-1));
+        r--;
+      }
+      l>>=1; r>>=1;
+    }
+    if (l >= r) {
+      while (rps.size()) {
+        auto& [r, rp] = rps.top();
+        if (!f(p * rp)) {
+          l = r-1;
+          break;
+        }
+        p = p * rp;
+        rps.pop();
+      }
+      if (rps.empty()) return end;
+    }
+    while (l < size_) {
+      assert(!f(p * access(l)));
+      l <<= 1;
+      auto pl = access(l);
+      if (f(p * pl)) {
+        p = p * pl;
+        l++;
+      }
+    }
+    return l - size_;
+  }
+  template<bool (*F)(M)>
+  size_t max_right(size_t begin, size_t end) {
+    return max_right(begin, end, [](M x) { return F(x); });
+  }
+
+  template<class F>
+  size_t min_left(size_t begin, size_t end, F f) {
+    if (end == begin) return begin;
+    M p;
+    std::stack<std::pair<size_t, M>> lps;
+    auto l = size_ + begin;
+    auto r = size_ + end;
+    _lazy_propagation(begin, end);
+    auto access = [&](size_t i) {
+      _propagate(i);
+      return tree_[i].first;
+    };
+    while (l < r and f(access(r-1) * p)) {
+      if (l&1) {
+        lps.emplace(l, access(l));
+        l++;
+      }
+      if (r&1) p = tree_[r-1].first * p;
+      l>>=1; r>>=1;
+    }
+    if (l >= r) {
+      while (lps.size()) {
+        auto& [l, lp] = lps.top();
+        if (!f(lp * p)) {
+          r = l+1;
+          break;
+        }
+        p = lp * p;
+        lps.pop();
+      }
+      if (lps.empty()) return begin;
+    }
+    while (r <= size_) {
+      assert(!f(access(r-1) * p));
+      r <<= 1;
+      auto pr = access(r-1);
+      if (f(pr * p)) {
+        p = pr * p;
+        --r;
+      }
+    }
+    return r - size_;
+  }
+  template<bool (*F)(M)>
+  size_t min_left(size_t begin, size_t end) {
+    return min_left(begin, [](M x) { return F(x); });
+  }
+
+ private:
   template<bool> struct iterator_base;
   template<bool> friend struct iterator_base;
   template<bool Const>
