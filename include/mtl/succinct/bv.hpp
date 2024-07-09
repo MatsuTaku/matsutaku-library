@@ -1,4 +1,5 @@
 #pragma once
+#include "select.hpp"
 #include <vector>
 #include <cstddef>
 #include <cstdint>
@@ -32,7 +33,7 @@ struct BV {
   std::vector<uint64_t> _r, _s, _zs;
   
   BV() = default;
-  BV(const bitvec_type* bm) {
+  explicit BV(const bitvec_type* bm) {
     build(bm);
   }
   void set_ptr(const bitvec_type* bm) {
@@ -74,7 +75,7 @@ struct BV {
     auto b = _r[l*2];
     return B ? b : l * L - b;
   }
-  static size_t s_off(size_t s) {
+  static constexpr size_t s_off(size_t s) {
     return (7-s) * 9;
   }
   template<bool B>
@@ -90,6 +91,7 @@ struct BV {
     auto s = i % L / S;
     auto q = i / S;
     auto r = i % S;
+    assert(bm_ != nullptr);
     auto w = bm_->get_word(q) & mask(r);
     return get_l<1>(l) + 
            get_s<1>(l, s) + 
@@ -108,8 +110,7 @@ struct BV {
 
   static struct l_block_cap_mask {
     uint64_t mask;
-    constexpr l_block_cap_mask() {
-      mask = 0;
+    constexpr l_block_cap_mask() : mask(0) {
       for (unsigned i = 0; i < S_PER_L; i++) {
         uint64_t cap = i * S;
         mask |= cap << s_off(i);
@@ -181,6 +182,3 @@ struct BV {
 
 template<class BitVec, unsigned WordSize>
 typename BV<BitVec, WordSize>::l_block_cap_mask BV<BitVec, WordSize>::l_block_cap;
-
-template<class T>
-struct RankSelectTraits : std::false_type {};
