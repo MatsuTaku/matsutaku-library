@@ -9,13 +9,22 @@
 #include <cstdint>
 #include <bit>
 
+#ifndef MTL_ARRAY_SET_CONSTEXPR
+#if __cplusplus >= 201703L
+#define MTL_ARRAY_SET_CONSTEXPR constexpr
+#else
+#define MTL_ARRAY_SET_CONSTEXPR
+#endif
+#endif
+
 namespace rmq {
 constexpr int table_width = 8;
 constexpr size_t table_size = 1u << table_width;
 struct make_rmq_table {
   std::array<uint8_t, table_size> idx;
   std::array<int8_t, table_size> val;
-  constexpr make_rmq_table() : idx(), val() {
+  MTL_ARRAY_SET_CONSTEXPR
+  make_rmq_table() : idx(), val() {
     for (unsigned int mask = 0; mask < table_size; mask++) {
       uint8_t argmin = 0;
       int8_t min_s = table_width+1, sum = 0;
@@ -33,7 +42,8 @@ struct make_rmq_table {
   }
 };
 } // namespace rmq
-constexpr rmq::make_rmq_table rmq_tb;
+MTL_ARRAY_SET_CONSTEXPR
+rmq::make_rmq_table rmq_tb;
 
 #ifndef MTL_PAIR_CONSTEXPR
 #if __cplusplus >= 201402L
