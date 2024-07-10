@@ -5,6 +5,7 @@
 #include <vector>
 #include <array>
 #include <stack>
+#include <tuple>
 #include <cstdint>
 #include <bit>
 
@@ -34,15 +35,26 @@ struct make_rmq_table {
 } // namespace rmq
 constexpr rmq::make_rmq_table rmq_tb;
 
+#ifndef MTL_PAIR_CONSTEXPR
+#if __cplusplus >= 201402L
+#define MTL_PAIR_CONSTEXPR constexpr
+#else
+#define MTL_PAIR_CONSTEXPR
+#endif
+#endif
+
 namespace rmq {
 // constexpr int block_width = 8;
 constexpr int block_width = 64;
+
+MTL_PAIR_CONSTEXPR
 std::pair<unsigned, int> rmq64(uint64_t mask) {
-  auto p_e8 = bm::popcnt_e8(mask) * 2;
-  auto cp_e8 = p_e8 * 0x0101010101010100ull;
-  constexpr auto cm_e8 = 8ull * 0x0706050403020100ull;
-  constexpr int offset = 64;
-  auto cc_e8 = offset * 0x0101010101010101ull + cp_e8 - cm_e8;
+  // Calc E[i-1] as ( rank1_B(i) * 2 - i ) { forall i| i % 8 = 0 }
+  auto pos_e8 = bm::popcnt_e8(mask) * 2;
+  auto cpos_e8 = pos_e8 * 0x0101010101010100ull;
+  constexpr auto cneg_e8 = 8ull * 0x0706050403020100ull;
+  constexpr int offset = 64; // to keep values non-negative
+  auto e_e8 = offset * 0x0101010101010101ull + cpos_e8 - cneg_e8;
 
   unsigned argmin = 0;
   int min_s = block_width+1;
@@ -50,9 +62,9 @@ std::pair<unsigned, int> rmq64(uint64_t mask) {
   constexpr uint64_t table_mask = (1ull << table_width) - 1;
   for (unsigned bi = 0; bi < block_width; bi += table_width) {
     auto submask = (mask >> bi) & table_mask;
-    auto bsum = (int)((cc_e8 >> bi) & table_mask) - offset;
-    // assert(sum == bsum);
-    auto s = rmq_tb.val[submask] + bsum;
+    auto estart = (int)((e_e8 >> bi) & table_mask) - offset;
+    // assert(sum == estart);
+    auto s = rmq_tb.val[submask] + estart;
     if (s < min_s) {
       min_s = s;
       argmin = rmq_tb.idx[submask] + bi;
@@ -68,39 +80,71 @@ template<class T>
 struct DecaltTree {
   static constexpr size_t null_idx = -1;
   struct Node {
-    size_t l, r, p;
+    size_t p, l, r;
   };
   size_t root_;
   std::vector<Node> nodes_;
-  std::vector<T> a_;
 
   DecaltTree() : root_(null_idx) {}
-  void push_back(const T& val) {
-    a_.push_back(val);
-    if (nodes_.empty()) {
-      nodes_.push_back({null_idx, null_idx, null_idx});
-      root_ = 0;
-      return;
-    }
-    auto u = nodes_.size()-1;
-    auto v = nodes_.size();
-    while (u != null_idx and a_[u] > a_[v]) {
-      u = nodes_[u].p;
-    }
-    if (u == null_idx) {
-      nodes_.push_back({root_, null_idx, null_idx});
-      nodes_[root_].p = v;
-      root_ = v;
-    } else {
-      auto ur = nodes_[u].r;
-      nodes_.push_back({ur, null_idx, u});
-      if (ur != null_idx)
-        nodes_[ur].p = v;
-      nodes_[u].r = v;
+  template<class It>
+  explicit DecaltTree(It begin, It end) : DecaltTree() {
+    nodes_.reserve(std::distance(begin, end));
+    std::vector<T> a;
+    for (auto it = begin; it != end; ++it) {
+      auto val = *it;
+      a.push_back(val);
+      if (nodes_.empty()) {
+        nodes_.push_back({null_idx, null_idx, null_idx});
+        root_ = 0;
+        continue;
+      }
+      auto u = nodes_.size()-1;
+      auto v = nodes_.size();
+      while (u != null_idx and a[u] > a[v]) {
+        u = nodes_[u].p;
+      }
+      if (u == null_idx) {
+        nodes_.push_back({null_idx, root_, null_idx});
+        nodes_[root_].p = v;
+        root_ = v;
+      } else {
+        auto ur = nodes_[u].r;
+        nodes_.push_back({u, ur, null_idx});
+        if (ur != null_idx)
+          nodes_[ur].p = v;
+        nodes_[u].r = v;
+      }
     }
   }
   size_t size() const {
     return nodes_.size();
+  }
+};
+
+template<class T, class InFn, class PostFn>
+void traverse_right_path_to_children(const DecaltTree<T>& tree, InFn in_fn, PostFn post_fn) {
+  std::stack<std::tuple<size_t, size_t, bool>> st; // (u, left_child, is_inorder)
+  st.emplace(DecaltTree<T>::null_idx, DecaltTree<T>::null_idx, false);
+  st.emplace(DecaltTree<T>::null_idx, tree.root_, true);
+  std::vector<size_t> c;
+  while (!st.empty()) {
+    auto [u,lc,in] = st.top(); st.pop();
+    if (in) {
+      c.clear();
+      auto v = lc;
+      while (v != DecaltTree<T>::null_idx) {
+        c.push_back(v);
+        v = tree.nodes_[v].r;
+      }
+      for (auto it = c.rbegin(); it != c.rend(); it++) {
+        auto v = *it;
+        st.emplace(v, DecaltTree<T>::null_idx, false);
+        st.emplace(v, tree.nodes_[v].l, true);
+      }
+      in_fn(u);
+    } else {
+      post_fn(u);
+    }
   }
 };
 
@@ -111,8 +155,8 @@ class LcaToRmq;
 
 template<class T, unsigned RecursionHeight = 3>
 class RmqToLca {
-  static constexpr size_t minimum_rmq_size = 1u<<4;
-  using st_index_type = uint32_t;
+  static constexpr size_t minimum_rmq_size = 1u<<3;
+  using st_index_type = size_t;
  private:
   size_t size_;
   min_SparseTable<std::pair<T, st_index_type>> st_;
@@ -130,11 +174,7 @@ class RmqToLca {
       }
       st_ = decltype(st_)(st_data.begin(), st_data.end());
     } else {
-      DecaltTree<T> tree;
-      for (auto it = begin; it != end; ++it) {
-        tree.push_back(*it);
-      }
-      lca_a_ = decltype(lca_a_)(tree);
+      lca_a_ = decltype(lca_a_)(DecaltTree<T>(begin, end));
     }
   }
   size_t rmq(size_t l, size_t r) const {
@@ -179,60 +219,78 @@ class RmqToLca<T, 0> {
 template<unsigned RecursionHeight>
 class LcaToRmq {
  private:
-  std::vector<size_t> d_;
-  std::vector<size_t> l_;
-  BitVector bv_;
+  // std::vector<size_t> d_;
+  // std::vector<size_t> l_;
+  BitVector b_;
   RmqToLca<size_t, RecursionHeight - 1> rmq_a_;
 
  public:
   LcaToRmq() = default;
   template<class U>
-  LcaToRmq(const DecaltTree<U>& decalt_tree) : d_(decalt_tree.size(), -1), l_(2*decalt_tree.size(), -1) {
-    std::vector<bool> de(2*decalt_tree.size());
+  LcaToRmq(const DecaltTree<U>& decalt_tree) 
+  // : d_(decalt_tree.size(), -1), l_(2*decalt_tree.size(), -1) 
+  {
+    // std::vector<bool> de(2*decalt_tree.size());
+    b_.resize(2*(decalt_tree.size()+1));
     // std::vector<size_t> f(decalt_tree.size(), -1);
     size_t t = 0;
-    std::stack<std::pair<size_t, bool>> st;
-    st.emplace(decalt_tree.root_, true);
-    st.emplace(decalt_tree.root_, false);
-    while (!st.empty()) {
-      auto [u, is_right] = st.top(); st.pop();
-      if (!is_right) {
-        d_[u] = t;
+    traverse_right_path_to_children(decalt_tree, 
+      [&](size_t u) {
+        // d_[u] = t;
         // e.push_back(h);
-        de[t] = 1;
+        b_[t] = 1;
         // l_[t] = -1; // dummy
-        auto cl = decalt_tree.nodes_[u].l, cr = decalt_tree.nodes_[u].r;
-        if (cr != DecaltTree<U>::null_idx) {
-          st.emplace(cr, true);
-          st.emplace(cr, false);
-        }
-        if (cl != DecaltTree<U>::null_idx) {
-          st.emplace(cl, true);
-          st.emplace(cl, false);
-        }
-      } else {
+        t++;
+      }, 
+      [&](size_t u) {
         // f[u] = t;
         // e.push_back(h-1);
-        de[t] = 0;
-        l_[t] = decalt_tree.nodes_[u].p;
-      }
-      t++;
-    }
+        b_[t] = 0;
+        // l_[t] = decalt_tree.nodes_[u].p;
+        t++;
+      });
+    // std::stack<std::pair<size_t, bool>> st;
+    // st.emplace(decalt_tree.root_, false);
+    // st.emplace(decalt_tree.root_, true);
+    // while (!st.empty()) {
+    //   auto [u, is_in] = st.top(); st.pop();
+    //   if (is_in) {
+    //     d_[u] = t;
+    //     // e.push_back(h);
+    //     de[t] = 1;
+    //     // l_[t] = -1; // dummy
+    //     auto cl = decalt_tree.nodes_[u].l, cr = decalt_tree.nodes_[u].r;
+    //     if (cr != DecaltTree<U>::null_idx) {
+    //       st.emplace(cr, false);
+    //       st.emplace(cr, true);
+    //     }
+    //     if (cl != DecaltTree<U>::null_idx) {
+    //       st.emplace(cl, false);
+    //       st.emplace(cl, true);
+    //     }
+    //   } else {
+    //     // f[u] = t;
+    //     // e.push_back(h-1);
+    //     de[t] = 0;
+    //     l_[t] = decalt_tree.nodes_[u].p;
+    //   }
+    //   t++;
+    // }
     
-    auto num_blocks = (de.size() + rmq::block_width - 1) / rmq::block_width;
-    bv_.resize(de.size());
+    auto num_blocks = (b_.size() + rmq::block_width - 1) / rmq::block_width;
+    // bv_.resize(de.size());
     std::vector<size_t> a(num_blocks);
     {
       size_t block_sum = 0;
       size_t ei = 0, bi = 0;
-      while (ei < de.size()) {
+      while (ei < b_.size()) {
         int esum = 0;
         uint64_t mask = 0;
         int ri = 0;
-        auto width = std::min(rmq::block_width, (int)(de.size()-ei));
+        auto width = std::min(rmq::block_width, (int)(b_.size()-ei));
         while (ri < width) {
-          bool bit = de[ei];
-          bv_[ei] = bit;
+          bool bit = b_[ei];
+          // bv_[ei] = bit;
           mask |= (uint64_t) bit << ri;
           esum += bit ? 1 : -1;
           ei++;
@@ -245,53 +303,50 @@ class LcaToRmq {
           ei += rem;
           ri = rmq::block_width;
         }
-        // for (int i = 0; i < rmq::block_width; i++) {
-        //   bool bit = ei < de.size() ? de[ei] : 1;
-        //   if (ei < de.size())
-        //     bv_[ei] = bit;
-        //   mask |= (uint64_t) bit << i;
-        //   esum += bit ? 1 : -1;
-        //   ei++;
-        // }
         // a[bi] = (long long) rmq_tb.val[mask] + block_sum;
         a[bi] = (long long) rmq::rmq64(mask).second + block_sum;
         block_sum += esum;
         bi++;
       }
     }
-    bv_.build();
+    b_.build();
     if (a.size() >= 3) {
       rmq_a_ = decltype(rmq_a_)(a.begin()+1, a.end()-1);
     }
   }
 
   size_t get_e(size_t i) const {
-    return bv_.rank1(i+1) * 2 - (i+1);
+    return b_.rank1(i+1) * 2 - (i+1);
   }
   
   size_t lca(size_t x, size_t y) const {
-    if (d_[x] == d_[y]) return x;
-    if (d_[x] > d_[y]) std::swap(x, y);
-    size_t i = d_[x] / rmq::block_width;
-    size_t j = d_[y] / rmq::block_width;
+    if (x == y) return x;
+    auto xx = b_.select0(x);
+    auto yy = b_.select0(y);
+    // if (d_[x] > d_[y]) std::swap(x, y);
+    if (xx > yy) std::swap(xx, yy);
+    // size_t i = d_[x] / rmq::block_width;
+    // size_t j = d_[y] / rmq::block_width;
+    size_t i = xx / rmq::block_width;
+    size_t j = yy / rmq::block_width;
     size_t m;
     size_t min_e;
     { // block i
-      auto r = std::min(d_[y]+1, (i+1)*rmq::block_width);
-      auto mask = bv_.bitmap().range_get(d_[x], r);
-      auto dist = r - d_[x];
+      auto r = std::min(yy+1, (i+1)*rmq::block_width);
+      auto mask = b_.bitmap().range_get(xx, r);
+      auto dist = r - xx;
       auto rem = rmq::block_width - dist;
       if (rem)
         mask |= ((1ull<<rem)-1) << dist;
       // auto idx = rmq_tb.idx[mask] + d_[x];
-      auto idx = rmq::rmq64(mask).first + d_[x];
+      auto idx = rmq::rmq64(mask).first + xx;
       auto e = get_e(idx);
       m = idx;
       min_e = e;
     }
     if (i+2 <= j) { // block i+1...j-1
       auto k = rmq_a_.rmq(i+1 - 1, j - 1) + 1; // -1 means ignoring i={0,num_block-1}
-      auto mask = bv_.bitmap().range_get(k*rmq::block_width, (k+1)*rmq::block_width);
+      auto mask = b_.bitmap().range_get(k*rmq::block_width, (k+1)*rmq::block_width);
       // auto idx = rmq_tb.idx[mask] + k*rmq::block_width;
       auto idx = rmq::rmq64(mask).first + k*rmq::block_width;
       auto e = get_e(idx);
@@ -302,8 +357,8 @@ class LcaToRmq {
     }
     if (i < j) { // block j
       auto l = j*rmq::block_width;
-      auto mask = bv_.bitmap().range_get(l, d_[y]+1);
-      auto dist = d_[y]+1 - l;
+      auto mask = b_.bitmap().range_get(l, yy+1);
+      auto dist = yy+1 - l;
       auto rem = rmq::block_width - dist;
       if (rem)
         mask |= ((1ull<<rem)-1) << dist;
@@ -315,7 +370,8 @@ class LcaToRmq {
         m = idx;
       }
     }
-    auto ret = m == d_[x] ? x : l_[m];
+    // auto ret = m == d_[x] ? x : l_[m];
+    auto ret = m == xx ? x : b_.rank0(m);
     // std::cerr<<"d[x] d[y] rmq_e(d[x],d[y]) "<<d_[x]<<' '<<d_[y]<<' '<<m<<std::endl;
     // std::cerr<<"x y lca_t(x,y) "<<x<<' '<<y<<' '<<ret<<std::endl;
     // std::cerr<<"E[d[x]] E[m] "<<get_e(d_[x])<<' '<<get_e(m)<<std::endl;
@@ -325,6 +381,24 @@ class LcaToRmq {
     //   assert(l_[m] != x);
     // }
     return ret;
+  }
+
+  static bool test_right_path_to_children_construction() {
+    std::vector<int> A{2,4,3,5,1,8,6,7,9};
+    std::vector<int> B{1,1,1,0,1,1,0,0,1,0,0,1,1,0,0,1,0,1,0,0};
+    DecaltTree<int> tree(A.begin(), A.end());
+    LcaToRmq ltr(tree);
+    bool ok = B.size()==ltr.b_.size();
+    for (size_t i = 0; i < B.size(); i++) {
+      ok &= B[i]==ltr.b_[i];
+    }
+    if (!ok) {
+      std::cerr<<B.size()<<' '<<ltr.b_.size()<<std::endl;
+      for (size_t i = 0; i < B.size(); i++) {
+        std::cerr<<B[i]<<' '<<ltr.b_[i]<<std::endl;
+      }
+    }
+    return ok;
   }
 };
 
