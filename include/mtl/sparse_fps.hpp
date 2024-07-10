@@ -205,7 +205,7 @@ class SparseFps : public std::vector<std::pair<size_t, Modular<Mod>>> {
     friend fps_type div_one(const fps_type& lhs, const SparseFps& rhs) {
         assert(lhs != fps_type());
         assert(!rhs.empty() and rhs[0].second == mint(1));
-        fps_type ret(ret.size() + rhs.deg() - 1);
+        fps_type ret(lhs.size() + rhs.deg() - 1);
         std::copy(lhs.begin(), lhs.end(), ret.begin());
         for (size_t i = 1; i < ret.size(); i++) {
             for (size_t j = 1; j < rhs.size(); j++) {
