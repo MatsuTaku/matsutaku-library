@@ -249,6 +249,7 @@ class LcaToRmq {
         // l_[t] = decalt_tree.nodes_[u].p;
         t++;
       });
+    // Construcr from normal decalt-tree
     // std::stack<std::pair<size_t, bool>> st;
     // st.emplace(decalt_tree.root_, false);
     // st.emplace(decalt_tree.root_, true);
@@ -277,40 +278,24 @@ class LcaToRmq {
     //   t++;
     // }
     
+    b_.build();
     auto num_blocks = (b_.size() + rmq::block_width - 1) / rmq::block_width;
-    // bv_.resize(de.size());
-    std::vector<size_t> a(num_blocks);
-    {
+    if (num_blocks >= 3) {
+      std::vector<size_t> a(num_blocks);
       size_t block_sum = 0;
       size_t ei = 0, bi = 0;
-      while (ei < b_.size()) {
-        int esum = 0;
-        uint64_t mask = 0;
-        int ri = 0;
+      while (ei + rmq::block_width < b_.size()) {
         auto width = std::min(rmq::block_width, (int)(b_.size()-ei));
-        while (ri < width) {
-          bool bit = b_[ei];
-          // bv_[ei] = bit;
-          mask |= (uint64_t) bit << ri;
-          esum += bit ? 1 : -1;
-          ei++;
-          ri++;
-        }
-        if (ri < rmq::block_width) {
-          auto rem = rmq::block_width - ri;
-          mask |= ((1ull<<rem)-1) << ri;
-          esum += rem;
-          ei += rem;
-          ri = rmq::block_width;
-        }
+        auto mask = b_.bitmap().range_get(ei, ei+width);
+        if (width < rmq::block_width)
+          mask |= ((1ull<<(rmq::block_width-width))-1) << width;
+        ei += rmq::block_width;
         // a[bi] = (long long) rmq_tb.val[mask] + block_sum;
         a[bi] = (long long) rmq::rmq64(mask).second + block_sum;
-        block_sum += esum;
+        block_sum += bm::popcnt(mask) * 2;
+        block_sum -= rmq::block_width;
         bi++;
       }
-    }
-    b_.build();
-    if (a.size() >= 3) {
       rmq_a_ = decltype(rmq_a_)(a.begin()+1, a.end()-1);
     }
   }
