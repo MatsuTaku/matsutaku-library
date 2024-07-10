@@ -35,4 +35,4 @@ public:
         size_t p = 63-bm::clz((r-1)^l);
         return op(tb_[p][l], tb_[p][r-1]);
     }
-}
+};

@@ -11,7 +11,7 @@ int main() {
         int j,a; cin>>j>>a;
         A[j] = a;
     }
-    Fps f(A.begin(), A.end());
+    Fps<> f(A.begin(), A.end());
     if (f.is_square()) {
         auto g = f.sqrt().inline_pre(n);
         for (int i = 0; i < n; i++)

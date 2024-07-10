@@ -11,7 +11,7 @@ int main() {
         int j,a; cin>>j>>a;
         A[j] = a;
     }
-    Fps f(A.begin(), A.end());
+    Fps<> f(A.begin(), A.end());
     auto g = f.exp_sparse();
     for (int i = 0; i < n; i++)
         cout << g[i] << ' ';

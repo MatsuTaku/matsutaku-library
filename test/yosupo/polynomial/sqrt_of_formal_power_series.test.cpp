@@ -8,7 +8,7 @@ int main() {
     int n; cin>>n;
     vector<int> A(n);
     for (int i = 0; i < n; i++) cin>>A[i];
-    Fps f(A.begin(), A.end());
+    Fps<> f(A.begin(), A.end());
     if (f.is_square()) {
         auto g = f.sqrt().inline_pre(n);
         for (int i = 0; i < n; i++)

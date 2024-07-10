@@ -87,7 +87,7 @@ template<typename I, typename F, typename C = std::less<>>
 auto fibonacci_search(I l, I r, F fn, const C& cmp = C()) 
   -> std::pair<typename std::remove_reference<I>::type,
                decltype(fn(l))> {
-  return FibonacciSearch(r - l, cmp)(l, r, fn);
+  return FibonacciSearch<C>(r - l, cmp)(l, r, fn);
 }
 template<typename I, typename F, typename C = std::less<>>
 auto trisect_int(I l, I r, F fn, const C& cmp = C())

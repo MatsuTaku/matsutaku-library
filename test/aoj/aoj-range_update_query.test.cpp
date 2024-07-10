@@ -21,7 +21,7 @@ struct OR {
 
 int main() {
     int n,q; cin>>n>>q;
-    vector init(n, (1u<<31)-1);
+    vector<int> init(n, (1u<<31)-1);
     DualSegmentTree<OR> dst(init.begin(), init.end());
     for (int i = 0; i < q; i++) {
         int t; cin>>t;
