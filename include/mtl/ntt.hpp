@@ -12,6 +12,14 @@ constexpr int ceil_pow2(unsigned long long x) {
 
 }
 
+#ifndef MTL_ARRAY_SET_CONSTEXPR
+#if __cplusplus >= 201703L
+#define MTL_ARRAY_SET_CONSTEXPR constexpr
+#else
+#define MTL_ARRAY_SET_CONSTEXPR
+#endif
+#endif
+
 namespace _ntt {
 
 template<int mod>
@@ -23,7 +31,8 @@ struct ntt_info {
   static constexpr int log_n() {
     return bm::ctz(mod-1);
   }
-  static constexpr std::array<Modular<mod>, log_n()> coeff(bool forward) {
+  static MTL_ARRAY_SET_CONSTEXPR
+  std::array<Modular<mod>, log_n()> coeff(bool forward) {
     mint r = mint(primitive_root()).pow((mod-1) >> log_n());
     std::array<mint, log_n()> coeff{};
     mint iw = forward ? r.inv() : r;
@@ -56,7 +65,7 @@ void _fft_impl(std::vector<Modular<mod>>& f) {
   if constexpr (!Forward and BitReverse)
     _iterative_bit_reverse(f);
   // Cooley-Tukey FFT
-  static constexpr auto coeff = info::coeff(Forward);
+  static MTL_ARRAY_SET_CONSTEXPR auto coeff = info::coeff(Forward);
   if constexpr (Forward) {
     for (int log_m = log_n-1; log_m >= 0; log_m -= 2) {
       int m = 1<<log_m;

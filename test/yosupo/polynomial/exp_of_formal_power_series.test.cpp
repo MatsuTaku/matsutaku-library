@@ -8,7 +8,7 @@ int main() {
     int n; cin>>n;
     vector<int> A(n);
     for (int i = 0; i < n; i++) cin>>A[i];
-    Fps f(A.begin(), A.end());
+    Fps<> f(A.begin(), A.end());
     auto g = f.exp_dense();
     for (int i = 0; i < n; i++)
         cout << g[i] << ' ';

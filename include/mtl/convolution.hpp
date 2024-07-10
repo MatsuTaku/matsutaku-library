@@ -182,8 +182,8 @@ std::vector<Modular<Mod>> convolution_large(const std::vector<Modular<Mod>>& f,
   int cs = ((n-1)>>l)+1;
   int ds = ((m-1)>>l)+1;
   using result_type = std::vector<Modular<Mod>>;
-  std::vector c(cs, result_type(2<<l));
-  std::vector d(ds, result_type(2<<l));
+  std::vector<result_type> c(cs, result_type(2<<l));
+  std::vector<result_type> d(ds, result_type(2<<l));
   size_t mask = (1<<l)-1;
   for (size_t i = 0; i < n; i++)
     c[i>>l][i&mask] = f[i];

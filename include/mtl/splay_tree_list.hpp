@@ -42,7 +42,7 @@ struct SplayTreeList : SplayTreeBase<SplayTreeListNode<M, O>> {
     SplayTreeList(InputIt first, InputIt last) : SplayTreeList() {
         if (first == last) return;
         using iterator_category = typename std::iterator_traits<InputIt>::iterator_category;
-        if constexpr (std::is_base_of_v<iterator_category, std::random_access_iterator_tag>) {
+        if constexpr (std::is_base_of<iterator_category, std::random_access_iterator_tag>::value) {
             root = _dfs_init(first, last);
         } else {
             auto it = first;
