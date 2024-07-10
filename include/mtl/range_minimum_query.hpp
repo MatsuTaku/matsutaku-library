@@ -130,6 +130,8 @@ struct DecaltTree {
     return nodes_.size();
   }
 };
+template<class T>
+constexpr size_t DecaltTree<T>::null_idx;
 
 template<class T, class InFn, class PostFn>
 void traverse_right_path_to_children(const DecaltTree<T>& tree, InFn in_fn, PostFn post_fn) {
@@ -138,7 +140,11 @@ void traverse_right_path_to_children(const DecaltTree<T>& tree, InFn in_fn, Post
   st.emplace(DecaltTree<T>::null_idx, tree.root_, true);
   std::vector<size_t> c;
   while (!st.empty()) {
-    auto [u,lc,in] = st.top(); st.pop();
+    // auto [u,lc,in] = st.top(); 
+    auto u = std::get<0>(st.top());
+    auto lc = std::get<1>(st.top());
+    auto in = std::get<2>(st.top());
+    st.pop();
     if (in) {
       c.clear();
       auto v = lc;
