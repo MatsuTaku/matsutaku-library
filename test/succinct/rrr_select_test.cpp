@@ -1,4 +1,5 @@
 #define STANDALONE
+#define IGNORE
 #include "include/mtl/succinct/rrr.hpp"
 #include <bits/stdc++.h>
 

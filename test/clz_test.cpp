@@ -10,7 +10,7 @@ int main() {
     int cnt = 0;
     while (cnt < 64 and (x & (1ull<<(63-cnt))) == 0)
       cnt++;
-    auto val = clz(x);
+    auto val = bm::clz(x);
     if (cnt != val) {
       std::cerr<<"clz("<<(std::bitset<64>(x))<<") is "<<cnt
       <<". calculated: "<<val<<std::endl;
