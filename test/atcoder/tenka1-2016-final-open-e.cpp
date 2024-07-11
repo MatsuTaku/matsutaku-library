@@ -1,4 +1,5 @@
 #define PROBLEM "https://atcoder.jp/contests/tenka1-2016-final-open/tasks/tenka1_2016_final_e"
+#define IGNORE
 #include "../../include/mtl/convex_hull_trick.hpp"
 #include <bits/stdc++.h>
 using namespace std;

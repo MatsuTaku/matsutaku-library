@@ -1,10 +1,10 @@
 #pragma once
+#include "fenwick_tree.hpp"
+#include "bit_manip.hpp"
 #include <cstddef>
 #include <cstdint>
 #include <array>
 #include <vector>
-#include "fenwick_tree.hpp"
-#include "bit_manip.hpp"
 #include <iostream>
 
 class Bitmap {
