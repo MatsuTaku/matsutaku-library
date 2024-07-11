@@ -37,7 +37,7 @@ jobs:
         with:
           output-path: verify_files.json
           # Specify patterns
-          # include: your-own-include/
+          include: test
           # exclude: your-own-exclude/
           # If you have config.toml
           # config: .verify-helper/config.toml
