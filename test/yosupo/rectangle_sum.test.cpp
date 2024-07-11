@@ -2,7 +2,7 @@
 #define IGNORE
 #include <iostream>
 #include <bitset>
-#include "../../include/mtl/ordinal_range_search.hpp"
+#include "include/mtl/ordinal_range_search.hpp"
 #include <bits/stdc++.h>
 using namespace std;
 

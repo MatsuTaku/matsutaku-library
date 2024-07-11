@@ -1,5 +1,5 @@
 #define PROBLEM "https://yukicoder.me/problems/no/945"
-#include "../../include/mtl/dual_sparse_table.hpp"
+#include "include/mtl/dual_sparse_table.hpp"
 #include <bits/stdc++.h>
 using namespace std;
 

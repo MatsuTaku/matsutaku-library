@@ -1,5 +1,5 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/static_range_frequency"
-#include "../../include/mtl/succinct/wavelet_matrix.hpp"
+#include "include/mtl/succinct/wavelet_matrix.hpp"
 #include <bits/stdc++.h>
 using namespace std;
 

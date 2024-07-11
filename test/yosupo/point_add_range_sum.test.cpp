@@ -1,5 +1,5 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/point_add_range_sum"
-#include "../../include/mtl/fenwick_tree.hpp"
+#include "include/mtl/fenwick_tree.hpp"
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;

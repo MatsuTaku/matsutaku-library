@@ -1,5 +1,5 @@
 #define STANDALONE
-#include "../../include/mtl/skiplist.hpp"
+#include "include/mtl/skiplist.hpp"
 
 #include <iostream>
 #include <vector>

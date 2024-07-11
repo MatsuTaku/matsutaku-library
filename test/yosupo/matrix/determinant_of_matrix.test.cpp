@@ -1,6 +1,6 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/matrix_det"
-#include "../../../include/mtl/matrix.hpp"
-#include "../../../include/mtl/modular.hpp"
+#include "include/mtl/matrix.hpp"
+#include "include/mtl/modular.hpp"
 #include <bits/stdc++.h>
 using namespace std;
 using mint = Modular998244353;

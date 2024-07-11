@@ -1,6 +1,6 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/persistent_unionfind"
 #include <iostream>
-#include "../../include/mtl/persistent_unionfind.hpp"
+#include "include/mtl/persistent_unionfind.hpp"
 #include <bits/stdc++.h>
 using namespace std;
 

@@ -1,6 +1,6 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/vertex_add_subtree_sum"
-#include "../../include/mtl/hld.hpp"
-#include "../../include/mtl/fenwick_tree.hpp"
+#include "include/mtl/hld.hpp"
+#include "include/mtl/fenwick_tree.hpp"
 #include <bits/stdc++.h>
 using namespace std;
 

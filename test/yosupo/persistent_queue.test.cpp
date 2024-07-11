@@ -1,6 +1,6 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/persistent_queue"
 #include <iostream> 
-#include "../../include/mtl/persistent_queue.hpp"
+#include "include/mtl/persistent_queue.hpp"
 #include <bits/stdc++.h>
 using namespace std;
 

@@ -1,5 +1,5 @@
 #define STANDALONE
-#include "../../include/mtl/double_ended_priority_queue.hpp"
+#include "include/mtl/double_ended_priority_queue.hpp"
 #include <vector>
 #include <random>
 #include <iostream>

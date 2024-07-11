@@ -1,6 +1,6 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/predecessor_problem"
 #define IGNORE
-#include "../../include/mtl/yft.hpp"
+#include "include/mtl/yft.hpp"
 #include <bits/stdc++.h>
 using namespace std; 
 

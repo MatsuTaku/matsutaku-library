@@ -1,7 +1,7 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/static_rectangle_add_rectangle_sum"
 #define IGNORE
-#include "../../include/mtl/ordinal_range_search.hpp"
-#include "../../include/mtl/modular.hpp"
+#include "include/mtl/ordinal_range_search.hpp"
+#include "include/mtl/modular.hpp"
 #include <bits/stdc++.h>
 using namespace std;
 

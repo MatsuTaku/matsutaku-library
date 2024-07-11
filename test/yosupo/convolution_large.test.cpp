@@ -1,5 +1,5 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/convolution_mod_large"
-#include "../../include/mtl/convolution.hpp"
+#include "include/mtl/convolution.hpp"
 #include <bits/stdc++.h>
 
 using namespace std;

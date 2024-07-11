@@ -1,5 +1,5 @@
 #define STANDALONE
-#include "../../include/mtl/bitmap.hpp"
+#include "include/mtl/bitmap.hpp"
 #include <iostream>
 
 int main() {

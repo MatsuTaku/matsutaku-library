@@ -1,4 +1,5 @@
-#include "../../include/mtl/binary_trie.hpp"
+#define STANDALONE
+#include "include/mtl/binary_trie.hpp"
 #include <iostream>
 #include <vector>
 

@@ -1,5 +1,5 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/inv_of_formal_power_series_sparse"
-#include "../../../include/mtl/fps.hpp"
+#include "include/mtl/fps.hpp"
 #include <bits/stdc++.h>
 using namespace std;
 

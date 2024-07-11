@@ -1,6 +1,6 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/staticrmq"
 
-#include "../../include/mtl/range_minimum_query.hpp"
+#include "include/mtl/range_minimum_query.hpp"
 #include <iostream>
 using namespace std;
 

@@ -1,6 +1,6 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/range_affine_range_sum"
-#include "../../include/mtl/lazy_segment_tree.hpp"
-#include "../../include/mtl/modular.hpp"
+#include "include/mtl/lazy_segment_tree.hpp"
+#include "include/mtl/modular.hpp"
 #include <bits/stdc++.h>
 
 using namespace std;

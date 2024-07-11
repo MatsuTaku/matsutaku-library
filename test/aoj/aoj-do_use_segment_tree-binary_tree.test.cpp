@@ -1,6 +1,6 @@
 #define PROBLEM "https://onlinejudge.u-aizu.ac.jp/problems/2450"
-#include "../../include/mtl/lazy_segment_tree.hpp"
-#include "../../include/mtl/hld.hpp"
+#include "include/mtl/lazy_segment_tree.hpp"
+#include "include/mtl/hld.hpp"
 #include <bits/stdc++.h>
 
 using namespace std;

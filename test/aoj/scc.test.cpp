@@ -1,5 +1,5 @@
 #define PROBLEM "https://onlinejudge.u-aizu.ac.jp/problems/GRL_3_C"
-#include "../../include/mtl/scc.hpp"
+#include "include/mtl/scc.hpp"
 #include <bits/stdc++.h>
 using namespace std;
 

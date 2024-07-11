@@ -1,3 +1,4 @@
 online-judge-tools
 online-judge-verify-helper
 online-judge-api-client
+competitive-verifier

@@ -1,7 +1,7 @@
 #define PROBLEM "https://atcoder.jp/contests/arc116/tasks/arc116_c"
 #define IGNORE
-#include "../../include/mtl/dirichlet.hpp"
-#include "../../include/mtl/modular.hpp"
+#include "include/mtl/dirichlet.hpp"
+#include "include/mtl/modular.hpp"
 #include <bits/stdc++.h>
 using namespace std;
 using mint = Modular998244353;

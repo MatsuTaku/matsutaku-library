@@ -1,7 +1,7 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/dynamic_sequence_range_affine_range_sum"
-#include "../../include/mtl/splay_tree_list.hpp"
-#include "../../include/mtl/modular.hpp"
-#include "../../include/mtl/monoid.hpp"
+#include "include/mtl/splay_tree_list.hpp"
+#include "include/mtl/modular.hpp"
+#include "include/mtl/monoid.hpp"
 #include <bits/stdc++.h>
 using namespace std;
 

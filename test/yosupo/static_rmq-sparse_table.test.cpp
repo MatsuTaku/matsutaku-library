@@ -1,6 +1,6 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/staticrmq"
 
-#include "../../include/mtl/sparse_table.hpp"
+#include "include/mtl/sparse_table.hpp"
 #include <iostream>
 using namespace std;
 

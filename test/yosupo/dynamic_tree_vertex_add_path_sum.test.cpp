@@ -1,5 +1,5 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/dynamic_tree_vertex_add_path_sum"
-#include "../../include/mtl/link_cut_tree.hpp"
+#include "include/mtl/link_cut_tree.hpp"
 #include <bits/stdc++.h>
 using namespace std;
 

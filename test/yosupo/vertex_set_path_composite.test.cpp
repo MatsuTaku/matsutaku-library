@@ -1,7 +1,7 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/vertex_set_path_composite"
-#include "../../include/mtl/hld.hpp"
-#include "../../include/mtl/segment_hld.hpp"
-#include "../../include/mtl/modular.hpp"
+#include "include/mtl/hld.hpp"
+#include "include/mtl/segment_hld.hpp"
+#include "include/mtl/modular.hpp"
 #include <bits/stdc++.h>
 using namespace std;
 

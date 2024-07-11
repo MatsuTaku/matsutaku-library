@@ -1,5 +1,5 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/log_of_formal_power_series"
-#include "../../../include/mtl/fps.hpp"
+#include "include/mtl/fps.hpp"
 #include <bits/stdc++.h>
 using namespace std;
 

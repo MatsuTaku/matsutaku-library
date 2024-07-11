@@ -1,6 +1,6 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/associative_array"
 #include <iostream>                        
-#include "../../include/mtl/treap.hpp"
+#include "include/mtl/treap.hpp"
 #include <bits/stdc++.h>
 using namespace std;
 

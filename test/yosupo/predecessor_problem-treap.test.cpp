@@ -1,5 +1,5 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/predecessor_problem"
-#include "../../include/mtl/treap.hpp"
+#include "include/mtl/treap.hpp"
 #include <bits/stdc++.h>
 using namespace std;
 

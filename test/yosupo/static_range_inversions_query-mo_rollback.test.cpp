@@ -1,8 +1,8 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/static_range_inversions_query"
-#include "../../include/mtl/compress_int.hpp"
-#include "../../include/mtl/mo.hpp"
-#include "../../include/mtl/lazy_segment_tree.hpp"
-#include "../../include/mtl/monoid.hpp"
+#include "include/mtl/compress_int.hpp"
+#include "include/mtl/mo.hpp"
+#include "include/mtl/lazy_segment_tree.hpp"
+#include "include/mtl/monoid.hpp"
 #include <bits/stdc++.h>
 using namespace std;
 using lint = long long;

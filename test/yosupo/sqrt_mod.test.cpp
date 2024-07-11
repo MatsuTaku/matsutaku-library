@@ -1,5 +1,5 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/sqrt_mod"
-#include "../../include/mtl/modular.hpp"
+#include "include/mtl/modular.hpp"
 #include <bits/stdc++.h>
 using namespace std;
 using mint = DynamicModular<>;

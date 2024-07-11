@@ -1,5 +1,5 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/set_xor_min"
-#include "../../include/mtl/binary_trie.hpp"
+#include "include/mtl/binary_trie.hpp"
 #include <bits/stdc++.h>
 using namespace std;
 
