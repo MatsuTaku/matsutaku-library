@@ -1,5 +1,5 @@
 #define STANDALONE
-#include "include/mtl/string/ac_machine.hpp"
+#include "../../include/mtl/string/ac_machine.hpp"
 
 #include <iostream>
 #include <cassert>

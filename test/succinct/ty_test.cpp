@@ -1,5 +1,5 @@
 #define STANDALONE
-#include "include/mtl/succinct/ty.hpp"
+#include "../../include/mtl/succinct/ty.hpp"
 #include <iostream>
 
 using namespace std;

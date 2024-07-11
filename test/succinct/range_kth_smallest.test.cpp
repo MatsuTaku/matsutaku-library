@@ -1,5 +1,5 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/range_kth_smallest"
-#include "include/mtl/succinct/wavelet_matrix.hpp"
+#include "../../include/mtl/succinct/wavelet_matrix.hpp"
 #include <bits/stdc++.h>
 using namespace std;
 

@@ -1,6 +1,6 @@
 #define STANDALONE
-#include "include/mtl/enumerate.hpp"
-#include "include/mtl/modular.hpp"
+#include "../../include/mtl/enumerate.hpp"
+#include "../../include/mtl/modular.hpp"
 
 #include <iostream>
 

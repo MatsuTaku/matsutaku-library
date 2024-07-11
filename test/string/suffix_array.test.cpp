@@ -1,5 +1,5 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/suffixarray"
-#include "include/mtl/string/suffix_array.hpp"
+#include "../../include/mtl/string/suffix_array.hpp"
 #include <iostream>
 using namespace std;
 

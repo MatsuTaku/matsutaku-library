@@ -1,5 +1,5 @@
 #define STANDALONE
-#include "include/mtl/binary_trie.hpp"
+#include "../../include/mtl/binary_trie.hpp"
 #include "set_test.hpp"
 
 int main() {
