@@ -1,3 +1,4 @@
+#define STANDALONE
 #include "set_test.hpp"
 #include <set>
 

@@ -1,4 +1,5 @@
-#include <modular.hpp>
+#define STANDALONE
+#include "include/mtl/modular.hpp"
 
 #include <iostream>
 

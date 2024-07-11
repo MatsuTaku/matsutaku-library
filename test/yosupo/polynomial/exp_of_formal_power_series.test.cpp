@@ -1,5 +1,4 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/exp_of_formal_power_series"
-// #define IGNORE
 #include "../../../include/mtl/fps/exp.hpp"
 #include <bits/stdc++.h>
 using namespace std;

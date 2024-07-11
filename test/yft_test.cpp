@@ -1,4 +1,5 @@
-#include <yft.hpp>
+#define STANDALONE
+#include "include/mtl/yft.hpp"
 #include "set_test.hpp"
 
 int main() {

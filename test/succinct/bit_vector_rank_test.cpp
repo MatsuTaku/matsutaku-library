@@ -1,4 +1,5 @@
-#include <succinct/bit_vector.hpp>
+#define STANDALONE
+#include "include/mtl/succinct/bit_vector.hpp"
 #include <bits/stdc++.h>
 
 int main() {

@@ -1,4 +1,5 @@
-#include <range_minimum_query.hpp>
+#define STANDALONE
+#include "include/mtl/range_minimum_query.hpp"
 #include <bits/stdc++.h>
 using namespace std;
 

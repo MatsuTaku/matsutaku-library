@@ -1,5 +1,4 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/sqrt_of_formal_power_series_sparse"
-// #define IGNORE
 #include "../../../include/mtl/fps/pow.hpp"
 #include <bits/stdc++.h>
 using namespace std;

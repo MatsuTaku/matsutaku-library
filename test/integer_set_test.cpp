@@ -1,4 +1,5 @@
-#include <integer_set.hpp>
+#define STANDALONE
+#include "include/mtl/integer_set.hpp"
 #include "set_test.hpp"
 
 constexpr int W = 20;

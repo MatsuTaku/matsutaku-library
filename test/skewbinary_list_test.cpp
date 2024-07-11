@@ -1,4 +1,5 @@
-#include <skewbinary_list.hpp>
+#define STANDALONE
+#include "include/mtl/skewbinary_list.hpp"
 
 #include <iostream>
 #include <vector>

@@ -1,4 +1,5 @@
-#include <persistent_stack.hpp>
+#define STANDALONE
+#include "include/mtl/persistent_stack.hpp"
 
 #include <vector>
 #include <stack>

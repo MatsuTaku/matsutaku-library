@@ -16,16 +16,16 @@ int main() {
   stable_sort(I.begin(), I.end(), [&](int l, int r) {return A[l]<A[r];});
   int b = ceil(sqrt(n));
   int m = n/b+1;
-  vector<vector<int>> v(m, vector(b,n));
+  vector<vector<int>> v(m, vector<int>(b,n));
   vector<vector<int>> sorted_idx(m);
   for (int i = 0; i < n; i++) {
     v[I[i]/b][I[i]%b] = i;
     sorted_idx[I[i]/b].push_back(I[i]%b);
   }
   vector<vector<int>> pref_inv(m);
-  vector<vector<lint>> block_inv(m, vector(m,0ll));
+  vector<vector<lint>> block_inv(m, vector<lint>(m,0ll));
   vector<int> freq(n+1);
-  vector<vector<int>> rank(m, vector(n,0));
+  vector<vector<int>> rank(m, vector<int>(n,0));
   for (int i = 0; i < m; i++) {
     lint inv = 0;
     pref_inv[i].push_back(0);

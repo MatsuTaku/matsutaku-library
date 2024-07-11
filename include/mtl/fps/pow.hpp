@@ -76,7 +76,7 @@ Fps<M> SparseFps<M>::pow(long long n, int degrees) const {
     // [x^0]g = 1
     // f^n = c_k^n x^{kn} g^n
     if (n == 0) 
-      return Fps{1};
+      return Fps<M>{1};
     size_t k = 0, ki = 0;;
     for (; ki < this->size(); ki++)
       if ((*this)[ki].second != 0) {
@@ -85,7 +85,7 @@ Fps<M> SparseFps<M>::pow(long long n, int degrees) const {
       }
     if (ki == this->size() or
         (k and n >= (long long)((degrees+k-1)/k))) 
-      return Fps();
+      return Fps<M>();
     auto c = (*this)[ki].second;
     if (k == 0 and c == 1)
       return pow_1(*this);

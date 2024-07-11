@@ -1,4 +1,5 @@
-#include <bit_manip.hpp>
+#define STANDALONE
+#include "include/mtl/bit_manip.hpp"
 #include <iostream>
 #include <bitset>
 

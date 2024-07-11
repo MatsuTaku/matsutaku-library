@@ -1,4 +1,5 @@
-#include <fibonacci_heap.hpp>
+#define STANDALONE
+#include "include/mtl/fibonacci_heap.hpp"
 
 #include <vector>
 #include <random>

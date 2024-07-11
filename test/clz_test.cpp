@@ -1,4 +1,5 @@
-#include <bit_manip.hpp>
+#define STANDALONE
+#include "include/mtl/bit_manip.hpp"
 #include <iostream>
 #include <bitset>
 
@@ -13,6 +14,7 @@ int main() {
     if (cnt != val) {
       std::cerr<<"clz("<<(std::bitset<64>(x))<<") is "<<cnt
       <<". calculated: "<<val<<std::endl;
+      assert(false);
     }
   }
 }

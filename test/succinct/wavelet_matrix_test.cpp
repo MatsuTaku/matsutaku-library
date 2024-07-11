@@ -1,4 +1,5 @@
-#include <succinct/wavelet_matrix.hpp>
+#define STANDALONE
+#include "include/mtl/succinct/wavelet_matrix.hpp"
 #include <bits/stdc++.h>
 using namespace std;
 

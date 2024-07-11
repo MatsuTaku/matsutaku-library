@@ -1,4 +1,5 @@
-#include <string/dynamic_ac_machine.hpp>
+#define STANDALONE
+#include "include/mtl/string/dynamic_ac_machine.hpp"
 
 #include <iostream>
 #include <cassert>

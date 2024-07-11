@@ -1,7 +1,8 @@
-#include <iostream>
+#define STANDALONE
+#include "include/mtl/enumerate.hpp"
+#include "include/mtl/modular.hpp"
 
-#include <enumerate.hpp>
-#include <modular.hpp>
+#include <iostream>
 
 using namespace std;
 using ll = long long;
@@ -14,14 +15,17 @@ int main() {
   auto a = enm.cmb(4, 2);
   if (a != 6) {
     cerr << "Error cmb(4,2) is not equal to " << a << endl;
+    assert(false);
   }
   auto b = enm.cmb(5, 3);
   if (b != 10) {
     cerr << "Error cmb(5,3) is not equal to " << b << endl;
+    assert(false);
   }
   auto c = enm.cmb(6, 3);
   if (c != 20) {
     cerr << "Error cmb(6,3) is not equal to " << c << endl;
+    assert(false);
   }
 
   return 0;

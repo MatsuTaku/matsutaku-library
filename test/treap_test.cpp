@@ -1,4 +1,5 @@
-#include <treap.hpp>
+#define STANDALONE
+#include "include/mtl/treap.hpp"
 
 #include <iostream>
 #include <vector>

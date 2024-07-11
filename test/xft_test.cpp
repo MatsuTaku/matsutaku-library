@@ -1,4 +1,5 @@
-#include <xft.hpp>
+#define STANDALONE
+#include "include/mtl/xft.hpp"
 #include "set_test.hpp"
 
 int main() {

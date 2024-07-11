@@ -1,4 +1,5 @@
-#include <persistent_array.hpp>
+#define STANDALONE
+#include "include/mtl/persistent_array.hpp"
 
 #include <vector>
 #include <stack>

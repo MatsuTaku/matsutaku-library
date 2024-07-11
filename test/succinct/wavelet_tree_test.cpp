@@ -1,4 +1,5 @@
-#include <succinct/wavelet_tree.hpp>
+#define STANDALONE
+#include "include/mtl/succinct/wavelet_tree.hpp"
 #include <bits/stdc++.h>
 using namespace std;
 
