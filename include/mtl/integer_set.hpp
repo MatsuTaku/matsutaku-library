@@ -9,8 +9,9 @@
 #include <cassert>
 
 template<typename T, unsigned BITS = 64>
-[[deprecated]]
-class _XFastTrie {
+class 
+[[deprecated("XFastTrie is expected to be used by YFastTrie. Single XFastTrie is inefficient for memory.")]]
+_XFastTrie {
  public:
   using U = uint64_t;
   static constexpr int W = BITS;
@@ -343,7 +344,6 @@ using XFastTrieMap = _XFastTrie<T, BITS>;
 
 
 template<typename T, unsigned BITS=64>
-[[deprecated]]
 class YFastTrie {
  public:
   using U = uint64_t;

@@ -386,7 +386,7 @@ class LcaToRmq {
 
   static bool test_right_path_to_children_construction() {
     std::vector<int> A{2,4,3,5,1,8,6,7,9};
-    std::vector<int> B{1,1,1,0,1,1,0,0,1,0,0,1,1,0,0,1,0,1,0,0};
+    std::vector<bool> B{1,1,1,0,1,1,0,0,1,0,0,1,1,0,0,1,0,1,0,0};
     DecaltTree<int> tree(A.begin(), A.end());
     LcaToRmq ltr(tree);
     bool ok = B.size()==ltr.b_.size();
