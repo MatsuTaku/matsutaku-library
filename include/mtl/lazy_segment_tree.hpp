@@ -25,22 +25,22 @@ template <typename M, typename A>
 requires LazySegmentTreeMonoid<M> &&
          LazySegmentTreeOperatorMonoid<A,M>
 #endif
-class LazySegmentTree {
+class SegmentTreebase {
  private:
   size_t size_;
   std::vector<std::pair<M, A>> tree_;
   std::vector<size_t> ids_;
 
  public:
-  explicit LazySegmentTree(size_t size) :
+  explicit SegmentTreebase(size_t size) :
       size_(1ull<<(64-bm::clz(size-1))),
       tree_(size_*2) {
     ids_.reserve((64-bm::clz(size-1))*2);
   }
 
   template <typename Iter>
-  explicit LazySegmentTree(Iter begin, Iter end)
-    : LazySegmentTree(std::distance(begin, end)) {
+  explicit SegmentTreebase(Iter begin, Iter end)
+    : SegmentTreebase(std::distance(begin, end)) {
     static_assert(std::is_convertible<typename std::iterator_traits<Iter>::value_type, M>::value, "");
     for (auto it = begin; it != end; ++it) {
       tree_[size_ + it - begin].first = *it;

@@ -54,7 +54,7 @@ int main() {
   vector<int> X(n*2);
   for (int i = 0; i < n; i++)
     X[T.in[i]] = X[n+n-1-T.in[i]] = W[i];
-  LazySegmentTree<M,A> RQ(X.begin(), X.end());
+  SegmentTreebase<M,A> RQ(X.begin(), X.end());
   auto range_update = [&](int l, int r, int v) {
     RQ.update(l,r,v);
     RQ.update(n+n-r, n+n-l, v);

@@ -37,7 +37,7 @@ int main() {
     cin>>a.a;
     a.sz = 1;
   }
-  LazySegmentTree<Sum, Affine> rsq(A.begin(), A.end());
+  SegmentTreebase<Sum, Affine> rsq(A.begin(), A.end());
 
   for (int q = 0; q < Q; q++) {
     int t; cin>>t;
