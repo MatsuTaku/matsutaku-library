@@ -1,6 +1,7 @@
 #define STANDALONE
 #define IGNORE
 #include "include/mtl/succinct/rrr.hpp"
+#include "include/mtl/succinct/traits.hpp"
 #include <bits/stdc++.h>
 
 static constexpr int u = 1e9;

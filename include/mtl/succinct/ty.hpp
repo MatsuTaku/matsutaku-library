@@ -10,7 +10,7 @@
  *            Memory needs for store nth integers O(n log d) bits 
  *            which d is max diff of consecutive elements.
 */
-template<class T, class DiffType = uint16_t>
+template<class T, class DiffType = int16_t>
 struct TY {
     using value_type = T;
     static constexpr auto block_size = sizeof(value_type) * 8;
@@ -23,29 +23,38 @@ struct TY {
     size_t size() const {
         return head.size() + diff.size();
     }
+    bool empty() const { return size() == 0; }
     void reserve(size_t n) {
         head.reserve((n + block_size - 1) / block_size);
         diff.reserve(n / block_size * (block_size - 1) + n % block_size);
     }
-    bool empty() const { return size() == 0; }
-    value_type raw_element(const value_type& v) {
-        return v;
-    }
-    value_type diff_element(const value_type& v) {
-        return v;
-    }
-    void push_back(const value_type& v) {
-        assert(head.empty() or size() % block_size == 0 or v - head.back() <= (value_type)max_diff);
+    template<class... Args>
+    void emplace_back(Args&&... args) {
         if (size() % block_size == 0) {
-            head.push_back(raw_element(v));
+            head.emplace_back(std::forward<Args>(args)...);
         } else {
-            diff.push_back(diff_element(v - head.back()));
+            value_type v(std::forward<Args>(args)...);
+            assert(v >= head.back() and v - head.back() <= (value_type)max_diff);
+            diff.push_back((diff_value_type)(v - head.back()));
         }
     }
+    void push_back(const value_type& v) {
+        if (size() % block_size == 0) {
+            head.push_back(v);
+        } else {
+            assert(v >= head.back() and v - head.back() <= (value_type)max_diff);
+            diff.push_back(v - head.back());
+        }
+    }
+    void push_back(value_type&& v) {
+        emplace_back(std::move(v));
+    }
     value_type get(size_t i) const {
-        return (i % block_size == 0) ? 
-            head[i / block_size] : 
-            head[i / block_size] + diff[i / block_size * (block_size-1) + i % block_size - 1];
+        if (i % block_size == 0) 
+            return head[i / block_size];
+        else 
+            return head[i / block_size] + 
+                   (value_type)diff[i / block_size * (block_size-1) + i % block_size - 1];
     }
     value_type operator[](size_t i) const { return get(i); }
     value_type front() const { return get(0); }

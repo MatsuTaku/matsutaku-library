@@ -1,5 +1,6 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/static_rectangle_add_rectangle_sum"
 // #define IGNORE
+#define TLE 100
 #include "include/mtl/ordinal_range_search.hpp"
 #include "include/mtl/modular.hpp"
 #include <bits/stdc++.h>
@@ -29,10 +30,10 @@ int main() {
     // for each xy, add (x-a)(y-b) = xy - ay - bx + ab
     array<ors_type, 4> ors{}; // XY, X, Y, const
     auto add_topleft = [&](int a, int b, int w) {
-        ors[0].add(a, b, (mint)w);
-        ors[1].add(a, b, (mint)w * -a);
-        ors[2].add(a, b, (mint)w * -b);
-        ors[3].add(a, b, (mint)w * a * b);
+        ors[0].add({a, b, (mint)w});
+        ors[1].add({a, b, (mint)w * -a});
+        ors[2].add({a, b, (mint)w * -b});
+        ors[3].add({a, b, (mint)w * a * b});
     };
     for (auto [l,d,r,u,w]:N) {
         add_topleft(l, d, w);
@@ -40,12 +41,17 @@ int main() {
         add_topleft(r, d, -w);
         add_topleft(r, u, w);
     }
-    for (auto& o:ors) o.build(index_max);
+    array<FenwickTree<mint>, 4> rsq{};
+    for (int i = 0; i < 4; i++) {
+        ors[i].build(
+            [&](size_t size) {rsq[i] = FenwickTree<mint>(size);},
+            [&](size_t j, mint w) {rsq[i].add(j, w);});
+    }
     auto prefix_sum = [&](int x, int y) {
-        return ors[0].sum(0, x, 0, y) * x * y +
-               ors[1].sum(0, x, 0, y) * y +
-               ors[2].sum(0, x, 0, y) * x +
-               ors[3].sum(0, x, 0, y);
+        return ors[0].sum(0, x, 0, y, [&](size_t l, size_t r) {return rsq[0].sum(l, r);}) * x * y +
+               ors[1].sum(0, x, 0, y, [&](size_t l, size_t r) {return rsq[1].sum(l, r);}) * y +
+               ors[2].sum(0, x, 0, y, [&](size_t l, size_t r) {return rsq[2].sum(l, r);}) * x +
+               ors[3].sum(0, x, 0, y, [&](size_t l, size_t r) {return rsq[3].sum(l, r);});
     };
     auto sum = [&](int l, int d, int r, int u) {
         return  prefix_sum(l, d) +

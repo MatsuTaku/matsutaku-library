@@ -1,8 +1,9 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/rectangle_sum"
 // #define IGNORE
+#include "include/mtl/ordinal_range_search.hpp"
+#include "include/mtl/fenwick_tree.hpp"
 #include <iostream>
 #include <bitset>
-#include "include/mtl/ordinal_range_search.hpp"
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -23,9 +24,16 @@ int main() {
         chmax(max_idx, max(r, u));
     }
     ORS<int, long long> ors;
-    for (auto [x,y,w] : N) ors.add(x, y, w);
-    ors.build(max_idx);
+    for (auto [x,y,w] : N) ors.add({x, y, w});
+    FenwickTree<long long> rsq;
+    ors.build(
+    [&](size_t size) {
+        rsq = FenwickTree<long long>(size);
+    },
+    [&](size_t i, int w) {
+        rsq.add(i, w);
+    });
     for (auto [l,d,r,u] : Q) {
-        cout << ors.sum(l, r, d, u) << endl;
+        cout << ors.sum(l, r, d, u, [&](size_t l, size_t r) { return rsq.sum(l, r); }) << endl;
     }
 }
