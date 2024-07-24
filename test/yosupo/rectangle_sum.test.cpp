@@ -1,5 +1,5 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/rectangle_sum"
-#define IGNORE
+// #define IGNORE
 #include <iostream>
 #include <bitset>
 #include "include/mtl/ordinal_range_search.hpp"
