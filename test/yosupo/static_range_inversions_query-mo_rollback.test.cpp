@@ -46,7 +46,7 @@ int main() {
     mo.add_segment(l, r);
   }
 
-  LazySegmentTree<sm, um> D(k);
+  SegmentTreebase<sm, um> D(k);
   vector<lint> ans(q, -1);
   lint inv_sum = 0;
   stack<int> hist;

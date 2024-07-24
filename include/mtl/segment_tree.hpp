@@ -17,9 +17,12 @@ class SegmentTree {
 #if __cplusplus >= 202002L
   static_assert(SegmentTreeMonoid<M>);
 #endif
+ public:
+  using monoid_type = M;
+  using value_type = monoid_type;
  private:
   size_t size_;
-  std::vector<M> tree_;
+  std::vector<value_type> tree_;
 
  public:
   explicit SegmentTree(size_t size) : size_(size), tree_(size*2) {}
@@ -32,10 +35,10 @@ class SegmentTree {
       tree_[i] = tree_[i<<1] * tree_[(i<<1)+1];
   }
 
-  M get(size_t index) const {
+  value_type get(size_t index) const {
     return tree_[size_ + index];
   }
-  M operator[](size_t index) const {
+  value_type operator[](size_t index) const {
     return get(index);
   }
 
@@ -55,15 +58,15 @@ class SegmentTree {
   void set(size_t index, T&& val) {
     return _set(index, std::forward<T>(val));
   }
-  void set(size_t index, const M& val) {
+  void set(size_t index, const value_type& val) {
     _set(index, val);
   }
-  void set(size_t index, M&& val) {
+  void set(size_t index, value_type&& val) {
     _set(index, std::move(val));
   }
 
-  M query(size_t l, size_t r) const {
-    M lhs,rhs;
+  value_type query(size_t l, size_t r) const {
+    value_type lhs,rhs;
     for (auto _l = l+size_, _r = r+size_; _l < _r; _l>>=1, _r>>=1) {
       if (_l&1) lhs = lhs * tree_[_l++];
       if (_r&1) rhs = tree_[--_r] * rhs;
@@ -74,8 +77,8 @@ class SegmentTree {
   template<class F>
   size_t max_right(size_t begin, size_t end, F f) const {
     if (begin == end) return end;
-    M p;
-    std::stack<std::pair<size_t, M>> rps;
+    monoid_type p;
+    std::stack<std::pair<size_t, monoid_type>> rps;
     auto l = size_ + begin;
     auto r = size_ + end;
     while (l < r and f(p * tree_[l])) {
@@ -106,16 +109,12 @@ class SegmentTree {
     }
     return l - size_;
   }
-  template<bool (*F)(M)>
-  size_t max_right(size_t begin, size_t end) const {
-    return max_right(begin, end, [](M x) { return F(x); });
-  }
 
   template<class F>
   size_t min_left(size_t begin, size_t end, F f) const {
     if (end == begin) return begin;
-    M p;
-    std::stack<std::pair<size_t, M>> lps;
+    monoid_type p;
+    std::stack<std::pair<size_t, monoid_type>> lps;
     auto l = size_ + begin;
     auto r = size_ + end;
     while (l < r and f(tree_[r-1] * p)) {
@@ -146,9 +145,9 @@ class SegmentTree {
     }
     return r - size_;
   }
-  template<bool (*F)(M)>
+  template<bool (*F)(value_type)>
   size_t min_left(size_t begin, size_t end) const {
-    return min_left(begin, [](M x) { return F(x); });
+    return min_left(begin, [](value_type x) { return F(x); });
   }
 
 };
