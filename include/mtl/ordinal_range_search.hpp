@@ -12,24 +12,31 @@
  * @brief Ordinal Range Search
  *   Maintain 2-dimential points (x,y) and their weights.
 */
-template<typename T, typename W = long long,
+template<class T, class W = void,
   class BitmapType = RRR<>
   >
-struct ORS {
+class ORS {
+ public:
   using index_type = T;
   using weight_type = W;
-  static constexpr index_type IndexLimit = std::numeric_limits<index_type>::max();
-  std::vector<std::tuple<index_type,index_type,weight_type>> ps;
+  // static constexpr index_type IndexLimit = std::numeric_limits<index_type>::max();
+  static constexpr bool kUseWeight = !std::is_same_v<weight_type, void>;
+  using point_data = std::conditional_t<
+    !kUseWeight,
+    std::tuple<index_type, index_type>,
+    std::tuple<index_type, index_type, weight_type>>;
   using x_index_multiset = BinaryMultiset<BitmapType>;
   using y_index_set = BinarySet<BitmapType>;
+  using wm_type = WaveletMatrix<int>;
+ private:
+  std::vector<point_data> ps;
   x_index_multiset X;
   y_index_set Y;
-  using wm_type = WaveletMatrix<int>;
   wm_type wm;
-  using range_sum_type = FenwickTree<W>;
-  range_sum_type rsq;
+  // using range_sum_type = FenwickTree<weight_type>;
+  // range_sum_type rsq;
   index_type value_of_ith_x(size_t i) const {
-    return X.select(i);
+    return X.get(i);
   }
   size_t index_of_lower_bound_x(const T& x) const {
     return X.rank(x);
@@ -41,18 +48,24 @@ struct ORS {
     return std::make_pair(l, l+c);
   }
   index_type value_of_ith_y(size_t i) const {
-    return Y.select(i);
+    return Y.get(i);
   }
   size_t index_of_lower_bound_y(const T& y) const {
     return Y.rank(y);
   }
 
+ public:
   ORS() = default;
 
-  void add(index_type x, index_type y, W w = 1) {
-    ps.emplace_back(x,y,w);
+  void add(const point_data& point) {
+    ps.push_back(point);
   }
-  void build(index_type max_index = IndexLimit) {
+  void add(point_data&& point) {
+    ps.emplace_back(std::move(point));
+  }
+
+  template<class Resize, class Add>
+  void build(Resize resize = [](size_t){}, Add add = [](size_t, W) {}) {
     std::sort(ps.begin(), ps.end(),
               [](auto l, auto r) {
       return std::get<0>(l) != std::get<0>(r) ? std::get<0>(l) < std::get<0>(r)
@@ -65,12 +78,19 @@ struct ORS {
       X.insert(x);
       Y.insert(y);
     }
-    X.insert(max_index);
-    Y.insert(max_index);
     X.build();
     Y.build();
 
-    {
+    if constexpr (!kUseWeight) {
+      std::vector<int> S(ps.size());
+      for (size_t i = 0; i < ps.size(); i++) {
+        auto y = std::get<1>(ps[i]);
+        S[i] = index_of_lower_bound_y(y);
+      }
+      ps.clear();
+      ps.shrink_to_fit();
+      wm = wm_type(S.begin(), S.end());
+    } else {
       std::vector<int> S(ps.size());
       std::vector<std::pair<int, W>> SW(ps.size()), swz, swo;
       for (size_t i = 0; i < ps.size(); i++) {
@@ -82,14 +102,15 @@ struct ORS {
       ps.clear();
       ps.shrink_to_fit();
       wm = wm_type(S.begin(), S.end());
-      rsq = range_sum_type(wm.n * (wm.h+1));
+      // rsq = range_sum_type(wm.n * (wm.h+1));
+      resize(wm.n * (wm.h+1));
       for (int k = wm.h-1; k >= 0; k--) {
         for (size_t i = 0; i < wm.n; i++) {
           if (((SW[i].first >> k) & 1u) == 0)
             swz.push_back(SW[i]);
           else
             swo.push_back(SW[i]);
-          rsq.add(wm.n * (wm.h-1-k) + i, SW[i].second);
+          add(wm.n * (wm.h-1-k) + i, SW[i].second);
         }
         size_t j = wm.n-1;
         while (!swo.empty()) {
@@ -102,7 +123,7 @@ struct ORS {
         }
       }
       for (size_t i = 0; i < wm.n; i++) {
-        rsq.add(wm.n * wm.h + i, SW[i].second);
+        add(wm.n * wm.h + i, SW[i].second);
       }
     }
   }
@@ -169,7 +190,12 @@ struct ORS {
     return wm.range_freq(i, j, a, b);
   }
 
-  void weight_add(const index_type& x, const index_type& y, const weight_type& w) {
+  struct identity_add {
+    auto operator()(size_t) const {}
+  };
+
+  template<class Add = identity_add>
+  void weight_add(const index_type& x, const index_type& y, Add add = Add()) {
     size_t l, r;
     std::tie(l,r) = range_on_wm_lower_bound_x(x);
     auto c = index_of_lower_bound_y(y);
@@ -179,29 +205,48 @@ struct ORS {
     assert(l != r);
     size_t j = l;
     for (size_t k = 0; k < wm.h; k++) {
-      rsq.add(j, w);
+      add(j);
       j = wm.parent(wm.h-1-k, j, (c >> k) & 1u);
     }
-    rsq.add(j, w);
+    add(j);
   }
 
-  W sum(const index_type& xl, 
-        const index_type& xh, 
-        const index_type& yl, 
-        const index_type& yh) const {
-    W ret = 0;
+  struct plus_op {
+    template<class U, class V>
+    auto operator()(const U& a, const V& b) const {
+      return a+b;
+    }
+  };
+  struct plus_identity {
+    auto operator()() const {
+      return 0;
+    }
+  };
+
+  template<class RangeSum, class Sum = plus_op, class Id = plus_identity>
+  auto sum(
+    const index_type& xl, 
+    const index_type& xh, 
+    const index_type& yl, 
+    const index_type& yh,
+    RangeSum range_sum = [](size_t l, size_t r) { return r-l; },
+    Sum sum_op = Sum(),
+    Id id = Id()
+  ) const -> decltype(range_sum(0,0)) {
+    using sum_type = decltype(range_sum(0,0));
+    sum_type ret = id();
     _traverse(xl, xh, yl, yh,
-              [&](size_t l, size_t r, auto _) { ret += rsq.range_sum(l, r); },
+              [&](size_t l, size_t r, auto _) { ret = sum_op(ret, range_sum(l, r)); },
               [](auto,auto,auto){});
     return ret;
   }
 
-  std::vector<std::pair<size_t, size_t>>
+  std::vector<std::tuple<index_type, index_type>>
   enumerate(const index_type& xl, 
             const index_type& xh, 
             const index_type& yl, 
             const index_type& yh) const {
-    std::vector<std::pair<size_t,size_t>> ret;
+    std::vector<std::tuple<index_type, index_type>> ret;
     _traverse(xl, xh, yl, yh,
               [](auto,auto,auto){},
               [&](size_t l, size_t r, T c) {

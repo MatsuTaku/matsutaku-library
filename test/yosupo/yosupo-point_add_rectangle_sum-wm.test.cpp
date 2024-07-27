@@ -11,7 +11,7 @@ int main() {
   ORS<int, long long> ors;
   for (int i = 0; i < n; i++) {
     int x,y,w; cin>>x>>y>>w;
-    ors.add(x,y,w);
+    ors.add({x,y,w});
     chmax(index_max, max(x, y));
   }
   vector<tuple<int,int,int,int,int>> Q(q);
@@ -20,7 +20,7 @@ int main() {
     if (t == 0) {
       int x,y,w; cin>>x>>y>>w;
       Q[i] = {0,x,y,w,0};
-      ors.add(x,y,0);
+      ors.add({x,y,0});
       chmax(index_max, max(x, y));
     } else {
       int l,d,r,u; cin>>l>>d>>r>>u;
@@ -28,17 +28,19 @@ int main() {
       chmax(index_max, max(r, u));
     }
   }
-  ors.build(index_max);
+  FenwickTree<long long> rsq;
+  ors.build([&](size_t size) {rsq = FenwickTree<long long>(size);},
+            [&](size_t i, int w) {rsq.add(i, w);});
   for (int i = 0; i < q; i++) {
     int t = get<0>(Q[i]);
     if (t == 0) {
       int x,y,w,_;
       std::tie(t,x,y,w,_) = Q[i];
-      ors.weight_add(x,y,w);
+      ors.weight_add(x,y,[&](size_t j) {rsq.add(j,w);});
     } else {
       int l,d,r,u;
       std::tie(t,l,d,r,u) = Q[i];
-      cout << ors.sum(l,r,d,u) << endl;
+      cout << ors.sum(l,r,d,u,[&](size_t l, size_t r) {return rsq.sum(l,r);}) << endl;
     }
   }
 }

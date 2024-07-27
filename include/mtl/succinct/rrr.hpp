@@ -3,16 +3,16 @@
 #include "bit_vector.hpp"
 #include "ty.hpp"
 #include "bv.hpp"
-#include <map>
 #include <array>
+#include <map>
+#include <vector>
 #include <cstdint>
 #include <limits>
 #include <cstddef>
 #include <cstdint>
-#include <vector>
 
 constexpr unsigned need_bits(uint64_t n) {
-    return 64-bm::clz(n);
+    return bm::bit_width(n);
 }
 
 template<unsigned N>
@@ -20,25 +20,26 @@ struct BinomialTable {
     static_assert(N < 64, 
         "Too large N for BinomialTable. N must be less than 64");
     using number_type = uint64_t;
-    static struct impl {
-        std::array<std::array<number_type, N+1>, N+1> tb;
-        constexpr impl() {
-            tb[0][0] = 1;
-            for (size_t i = 1; i <= N; i++) {
-                tb[i][0] = tb[i-1][0];
-                for (size_t j = 1; j <= i; j++) 
-                    tb[i][j] = tb[i-1][j-1] + tb[i-1][j];
-            }
+    using binom_table_type = std::array<std::array<number_type, N+1>, N+1>;
+
+    static constexpr binom_table_type make_binomial_table() {
+        binom_table_type tb{};
+        tb[0][0] = 1;
+        for (size_t i = 1; i <= N; i++) {
+            tb[i][0] = tb[i-1][0];
+            for (size_t j = 1; j <= i; j++) 
+                tb[i][j] = tb[i-1][j-1] + tb[i-1][j];
         }
-    } data;
+        return tb;
+    }
+    static constexpr binom_table_type _binom_tb = make_binomial_table();
     static constexpr number_type binom(size_t n, size_t k) {
         assert(n <= N and k <= N);
-        return data.tb[n][k];
+        return _binom_tb[n][k];
     }
 };
-
 template<unsigned N>
-typename BinomialTable<N>::impl BinomialTable<N>::data;
+constexpr typename BinomialTable<N>::binom_table_type BinomialTable<N>::_binom_tb;
 
 template<class Def>
 struct RRRTable {
@@ -171,7 +172,7 @@ struct RRRTable {
             return 0;
         return k >= binomial_table_type::binom(s_size-offset-1, nn);
     }
-    static number_type get_number_for_popcnt(s_type bitmap, unsigned pc) {
+    static constexpr number_type get_number_for_popcnt(s_type bitmap, unsigned pc) {
         number_type number = 0;
         auto m = bitmap;
         auto n = pc;
@@ -183,31 +184,32 @@ struct RRRTable {
         }
         return number;
     }
-    static std::pair<unsigned, number_type> get_pc_and_number(s_type bitmap) {
+    static constexpr number_type number_size(unsigned n) {
+        return binomial_table_type::binom(s_size, n);
+    }
+    static constexpr std::pair<unsigned, number_type> get_pc_and_number(s_type bitmap) {
         unsigned pc = bm::popcnt(bitmap);
         auto number = pc <= s_size-pc ? get_number_for_popcnt(bitmap, pc) 
                                       : (number_size(pc)-1-get_number_for_popcnt(
                                             ~bitmap & ((s_type(1)<<s_size)-1), s_size-pc));
         return std::make_pair(pc, number);
     }
-    static number_type number_size(unsigned n) {
-        return binomial_table_type::binom(s_size, n);
-    }
-    static struct number_bits_table {
-        std::array<unsigned, s_size+1> tb;
-        number_bits_table() {
-            for (unsigned i = 0; i <= s_size; i++)
-                tb[i] = need_bits(number_size(i)-1);
+    using number_bits_table_type = std::array<unsigned, s_size+1>;
+    static constexpr number_bits_table_type make_number_bits_table() {
+        number_bits_table_type tb{};
+        for (unsigned i = 0; i <= s_size; i++) {
+            tb[i] = need_bits(number_size(i)-1);
         }
-    } n_len;
-    static unsigned number_bits(unsigned n) {
-        return n_len.tb[n];
+        return tb;
     }
-
+    static constexpr number_bits_table_type n_len = make_number_bits_table();
+    static constexpr unsigned number_bits(unsigned n) {
+        assert(n <= s_size);
+        return n_len[n];
+    }
 };
-
 template<class Def>
-typename RRRTable<Def>::number_bits_table RRRTable<Def>::n_len;
+constexpr typename RRRTable<Def>::number_bits_table_type RRRTable<Def>::n_len;
 
 template<unsigned SSize, class SType>
 struct RRRDefinition {
@@ -246,6 +248,8 @@ struct RRR {
     void build() {
         size_t h = 0;
         size_t pq = 0;
+        auto block_count = s_map.empty() ? 0 : std::prev(s_map.end())->first+1;
+        heads.reserve(block_count);
         for (auto qm : s_map) {
             auto qidx = qm.first;
             auto mask = qm.second;
@@ -266,8 +270,8 @@ struct RRR {
             bm.resize(h+w);
             bm.range_set(h, h+def::n_bits, n);
             bm.range_set(h+def::n_bits, h+w, p);
-            assert(rrr_table_type::get_int(
-                bm.range_get(h, h+def::n_bits), bm.range_get(h+def::n_bits, h+w)) == mask);
+            assert(bm.range_get(h, h+def::n_bits) == n);
+            assert(bm.range_get(h+def::n_bits, h+w) == p);
             h += w;
             pq++;
         }
@@ -318,9 +322,4 @@ struct RRR {
         return get_bit(i/def::s_size, i%def::s_size);
     }
 
-};
-
-template<unsigned SSize, class SType, class MapType>
-struct RankSelectTraits<RRR<SSize, SType, MapType>> {
-    using rank_select_type = BV<RRR<SSize, SType, MapType>, SSize>;
 };
