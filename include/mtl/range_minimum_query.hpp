@@ -169,13 +169,19 @@ class RmqToLca;
 template<unsigned RecursionHeight>
 class LcaToRmq;
 
+template<class T>
+T _fn_min(T l, T r) {
+  return std::min(l, r);
+}
+
 template<class T, unsigned RecursionHeight = 3>
 class RmqToLca {
   static constexpr size_t minimum_rmq_size = 1u<<3;
   using st_index_type = size_t;
  private:
   size_t size_;
-  min_SparseTable<std::pair<T, st_index_type>> st_;
+  using st_unit_type = std::pair<T, st_index_type>;
+  SparseTable<st_unit_type, _fn_min<st_unit_type>> st_;
   LcaToRmq<RecursionHeight> lca_a_;
  public:
   RmqToLca() = default;
@@ -212,7 +218,8 @@ class RmqToLca<T, 0> {
   using st_index_type = size_t;
  private:
   size_t size_;
-  min_SparseTable<std::pair<T, st_index_type>> st_;
+  using st_unit_type = std::pair<T, st_index_type>;
+  SparseTable<st_unit_type, _fn_min<st_unit_type>> st_;
  public:
   RmqToLca() = default;
   template<class It>
