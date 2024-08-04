@@ -1,9 +1,9 @@
 #define STANDALONE
 #include "include/mtl/succinct/ty.hpp"
-#include <iostream>
+#include <bits/stdc++.h>
 
 using namespace std;
-constexpr int n = 1e7;
+constexpr int n = 1e6;
 
 int main() {
     vector<int> A(n);
@@ -12,8 +12,7 @@ int main() {
     for (int i = 1; i < n; i++) {
         A[i] = A[i-1] + rand()%max_diff;
     }
-    TY<int> ty;
-    for (auto a:A) ty.push_back(a);
+    TY<int> ty(A.begin(), A.end());
     for (int i = 0; i < n; i++) {
         auto v = ty[i];
         if (v != A[i]) {
