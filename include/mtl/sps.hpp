@@ -1,5 +1,7 @@
 #pragma once
 #include "subset_convolution.hpp"
+#include <iostream>
+using namespace std;
 
 template<class T, int LIM=20>
 std::vector<T> SpsExp(int n, std::vector<T>& A) {
@@ -13,4 +15,65 @@ std::vector<T> SpsExp(int n, std::vector<T>& A) {
                               dp.begin()+(1<<i));
   }
   return dp;
+}
+
+// Sum_i F_i/i! A^i, A^i is subset-comvolution
+template<class T, int LIM=20>
+std::vector<T> SpsCompositionEgf(int n, const std::vector<T>& F, const std::vector<T>& A) {
+  assert(A.size() >= 1ull<<n);
+  assert(A[0]== T(0));
+  int d = std::min((size_t)n, F.size()-1);
+  std::vector<T> dp(1<<n), ndp(1<<n);
+  dp[0] = F[d];
+  using ranked_fn_type = decltype(SubsetRankedZeta<T, LIM>(n, A.begin(), A.end()));
+  std::vector<ranked_fn_type> zA(n), zDP(n);
+  for (int i = 0; i < n; i++) {
+    zA[i].resize(1<<i);
+    zDP[i].resize(1<<i);
+  }
+  for (int i = d-1; i >= 0; i--) {
+    ndp.assign(1<<n, 0);
+    ndp[0] = F[i];
+    for (int j = 0; j < n-i; j++) {
+      // SubsetConvolution<T, LIM>(A.cbegin()+(1<<j), A.cbegin()+(2<<j),
+      //                           dp.cbegin(), dp.cbegin()+(1<<j),
+      //                           ndp.begin()+(1<<j));
+      SubsetRankedZeta<T, LIM>(j, A.cbegin()+(1<<j), A.cbegin()+(2<<j), zA[j].begin());
+      SubsetRankedZeta<T, LIM>(j, dp.cbegin(), dp.cbegin()+(1<<j), zDP[j].begin());
+      SubsetConvolutionImpl<T, LIM>(j, zA[j], zDP[j], ndp.begin()+(1<<j));
+    }
+    swap(dp, ndp);
+  }
+  return dp;
+}
+
+// Sum_i F_i A^i, A^i is subset-comvolution
+template<class T, int LIM=20>
+std::vector<T> SpsCompositionPoly(int n, const std::vector<T>& F, std::vector<T> A) {
+  if (F.empty()) return std::vector<T>(1<<n, T(0));
+  int d = std::min(F.size()-1, (size_t)n);
+  std::vector<T> g(d+1);
+  T c = A[0];
+  A[0] = 0;
+  A.resize(1<<n, 0);
+  if (c==T(0)) {
+    return SpsCompositionEgf<T, LIM>(n, F, A);
+  }
+  // (x+c)^i
+  std::vector<T> pow(d+1);
+  pow[0] = 1;
+  for (int i = 0; i < (int)F.size(); i++) {
+    for (int j = 0; j <= d; j++) {
+      g[j] += F[i] * pow[j];
+    }
+    for (int j = d; j >= 0; j--) {
+      pow[j] = pow[j] * c + (j==0 ? T(0) : pow[j-1]);
+    }
+  } 
+  // to egf
+  T factorial = 1;
+  for (int j = 0; j <= d; j++) {
+    g[j] *= factorial, factorial *= j+1;
+  }
+  return SpsCompositionEgf<T, LIM>(n, g, A);
 }
