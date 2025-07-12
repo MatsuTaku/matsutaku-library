@@ -1,8 +1,8 @@
 #pragma once
 #include <vector>
+#include <array>
+#include <cstddef>
 #include "bit_manip.hpp"
-#include <iostream>
-using namespace std;
 
 template<class T, int LIM, class Iter>
 std::vector<std::array<T,LIM+1>> SubsetRankedZeta(int n, Iter begin, Iter end) {

@@ -3,6 +3,7 @@
 #include <iostream>
 using namespace std;
 
+// Sum_i A^i/i!, A^i is subset-comvolution
 template<class T, int LIM=20>
 std::vector<T> SpsExp(int n, std::vector<T>& A) {
   assert(A.size()==size_t(1<<n));
@@ -76,4 +77,24 @@ std::vector<T> SpsCompositionPoly(int n, const std::vector<T>& F, std::vector<T>
     g[j] *= factorial, factorial *= j+1;
   }
   return SpsCompositionEgf<T, LIM>(n, g, A);
+}
+
+template<class T, int LIM=20>
+std::vector<T> SpsLog(int n, vector<T> s) {
+    assert(s[0] == T(1));
+    // composite log(1-x) with 1-s
+    // log(1-x) = -sum_{i=1}^n x^i/i
+    // to egf:  = sum_{i=1}^n -(i-1)! x^i/i!
+    std::vector<T> f(n+1);
+    T fact = 1;
+    for (int i = 1; i <= n; i++) {
+      f[i] = -fact;
+      fact *= i;
+    }
+    s[0] = 0;
+    if (s.size() != size_t(1ull<<n))
+      s.resize(1<<n, 0);
+    for (int i = 1; i < 1<<n; i++) 
+      s[i] = -s[i];
+    return SpsCompositionEgf<T, LIM>(n, f, s);
 }
