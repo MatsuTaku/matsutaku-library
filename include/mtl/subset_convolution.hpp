@@ -92,3 +92,18 @@ std::vector<T> SubsetConvolution(const std::vector<T>& A, const std::vector<T>& 
   SubsetConvolution<T, LIM>(A.begin(), A.end(), B.begin(), B.end(), C.begin());
   return C;
 }
+
+template<class T, int LIM, class Iter, class OutIter>
+OutIter SubsetConvolutionSquare(Iter ba, Iter ea, OutIter out) {
+  auto n = 64-bm::clz(std::distance(ba, ea)-1);
+  auto zA = SubsetRankedZeta<T, LIM>(n, ba, ea);
+  return SubsetConvolutionImpl<T, LIM>(n, zA, zA, out);
+}
+
+template<class T, int LIM=20>
+std::vector<T> SubsetConvolutionSquare(const std::vector<T>& A) {
+  auto n = 64-bm::clz(A.size()-1);
+  std::vector<T> C(1<<n);
+  SubsetConvolutionSquare<T, LIM>(A.begin(), A.end(), C.begin());
+  return C;
+}

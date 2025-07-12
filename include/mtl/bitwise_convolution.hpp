@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <cstddef>
 #include "bit_manip.hpp"
 
 /* Get \zeta A
