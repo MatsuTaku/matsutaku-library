@@ -63,6 +63,13 @@ OutIter SubsetRankedMobius(int n, std::vector<std::array<T,LIM+1>>& zA, OutIter 
   return out;
 }
 
+template<class T, int LIM>
+std::vector<T> SubsetRankedMobius(int n, std::vector<std::array<T,LIM+1>>& zA) {
+  std::vector<T> out(1<<n);
+  SubsetRankedMobius<T, LIM>(n, zA, out.begin());
+  return out;
+}
+
 template<class T, int LIM, class OutIter>
 OutIter SubsetConvolutionImpl(int n, std::vector<std::array<T,LIM+1>>& zA, std::vector<std::array<T,LIM+1>>& zB, OutIter out) {
   for (int i = 0; i < 1<<n; i++) {
