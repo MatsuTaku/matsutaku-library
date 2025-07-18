@@ -84,8 +84,8 @@ OutIter SubsetConvolutionImpl(int n, std::vector<std::array<T,LIM+1>>& zA, std::
   return SubsetRankedMobius<T, LIM>(n, zA, out);
 }
 
-template<class T, int LIM, class Iter, class OutIter>
-OutIter SubsetConvolution(Iter ba, Iter ea, Iter bb, Iter eb, OutIter out) {
+template<class T, int LIM, class LIter, class RIter, class OutIter>
+OutIter SubsetConvolution(LIter ba, LIter ea, RIter bb, RIter eb, OutIter out) {
   auto n = 64-bm::clz(std::max(std::distance(ba, ea), std::distance(bb, eb))-1);
   auto zA = SubsetRankedZeta<T, LIM>(n, ba, ea);
   auto zB = SubsetRankedZeta<T, LIM>(n, bb, eb);
