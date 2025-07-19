@@ -6,7 +6,7 @@
 #include <algorithm>
 using namespace std;
 
-// Sum_i A^i/i!, A^i is subset-comvolution
+// Sum_i A^i/i!, A^i is subset-convolution
 template<class T, int LIM=20>
 std::vector<T> SpsExp(int n, std::vector<T>& A) {
   assert(A.size()==size_t(1<<n));
@@ -21,7 +21,7 @@ std::vector<T> SpsExp(int n, std::vector<T>& A) {
   return dp;
 }
 
-// Sum_i F_i/i! A^i, A^i is subset-comvolution
+// Sum_i F_i/i! A^i, A^i is subset-convolution
 template<class T, int LIM=20>
 std::vector<T> SpsCompositionEgf(int n, const std::vector<T>& F, const std::vector<T>& A) {
   assert(A.size() >= 1ull<<n);
@@ -51,7 +51,7 @@ std::vector<T> SpsCompositionEgf(int n, const std::vector<T>& F, const std::vect
   return dp;
 }
 
-// Sum_i F_i A^i, A^i is subset-comvolution
+// Sum_i F_i A^i, A^i is subset-convolution
 template<class T, int LIM=20>
 std::vector<T> SpsCompositionPoly(int n, const std::vector<T>& F, std::vector<T> A) {
   if (F.empty()) return std::vector<T>(1<<n, T(0));
