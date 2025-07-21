@@ -6,21 +6,6 @@
 #include <algorithm>
 using namespace std;
 
-// Sum_i A^i/i!, A^i is subset-convolution
-template<class T, int LIM=20>
-std::vector<T> SpsExp(int n, std::vector<T>& A) {
-  assert(A.size()==size_t(1<<n));
-  assert(A[0] == T(0));
-  std::vector<T> dp(1<<n);
-  dp[0] = 1;
-  for (int i = 0; i < n; i++) {
-    SubsetConvolution<T, LIM>(A.begin()+(1<<i), A.begin()+(2<<i), 
-                              dp.begin(), dp.begin()+(1<<i), 
-                              dp.begin()+(1<<i));
-  }
-  return dp;
-}
-
 // Sum_i F_i/i! A^i, A^i is subset-convolution
 template<class T, int LIM=20>
 std::vector<T> SpsCompositionEgf(int n, const std::vector<T>& F, const std::vector<T>& A) {
@@ -82,8 +67,25 @@ std::vector<T> SpsCompositionPoly(int n, const std::vector<T>& F, std::vector<T>
   return SpsCompositionEgf<T, LIM>(n, g, A);
 }
 
+// Sum_i A^i/i!, A^i is subset-convolution
+// Equal to composite f=1+x+x^2+... with A
+// So this is special case of sps-composition
 template<class T, int LIM=20>
-std::vector<T> SpsLog(int n, vector<T> s) {
+std::vector<T> SpsExp(int n, std::vector<T>& A) {
+  assert(A.size()==size_t(1<<n));
+  assert(A[0] == T(0));
+  std::vector<T> dp(1<<n);
+  dp[0] = 1;
+  for (int i = 0; i < n; i++) {
+    SubsetConvolution<T, LIM>(A.begin()+(1<<i), A.begin()+(2<<i), 
+                              dp.begin(), dp.begin()+(1<<i), 
+                              dp.begin()+(1<<i));
+  }
+  return dp;
+}
+
+template<class T, int LIM=20>
+std::vector<T> SpsLog(int n, std::vector<T> s) {
     assert(s[0] == T(1));
     // composite log(1-x) with 1-s
     // log(1-x) = -sum_{i=1}^n x^i/i
@@ -207,4 +209,22 @@ std::vector<T> TransposedSpsCompositionPoly(std::vector<T> s, std::vector<T> x, 
   x.resize(m);
   for (int i = 0; i < m; i++) x[i] *= fact[i];
   return x;
+}
+
+template<class T, int LIM=20>
+std::vector<T> SpsInv(int n, const std::vector<T>& s) {
+  auto zs = SubsetRankedZeta<T,LIM>(n, s.begin(), s.end());
+  // Pointwise inv
+  std::array<T, LIM+1> g{};
+  for (int i = 0; i < 1<<n; i++) {
+    g[0] = 1;
+    for (int j = 1; j <= n; j++) {
+      g[j] = 0;
+      for (int k = 0; k < j; k++) {
+        g[j] -= g[k] * zs[i][j-k];
+      }
+    }
+    zs[i] = g;
+  }
+  return SubsetRankedMobius<T,LIM>(n, zs);
 }
