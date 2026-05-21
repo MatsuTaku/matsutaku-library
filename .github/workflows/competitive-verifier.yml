@@ -38,8 +38,8 @@ jobs:
         with:
           output-path: verify_files.json
           # Specify patterns
-          include: test
-          # exclude: your-own-exclude/
+          include: test/
+          exclude: test/atcoder/
           # If you have config.toml
           config: .competitive-verifier/config.toml
       - name: parse-doxygen
