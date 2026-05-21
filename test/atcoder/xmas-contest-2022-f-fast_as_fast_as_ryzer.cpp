@@ -1,5 +1,4 @@
-#define PROBLEM "https://atcoder.jp/contests/xmascon22/editorial/5438"
-#define IGNORE
+// https://atcoder.jp/contests/xmascon22/editorial/5438
 #include "../../include/mtl/sps.hpp"
 #include <bits/stdc++.h>
 using namespace std;

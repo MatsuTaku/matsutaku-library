@@ -1,5 +1,4 @@
-#define PROBLEM "https://atcoder.jp/contests/abc306/tasks/abc306_h"
-#define IGNORE
+// https://atcoder.jp/contests/abc306/tasks/abc306_h
 #include "../../include/mtl/sps.hpp"
 #include "../../include/mtl/modular.hpp"
 #include <bits/stdc++.h>

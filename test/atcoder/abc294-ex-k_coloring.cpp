@@ -1,5 +1,4 @@
-#define PROBLEM "https://atcoder.jp/contests/abc294/tasks/abc294_h"
-#define IGNORE
+// https://atcoder.jp/contests/abc294/tasks/abc294_h
 #include "../../include/mtl/bitwise_convolution.hpp"
 #include "../../include/mtl/sps.hpp"
 #include "../../include/mtl/modular.hpp"

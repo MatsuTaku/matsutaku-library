@@ -1,5 +1,4 @@
-#define PROBLEM "https://atcoder.jp/contests/xmascon20/tasks/xmascon20_h"
-#define IGNORE
+// https://atcoder.jp/contests/xmascon20/tasks/xmascon20_h
 #include "../../include/mtl/modular.hpp"
 #include "../../include/mtl/subset_convolution.hpp"
 #include "../../include/mtl/fps/pow.hpp"
