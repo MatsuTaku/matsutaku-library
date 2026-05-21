@@ -13,7 +13,7 @@ void SpsEgfZetaMerge(int n, TempIter zbf) {
   if (n==0) return;
   auto zB = std::to_address(zbf);
   auto w = 1ull<<(n-1);
-  for (auto s = 0; s < w; s++) {
+  for (auto s = 0ull; s < w; s++) {
     auto t = s+w;
     // Shift rank+1
     for (int d = LIM; d > 0; d--)
@@ -31,8 +31,8 @@ void SpsEgfMobiusSplit(int n, TempIter zbf) {
   [[assume(n <= LIM)]];
   if (n==0) return;
   auto zB = std::to_address(zbf);
-  auto w = 1<<(n-1);
-  for (int s = 0; s < w; s++) {
+  auto w = 1u<<(n-1);
+  for (auto s = 0ull; s < w; s++) {
     auto t = s+w;
     // Shift rank-1
     for (int d = 0; d <= LIM; d++) 
@@ -49,7 +49,9 @@ template<typename T, int LIM=20>
 std::vector<T> SpsCompositionEgf(int n, const std::vector<T>& F, const std::vector<T>& A) {
   assert(A.size() >= 1ull<<n);
   assert(A[0]== T(0));
+  if (F.empty()) return std::vector<T>(1ull<<n, T(0));
   int d = std::min((size_t)n, F.size()-1);
+
   // std::vector<T> dp(1<<n), ndp(1<<n);
   // dp[0] = F[d];
   // using ranked_fn_type = decltype(SubsetRankedZeta<T, LIM>(n, A.begin(), A.end()));
@@ -76,13 +78,14 @@ std::vector<T> SpsCompositionEgf(int n, const std::vector<T>& F, const std::vect
   // return dp;
 
   RankedVector<T,LIM> zA(1<<n),zB(1<<n),zC(1<<n);
-  for (int i = 0; i < n; i++)
-    SubsetRankedZeta<T,LIM>(i, A.begin(), A.end(), zA.begin()+(1<<i));
+  for (int i = 0; i < n; i++) 
+    SubsetRankedZeta<T,LIM>(i, A.begin()+(1<<i), A.begin()+(2<<i), 
+      zA.begin()+(1<<i));
   zB[0][0] = F[d];
-  for (int k = d-1; d >= 0; k--) {
+  for (int k = d-1; k >= 0; k--) {
     zC[0][0] = F[k];
     for (int i = 0; i < n-k; i++) {
-      if (i>0) {
+      if (k < d-1) {
         SpsEgfZetaMerge<T,LIM>(i, zB.begin());
       }
       SubsetPointwiseConvolution<T,LIM>(i,
@@ -94,10 +97,8 @@ std::vector<T> SpsCompositionEgf(int n, const std::vector<T>& F, const std::vect
   }
   std::vector<T> ret(1<<n);
   for (int i = n-1; i >= 0; i--) {
-    SubsetRankedMobius<T,LIM>(i, zB.begin()+(1<<i), zB.begin()+(2<<i), ret.begin()+(1<<i));
-    if (i>0) {
-      SpsEgfMobiusSplit<T,LIM>(i, zB.begin());
-    }
+    SubsetRankedMobius<T,LIM>(i, zB.begin()+(1<<i), zB.begin()+(2<<i), 
+      ret.begin()+(1<<i));
   }
   assert(F[0] == zB[0][0]);
   ret[0] = zB[0][0];
@@ -109,7 +110,6 @@ template<typename T, int LIM=20>
 std::vector<T> SpsCompositionPoly(int n, const std::vector<T>& F, std::vector<T> A) {
   if (F.empty()) return std::vector<T>(1<<n, T(0));
   int d = std::min(F.size()-1, (size_t)n);
-  std::vector<T> g(d+1);
   T c = A[0];
   A[0] = 0;
   A.resize(1<<n, 0);
@@ -117,7 +117,7 @@ std::vector<T> SpsCompositionPoly(int n, const std::vector<T>& F, std::vector<T>
     return SpsCompositionEgf<T, LIM>(n, F, A);
   }
   // (x+c)^i
-  std::vector<T> pow(d+1);
+  std::vector<T> g(d+1), pow(d+1);
   pow[0] = 1;
   for (int i = 0; i < (int)F.size(); i++) {
     for (int j = 0; j <= d; j++) {
@@ -130,7 +130,8 @@ std::vector<T> SpsCompositionPoly(int n, const std::vector<T>& F, std::vector<T>
   // to egf
   T factorial = 1;
   for (int j = 0; j <= d; j++) {
-    g[j] *= factorial, factorial *= j+1;
+    g[j] *= factorial;
+    factorial *= j+1;
   }
   return SpsCompositionEgf<T, LIM>(n, g, A);
 }
@@ -180,10 +181,10 @@ OutputIter SpsExp(int n, InputIter first, InputIter last, OutputIter out) {
 // Sum_i A^i/i!, A^i is subset-convolution
 // Equal to composite f=1+x+x^2+... with A
 // So this is special case of sps-composition
-template<typename T, int LIM=20>
-std::vector<T> SpsExp(int n, const std::vector<T>& A) {
+template<typename T, int LIM=20, std::convertible_to<T> U>
+std::vector<T> SpsExp(int n, const std::vector<U>& A) {
   std::vector<T> dp(1<<n);
-  SpsExp(n, A.cbegin(), A.cend(), dp.begin());
+  SpsExp<T, LIM>(n, A.cbegin(), A.cend(), dp.begin());
   return dp;
 }
 

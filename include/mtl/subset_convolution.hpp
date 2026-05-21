@@ -153,8 +153,8 @@ OutIter SubsetConvolution(LIter ba, LIter ea, RIter bb, RIter eb, OutIter out) {
   auto zB = SubsetRankedZeta<T, LIM>(n, bb, eb);
   return SubsetConvolutionMobius<T, LIM>(n, zA, zB, out);
 }
-template<typename T, int LIM=20>
-std::vector<T> SubsetConvolution(const std::vector<T>& A, const std::vector<T>& B) {
+template<typename T, int LIM=20, std::convertible_to<T> U, std::convertible_to<T> V>
+std::vector<T> SubsetConvolution(const std::vector<U>& A, const std::vector<V>& B) {
   auto n = 64-bm::clz(std::max(A.size(), B.size())-1);
   std::vector<T> C(1<<n);
   SubsetConvolution<T, LIM>(A.begin(), A.end(), B.begin(), B.end(), C.begin());

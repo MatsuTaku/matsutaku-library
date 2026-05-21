@@ -9,7 +9,7 @@ int main() {
   vector<mint> A(1<<n), B(1<<n);
   for (int i = 0; i < 1<<n; i++) cin>>A[i];
   for (int i = 0; i < 1<<n; i++) cin>>B[i];
-  auto C = SubsetConvolution(A,B);
+  auto C = SubsetConvolution<mint, 20>(A,B);
   for (int i = 0; i < 1<<n; i++) cout<<C[i]<<' ';
   cerr<<endl;
 } 
