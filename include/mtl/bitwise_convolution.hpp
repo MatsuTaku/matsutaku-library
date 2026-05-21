@@ -2,13 +2,14 @@
 #include "bit_manip.hpp"
 #include <vector>
 #include <iterator>
+#include <algorithm>
+#include <cassert>
 #include <cstddef>
 
 /* Get \zeta A
  * defined: [x^s]\zeta A = \sum_{t \in s} A_t  
 */
-template<typename ContiguousIterator>
-requires std::contiguous_iterator<ContiguousIterator>
+template<std::contiguous_iterator ContiguousIterator>
 void SubsetZetaImpl(int n, ContiguousIterator first) {
   auto A = std::to_address(first);
   /// Basic implementation
@@ -40,7 +41,7 @@ void SubsetZetaImpl(int n, ContiguousIterator first) {
  * defined: [x^s]\zeta A = \sum_{t \in s} A_t  
 */
 template<typename T, typename InputIterator>
-std::vector<typename std::iterator_traits<InputIterator>::value_type> SubsetZeta(int n, InputIterator first) {
+std::vector<T> SubsetZeta(int n, InputIterator first) {
   std::vector<T> zA(1<<n);
   std::copy(first, first+(1<<n), zA.begin());
   SubsetZetaImpl<T>(n, zA.begin());
@@ -69,9 +70,8 @@ std::vector<T> SubsetZeta(const std::vector<T>& A) {
 
 /* Get \mobius A, the reverse transformation of \zeta A
 */
-template<typename T, typename ContiguousIterator>
-requires std::contiguous_iterator<ContiguousIterator>
-std::vector<T> SubsetMobiusImpl(int n, ContiguousIterator first) {
+template<std::contiguous_iterator ContiguousIterator>
+void SubsetMobiusImpl(int n, ContiguousIterator first) {
   auto zA = std::to_address(first);
   /// Basic implementation
   // for (int i = 0; i < n; i++) {
@@ -96,16 +96,14 @@ std::vector<T> SubsetMobiusImpl(int n, ContiguousIterator first) {
       w <<= 1;
     }
   }
-  return zA;
 }
 
 /* Get \mobius A, the reverse transformation of \zeta A
 */
-template<typename T, typename InputIterator>
+template<std::input_iterator InputIterator, typename T = std::iter_value_t<InputIterator>>
 std::vector<T> SubsetMobius(int n, InputIterator first) {
   std::vector<T> zA(1<<n);
   std::copy(first, first+(1<<n), zA.begin());
-  std::vector t(first, first+(1<<n));
   SubsetMobiusImpl(n, zA.begin());
   return zA;
 }
@@ -152,23 +150,14 @@ void BitwiseOrConvolutionInline(std::vector<T>& A, std::vector<T>& B) {
 }
 
 template<typename T>
-void BitFlippedRearrangeInline(int n, std::vector<T>& A) {
-  if (n==1) return;
-  int mask = (1<<n)-1;
-  for (size_t i = 0; i < 1<<(n-1); i++) {
-    std::swap(A[i], A[(~i)&mask]);
-  }
-}
-
-template<typename T>
 std::vector<T> BitwiseAndConvolution(const std::vector<T>& A, const std::vector<T>& B) {
   int n = 64-bm::clz(std::max(A.size(), B.size())-1);
   std::vector<T> rA(1<<n), rB(1<<n);
   std::copy(A.begin(), A.end(), rA.begin());
   std::copy(B.begin(), B.end(), rB.begin());
-  BitFlippedRearrangeInline(n, rA);
-  BitFlippedRearrangeInline(n, rB);
+  std::reverse(rA.begin(), rA.end());
+  std::reverse(rB.begin(), rB.end());
   BitwiseOrConvolutionInline(rA, rB);
-  BitFlippedRearrangeInline(n, rA);
+  std::reverse(rA.begin(), rA.end());
   return rA;
 }
