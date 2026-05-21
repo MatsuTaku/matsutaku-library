@@ -1,16 +1,21 @@
 cmake_minimum_required(VERSION 3.19)
+project(matsutaku-library LANGUAGES CXX)
 
-project(matsutaku-library CXX)
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED OF)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
-# set(CMAKE_CXX_STANDARD 14) # Support C++ version of TopCoder at 11/27/2022
-set(CMAKE_CXX_STANDARD 17) # Same as competitive-verifier compile option
-set(CMAKE_BUILD_TYPE Debug)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -Wall")
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Debug CACHE STRING "Build type" FORCE)
+endif()
+
+add_compile_options(-Wall -Wextra -Wshadow)
+add_compile_options($<$<CONFIG:Release>:-O2>)
 
 add_library(mtl INTERFACE)
-target_include_directories(mtl INTERFACE include)
+target_include_directories(mtl INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
-include_directories(.)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 enable_testing()
 add_subdirectory(test)

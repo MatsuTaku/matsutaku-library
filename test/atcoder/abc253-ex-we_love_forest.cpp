@@ -19,16 +19,15 @@ void solve() {
 
     // dp_i: number of trees with vertex set i
     vector<mint> dp(1<<n);
+    // f.reserve(1<<n);
     dp[0] = 0;
     for (int i = 0; i < n; i++) {
-        vector<mint> f(dp.begin(), dp.begin()+(1<<i));
         for (int s = 0; s < 1<<i; s++) {
             int k = 0;
             for (int j = 0; j < i; j++) if ((s>>j)&1) k += mat[i][j];
-            f[s] *= k;
+            dp[s|(1<<i)] = dp[s] * k;
         }
-        f = SpsExp<mint,LIM>(i, f);
-        for (int s = 0; s < 1<<i; s++) dp[s|(1<<i)] = f[s];
+        SpsExp<mint,LIM>(i, dp.cbegin()+(1<<i), dp.cbegin()+(2<<i), dp.begin()+(1<<i));
     }
 
     vector<mint> x(1<<n);
@@ -37,11 +36,12 @@ void solve() {
     // thats why, define f(s): number of forest with vertex set s, f = exp(dp)
     auto y = TransposedSpsCompositionEgf<mint,LIM>(dp, x);
 
-    mint fact = 1;
+    auto im = mint(m).inv();
+    mint coeff = 1;
     for (int k = 1; k < n; k++) {
         auto ans = y[n-k];
-        fact *= k;
-        ans *= fact * mint(m).inv().pow(k);
+        coeff *= k * im;
+        ans *= coeff;
         cout<<ans<<endl;
     }
 }
