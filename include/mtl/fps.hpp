@@ -287,8 +287,26 @@ class Fps : public std::vector<Modular<Mod>> {
     assert(!_base::empty() and (*this)[0] == 1);
     return _pow_1(mint(2).inv().val());
   }
- public:
-  Fps sqrt() const {
+  /**
+   * define f^{1/2}' = 1/2f^{-1/2} if [x^0]f = 1
+   * F = f^{1/2}
+   * fF' = 1/2 F f'
+   */
+  Fps _sqrt_1_dense() const {
+    assert(!_base::empty() and (*this)[0] == 1);
+    return _pow_1_dense(mint(2).inv().val());
+  }
+  /**
+   * define f^{1/2}' = 1/2f^{-1/2} if [x^0]f = 1
+   * F = f^{1/2}
+   * fF' = 1/2 F f'
+   */
+  Fps _sqrt_1_sparse() const {
+    assert(!_base::empty() and (*this)[0] == 1);
+    return _pow_1_sparse(mint(2).inv().val());
+  }
+  template<class Sqrt>
+  Fps _sqrt(Sqrt sqrt_fn) const {
     // f = sum_i a_i x^i = c_k x^k sum_i a_i/c_k x^{i-k} = c_k x^k g
     // f^{1/2} = c_k^{1/2} x^{k/2} g^{1/2}
     // s.t. c_k is square and k is even
@@ -302,10 +320,20 @@ class Fps : public std::vector<Modular<Mod>> {
       throw std::runtime_error("not square");
     auto g = *this >> k;
     g /= ck;
-    g = g._sqrt_1();
+    g = sqrt_fn(g);
     g *= ck.sqrt();
     g <<= k/2;
     return g;
+  }
+ public:
+  Fps sqrt() const {
+    return _sqrt([](const Fps& g) { return g._sqrt_1(); });
+  }
+  Fps sqrt_dense() const {
+    return _sqrt([](const Fps& g) { return g._sqrt_1_dense(); });
+  }
+  Fps sqrt_sparse() const {
+    return _sqrt([](const Fps& g) { return g._sqrt_1_sparse(); });
   }
   bool is_square() const {
     size_t k = 0;

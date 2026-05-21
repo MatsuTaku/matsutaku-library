@@ -1,4 +1,5 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/line_add_get_min"
+#define IGNORE
 #include "include/mtl/li_chao_tree.hpp"
 #include "include/mtl/compress_int.hpp"
 #include <bits/stdc++.h>
