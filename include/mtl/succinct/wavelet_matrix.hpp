@@ -299,7 +299,7 @@ struct WaveletMatrix {
     size_t range,s;
     T c;
     while (!qs.empty()) {
-      std::tie(range,s,c) = qs.top();
+      std::tie(range,s,c) = qs.front();
       qs.pop();
       auto level = s/n;
       if (level == h) {
