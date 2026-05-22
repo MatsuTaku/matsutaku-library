@@ -161,3 +161,81 @@ std::vector<T> BitwiseAndConvolution(const std::vector<T>& A, const std::vector<
   std::reverse(rA.begin(), rA.end());
   return rA;
 }
+
+/* Get Hadamard(A)
+*/
+template<std::contiguous_iterator ContiguousIterator>
+void HadamardTransformImpl(int n, ContiguousIterator first) {
+  auto zA = std::to_address(first);
+  /// Basic implementation
+  // for (int i = 0; i < n; i++) {
+  //   auto w = 1<<i;
+  //   for (int p = 0; p < 1<<n; p += 2*w) {
+  //     for (int s = p; s < p+w; s++) {
+  //       int t = s|w;
+  //       auto a = zA[t-w];
+  //       auto b = zA[t];
+  //       zA[t-w] = a+b;
+  //       zA[t] = a-b;
+  //     }
+  //   }
+  // }  
+  /// Cache-oblivious order
+  for (auto mask = 1ull; mask < 1ull<<n; mask += 2) {
+    auto m = mask;
+    auto w = 1ull;
+    while (m & 1ull) {
+      auto t = mask+1-w;
+      for (auto t = mask+1-w; t < mask+1; t++) {
+        auto a = zA[t-w];
+        auto b = zA[t];
+        zA[t-w] = a+b;
+        zA[t] = a-b;
+      }
+      m >>= 1;
+      w <<= 1;
+    }
+  }
+}
+
+/* Get Hadamard(A)
+*/
+template<std::input_iterator InputIterator, typename T = std::iter_value_t<InputIterator>>
+std::vector<T> HadamardTransform(int n, InputIterator first) {
+  std::vector<T> hA(1<<n);
+  std::copy(first, first+(1<<n), hA.begin());
+  HadamardTransformImpl(n, hA.begin());
+  return hA;
+}
+
+/* Get Hadamard(A)
+*/
+template<typename T, std::convertible_to<T> U>
+std::vector<T> HadamardTransform(const std::vector<U>& A) {
+  if (A.empty()) return {};
+  auto n = 64-bm::clz(A.size()-1);
+  return HadamardTransform<decltype(A.cbegin()), T>(n, A.cbegin());
+}
+
+template<typename T, std::convertible_to<T> U, std::convertible_to<T> V>
+std::vector<T> BitwiseXorConvolution(const std::vector<U>& A, const std::vector<V>& B) {
+  auto n = 64-bm::clz(A.size()-1);
+  auto hA = HadamardTransform<T>(A);
+  auto hB = HadamardTransform<T>(B);
+  for (size_t i = 0; i < hA.size(); i++) {
+    hA[i] *= hB[i];
+  }
+  HadamardTransformImpl(n, hA.begin());
+  auto& AB = hA; // inline result
+  if constexpr (requires (T& t) { t.inv(); t.pow(std::declval<int>()); }) {
+    auto inv = T{2}.pow(n).inv();
+    for (auto& a:AB) a *= inv;
+  } else if constexpr (std::is_integral_v<T>) {
+    for (auto& a:AB) a >>= n;
+  } else {
+    T p{2};
+    for (int i = 0; i < n; i++) p *= 2;
+    for (auto& a:AB) a /= p;
+  }
+  return AB;
+}
