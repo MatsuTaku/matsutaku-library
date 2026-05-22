@@ -92,10 +92,10 @@ struct BV {
     auto q = i / S;
     auto r = i % S;
     assert(bm_ != nullptr);
+    if (i >= bm_->size())
+      return _r[_r.size()-2];
     auto w = bm_->get_word(q) & mask(r);
-    return get_l<1>(l) + 
-           get_s<1>(l, s) + 
-           bm::popcnt(w);
+    return get_l<1>(l) + get_s<1>(l, s) + bm::popcnt(w);
   }
   size_t rank0(size_t i) const { 
     return i - rank1(i);
@@ -108,7 +108,7 @@ struct BV {
       return rank0(i);
   }
 
-  static struct l_block_cap_mask {
+  struct l_block_cap_mask {
     uint64_t mask;
     constexpr l_block_cap_mask() : mask(0) {
       for (unsigned i = 0; i < S_PER_L; i++) {
@@ -180,5 +180,5 @@ struct BV {
   }
 };
 
-template<class BitVec, unsigned WordSize>
-typename BV<BitVec, WordSize>::l_block_cap_mask BV<BitVec, WordSize>::l_block_cap;
+// template<class BitVec, unsigned WordSize>
+// typename BV<BitVec, WordSize>::l_block_cap_mask BV<BitVec, WordSize>::l_block_cap;

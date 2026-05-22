@@ -7,8 +7,6 @@
 #include <iostream>
 #include <iterator>
 
-auto t = std::iterator_traits<std::vector<bool>::iterator>::iterator_category();
-
 /// Bitmap is likes std::vector<bool> with advanced operations
 struct Bitmap {
   using value_type = bool;
@@ -284,7 +282,7 @@ struct Bitmap {
     auto mask = w < 64 ? (1ull << w) - 1 : ~0ull;
     assert(x <= mask);
     arr[b/64] = (arr[b/64] & ~(mask << r)) | x << r;
-    if (mask + r > 64) {
+    if (w + r > 64) {
       arr[b/64+1] = (arr[b/64+1] & ~(mask >> (64-r))) | x >> (64-r);
     }
   }

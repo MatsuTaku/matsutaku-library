@@ -280,10 +280,10 @@ struct RRR {
     void move_or_build(RRR&& src) {
         *this = std::move(src);
     }
-    void move_or_build(const Bitmap& bm) {
-        for (size_t i = 0; i < bm.size(); i += def::s_size) {
-            auto w = bm.range_get(i, std::min(i+def::s_size, bm.size()));
-            if (w or i+def::s_size >= bm.size()) s_map.emplace(i/def::s_size, w);
+    void move_or_build(const Bitmap& src) {
+        for (size_t i = 0; i < src.size(); i += def::s_size) {
+            auto w = src.range_get(i, std::min(i+def::s_size, src.size()));
+            if (w or i+def::s_size >= src.size()) s_map.emplace(i/def::s_size, w);
         }
         build();
     }
